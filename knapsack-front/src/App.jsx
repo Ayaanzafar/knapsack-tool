@@ -1,88 +1,161 @@
 // src/App.jsx
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
+import TabBar from './components/TabBar';
 import GlobalInputs from './components/GlobalInputs';
 import RailTable from './components/RailTable';
-import { loadSettings, saveSettings } from './lib/storage';
+import CreateTabDialog from './components/CreateTabDialog';
+import CloseTabConfirmDialog from './components/CloseTabConfirmDialog';
+import {
+  loadTabs,
+  saveTabs,
+  createTab,
+  deleteTab,
+  updateTab,
+  switchTab,
+  getActiveTab
+} from './lib/tabStorage';
 
 export default function App() {
-  // Load saved settings
-  const savedSettings = useMemo(() => loadSettings(), []);
+  // Load tabs data
+  const [tabsData, setTabsData] = useState(() => loadTabs());
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+  const [tabToClose, setTabToClose] = useState(null);
 
-  // Settings state
-  const [settings, setSettings] = useState(savedSettings);
+  // Get active tab
+  const activeTab = getActiveTab(tabsData);
 
-  // Table rows state - load from localStorage or start empty
-  const [rows, setRows] = useState(() => {
-    try {
-      const saved = localStorage.getItem('railOptimizer_rows');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  // Selected row for detail view
-  const [selectedRowId, setSelectedRowId] = useState(() => {
-    try {
-      const saved = localStorage.getItem('railOptimizer_selectedRowId');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  // Get selected row
-  const selectedRow = rows.find(r => r.id === selectedRowId);
-
-  // Save settings whenever they change
+  // Save tabs whenever they change
   useEffect(() => {
-    saveSettings(settings);
-  }, [settings]);
+    saveTabs(tabsData);
+  }, [tabsData]);
 
-  // Save rows whenever they change
-  useEffect(() => {
-    localStorage.setItem('railOptimizer_rows', JSON.stringify(rows));
-  }, [rows]);
-
-  // Save selected row ID whenever it changes
-  useEffect(() => {
-    localStorage.setItem('railOptimizer_selectedRowId', JSON.stringify(selectedRowId));
-  }, [selectedRowId]);
-
-  // Update a single setting
-  const updateSetting = (key, value) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+  // Tab operations
+  const handleTabSwitch = (tabId) => {
+    setTabsData(switchTab(tabsData, tabId));
   };
+
+  const handleTabCreate = (tabName) => {
+    setTabsData(createTab(tabsData, tabName));
+    setShowCreateDialog(false);
+  };
+
+  const handleTabCloseRequest = (tab) => {
+    // Don't allow closing if only 1 tab
+    if (tabsData.tabs.length === 1) {
+      alert('Cannot close the last tab!');
+      return;
+    }
+    setTabToClose(tab);
+    setShowCloseConfirm(true);
+  };
+
+  const confirmCloseTab = () => {
+    setTabsData(deleteTab(tabsData, tabToClose.id));
+    setShowCloseConfirm(false);
+    setTabToClose(null);
+  };
+
+  // Update active tab's settings
+  const updateSettings = (newSettings) => {
+    setTabsData(currentTabsData => {
+      const currentActiveTab = getActiveTab(currentTabsData);
+      if (!currentActiveTab) return currentTabsData;
+
+      // Handle both object and function updaters
+      const settingsUpdate = typeof newSettings === 'function'
+        ? newSettings(currentActiveTab.settings)
+        : { ...currentActiveTab.settings, ...newSettings };
+
+      return updateTab(currentTabsData, currentActiveTab.id, {
+        settings: settingsUpdate
+      });
+    });
+  };
+
+  // Update active tab's rows
+  const updateRows = (newRows) => {
+    setTabsData(currentTabsData => {
+      const currentActiveTab = getActiveTab(currentTabsData);
+      if (!currentActiveTab) return currentTabsData;
+
+      // Handle both direct values and function updaters
+      const rowsUpdate = typeof newRows === 'function'
+        ? newRows(currentActiveTab.rows)
+        : newRows;
+
+      return updateTab(currentTabsData, currentActiveTab.id, { rows: rowsUpdate });
+    });
+  };
+
+  // Update active tab's selected row
+  const updateSelectedRowId = (rowId) => {
+    setTabsData(currentTabsData => {
+      const currentActiveTab = getActiveTab(currentTabsData);
+      if (!currentActiveTab) return currentTabsData;
+
+      return updateTab(currentTabsData, currentActiveTab.id, { selectedRowId: rowId });
+    });
+  };
+
+  const selectedRow = activeTab?.rows.find(r => r.id === activeTab.selectedRowId);
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <Header
-        userMode={settings.userMode}
-        setUserMode={(mode) => updateSetting('userMode', mode)}
-        settings={settings}
-        setSettings={setSettings}
+        userMode={activeTab?.settings.userMode}
+        setUserMode={(mode) => updateSettings({ userMode: mode })}
+        settings={activeTab?.settings}
+        setSettings={updateSettings}
+      />
+
+      {/* Tab Bar */}
+      <TabBar
+        tabs={tabsData.tabs}
+        activeTabId={tabsData.activeTabId}
+        onTabSwitch={handleTabSwitch}
+        onTabCreate={() => setShowCreateDialog(true)}
+        onTabClose={handleTabCloseRequest}
       />
 
       <main className="mx-auto max-w-[80%] px-4 py-6">
-        {/* Top: Global Inputs */}
+        {/* Global Inputs for active tab */}
         <div className="mb-6">
-          <GlobalInputs settings={settings} setSettings={setSettings} />
+          <GlobalInputs
+            settings={activeTab?.settings}
+            setSettings={updateSettings}
+          />
         </div>
 
-        {/* Main Content */}
+        {/* Rail Table for active tab */}
         <section>
           <RailTable
-            rows={rows}
-            setRows={setRows}
-            selectedRowId={selectedRowId}
-            setSelectedRowId={setSelectedRowId}
-            settings={settings}
-            setSettings={setSettings}
+            rows={activeTab?.rows || []}
+            setRows={updateRows}
+            selectedRowId={activeTab?.selectedRowId}
+            setSelectedRowId={updateSelectedRowId}
+            settings={activeTab?.settings}
+            setSettings={updateSettings}
             selectedRow={selectedRow}
           />
         </section>
       </main>
+
+      {/* Dialogs */}
+      <CreateTabDialog
+        isOpen={showCreateDialog}
+        onClose={() => setShowCreateDialog(false)}
+        onCreate={handleTabCreate}
+        existingTabNames={tabsData.tabs.map(t => t.name)}
+      />
+
+      <CloseTabConfirmDialog
+        isOpen={showCloseConfirm}
+        tabName={tabToClose?.name}
+        onClose={() => setShowCloseConfirm(false)}
+        onConfirm={confirmCloseTab}
+      />
 
       <footer className="py-8 text-center text-xs text-gray-500">
         Rail Cut Optimizer - Built for solar rail standardization
