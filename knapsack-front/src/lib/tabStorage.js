@@ -33,7 +33,8 @@ export const DEFAULT_TAB = {
     costPerJointSet: '50',
     joinerLength: '100',
     priority: 'cost',
-    userMode: 'normal'
+    userMode: 'normal',
+    enableSB2: false
   },
   rows: [],
   selectedRowId: null

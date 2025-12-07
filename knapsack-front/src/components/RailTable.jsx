@@ -223,9 +223,14 @@ export default function RailTable({
   selectedRow
 }) {
   const [showSettings, setShowSettings] = useState(false);
-  const [enableSB2, setEnableSB2] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [deleteConfirmRowId, setDeleteConfirmRowId] = useState(null);
+
+  // Get enableSB2 from settings (per-tab)
+  const enableSB2 = settings?.enableSB2 ?? false;
+  const setEnableSB2 = (value) => {
+    setSettings(prev => ({ ...prev, enableSB2: value }));
+  };
 
   // Drag and drop sensors for @dnd-kit
   const sensors = useSensors(
