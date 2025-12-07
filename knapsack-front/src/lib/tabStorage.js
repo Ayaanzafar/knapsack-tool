@@ -157,3 +157,42 @@ export function switchTab(tabsData, tabId) {
 export function getActiveTab(tabsData) {
   return tabsData.tabs.find(t => t.id === tabsData.activeTabId);
 }
+
+// Rename tab
+export function renameTab(tabsData, tabId, newName) {
+  return {
+    ...tabsData,
+    tabs: tabsData.tabs.map(tab =>
+      tab.id === tabId ? { ...tab, name: newName } : tab
+    )
+  };
+}
+
+// Duplicate tab
+export function duplicateTab(tabsData, tabId) {
+  const tabToDuplicate = tabsData.tabs.find(t => t.id === tabId);
+  if (!tabToDuplicate) return tabsData;
+
+  const newId = Math.max(...tabsData.tabs.map(t => t.id), 0) + 1;
+
+  // Find a unique name for the duplicate
+  let duplicateName = `${tabToDuplicate.name} (Copy)`;
+  let counter = 2;
+  while (tabsData.tabs.some(t => t.name === duplicateName)) {
+    duplicateName = `${tabToDuplicate.name} (Copy ${counter})`;
+    counter++;
+  }
+
+  const duplicatedTab = {
+    ...tabToDuplicate,
+    id: newId,
+    name: duplicateName,
+    createdAt: new Date().toISOString()
+  };
+
+  return {
+    ...tabsData,
+    tabs: [...tabsData.tabs, duplicatedTab],
+    activeTabId: newId
+  };
+}

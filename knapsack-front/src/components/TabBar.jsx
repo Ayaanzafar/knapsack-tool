@@ -1,5 +1,35 @@
 // src/components/TabBar.jsx
-export default function TabBar({ tabs, activeTabId, onTabSwitch, onTabCreate, onTabClose }) {
+import { useState } from 'react';
+import TabContextMenu from './TabContextMenu';
+
+export default function TabBar({ tabs, activeTabId, onTabSwitch, onTabCreate, onTabClose, onTabRename, onTabDuplicate }) {
+  const [contextMenu, setContextMenu] = useState({ isOpen: false, tab: null, position: { x: 0, y: 0 } });
+
+  const handleContextMenu = (e, tab) => {
+    e.preventDefault();
+    setContextMenu({
+      isOpen: true,
+      tab,
+      position: { x: e.clientX, y: e.clientY }
+    });
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu({ isOpen: false, tab: null, position: { x: 0, y: 0 } });
+  };
+
+  const handleRename = () => {
+    if (contextMenu.tab) {
+      onTabRename(contextMenu.tab);
+    }
+  };
+
+  const handleDuplicate = () => {
+    if (contextMenu.tab) {
+      onTabDuplicate(contextMenu.tab);
+    }
+  };
+
   return (
     <div className="bg-white border-b">
       <div className="mx-auto max-w-[80%] px-4">
@@ -13,6 +43,7 @@ export default function TabBar({ tabs, activeTabId, onTabSwitch, onTabCreate, on
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-transparent'
               }`}
               onClick={() => onTabSwitch(tab.id)}
+              onContextMenu={(e) => handleContextMenu(e, tab)}
             >
               <span className="text-sm whitespace-nowrap">{tab.name}</span>
               <button
@@ -41,6 +72,14 @@ export default function TabBar({ tabs, activeTabId, onTabSwitch, onTabCreate, on
           </button>
         </div>
       </div>
+
+      <TabContextMenu
+        isOpen={contextMenu.isOpen}
+        position={contextMenu.position}
+        onClose={closeContextMenu}
+        onRename={handleRename}
+        onDuplicate={handleDuplicate}
+      />
     </div>
   );
 }

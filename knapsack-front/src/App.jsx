@@ -6,6 +6,7 @@ import GlobalInputs from './components/GlobalInputs';
 import RailTable from './components/RailTable';
 import CreateTabDialog from './components/CreateTabDialog';
 import CloseTabConfirmDialog from './components/CloseTabConfirmDialog';
+import RenameTabDialog from './components/RenameTabDialog';
 import {
   loadTabs,
   saveTabs,
@@ -13,7 +14,9 @@ import {
   deleteTab,
   updateTab,
   switchTab,
-  getActiveTab
+  getActiveTab,
+  renameTab,
+  duplicateTab
 } from './lib/tabStorage';
 
 export default function App() {
@@ -21,7 +24,9 @@ export default function App() {
   const [tabsData, setTabsData] = useState(() => loadTabs());
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+  const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [tabToClose, setTabToClose] = useState(null);
+  const [tabToRename, setTabToRename] = useState(null);
 
   // Get active tab
   const activeTab = getActiveTab(tabsData);
@@ -55,6 +60,21 @@ export default function App() {
     setTabsData(deleteTab(tabsData, tabToClose.id));
     setShowCloseConfirm(false);
     setTabToClose(null);
+  };
+
+  const handleTabRenameRequest = (tab) => {
+    setTabToRename(tab);
+    setShowRenameDialog(true);
+  };
+
+  const handleTabRename = (newName) => {
+    setTabsData(renameTab(tabsData, tabToRename.id, newName));
+    setShowRenameDialog(false);
+    setTabToRename(null);
+  };
+
+  const handleTabDuplicate = (tab) => {
+    setTabsData(duplicateTab(tabsData, tab.id));
   };
 
   // Update active tab's settings
@@ -117,6 +137,8 @@ export default function App() {
         onTabSwitch={handleTabSwitch}
         onTabCreate={() => setShowCreateDialog(true)}
         onTabClose={handleTabCloseRequest}
+        onTabRename={handleTabRenameRequest}
+        onTabDuplicate={handleTabDuplicate}
       />
 
       <main className="mx-auto max-w-[80%] px-4 py-6">
@@ -155,6 +177,14 @@ export default function App() {
         tabName={tabToClose?.name}
         onClose={() => setShowCloseConfirm(false)}
         onConfirm={confirmCloseTab}
+      />
+
+      <RenameTabDialog
+        isOpen={showRenameDialog}
+        currentName={tabToRename?.name}
+        onClose={() => setShowRenameDialog(false)}
+        onRename={handleTabRename}
+        existingTabNames={tabsData.tabs.map(t => t.name)}
       />
 
       <footer className="py-8 text-center text-xs text-gray-500">
