@@ -2,7 +2,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BOMTable from './BOMTable';
-import SpareTable from './SpareTable';
 
 export default function BOMPage() {
   const location = useLocation();
@@ -90,8 +89,8 @@ export default function BOMPage() {
 
       {/* BOM Content */}
       <main className="container mx-auto px-6 py-6">
-        {/* Project Info Bar */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          {/* Project Info Bar */}
           <div className="bg-linear-to-r from-purple-600 to-indigo-600 text-white px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
@@ -108,19 +107,9 @@ export default function BOMPage() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Tables Side by Side */}
-        <div className="flex gap-4">
-          {/* Main BOM Table - Takes more space */}
-          <div className="flex-1 bg-white rounded-lg shadow-lg overflow-hidden">
-            <BOMTable bomData={bomData} />
-          </div>
-
-          {/* Spare Table - Fixed width on right side */}
-          <div className="w-64 bg-white rounded-lg shadow-lg overflow-hidden flex-shrink-0">
-            <SpareTable bomData={bomData} />
-          </div>
+          {/* BOM Table with integrated Spare columns */}
+          <BOMTable bomData={bomData} />
         </div>
       </main>
     </div>

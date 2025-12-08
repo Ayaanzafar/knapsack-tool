@@ -89,20 +89,18 @@ export default function BOMTableRow({ item, tabs, isEven }) {
         {totalQuantity}
       </td>
 
+      {/* Blank separator column */}
+      <td className="bg-gray-200"></td>
+
       {/* Spare Quantity */}
-      {/* <td className="border border-gray-400 px-2 py-2 text-sm text-center bg-green-50">
+      <td className="border border-gray-400 px-3 py-2 text-sm text-center bg-green-50">
         {spareQuantity}
-      </td> */}
+      </td>
 
-      {/* 1% Label */}
-      {/* <td className="border border-gray-400 px-2 py-2 text-xs text-center text-gray-500">
-        1%
-      </td> */}
-
-      {/* Final Total */}
-      {/* <td className="border border-gray-400 px-2 py-2 text-sm text-center font-bold bg-purple-50">
+      {/* Final Total Quantity */}
+      <td className="border border-gray-400 px-3 py-2 text-sm text-center font-bold bg-purple-50">
         {finalTotal}
-      </td> */}
+      </td>
     </tr>
   );
 }

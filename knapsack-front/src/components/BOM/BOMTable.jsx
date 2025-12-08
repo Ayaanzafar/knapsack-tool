@@ -36,9 +36,20 @@ export default function BOMTable({ bomData }) {
               </th>
             ))}
 
-            
+
             <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
               Total
+            </th>
+
+            {/* Blank separator column */}
+            <th className="bg-gray-200 w-4"></th>
+
+            {/* Spare section header */}
+            <th
+              colSpan={2}
+              className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
+            >
+              Spare
             </th>
           </tr>
 
@@ -73,9 +84,20 @@ export default function BOMTable({ bomData }) {
               </th>
             ))}
 
-            
+
             <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
               {Object.values(panelCounts).reduce((a, b) => a + b, 0)}
+            </th>
+
+            {/* Blank separator column */}
+            <th className="bg-gray-200 w-4"></th>
+
+            {/* Spare section - "1%" label spanning 2 columns */}
+            <th
+              colSpan={2}
+              className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
+            >
+              1%
             </th>
 
           </tr>
@@ -121,6 +143,19 @@ export default function BOMTable({ bomData }) {
             {/* last column under Total */}
             <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
               Quantity
+            </th>
+
+            {/* Blank separator column */}
+            <th className="bg-gray-200 w-4"></th>
+
+            {/* Spare Quantity column */}
+            <th className="border border-gray-400 px-3 py-2 text-xs font-bold text-center">
+              Spare<br />Quantity
+            </th>
+
+            {/* Total Quantity column */}
+            <th className="border border-gray-400 px-3 py-2 text-xs font-bold text-center">
+              Total<br />Quantity
             </th>
           </tr>
 
