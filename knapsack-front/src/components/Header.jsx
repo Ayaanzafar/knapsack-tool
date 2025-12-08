@@ -1,9 +1,35 @@
 // src/components/Header.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { exportToFile, DEFAULT_SETTINGS, DEFAULT_LENGTHS } from '../lib/storage';
 
-export default function Header({ userMode, setUserMode, settings, setSettings }) {
+export default function Header({ userMode, setUserMode, settings, setSettings, projectName, setProjectName }) {
   const [showSettings, setShowSettings] = useState(false);
+  const [isEditingProject, setIsEditingProject] = useState(false);
+  const [tempProjectName, setTempProjectName] = useState(projectName || 'Untitled Project');
+
+  // Sync tempProjectName with projectName
+  useEffect(() => {
+    setTempProjectName(projectName || 'Untitled Project');
+  }, [projectName]);
+
+  const handleSaveProjectName = () => {
+    const trimmed = tempProjectName.trim();
+    if (trimmed) {
+      setProjectName(trimmed);
+    } else {
+      setTempProjectName(projectName || 'Untitled Project');
+    }
+    setIsEditingProject(false);
+  };
+
+  const handleProjectKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveProjectName();
+    } else if (e.key === 'Escape') {
+      setTempProjectName(projectName || 'Untitled Project');
+      setIsEditingProject(false);
+    }
+  };
 
   const handleExport = () => {
     exportToFile(settings);
@@ -46,7 +72,39 @@ export default function Header({ userMode, setUserMode, settings, setSettings })
       {/* <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between"> */}
       <div className="max-w-7xl px-4 py-4 flex ml-50 items-center justify-between">
       {/* <div className="max-w-7xl px-4 py-4 ml-8 flex items-center justify-between"> */}
-        <h1 className="text-xl font-semibold">Preliminary Calculation for Long Rail</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-semibold">Preliminary Calculation for Long Rail</h1>
+          <span className="text-gray-300">|</span>
+          {isEditingProject ? (
+            <input
+              type="text"
+              value={tempProjectName}
+              onChange={(e) => setTempProjectName(e.target.value)}
+              onBlur={handleSaveProjectName}
+              onKeyDown={handleProjectKeyDown}
+              className="border-b-2 border-purple-500 px-2 py-1 text-sm focus:outline-none w-64"
+              autoFocus
+              maxLength={255}
+            />
+          ) : (
+            <div
+              onClick={() => setIsEditingProject(true)}
+              className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded transition-colors"
+              title="Click to edit project name"
+            >
+              <span className="text-sm text-gray-600">Project:</span>
+              <span className="font-medium text-sm">{projectName}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 text-gray-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              </svg>
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-4">
           <div className="relative">
             <button

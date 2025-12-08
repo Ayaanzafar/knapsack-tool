@@ -7,6 +7,7 @@ import RailTable from './components/RailTable';
 import CreateTabDialog from './components/CreateTabDialog';
 import CloseTabConfirmDialog from './components/CloseTabConfirmDialog';
 import RenameTabDialog from './components/RenameTabDialog';
+import CreateBOMButton from './components/BOM/CreateBOMButton';
 import {
   loadTabs,
   saveTabs,
@@ -28,6 +29,11 @@ export default function App() {
   const [tabToClose, setTabToClose] = useState(null);
   const [tabToRename, setTabToRename] = useState(null);
 
+  // Project name state
+  const [projectName, setProjectName] = useState(() =>
+    localStorage.getItem('projectName') || 'Untitled Project'
+  );
+
   // Get active tab
   const activeTab = getActiveTab(tabsData);
 
@@ -35,6 +41,11 @@ export default function App() {
   useEffect(() => {
     saveTabs(tabsData);
   }, [tabsData]);
+
+  // Save project name whenever it changes
+  useEffect(() => {
+    localStorage.setItem('projectName', projectName);
+  }, [projectName]);
 
   // Tab operations
   const handleTabSwitch = (tabId) => {
@@ -128,6 +139,8 @@ export default function App() {
         setUserMode={(mode) => updateSettings({ userMode: mode })}
         settings={activeTab?.settings}
         setSettings={updateSettings}
+        projectName={projectName}
+        setProjectName={setProjectName}
       />
 
       {/* Tab Bar */}
@@ -162,6 +175,12 @@ export default function App() {
             selectedRow={selectedRow}
           />
         </section>
+
+        {/* Create BOM Button */}
+        <CreateBOMButton
+          tabsData={tabsData}
+          projectName={projectName}
+        />
       </main>
 
       {/* Dialogs */}
