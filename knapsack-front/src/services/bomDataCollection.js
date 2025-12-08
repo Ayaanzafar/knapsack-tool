@@ -2,6 +2,8 @@
 // Service to collect data from all tabs for BOM generation
 
 import { calculateSB1 } from '../lib/calculations';
+import { requiredRailLength, generateScenarios } from '../lib/optimizer';
+import { parseNumList } from '../lib/storage';
 
 /**
  * Calculate totals for a single tab
@@ -19,14 +21,23 @@ function calculateTabTotals(tab) {
     endClampWidth = 40,
     buffer = 15,
     lengthsInput = '',
-    enabledLengths = {}
+    enabledLengths = {},
+    maxWastePct = '',
+    allowUndershootPct = 0,
+    alphaJoint = 220,
+    betaSmall = 60,
+    gammaShort = 5,
+    costPerMm = '0.1',
+    costPerJointSet = '50',
+    joinerLength = '100',
+    priority = 'cost'
   } = settings;
 
   // Parse available lengths
-  const allLengths = lengthsInput
-    .split(',')
-    .map(s => parseInt(s.trim(), 10))
-    .filter(n => !isNaN(n) && n > 0);
+  const allLengths = parseNumList(lengthsInput);
+
+  // Filter enabled lengths
+  const parsedLengths = allLengths.filter(len => enabledLengths[len] !== false);
 
   const result = {
     modules: 0,
@@ -54,10 +65,13 @@ function calculateTabTotals(tab) {
       result.modules += modules * qty;
 
       // Calculate required length
-      const required = (modules * moduleWidth) +
-        (2 * endClampWidth) +
-        ((modules - 1) * midClamp) +
-        (2 * buffer);
+      const required = requiredRailLength({
+        modules: modules,
+        moduleWidth: Number(moduleWidth) || 0,
+        midClamp: Number(midClamp) || 0,
+        endClampWidth: Number(endClampWidth) || 0,
+        buffer: Number(buffer) || 0
+      });
 
       result.required += required * qty;
 
@@ -65,10 +79,45 @@ function calculateTabTotals(tab) {
       result.endClamp += 2 * qty;
       result.midClamp += Math.max(0, modules - 1) * qty;
 
-      // Estimate joints based on required length
-      // This is simplified - actual joint calculation depends on optimization
-      const avgJointsPerRow = Math.max(0, Math.floor(required / 5000)); // Rough estimate
-      result.joints += avgJointsPerRow * qty;
+      // Run optimization to get actual cut lengths and joints
+      if (required > 0 && parsedLengths.length > 0) {
+        const combos = generateScenarios({
+          required,
+          lengths: parsedLengths,
+          allowUndershootPct: Number(allowUndershootPct) || 0,
+          maxWastePct: Number(maxWastePct) || undefined,
+          alphaJoint: Number(alphaJoint) || 0,
+          betaSmall: Number(betaSmall) || 0,
+          gammaShort: Number(gammaShort) || 0,
+          costPerMm: Number(costPerMm) || 0,
+          costPerJointSet: Number(costPerJointSet) || 0,
+          joinerLength: Number(joinerLength) || 0
+        });
+
+        if (combos) {
+          // Select combo based on priority
+          let optimResult;
+          if (priority === 'cost') {
+            optimResult = combos.C;
+          } else if (priority === 'length') {
+            optimResult = combos.L;
+          } else if (priority === 'joints') {
+            optimResult = combos.J;
+          } else {
+            optimResult = combos.C;  // Default to cost
+          }
+
+          // Collect cut lengths from optimization result
+          if (optimResult && optimResult.ok && optimResult.countsByLength) {
+            allLengths.forEach(len => {
+              result.countsByLength[len] += (optimResult.countsByLength[len] || 0) * qty;
+            });
+
+            // Get actual joints from optimization
+            result.joints += (optimResult.numJoints || 0) * qty;
+          }
+        }
+      }
 
       // SB1 and SB2 calculations
       const purlinDist = Number(settings.purlinDistance) || 1700;
@@ -78,15 +127,6 @@ function calculateTabTotals(tab) {
 
       result.sb1 += sb1Value * qty;
       result.sb2 += sb2Value * qty;
-
-      // Count pieces by length (from row results if available)
-      // Note: This would need actual optimization results
-      // For now, we'll use a simplified approach
-      if (row.result && row.result.countsByLength) {
-        allLengths.forEach(len => {
-          result.countsByLength[len] += (row.result.countsByLength[len] || 0) * qty;
-        });
-      }
     }
   });
 
