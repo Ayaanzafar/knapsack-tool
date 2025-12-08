@@ -114,7 +114,7 @@ function calculateTabTotals(tab) {
             });
 
             // Get actual joints from optimization
-            result.joints += (optimResult.numJoints || 0) * qty;
+            result.joints += (optimResult.joints || 0) * qty;
           }
         }
       }
