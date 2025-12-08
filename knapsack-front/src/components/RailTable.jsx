@@ -897,14 +897,14 @@ export default function RailTable({
               </p> */}
             </div>
 
-            {/* Ratio 3: Supports to Rail */}
+            {/* Ratio 3: Rail to Supports */}
             <div className="bg-white rounded-lg p-4 shadow-sm border border-purple-200">
               <span className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">
-                Ratio of Supports to Rail
+                Ratio of Rail to Supports
               </span>
               <p className="text-xl font-bold text-purple-700">
                 {totals.total > 0
-                  ? ((totals.sb1 + totals.sb2) / totals.total).toFixed(6)
+                  ? (totals.total / (totals.sb1 + totals.sb2)).toFixed(6)
                   : '0.00'}
               </p>
               {/* <p className="text-xs text-gray-400 mt-1">

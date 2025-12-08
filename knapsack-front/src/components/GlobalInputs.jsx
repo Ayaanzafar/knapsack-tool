@@ -96,7 +96,7 @@ export default function GlobalInputs({ settings, setSettings }) {
           <h3 className="text-xs font-bold text-purple-700 mb-2 uppercase tracking-wide">MMS Parameters</h3>
           <div className="grid grid-cols-2 gap-1.5">
             <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">End Clamp (mm)</label>
+              <label className="block text-[14px] text-gray-600 mb-0.5">End Clamp after Module(mm)</label>
               <input
                 type="number"
                 value={endClampWidth}
@@ -105,7 +105,7 @@ export default function GlobalInputs({ settings, setSettings }) {
               />
             </div>
             <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">Mid Clamp (mm)</label>
+              <label className="block text-[14px] text-gray-600 mb-0.5">Mid Clamp Gap(mm)</label>
               <input
                 type="number"
                 value={midClamp}
@@ -114,7 +114,7 @@ export default function GlobalInputs({ settings, setSettings }) {
               />
             </div>
             <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">Buffer (mm)</label>
+              <label className="block text-[14px] text-gray-600 mb-0.5">Buffer after End Clamp(mm)</label>
               <input
                 type="number"
                 value={buffer}
@@ -123,7 +123,8 @@ export default function GlobalInputs({ settings, setSettings }) {
               />
             </div>
             <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">Rails/side</label>
+              {/* <label className="block text-[14px] text-gray-600 mb-0.5">Rails/side</label> */}
+              <label className="block text-[13px] text-gray-600 mb-0.5">No. of Rails per each side of module</label>
               <input
                 type="number"
                 value={railsPerSide}
@@ -132,7 +133,7 @@ export default function GlobalInputs({ settings, setSettings }) {
                 className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
               />
               {Number(railsPerSide) === 1 && (
-                <p className="text-[10px] text-amber-600 mt-0.5">⚠ Min 2</p>
+                <p className="text-[10px] text-amber-600 mt-0.5">⚠ Typically its 2</p>
               )}
             </div>
           </div>

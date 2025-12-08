@@ -43,8 +43,10 @@ export default function Header({ userMode, setUserMode, settings, setSettings })
 
   return (
     <header className="border-b bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Rail Cut Optimizer</h1>
+      {/* <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between"> */}
+      <div className="max-w-7xl px-4 py-4 flex ml-50 items-center justify-between">
+      {/* <div className="max-w-7xl px-4 py-4 ml-8 flex items-center justify-between"> */}
+        <h1 className="text-xl font-semibold">Preliminary Calculation for Long Rail</h1>
         <div className="flex items-center gap-4">
           <div className="relative">
             <button
