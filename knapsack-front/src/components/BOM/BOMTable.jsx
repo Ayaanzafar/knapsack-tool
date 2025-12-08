@@ -2,31 +2,31 @@
 import BOMTableRow from './BOMTableRow';
 
 export default function BOMTable({ bomData }) {
-  const { tabs, panelCounts, bomItems } = bomData;
+  const { tabs, panelCounts, bomItems, projectInfo } = bomData;
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">
         <thead>
           <tr className="bg-yellow-400">
-           
+
 
 
             <th
-				colSpan={5}
-              className="border border-gray-400 px-3 py-1 text-sm font-bold text-left"
+              colSpan={5}
+              className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
-              JET Energy - 5.3MWp
+              {projectInfo.projectName}
             </th>
 
-            
-            <th 
-			colSpan={2}
-			className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+
+            <th
+              colSpan={2}
+              className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
               Building Code
             </th>
 
-       
+
             {tabs.map((tab) => (
               <th
                 key={`bc-${tab}`}
@@ -59,22 +59,23 @@ export default function BOMTable({ bomData }) {
             {/* left empty cell */}
 
 
-            
+
             <th
-			  colSpan={5}
-              className="border border-gray-400 px-3 py-1 text-sm font-bold text-left"
+              colSpan={5}
+              
+              className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
               BOM for U Cleat Long Rail
             </th>
 
-            
+
             <th
-             colSpan={2}			
-			className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              colSpan={2}
+              className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
               No. of Panels
             </th>
 
-            
+
             {tabs.map((tab) => (
               <th
                 key={`panel-${tab}`}
@@ -128,7 +129,7 @@ export default function BOMTable({ bomData }) {
             </th>
 
             {/* column under "Building Code" / "No. of Panels" is blank on row 3 */}
-         
+
 
             {/* Qty. under each Tn */}
             {tabs.map((tab) => (
