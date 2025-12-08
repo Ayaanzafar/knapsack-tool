@@ -8,57 +8,123 @@ export default function BOMTable({ bomData }) {
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">
         <thead>
-          {/* Main Header Row */}
           <tr className="bg-yellow-400">
-            <th className="border border-gray-400 px-2 py-2 text-sm font-bold text-gray-900 text-center" rowSpan="2">S.N</th>
-            <th className="border border-gray-400 px-2 py-2 text-sm font-bold text-gray-900 text-center" rowSpan="2">Sunrack Code</th>
-            <th className="border border-gray-400 px-2 py-2 text-sm font-bold text-gray-900 text-center" rowSpan="2">Profile</th>
-            <th className="border border-gray-400 px-2 py-2 text-sm font-bold text-gray-900 text-center" rowSpan="2">Item Description</th>
-            <th className="border border-gray-400 px-2 py-2 text-sm font-bold text-gray-900 text-center" rowSpan="2">Material</th>
-            <th className="border border-gray-400 px-2 py-2 text-sm font-bold text-gray-900 text-center" rowSpan="2">Length</th>
-            <th className="border border-gray-400 px-2 py-2 text-sm font-bold text-gray-900 text-center" rowSpan="2">UoM</th>
-            <th className="border border-gray-400 px-3 py-2 text-sm font-bold text-gray-900 text-center" colSpan={tabs.length + 1}>
+           
+
+
+            <th
+				colSpan={5}
+              className="border border-gray-400 px-3 py-1 text-sm font-bold text-left"
+            >
+              JET Energy - 5.3MWp
+            </th>
+
+            
+            <th 
+			colSpan={2}
+			className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
               Building Code
             </th>
-            <th className="border border-gray-400 px-3 py-2 text-sm font-bold text-gray-900 text-center" colSpan="3">
-              Spare
-            </th>
-          </tr>
 
-          {/* Sub Header Row */}
-          <tr className="bg-yellow-400">
-            {/* No. of Panels for each tab */}
-            {tabs.map(tabName => (
-              <th key={`panel-${tabName}`} className="border border-gray-400 px-2 py-1 text-xs font-bold text-gray-900 text-center">
-                {tabName}
+       
+            {tabs.map((tab) => (
+              <th
+                key={`bc-${tab}`}
+                className="border border-gray-400 px-2 py-1 text-xs font-bold text-center"
+              >
+                {tab}
               </th>
             ))}
-            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-gray-900 text-center">
-              Quantity
-            </th>
-            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-gray-900 text-center">
-              Spare Quantity
-            </th>
-            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-gray-900 text-center">
-              1%
-            </th>
-            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-gray-900 text-center">
-              Total Quantity
+
+            
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              Total
             </th>
           </tr>
 
-          {/* Panel Counts Row */}
-          <tr className="bg-blue-50">
-            <td colSpan="7" className="border border-gray-400 px-3 py-2 text-sm font-semibold text-gray-700 text-right">
+          {/* === ROW 2 === */}
+          <tr className="bg-yellow-400">
+
+            {/* left empty cell */}
+
+
+            
+            <th
+			  colSpan={5}
+              className="border border-gray-400 px-3 py-1 text-sm font-bold text-left"
+            >
+              BOM for U Cleat Long Rail
+            </th>
+
+            
+            <th
+             colSpan={2}			
+			className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
               No. of Panels
-            </td>
-            {tabs.map(tabName => (
-              <td key={`count-${tabName}`} className="border border-gray-400 px-2 py-2 text-sm font-bold text-center text-blue-700">
-                {panelCounts[tabName] || 0}
-              </td>
+            </th>
+
+            
+            {tabs.map((tab) => (
+              <th
+                key={`panel-${tab}`}
+                className="border border-gray-400 px-2 py-1 text-xs font-bold text-center"
+              >
+                {panelCounts[tab] || 0}
+              </th>
             ))}
-            <td colSpan="4" className="border border-gray-400 bg-gray-100"></td>
+
+            
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              {Object.values(panelCounts).reduce((a, b) => a + b, 0)}
+            </th>
+
           </tr>
+
+
+          {/* ROW 3 – column labels + Qty row */}
+          <tr className="bg-yellow-400">
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              S.N
+            </th>
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              Sunrack<br />Code
+            </th>
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              Profile
+            </th>
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              Item Description
+            </th>
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              Material
+            </th>
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              Length<br />(mm)
+            </th>
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              UoM
+            </th>
+
+            {/* column under "Building Code" / "No. of Panels" is blank on row 3 */}
+         
+
+            {/* Qty. under each Tn */}
+            {tabs.map((tab) => (
+              <th
+                key={`qty-${tab}`}
+                className="border border-gray-400 px-2 py-1 text-xs font-bold text-center"
+              >
+                Qty.
+              </th>
+            ))}
+
+            {/* last column under Total */}
+            <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+              Quantity
+            </th>
+          </tr>
+
+
         </thead>
 
         <tbody>
@@ -72,6 +138,6 @@ export default function BOMTable({ bomData }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </div >
   );
 }

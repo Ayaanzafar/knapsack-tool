@@ -91,7 +91,7 @@ export default function BOMPage() {
       <main className="container mx-auto px-6 py-6">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           {/* Project Info Bar */}
-          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-4">
+          <div className="bg-linear-to-r from-purple-600 to-indigo-600 text-white px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold">{bomData.projectInfo.projectName}</h2>
