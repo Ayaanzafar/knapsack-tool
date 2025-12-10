@@ -32,7 +32,8 @@ class TabService {
         joinerLength: settings?.joinerLength || '100',
         priority: settings?.priority || 'cost',
         userMode: settings?.userMode || 'normal',
-        enableSb2: settings?.enableSb2 || false
+        // Handle both enableSB2 (frontend) and enableSb2 (backend) for compatibility
+        enableSb2: settings?.enableSB2 !== undefined ? settings.enableSB2 : (settings?.enableSb2 || false)
       }
     });
   }
@@ -99,7 +100,8 @@ class TabService {
         joinerLength: settings.joinerLength,
         priority: settings.priority,
         userMode: settings.userMode,
-        enableSb2: settings.enableSb2
+        // Handle both enableSB2 (frontend) and enableSb2 (backend) for compatibility
+        enableSb2: settings.enableSB2 !== undefined ? settings.enableSB2 : settings.enableSb2
       });
     }
 
