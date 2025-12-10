@@ -90,9 +90,21 @@ export async function loadTabs() {
     // Convert database format to app format
     const appTabs = tabs.map(tab => convertDBTabToAppTab(tab));
 
+    // Try to restore last active tab from localStorage
+    let activeTabId = null;
+    const lastActiveTabId = localStorage.getItem(`lastActiveTab_${currentProjectId}`);
+
+    // Check if the last active tab still exists in the loaded tabs
+    if (lastActiveTabId && appTabs.find(tab => tab.id === parseInt(lastActiveTabId))) {
+      activeTabId = parseInt(lastActiveTabId);
+    } else {
+      // Fallback to first tab if last active tab doesn't exist
+      activeTabId = appTabs[0]?.id || null;
+    }
+
     return {
       tabs: appTabs,
-      activeTabId: appTabs[0]?.id || null
+      activeTabId: activeTabId
     };
   } catch (error) {
     console.error('Failed to load tabs:', error);
@@ -163,6 +175,11 @@ export async function createTab(tabsData, tabName) {
 
     const appTab = convertDBTabToAppTab(newTab);
 
+    // Save new active tab to localStorage
+    if (currentProjectId && appTab.id) {
+      localStorage.setItem(`lastActiveTab_${currentProjectId}`, appTab.id.toString());
+    }
+
     return {
       ...tabsData,
       tabs: [...tabsData.tabs, appTab],
@@ -185,6 +202,11 @@ export async function deleteTab(tabsData, tabId) {
     let newActiveId = tabsData.activeTabId;
     if (tabId === tabsData.activeTabId && newTabs.length > 0) {
       newActiveId = newTabs[0].id;
+    }
+
+    // Save new active tab to localStorage
+    if (currentProjectId && newActiveId) {
+      localStorage.setItem(`lastActiveTab_${currentProjectId}`, newActiveId.toString());
     }
 
     return {
@@ -229,6 +251,11 @@ export async function updateTab(tabsData, tabId, updates) {
 
 // Switch active tab
 export function switchTab(tabsData, tabId) {
+  // Save active tab to localStorage for persistence across page refreshes
+  if (currentProjectId && tabId) {
+    localStorage.setItem(`lastActiveTab_${currentProjectId}`, tabId.toString());
+  }
+
   return {
     ...tabsData,
     activeTabId: tabId
@@ -262,6 +289,11 @@ export async function duplicateTab(tabsData, tabId) {
   try {
     const duplicatedTab = await tabAPI.duplicate(tabId);
     const appTab = convertDBTabToAppTab(duplicatedTab);
+
+    // Save new active tab to localStorage
+    if (currentProjectId && appTab.id) {
+      localStorage.setItem(`lastActiveTab_${currentProjectId}`, appTab.id.toString());
+    }
 
     return {
       ...tabsData,
