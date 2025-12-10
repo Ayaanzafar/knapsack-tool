@@ -275,7 +275,6 @@ export default function App() {
         {/* Rail Table for active tab */}
         <section>
           <RailTable
-            tabId={activeTab?.id}
             rows={activeTab?.rows || []}
             setRows={updateRows}
             selectedRowId={activeTab?.selectedRowId}

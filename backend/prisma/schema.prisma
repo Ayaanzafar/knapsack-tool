@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Projects Table - Stores project-level information
+model Project {
+  id        Int      @id @default(autoincrement())
+  name      String   @default("Untitled Project") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  userId    Int?     @map("user_id")
+  isActive  Boolean  @default(true) @map("is_active")
+
+  tabs          Tab[]
+  generatedBoms GeneratedBom[]
+
+  @@map("projects")
+}
+
+// Tabs Table - Stores individual tabs (buildings) within a project
+model Tab {
+  id        Int      @id @default(autoincrement())
+  projectId Int      @map("project_id")
+  name      String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at")
+  isActive  Boolean  @default(true) @map("is_active")
+
+  // Settings (denormalized for performance)
+  moduleLength       Decimal  @default(2278) @map("module_length") @db.Decimal(10, 2)
+  moduleWidth        Decimal  @default(1134) @map("module_width") @db.Decimal(10, 2)
+  frameThickness     Decimal  @default(35) @map("frame_thickness") @db.Decimal(10, 2)
+  midClamp           Decimal  @default(20) @map("mid_clamp") @db.Decimal(10, 2)
+  endClampWidth      Decimal  @default(40) @map("end_clamp_width") @db.Decimal(10, 2)
+  buffer             Decimal  @default(15) @map("buffer") @db.Decimal(10, 2)
+  purlinDistance     Decimal  @default(1700) @map("purlin_distance") @db.Decimal(10, 2)
+  railsPerSide       Int      @default(2) @map("rails_per_side")
+  lengthsInput       String?  @map("lengths_input") @db.Text
+  enabledLengths     Json?    @map("enabled_lengths")
+  maxPieces          Int      @default(3) @map("max_pieces")
+  maxWastePct        String?  @map("max_waste_pct") @db.VarChar(50)
+  alphaJoint         Decimal  @default(220) @map("alpha_joint") @db.Decimal(10, 2)
+  betaSmall          Decimal  @default(60) @map("beta_small") @db.Decimal(10, 2)
+  allowUndershootPct Decimal  @default(0) @map("allow_undershoot_pct") @db.Decimal(10, 2)
+  gammaShort         Decimal  @default(5) @map("gamma_short") @db.Decimal(10, 2)
+  costPerMm          String   @default("0.1") @map("cost_per_mm") @db.VarChar(50)
+  costPerJointSet    String   @default("50") @map("cost_per_joint_set") @db.VarChar(50)
+  joinerLength       String   @default("100") @map("joiner_length") @db.VarChar(50)
+  priority           String   @default("cost") @map("priority") @db.VarChar(20)
+  userMode           String   @default("normal") @map("user_mode") @db.VarChar(20)
+  enableSb2          Boolean  @default(false) @map("enable_sb2")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  rows    TabRow[]
+
+  @@index([projectId])
+  @@map("tabs")
+}
+
+// Tab Rows Table - Stores individual rows (rail configurations) within a tab
+model TabRow {
+  id           Int      @id @default(autoincrement())
+  tabId        Int      @map("tab_id")
+  rowNumber    Int      @map("row_number")
+  modules      Int      @default(0)
+  quantity     Int      @default(1)
+  supportBase1 Decimal? @map("support_base_1") @db.Decimal(10, 2)
+  supportBase2 Decimal? @map("support_base_2") @db.Decimal(10, 2)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tab Tab @relation(fields: [tabId], references: [id], onDelete: Cascade)
+
+  @@index([tabId])
+  @@map("tab_rows")
+}
+
+// BOM Master Items Table - Master catalog of all BOM items
+model BomMasterItem {
+  id               Int      @id @default(autoincrement())
+  serialNumber     String   @unique @map("serial_number") @db.VarChar(20)
+  sunrackCode      String?  @unique @map("sunrack_code") @db.VarChar(50)
+  itemDescription  String   @map("item_description") @db.VarChar(255)
+  material         String?  @db.VarChar(100)
+  standardLength   Int?     @map("standard_length")
+  uom              String   @db.VarChar(20)
+  category         String?  @db.VarChar(50)
+  profileImagePath String?  @map("profile_image_path") @db.VarChar(255)
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  formulas BomFormula[]
+
+  @@index([sunrackCode])
+  @@index([category])
+  @@map("bom_master_items")
+}
+
+// BOM Formulas Table - Stores formula definitions for calculating BOM quantities
+model BomFormula {
+  id                 Int      @id @default(autoincrement())
+  itemSerialNumber   String   @map("item_serial_number") @db.VarChar(20)
+  formulaKey         String   @map("formula_key") @db.VarChar(50)
+  formulaDescription String?  @map("formula_description") @db.Text
+  calculationLevel   Int      @map("calculation_level")
+  isActive           Boolean  @default(true) @map("is_active")
+
+  masterItem BomMasterItem @relation(fields: [itemSerialNumber], references: [serialNumber])
+
+  @@map("bom_formulas")
+}
+
+// Generated BOM Table - Stores generated BOM snapshots for historical reference
+model GeneratedBom {
+  id          Int      @id @default(autoincrement())
+  projectId   Int      @map("project_id")
+  generatedAt DateTime @default(now()) @map("generated_at")
+  bomData     Json     @map("bom_data")
+  generatedBy Int?     @map("generated_by")
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  @@map("generated_boms")
+}

@@ -1,8 +1,9 @@
 // src/components/RailTable.jsx
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { optimizeCuts, requiredRailLength, generateScenarios } from '../lib/optimizer';
 import { parseNumList, fmt } from '../lib/storage';
 import { TextField, NumberField } from './ui';
+import { usePersistedRows } from '../hooks/usePersistedRows';
 import ResultCard from './ResultCard';
 import {
   DndContext,
@@ -60,8 +61,9 @@ function SortableRow({
     : '-';
 
   const defaultSB1 = calculateSB1(required);
-  const sb1Value = enableSB2 ? (row.supportBase1 ?? defaultSB1) : defaultSB1;
-  const sb2Value = row.supportBase2 ?? 0;
+  // When enableSB2 is on, use row.supportBase1 if it's set (non-zero), otherwise use calculated default
+  const sb1Value = enableSB2 ? (row.supportBase1 || defaultSB1) : defaultSB1;
+  const sb2Value = row.supportBase2 || 0;
 
   return (
     <tr
@@ -214,6 +216,7 @@ function SortableRow({
 }
 
 export default function RailTable({
+  tabId,
   rows,
   setRows,
   selectedRowId,
@@ -222,6 +225,16 @@ export default function RailTable({
   setSettings,
   selectedRow
 }) {
+  // Use persisted rows hook for database operations (only if tabId exists)
+  const persistedRows = tabId ? usePersistedRows(tabId, rows, setRows) : null;
+
+  const {
+    addRow: addRowToDB = () => {},
+    updateRowModules: updateRowModulesToDB = () => {},
+    updateRowQuantity: updateRowQuantityToDB = () => {},
+    updateRowSupportBase: updateRowSupportBaseToDB = () => {},
+    deleteRow: deleteRowFromDB = () => {}
+  } = persistedRows || {};
   const [showSettings, setShowSettings] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [deleteConfirmRowId, setDeleteConfirmRowId] = useState(null);
@@ -407,7 +420,7 @@ export default function RailTable({
 
       // SB1 and SB2 calculations
       const defaultSB1 = calculateSB1(required);
-      const sb1Value = enableSB2 ? (row.supportBase1 ?? defaultSB1) : defaultSB1;
+      const sb1Value = enableSB2 ? (row.supportBase1 || defaultSB1) : defaultSB1;
       const sb2Value = enableSB2 ? (row.supportBase2 ?? 0) : 0;
 
       result.sb1 += sb1Value * qty;
@@ -448,32 +461,50 @@ export default function RailTable({
     return result;
   }, [rowResults, allLengths, railsPerSide, enableSB2]);
 
-  const addRow = () => {
-    const newId = rows.length > 0 ? Math.max(...rows.map(r => r.id)) + 1 : 1;
+  const addRow = async () => {
     const lastModules = rows.length > 0 ? rows[rows.length - 1].modules : 0;
-    setRows([...rows, { id: newId, modules: lastModules + 1, quantity: 1 }]);
-    // Auto-select the new row
-    setSelectedRowId(newId);
+    await addRowToDB({ modules: lastModules + 1, quantity: 1 });
   };
 
   const updateRowModules = (id, modules) => {
-    setRows(rows.map(r => r.id === id ? { ...r, modules: Number(modules) || 0 } : r));
+    updateRowModulesToDB(id, modules);
+
+    // When enableSB2 is FALSE, auto-recalculate and update SB1 based on new modules
+    // When enableSB2 is TRUE, don't auto-update (preserve user's custom value)
+    if (!enableSB2) {
+      const row = rows.find(r => r.id === id);
+      if (row) {
+        const required = requiredRailLength({
+          modules: Number(modules) || 0,
+          moduleWidth: Number(moduleWidth) || 0,
+          midClamp: Number(midClamp) || 0,
+          endClampWidth: Number(endClampWidth) || 0,
+          buffer: Number(buffer) || 0
+        });
+        const newSB1 = calculateSB1(required);
+
+        // Update SB1 in database
+        if (newSB1 > 0) {
+          updateRowSupportBaseToDB(id, 'supportBase1', newSB1);
+        }
+      }
+    }
   };
 
   const updateRowQuantity = (id, quantity) => {
-    setRows(rows.map(r => r.id === id ? { ...r, quantity: Math.max(1, Number(quantity) || 1) } : r));
+    updateRowQuantityToDB(id, quantity);
   };
 
-  const deleteRow = (id) => {
-    const newRows = rows.filter(r => r.id !== id);
-    setRows(newRows);
+  const deleteRow = async (id) => {
+    await deleteRowFromDB(id);
     if (selectedRowId === id) {
+      const newRows = rows.filter(r => r.id !== id);
       setSelectedRowId(newRows.length > 0 ? newRows[0].id : null);
     }
   };
 
   const updateRowSupportBase = (id, field, value) => {
-    setRows(rows.map(r => r.id === id ? { ...r, [field]: Number(value) || 0 } : r));
+    updateRowSupportBaseToDB(id, field, value);
   };
 
   // Drag and drop handler for @dnd-kit
@@ -486,6 +517,72 @@ export default function RailTable({
       setRows(arrayMove(rows, oldIndex, newIndex));
     }
   };
+
+  // Initialize SB1 values when enableSB2 is turned on
+  useEffect(() => {
+    console.log('🔍 SB1 Init useEffect triggered:', { enableSB2, tabId, rowsLength: rows.length });
+
+    if (enableSB2 && tabId && rows.length > 0) {
+      console.log('✅ Conditions met, initializing SB1 for rows...');
+
+      rows.forEach(row => {
+        console.log(`  Row ${row.id}: supportBase1=${row.supportBase1}, modules=${row.modules}`);
+
+        // Only initialize if supportBase1 is not already set (null or 0)
+        if (row.supportBase1 == null || row.supportBase1 === 0) {
+          const required = requiredRailLength({
+            modules: row.modules || 0,
+            moduleWidth: Number(settings?.moduleWidth) || 0,
+            midClamp: Number(settings?.midClamp) || 0,
+            endClampWidth: Number(settings?.endClampWidth) || 0,
+            buffer: Number(settings?.buffer) || 0
+          });
+          const defaultSB1 = calculateSB1(required);
+
+          console.log(`    Calculated SB1=${defaultSB1} for row ${row.id}`);
+
+          // Save calculated value to database
+          if (defaultSB1 > 0) {
+            console.log(`    💾 Saving SB1=${defaultSB1} to database for row ${row.id}`);
+            updateRowSupportBaseToDB(row.id, 'supportBase1', defaultSB1);
+          } else {
+            console.log(`    ⚠️ Skipping save: SB1=${defaultSB1} is not > 0`);
+          }
+        } else {
+          console.log(`    ℹ️ Skipping row ${row.id}: supportBase1 already set to ${row.supportBase1}`);
+        }
+      });
+    } else {
+      console.log('❌ Conditions not met:', { enableSB2, tabId, rowsLength: rows.length });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enableSB2, tabId]); // Only run when enableSB2 or tabId changes
+
+  // Auto-update all SB1 values when global settings change (only when enableSB2 is FALSE)
+  useEffect(() => {
+    // Only auto-update when enableSB2 is disabled (SB1 is auto-calculated)
+    if (!enableSB2 && tabId && rows.length > 0) {
+      console.log('🔄 Global settings changed, recalculating SB1 for all rows...');
+
+      rows.forEach(row => {
+        const required = requiredRailLength({
+          modules: row.modules || 0,
+          moduleWidth: Number(moduleWidth) || 0,
+          midClamp: Number(midClamp) || 0,
+          endClampWidth: Number(endClampWidth) || 0,
+          buffer: Number(buffer) || 0
+        });
+        const newSB1 = calculateSB1(required);
+
+        // Update SB1 in database
+        if (newSB1 > 0) {
+          console.log(`  💾 Updating SB1=${newSB1} for row ${row.id}`);
+          updateRowSupportBaseToDB(row.id, 'supportBase1', newSB1);
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moduleWidth, midClamp, endClampWidth, buffer, purlinDistance, enableSB2]);
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm">
