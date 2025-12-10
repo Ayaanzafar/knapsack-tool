@@ -232,43 +232,41 @@ export default function RailTable({
     setSettings(prev => ({ ...prev, enableSB2: value }));
   };
 
-  // Callback when a row is created (to calculate SB1 when enableSB2 is false)
+  // Callback when a row is created (to calculate initial SB1 value)
   const handleRowCreated = useCallback((createdRow) => {
-    // Only calculate SB1 if enableSB2 is disabled
-    if (!enableSB2) {
-      const required = requiredRailLength({
-        modules: createdRow.modules || 0,
-        moduleWidth: Number(settings?.moduleWidth) || 0,
-        midClamp: Number(settings?.midClamp) || 0,
-        endClampWidth: Number(settings?.endClampWidth) || 0,
-        buffer: Number(settings?.buffer) || 0
+    // Always calculate SB1 as initial value for new rows
+    const required = requiredRailLength({
+      modules: createdRow.modules || 0,
+      moduleWidth: Number(settings?.moduleWidth) || 0,
+      midClamp: Number(settings?.midClamp) || 0,
+      endClampWidth: Number(settings?.endClampWidth) || 0,
+      buffer: Number(settings?.buffer) || 0
+    });
+
+    const purlin = Number(settings?.purlinDistance) || 1;
+    const calculatedSB1 = Math.ceil(required / purlin) + 1;
+
+    if (calculatedSB1 > 0) {
+      console.log(`💾 Setting initial SB1=${calculatedSB1} for new row ${createdRow.id}`);
+
+      // Update UI optimistically
+      setRows(currentRows =>
+        currentRows.map(r => r.id === createdRow.id ? { ...r, supportBase1: calculatedSB1 } : r)
+      );
+
+      // Save to database
+      import('../services/api').then(({ rowAPI }) => {
+        rowAPI.update(createdRow.id, { supportBase1: calculatedSB1 })
+          .catch(err => {
+            console.error('Failed to save SB1:', err);
+            // Rollback UI on error
+            setRows(currentRows =>
+              currentRows.map(r => r.id === createdRow.id ? { ...r, supportBase1: 0 } : r)
+            );
+          });
       });
-
-      const purlin = Number(settings?.purlinDistance) || 1;
-      const calculatedSB1 = Math.ceil(required / purlin) + 1;
-
-      if (calculatedSB1 > 0) {
-        console.log(`💾 Auto-calculating SB1=${calculatedSB1} for new row ${createdRow.id}`);
-
-        // Update UI optimistically
-        setRows(currentRows =>
-          currentRows.map(r => r.id === createdRow.id ? { ...r, supportBase1: calculatedSB1 } : r)
-        );
-
-        // Save to database
-        import('../services/api').then(({ rowAPI }) => {
-          rowAPI.update(createdRow.id, { supportBase1: calculatedSB1 })
-            .catch(err => {
-              console.error('Failed to save SB1:', err);
-              // Rollback UI on error
-              setRows(currentRows =>
-                currentRows.map(r => r.id === createdRow.id ? { ...r, supportBase1: 0 } : r)
-              );
-            });
-        });
-      }
     }
-  }, [enableSB2, settings, setRows]);
+  }, [settings, setRows]);
 
   // Use persisted rows hook for database operations (only if tabId exists)
   const persistedRows = tabId ? usePersistedRows(tabId, rows, setRows, handleRowCreated) : null;
