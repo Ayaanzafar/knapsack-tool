@@ -4,7 +4,7 @@
 import { useCallback } from 'react';
 import { rowAPI } from '../services/api';
 
-export function usePersistedRows(tabId, rows, setRows) {
+export function usePersistedRows(tabId, rows, setRows, onRowCreated) {
   // Add a new row
   const addRow = useCallback(async (newRowData) => {
     // Generate temporary ID for optimistic update
@@ -40,13 +40,18 @@ export function usePersistedRows(tabId, rows, setRows) {
           supportBase2: Number(savedRow.supportBase2) || 0
         } : r)
       );
+
+      // Call callback with the created row (if provided)
+      if (onRowCreated) {
+        onRowCreated(savedRow);
+      }
     } catch (error) {
       console.error('Failed to save row:', error);
       // Rollback on error
       setRows(currentRows => currentRows.filter(r => r.id !== tempId));
       alert('Failed to save row. Please try again.');
     }
-  }, [tabId, rows, setRows]);
+  }, [tabId, rows, setRows, onRowCreated]);
 
   // Update a row field
   const updateRow = useCallback(async (rowId, updates) => {

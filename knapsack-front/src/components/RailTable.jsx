@@ -1,5 +1,5 @@
 // src/components/RailTable.jsx
-import { useMemo, useState, useRef, useEffect } from 'react';
+import { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { optimizeCuts, requiredRailLength, generateScenarios } from '../lib/optimizer';
 import { parseNumList, fmt } from '../lib/storage';
 import { TextField, NumberField } from './ui';
@@ -226,8 +226,52 @@ export default function RailTable({
   setSettings,
   selectedRow
 }) {
+  // Get enableSB2 from settings first (needed by callback below)
+  const enableSB2 = settings?.enableSB2 ?? false;
+  const setEnableSB2 = (value) => {
+    setSettings(prev => ({ ...prev, enableSB2: value }));
+  };
+
+  // Callback when a row is created (to calculate SB1 when enableSB2 is false)
+  const handleRowCreated = useCallback((createdRow) => {
+    // Only calculate SB1 if enableSB2 is disabled
+    if (!enableSB2) {
+      const required = requiredRailLength({
+        modules: createdRow.modules || 0,
+        moduleWidth: Number(settings?.moduleWidth) || 0,
+        midClamp: Number(settings?.midClamp) || 0,
+        endClampWidth: Number(settings?.endClampWidth) || 0,
+        buffer: Number(settings?.buffer) || 0
+      });
+
+      const purlin = Number(settings?.purlinDistance) || 1;
+      const calculatedSB1 = Math.ceil(required / purlin) + 1;
+
+      if (calculatedSB1 > 0) {
+        console.log(`💾 Auto-calculating SB1=${calculatedSB1} for new row ${createdRow.id}`);
+
+        // Update UI optimistically
+        setRows(currentRows =>
+          currentRows.map(r => r.id === createdRow.id ? { ...r, supportBase1: calculatedSB1 } : r)
+        );
+
+        // Save to database
+        import('../services/api').then(({ rowAPI }) => {
+          rowAPI.update(createdRow.id, { supportBase1: calculatedSB1 })
+            .catch(err => {
+              console.error('Failed to save SB1:', err);
+              // Rollback UI on error
+              setRows(currentRows =>
+                currentRows.map(r => r.id === createdRow.id ? { ...r, supportBase1: 0 } : r)
+              );
+            });
+        });
+      }
+    }
+  }, [enableSB2, settings, setRows]);
+
   // Use persisted rows hook for database operations (only if tabId exists)
-  const persistedRows = tabId ? usePersistedRows(tabId, rows, setRows) : null;
+  const persistedRows = tabId ? usePersistedRows(tabId, rows, setRows, handleRowCreated) : null;
 
   const {
     addRow: addRowToDB = () => {},
@@ -239,12 +283,6 @@ export default function RailTable({
   const [showSettings, setShowSettings] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [deleteConfirmRowId, setDeleteConfirmRowId] = useState(null);
-
-  // Get enableSB2 from settings (per-tab)
-  const enableSB2 = settings?.enableSB2 ?? false;
-  const setEnableSB2 = (value) => {
-    setSettings(prev => ({ ...prev, enableSB2: value }));
-  };
 
   // Drag and drop sensors for @dnd-kit
   const sensors = useSensors(
@@ -465,6 +503,7 @@ export default function RailTable({
   const addRow = async () => {
     const lastModules = rows.length > 0 ? rows[rows.length - 1].modules : 0;
     await addRowToDB({ modules: lastModules + 1, quantity: 1 });
+    // SB1 calculation is now handled by handleRowCreated callback
   };
 
   const updateRowModules = (id, modules) => {
@@ -581,13 +620,20 @@ export default function RailTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enableSB2, tabId]); // Only run when enableSB2 or tabId changes
 
-  // Auto-update all SB1 values when global settings change (only when enableSB2 is FALSE)
+  // Auto-update all SB1 values when global settings change OR when rows change (only when enableSB2 is FALSE)
   useEffect(() => {
     // Only auto-update when enableSB2 is disabled (SB1 is auto-calculated)
     if (!enableSB2 && tabId && rows.length > 0) {
-      console.log('🔄 Global settings changed, recalculating SB1 for all rows...');
+      console.log('🔄 Recalculating SB1 for all rows (enableSB2=false)...');
 
       rows.forEach(row => {
+        // Skip rows with temporary IDs (timestamp-based IDs > 1000000000000)
+        // These rows haven't been saved to DB yet
+        if (row.id > 1000000000000) {
+          console.log(`  ⏭️ Skipping temp row ${row.id} (not yet saved to DB)`);
+          return;
+        }
+
         const required = requiredRailLength({
           modules: row.modules || 0,
           moduleWidth: Number(moduleWidth) || 0,
@@ -597,15 +643,16 @@ export default function RailTable({
         });
         const newSB1 = calculateSB1(required);
 
-        // Update SB1 in database
-        if (newSB1 > 0) {
-          console.log(`  💾 Updating SB1=${newSB1} for row ${row.id}`);
+        // Only update if different from current value (to avoid unnecessary API calls)
+        const currentSB1 = Number(row.supportBase1) || 0;
+        if (newSB1 > 0 && newSB1 !== currentSB1) {
+          console.log(`  💾 Updating SB1=${newSB1} for row ${row.id} (was ${currentSB1})`);
           updateRowSupportBaseToDB(row.id, 'supportBase1', newSB1);
         }
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [moduleWidth, midClamp, endClampWidth, buffer, purlinDistance, enableSB2]);
+  }, [moduleWidth, midClamp, endClampWidth, buffer, purlinDistance, enableSB2, rows.length]);
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm">
