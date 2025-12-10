@@ -1,8 +1,42 @@
 // src/components/GlobalInputs.jsx
+import { useState, useEffect, useRef } from 'react';
 import { TextField } from './ui';
 import { parseNumList } from '../lib/storage';
 
 export default function GlobalInputs({ settings, setSettings }) {
+  // Local state for lengthsInput to prevent cursor jumping
+  const [localLengthsInput, setLocalLengthsInput] = useState(settings.lengthsInput || '');
+  const debounceTimerRef = useRef(null);
+
+  // Sync local state when settings change from outside (e.g., tab switch)
+  useEffect(() => {
+    setLocalLengthsInput(settings.lengthsInput || '');
+  }, [settings.lengthsInput]);
+
+  // Debounced update to parent
+  const handleLengthsInputChange = (value) => {
+    // Update local state immediately (no cursor jump)
+    setLocalLengthsInput(value);
+
+    // Clear previous timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Set new timer to update parent (and DB) after 500ms of no typing
+    debounceTimerRef.current = setTimeout(() => {
+      setSettings(prev => ({ ...prev, lengthsInput: value }));
+    }, 500);
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
   const {
     moduleLength = 2278,
     moduleWidth = 1134,
@@ -12,13 +46,13 @@ export default function GlobalInputs({ settings, setSettings }) {
     buffer,
     purlinDistance,
     railsPerSide,
-    lengthsInput,
     enabledLengths,
     userMode,
     priority
   } = settings;
 
-  const allLengths = parseNumList(lengthsInput);
+  // Use local state for parsing to prevent issues during typing
+  const allLengths = parseNumList(localLengthsInput);
 
   const updateSetting = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -230,8 +264,8 @@ export default function GlobalInputs({ settings, setSettings }) {
         <div className="mt-4 pt-4 border-t">
           <TextField
             label="Edit Cut Lengths (comma-separated)"
-            value={lengthsInput}
-            setValue={(v) => updateSetting('lengthsInput', v)}
+            value={localLengthsInput}
+            setValue={handleLengthsInputChange}
           />
         </div>
       )}
