@@ -4,6 +4,7 @@ import { optimizeCuts, requiredRailLength, generateScenarios } from '../lib/opti
 import { parseNumList, fmt } from '../lib/storage';
 import { TextField, NumberField } from './ui';
 import { usePersistedRows } from '../hooks/usePersistedRows';
+import { rowAPI } from '../services/api';
 import ResultCard from './ResultCard';
 import {
   DndContext,
@@ -508,13 +509,35 @@ export default function RailTable({
   };
 
   // Drag and drop handler for @dnd-kit
-  const handleDragEnd = (event) => {
+  const handleDragEnd = async (event) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
       const oldIndex = rows.findIndex((row) => row.id === active.id);
       const newIndex = rows.findIndex((row) => row.id === over.id);
-      setRows(arrayMove(rows, oldIndex, newIndex));
+      const newRows = arrayMove(rows, oldIndex, newIndex);
+
+      // Update UI optimistically
+      setRows(newRows);
+
+      // Persist new order to database
+      if (tabId) {
+        try {
+          // Create array of { id, rowNumber } to send to backend
+          const rowOrders = newRows.map((row, index) => ({
+            id: row.id,
+            rowNumber: index + 1  // rowNumber starts from 1
+          }));
+
+          await rowAPI.reorder(tabId, rowOrders);
+
+          console.log('✅ Row order saved to database');
+        } catch (error) {
+          console.error('❌ Failed to save row order:', error);
+          // Optionally: rollback to old order on error
+          // setRows(rows);
+        }
+      }
     }
   };
 
