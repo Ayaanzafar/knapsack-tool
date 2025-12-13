@@ -130,7 +130,11 @@ export default function GlobalInputs({ settings, setSettings }) {
           <h3 className="text-xs font-bold text-purple-700 mb-2 uppercase tracking-wide">MMS Parameters</h3>
           <div className="grid grid-cols-2 gap-1.5">
             <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">End Clamp after Module(mm)</label>
+              {/* <label className="block text-[14px] text-gray-600 mb-0.5">End Clamp after Module(mm)</label> */}
+              <label className="block text-[14px] text-gray-600 mb-0.5 leading-tight min-h-[34px] flex items-end">
+                End Clamp after Module(mm)
+              </label>
+
               <input
                 type="number"
                 value={endClampWidth}
@@ -139,7 +143,11 @@ export default function GlobalInputs({ settings, setSettings }) {
               />
             </div>
             <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">Mid Clamp Gap(mm)</label>
+              {/* <label className="block text-[14px] text-gray-600 mb-0.5">Mid Clamp Gap(mm)</label> */}
+              <label className="block text-[14px] text-gray-600 mb-0.5 leading-tight min-h-[34px] flex items-end">
+                Mid Clamp Gap(mm)
+              </label>
+
               <input
                 type="number"
                 value={midClamp}
@@ -238,11 +246,10 @@ export default function GlobalInputs({ settings, setSettings }) {
           {allLengths.map(len => (
             <label
               key={len}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border cursor-pointer transition-colors ${
-                enabledLengths[len] !== false
-                  ? 'bg-purple-100 border-purple-400 text-purple-800'
-                  : 'bg-gray-50 border-gray-200 text-gray-400'
-              }`}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border cursor-pointer transition-colors ${enabledLengths[len] !== false
+                ? 'bg-purple-100 border-purple-400 text-purple-800'
+                : 'bg-gray-50 border-gray-200 text-gray-400'
+                }`}
             >
               <input
                 type="checkbox"
