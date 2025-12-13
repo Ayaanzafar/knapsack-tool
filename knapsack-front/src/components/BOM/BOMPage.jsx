@@ -2,6 +2,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BOMTable from './BOMTable';
+import ComboBox from '../ComboBox';
 
 export default function BOMPage() {
   const location = useLocation();
@@ -91,6 +92,11 @@ export default function BOMPage() {
       </div>
     );
   }
+
+  const profileOptions = profiles.map(profile => ({
+    value: profile.serialNumber,
+    label: `${profile.genericName} (${profile.preferredRmCode || profile.sunrackCode || 'No Code'})`
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -194,21 +200,14 @@ export default function BOMPage() {
                 <label className="text-sm font-semibold text-gray-700">
                   Select Profile:
                 </label>
-                <select
-                  className="flex-1 max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  value={selectedRow?.profileSerialNumber || ''}
-                  onChange={(e) => handleProfileChange(e.target.value)}
-                  disabled={!selectedRow}
-                >
-                  <option value="">
-                    {selectedRow ? '-- Choose a profile --' : '-- Click a row to select --'}
-                  </option>
-                  {profiles.map(profile => (
-                    <option key={profile.serialNumber} value={profile.serialNumber}>
-                      {profile.genericName} ({profile.preferredRmCode || profile.sunrackCode || 'No Code'})
-                    </option>
-                  ))}
-                </select>
+                <div className="flex-1 max-w-md">
+                  <ComboBox
+                    options={profileOptions}
+                    value={selectedRow?.profileSerialNumber || ''}
+                    onChange={handleProfileChange}
+                    placeholder={selectedRow ? '-- Choose a profile --' : '-- Click a row to select --'}
+                  />
+                </div>
                 {selectedRow && (
                   <span className="text-sm text-gray-600">
                     Selected Row: {selectedRow.sn}
