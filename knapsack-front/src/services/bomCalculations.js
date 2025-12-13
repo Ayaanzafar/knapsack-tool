@@ -125,48 +125,28 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
     }
   });
 
-  // 2. Add hardware items (with formulas)
-  const hardwareItems = [
-    {
-      sunrackCode: 'MA-110',
-      itemDescription: 'U Cleat (5mm Hole)',
-      material: 'AA 6000 T5/T6',
-      length: 40,
-      uom: 'Nos',
-      formulaKey: 'U_CLEAT'
-    },
-    {
-      sunrackCode: 'MA-72',
-      itemDescription: 'Rail Jointer',
-      material: 'AA 6000 T5/T6',
-      length: 150,
-      uom: 'Nos',
-      formulaKey: 'RAIL_JOINTER'
-    },
-    {
-      sunrackCode: 'MA-109',
-      itemDescription: 'End Clamps-30mm',
-      material: 'AA 6000 T5/T6',
-      length: 50,
-      uom: 'Nos',
-      formulaKey: 'END_CLAMP'
-    },
-    {
-      sunrackCode: 'MA-35',
-      itemDescription: 'Mid Clamps',
-      material: 'AA 6000 T5/T6',
-      length: 50,
-      uom: 'Nos',
-      formulaKey: 'MID_CLAMP'
-    },
-    {
-      sunrackCode: 'MA-46',
-      itemDescription: 'Rail Nuts',
-      material: 'AA 6000 T5/T6',
-      length: 20,
-      uom: 'Nos',
-      formulaKey: 'RAIL_NUTS'
-    },
+  // 2. Build hardware items from database (items with formulas) + hardcoded hardware
+  const hardwareItems = [];
+
+  // Add items from database that have formulas
+  Object.values(profilesMap).forEach(profile => {
+    if (profile.formulas && profile.formulas.length > 0) {
+      profile.formulas.forEach(formula => {
+        hardwareItems.push({
+          sunrackCode: profile.sunrackCode,
+          preferredRmCode: profile.preferredRmCode,
+          itemDescription: profile.genericName,  // Use genericName from DB
+          material: profile.material,
+          length: profile.standardLength,
+          uom: profile.uom,
+          formulaKey: formula.formulaKey
+        });
+      });
+    }
+  });
+
+  // Add hardcoded hardware items (not in database as aluminum profiles)
+  const hardcodedHardware = [
     {
       sunrackCode: null,
       itemDescription: 'M8x60 Hex Head Bolt for U-cleat',
@@ -241,6 +221,8 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
     }
   ];
 
+  hardwareItems.push(...hardcodedHardware);
+
   hardwareItems.forEach(item => {
     const quantities = {};
     let totalQty = 0;
@@ -252,16 +234,8 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
     });
 
     if (totalQty > 0) {
-      // Find matching profile by sunrackCode to get preferredRmCode
-      let displayCode = item.sunrackCode;
-      if (item.sunrackCode) {
-        const matchingProfile = Object.values(profilesMap).find(
-          p => p.sunrackCode === item.sunrackCode
-        );
-        if (matchingProfile?.preferredRmCode) {
-          displayCode = matchingProfile.preferredRmCode;
-        }
-      }
+      // Use RM code if available, otherwise use sunrack code
+      const displayCode = item.preferredRmCode || item.sunrackCode;
 
       bomItems.push({
         sn: serialNumber++,

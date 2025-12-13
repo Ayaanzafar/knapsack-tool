@@ -11,7 +11,8 @@
       "Bash(node prisma/seed.js:*)",
       "Bash(node scripts/importBomData.js:*)",
       "Bash(grep:*)",
-      "Bash(node scripts/setDefaultProfile.js:*)"
+      "Bash(node scripts/setDefaultProfile.js:*)",
+      "Bash(node scripts/seedBomFormulas.js:*)"
     ],
     "deny": [],
     "ask": []
