@@ -198,7 +198,7 @@ export default function BOMPage() {
                   </option>
                   {profiles.map(profile => (
                     <option key={profile.serialNumber} value={profile.serialNumber}>
-                      {profile.genericName} ({profile.sunrackCode || 'No Code'})
+                      {profile.genericName} ({profile.preferredRmCode || profile.sunrackCode || 'No Code'})
                     </option>
                   ))}
                 </select>
