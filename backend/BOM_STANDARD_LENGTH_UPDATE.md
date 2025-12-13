@@ -159,7 +159,7 @@ WHERE standard_length IS NULL;
 - This is a **data fix**, not a code change
 
 ## Status
-- [ ] Create update script
+- [x] Create update script
 - [ ] Run update script
 - [ ] Verify in database
 - [ ] Test BOM generation
