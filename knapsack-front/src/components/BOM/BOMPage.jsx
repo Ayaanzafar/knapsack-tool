@@ -74,6 +74,13 @@ export default function BOMPage() {
     setSelectedRow(null);  // Deselect after update
   };
 
+    const handleToggleEditMode = () => {
+    if (editMode) {
+      setSelectedRow(null); // Clear selection when exiting edit mode
+    }
+    setEditMode(!editMode);
+  };
+
   if (!bomData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -119,7 +126,7 @@ export default function BOMPage() {
           <div className="flex items-center gap-3">
             {/* NEW: Enable Edit Button */}
             <button
-              onClick={() => setEditMode(!editMode)}
+              onClick={handleToggleEditMode}
               className={`px-4 py-2 border rounded-lg transition-colors flex items-center gap-2 ${
                 editMode
                   ? 'bg-purple-600 text-white border-purple-600'
