@@ -1,5 +1,5 @@
 // src/components/BOM/BOMTableRow.jsx
-export default function BOMTableRow({ item, tabs, isEven }) {
+export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, onSelect }) {
   const {
     sn,
     sunrackCode,
@@ -16,8 +16,18 @@ export default function BOMTableRow({ item, tabs, isEven }) {
 
   const bgColor = isEven ? 'bg-white' : 'bg-gray-50';
 
+  // Add selection styling
+  const rowClasses = `${bgColor} ${
+    editMode ? 'cursor-pointer hover:bg-blue-50' : ''
+  } ${
+    isSelected ? 'ring-2 ring-purple-500 bg-purple-50' : ''
+  }`;
+
   return (
-    <tr className={bgColor}>
+    <tr
+      className={rowClasses}
+      onClick={() => editMode && onSelect && onSelect()}
+    >
       {/* S.N */}
       <td className="border border-gray-400 px-2 py-2 text-sm text-center font-medium">
         {sn}
@@ -75,9 +85,9 @@ export default function BOMTableRow({ item, tabs, isEven }) {
       </td>
 
       {/* Quantities for each tab */}
-      {tabs.map(tabName => (
+      {tabs.map((tabName, index) => (
         <td
-          key={`qty-${tabName}`}
+          key={`qty-${index}-${tabName}`}
           className="border border-gray-400 px-2 py-2 text-sm text-center font-medium"
         >
           {quantities[tabName] || 0}

@@ -6,7 +6,7 @@ import { generateCompleteBOM } from '../../services/bomCalculations';
 export default function CreateBOMButton({ tabsData, projectName }) {
   const navigate = useNavigate();
 
-  const handleCreateBOM = () => {
+  const handleCreateBOM = async () => {
     try {
       // Collect data from all tabs
       const bomData = collectBOMData(tabsData, projectName);
@@ -14,8 +14,8 @@ export default function CreateBOMButton({ tabsData, projectName }) {
       // Get active cut lengths (non-zero)
       const activeCutLengths = getActiveCutLengths(bomData);
 
-      // Generate complete BOM structure
-      const completeBOM = generateCompleteBOM(bomData, activeCutLengths);
+      // Generate complete BOM structure (NOW ASYNC!)
+      const completeBOM = await generateCompleteBOM(bomData, activeCutLengths);
 
       // Navigate to BOM page with data
       navigate('/bom', { state: { bomData: completeBOM } });

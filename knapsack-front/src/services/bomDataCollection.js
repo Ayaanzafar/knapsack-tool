@@ -164,13 +164,17 @@ export function collectBOMData(tabsData, projectName) {
     },
     tabs: [],
     panelCounts: {},
-    tabCalculations: {}
+    tabCalculations: {},
+    tabProfiles: {}  // NEW: Store profile serial numbers per tab
   };
 
   // Process each tab
   tabs.forEach((tab, index) => {
     const tabName = tab.name || `T${index + 1}`;
     bomData.tabs.push(tabName);
+
+    // NEW: Store profile serial number for this tab
+    bomData.tabProfiles[tabName] = tab.longRailProfileSerialNumber || '26';
 
     // Calculate totals for this tab
     const tabTotals = calculateTabTotals(tab);

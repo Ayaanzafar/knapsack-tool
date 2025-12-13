@@ -1,7 +1,7 @@
 // src/components/BOM/BOMTable.jsx
 import BOMTableRow from './BOMTableRow';
 
-export default function BOMTable({ bomData }) {
+export default function BOMTable({ bomData, editMode, selectedRow, onRowSelect }) {
   const { tabs, panelCounts, bomItems, projectInfo } = bomData;
 
   return (
@@ -27,9 +27,9 @@ export default function BOMTable({ bomData }) {
             </th>
 
 
-            {tabs.map((tab) => (
+            {tabs.map((tab, index) => (
               <th
-                key={`bc-${tab}`}
+                key={`bc-${index}-${tab}`}
                 className="border border-gray-400 px-2 py-1 text-xs font-bold text-center"
               >
                 {tab}
@@ -76,9 +76,9 @@ export default function BOMTable({ bomData }) {
             </th>
 
 
-            {tabs.map((tab) => (
+            {tabs.map((tab, index) => (
               <th
-                key={`panel-${tab}`}
+                key={`panel-${index}-${tab}`}
                 className="border border-gray-400 px-2 py-1 text-xs font-bold text-center"
               >
                 {panelCounts[tab] || 0}
@@ -132,9 +132,9 @@ export default function BOMTable({ bomData }) {
 
 
             {/* Qty. under each Tn */}
-            {tabs.map((tab) => (
+            {tabs.map((tab, index) => (
               <th
-                key={`qty-${tab}`}
+                key={`qty-${index}-${tab}`}
                 className="border border-gray-400 px-2 py-1 text-xs font-bold text-center"
               >
                 Qty.
@@ -170,6 +170,9 @@ export default function BOMTable({ bomData }) {
               item={item}
               tabs={tabs}
               isEven={index % 2 === 0}
+              editMode={editMode}
+              isSelected={selectedRow?.sn === item.sn}
+              onSelect={() => onRowSelect(item)}
             />
           ))}
         </tbody>

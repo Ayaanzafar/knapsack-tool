@@ -1,6 +1,8 @@
 // src/services/bomCalculations.js
 // Formula-based calculations for BOM hardware items
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 /**
  * Formula map for calculating hardware quantities
  * Each formula takes tabCalculation data and previously calculated values
@@ -73,9 +75,10 @@ export function calculateTabQuantities(tabCalculation) {
  * Generate complete BOM items with quantities for all tabs
  * @param {Object} bomData - Collected BOM data from bomDataCollection
  * @param {Array} activeCutLengths - Active cut lengths (non-zero)
+ * @param {Object} profilesMap - Map of profile serial numbers to profile data
  * @returns {Array} - Array of BOM items with quantities per tab
  */
-export function generateBOMItems(bomData, activeCutLengths) {
+export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
   const bomItems = [];
   let serialNumber = 1;
 
@@ -86,6 +89,13 @@ export function generateBOMItems(bomData, activeCutLengths) {
   });
 
   // 1. Add Long Rails for each active cut length
+  // Determine which profile to use (use first tab's profile if all same, or default)
+  const profileSerialNumbers = Object.values(bomData.tabProfiles);
+  const primaryProfileSerialNumber = profileSerialNumbers[0] || '26';
+
+  // Get profile details from profilesMap
+  const selectedProfile = profilesMap[primaryProfileSerialNumber];
+
   activeCutLengths.forEach(cutLength => {
     const quantities = {};
     let totalQty = 0;
@@ -99,13 +109,14 @@ export function generateBOMItems(bomData, activeCutLengths) {
     if (totalQty > 0) {
       bomItems.push({
         sn: serialNumber++,
-        sunrackCode: 'MA-43',
-        profileImage: '/assets/bom-profiles/MA-43.png',
-        itemDescription: `Long Rail - ${cutLength}mm`,
+        sunrackCode: selectedProfile?.sunrackCode || 'MA-43',  // From DB
+        profileImage: selectedProfile?.profileImagePath || '/assets/bom-profiles/MA-43.png',  // From DB
+        itemDescription: selectedProfile?.genericName || '40mm Long Rail',  // Use genericName!
         material: 'AA 6000 T5/T6',
         length: cutLength,
         uom: 'Nos',
-        calculationType: 'DIRECT',
+        calculationType: 'CUT_LENGTH',  // NEW: Mark as cut length type
+        profileSerialNumber: primaryProfileSerialNumber,  // NEW: Store for edit mode
         quantities: quantities,
         totalQuantity: totalQty,
         spareQuantity: Math.ceil(totalQty * 0.01),
@@ -249,7 +260,7 @@ export function generateBOMItems(bomData, activeCutLengths) {
         material: item.material,
         length: item.length,
         uom: item.uom,
-        calculationType: 'FORMULA',
+        calculationType: 'ACCESSORY',  // NEW: Mark as accessory type
         formulaKey: item.formulaKey,
         quantities: quantities,
         totalQuantity: totalQty,
@@ -268,13 +279,24 @@ export function generateBOMItems(bomData, activeCutLengths) {
  * @param {Array} activeCutLengths - Active cut lengths
  * @returns {Object} - Complete BOM structure
  */
-export function generateCompleteBOM(bomData, activeCutLengths) {
-  const bomItems = generateBOMItems(bomData, activeCutLengths);
+export async function generateCompleteBOM(bomData, activeCutLengths) {
+  // Fetch all profiles from API
+  const response = await fetch(`${API_URL}/api/bom/master-items`);
+  const allProfiles = await response.json();
+
+  // Create profilesMap: { serialNumber: profileData }
+  const profilesMap = {};
+  allProfiles.forEach(profile => {
+    profilesMap[profile.serialNumber] = profile;
+  });
+
+  const bomItems = await generateBOMItems(bomData, activeCutLengths, profilesMap);
 
   return {
     projectInfo: bomData.projectInfo,
     tabs: bomData.tabs,
     panelCounts: bomData.panelCounts,
+    profilesMap: profilesMap,  // NEW: Pass profiles to BOM page
     bomItems: bomItems
   };
 }

@@ -20,7 +20,7 @@ async function main() {
     "itemDescription": "Mini Rail - 80mm Height - 26mm Crest width - 74° Angle - Internal",
     "genericName": "80mm Mini Rail",
     "designWeight": 1.0192500000000002,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "3",
@@ -28,7 +28,7 @@ async function main() {
     "itemDescription": "2 Part - Seam Clamp - Type 1 - Part B",
     "genericName": "Standing Seam Clamp - Part B (Type 1)",
     "designWeight": 0.74331,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "4",
@@ -36,7 +36,7 @@ async function main() {
     "itemDescription": "2 Part - Seam Clamp - Type 1 - Part A",
     "genericName": "Standing Seam Clamp - Part A (Type 1)",
     "designWeight": 1.46448,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "5",
@@ -44,7 +44,7 @@ async function main() {
     "itemDescription": "Walkway - 150mm Width",
     "genericName": "150mm Walkway Section",
     "designWeight": 0.9325800000000001,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "6",
@@ -60,7 +60,7 @@ async function main() {
     "itemDescription": "Mid Clamp - 29mm Height - 25mm Gap - 3mm Thickness",
     "genericName": "Mid Clamp - 25mm Module Gap",
     "designWeight": 0.8005500000000001,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "8",
@@ -76,7 +76,7 @@ async function main() {
     "itemDescription": "Short Rail - 100mm Height - Small Rail Nut (RN3)",
     "genericName": "100mm Short Rail (In)",
     "designWeight": 1.31841,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "10",
@@ -84,7 +84,7 @@ async function main() {
     "itemDescription": "End Clamp - 40mm Height - 2mm Gap - 3mm Thickness",
     "genericName": "40mm End Clamp (Type 1)",
     "designWeight": 0.54486,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "11",
@@ -100,7 +100,7 @@ async function main() {
     "itemDescription": "Seam Clamp - 50mm Height - 14mm Gap - 25mm Seam Height - Top Rail",
     "genericName": "Standing Seam H Clamp (Type 1)",
     "designWeight": 1.46583,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "13",
@@ -116,7 +116,7 @@ async function main() {
     "itemDescription": "Strut Rail - 21mm Height",
     "genericName": "21mm Strut Channel",
     "designWeight": 0.62856,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "15",
@@ -132,7 +132,7 @@ async function main() {
     "itemDescription": "Purlin Clamp",
     "genericName": "Purlin Clamp",
     "designWeight": 1.21662,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "17",
@@ -140,7 +140,7 @@ async function main() {
     "itemDescription": "Short Rail - 75mm Height - Small Rail Nut (RN3)",
     "genericName": "75mm Short Rail (In)_V2",
     "designWeight": 1.6394400000000002,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "18",
@@ -164,7 +164,7 @@ async function main() {
     "itemDescription": "Round Hollow Tube - 9mm OD",
     "genericName": "9mm Circular Tube",
     "designWeight": 0.11442600000000001,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "21",
@@ -204,7 +204,7 @@ async function main() {
     "itemDescription": "End Clamp - 30mm Height - 16mm Gap - 4mm Thickness",
     "genericName": "30mm End Clamp",
     "designWeight": 0.6102000000000001,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "26",
@@ -236,7 +236,7 @@ async function main() {
     "itemDescription": "Mid Clamp - 15mm Height - 25mm Gap - 4mm Thickness",
     "genericName": "Mid Clamp (M+)",
     "designWeight": 0.75465,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "30",
@@ -244,7 +244,7 @@ async function main() {
     "itemDescription": "2 Part - Seam Clamp - Proflex Roof - Part A",
     "genericName": "Proflex - Standing Seam Clamp - Part A",
     "designWeight": 1.5967799999999999,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "31",
@@ -252,7 +252,7 @@ async function main() {
     "itemDescription": "2 Part - Seam Clamp - Proflex Roof - Part B",
     "genericName": "Proflex - Standing Seam Clamp - Part B",
     "designWeight": 0.8332200000000002,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "32",
@@ -300,7 +300,7 @@ async function main() {
     "itemDescription": "Short Rail - 70mm Height - Small Rail Nut (RN3)",
     "genericName": "70mm Short Rail (In)",
     "designWeight": 0.90234,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "38",
@@ -316,7 +316,7 @@ async function main() {
     "itemDescription": "2 Part - Seam Clamp - Type 2 - Part A - 80mm Height",
     "genericName": "Standing Seam Clamp - Part A (Type 2)",
     "designWeight": 1.03653,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "40",
@@ -324,7 +324,7 @@ async function main() {
     "itemDescription": "2 Part - Seam Clamp - Type 2 - Part B",
     "genericName": "Standing Seam Clamp - Part B (Type 2)",
     "designWeight": 0.55377,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "41",
@@ -332,7 +332,7 @@ async function main() {
     "itemDescription": "Walkway - For FRP - M Clamp",
     "genericName": "FRP Walkway M Clamp",
     "designWeight": 0.6029100000000001,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "42",
@@ -340,7 +340,7 @@ async function main() {
     "itemDescription": "2 Part - Seam Clamp - Type 3 - Part A and B",
     "genericName": "Standing Seam Clamp (Type 3) (2x)",
     "designWeight": 0.6458400000000001,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "43",
@@ -364,7 +364,7 @@ async function main() {
     "itemDescription": "Bracket for 60mm Hat Section",
     "genericName": "Hat Base",
     "designWeight": 0.86778,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "46",
@@ -420,7 +420,7 @@ async function main() {
     "itemDescription": "2 Part - Seam Clamp - Type 4 - Part B",
     "genericName": "Standing Seam Clamp - Part B (Type 4)",
     "designWeight": 0.47681999999999997,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "53",
@@ -428,7 +428,7 @@ async function main() {
     "itemDescription": "Seam Clamp - 75mm Height - 21mm Gap - 30mm Seam Height - External Rail",
     "genericName": "75mm Standing Seam Clamp - External",
     "designWeight": 1.7298900000000004,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "54",
@@ -436,7 +436,7 @@ async function main() {
     "itemDescription": "Mini Rail - 65mm Height - 17mm Crest width - 74° Angle - External",
     "genericName": "65/17mm - 74 - Mini Rail (Ex)",
     "designWeight": 0.8575200000000001,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "55",
@@ -516,7 +516,7 @@ async function main() {
     "itemDescription": "Mini Rail - 97mm Height - 36mm Crest width - 90° Angle - External",
     "genericName": "97/36mm - 90 - Mini Rail (Ex)",
     "designWeight": 1.16316,
-    "selectedRmVendor": "SMALCO"
+    "selectedRmVendor": "SNALCO"
   },
   {
     "serialNumber": "65",
@@ -556,7 +556,7 @@ async function main() {
     "itemDescription": "Whistle Clamp",
     "genericName": "Whistle Clamp",
     "designWeight": 2.3257800000000004,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "70",
@@ -612,7 +612,7 @@ async function main() {
     "itemDescription": "Long Rail - 60mm Height - Internal",
     "genericName": "L Type Long Rail - 60mm",
     "designWeight": 0.85239,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "77",
@@ -628,7 +628,7 @@ async function main() {
     "itemDescription": "Mini Rail - Tata Profile",
     "genericName": "Tata Short Rail",
     "designWeight": 1.7174700000000003,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "79",
@@ -636,7 +636,7 @@ async function main() {
     "itemDescription": "End Clamp - Tata Profile",
     "genericName": "Tata Universal Module Clamp",
     "designWeight": 1.5948900000000004,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "80",
@@ -644,7 +644,7 @@ async function main() {
     "itemDescription": "Tata T Nut",
     "genericName": "Tata Rail Nut",
     "designWeight": 0.37287,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "81",
@@ -660,7 +660,7 @@ async function main() {
     "itemDescription": "Multilock Seam Clamp - Part A",
     "genericName": "Multilock Seam Clamp - Part A",
     "designWeight": 1.019061,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "83",
@@ -692,7 +692,7 @@ async function main() {
     "itemDescription": "Jointer for 60mm Height - External Long Rail",
     "genericName": "External 60mm Long Rail Jointer",
     "designWeight": 0.37583999999999995,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "87",
@@ -756,7 +756,7 @@ async function main() {
     "itemDescription": "U Cleat - Outer - 145mm Height",
     "genericName": "UX Long Rail - Large U Base",
     "designWeight": 3.0623400000000003,
-    "selectedRmVendor": "SMALCO"
+    "selectedRmVendor": "SNALCO"
   },
   {
     "serialNumber": "95",
@@ -772,7 +772,7 @@ async function main() {
     "itemDescription": "Multilock Seam Clamp - Flat Top - Part A",
     "genericName": "Multilok Flat Top Seam Clamp - Part A",
     "designWeight": 1.0918800000000002,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "97",
@@ -812,7 +812,7 @@ async function main() {
     "itemDescription": "Long Rail Height Extender - 180mm",
     "genericName": "Height Extender - U Long Rail",
     "designWeight": 3.25566,
-    "selectedRmVendor": "SMALCO"
+    "selectedRmVendor": "SNALCO"
   },
   {
     "serialNumber": "102",
@@ -820,7 +820,7 @@ async function main() {
     "itemDescription": "Bitumen Rail Splice",
     "genericName": "Bitumen Rail Splice",
     "designWeight": 0.36234,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "103",
@@ -876,7 +876,7 @@ async function main() {
     "itemDescription": "Mono Rail - Height 100mm - Width - 27mm",
     "genericName": "100 - 27- Mono Rail (Ex)",
     "designWeight": 1.0208700000000002,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "110",
@@ -884,7 +884,7 @@ async function main() {
     "itemDescription": "End Clamp - 30mm Height - 15mm Gap - 4mm Thickness",
     "genericName": "30mm End Clamp_Type 2",
     "designWeight": 0.6615,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "111",
@@ -892,7 +892,7 @@ async function main() {
     "itemDescription": "Mid Clamp - 15mm Height - 27mm Gap - 4mm Thickness",
     "genericName": "Mid Clamp - 27mm Module Gap",
     "designWeight": 0.76275,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "112",
@@ -900,7 +900,7 @@ async function main() {
     "itemDescription": "Round Hollow Tube - 10mm OD",
     "genericName": "M8 Spacer",
     "designWeight": 0.12474,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "113",
@@ -940,7 +940,7 @@ async function main() {
     "itemDescription": "Bitumen Rail - 100mm Height - 99mm Base",
     "genericName": "Bitumen Rail - 100mm",
     "designWeight": 1.3378500000000002,
-    "selectedRmVendor": "SMALCO"
+    "selectedRmVendor": "SNALCO"
   },
   {
     "serialNumber": "118",
@@ -948,7 +948,7 @@ async function main() {
     "itemDescription": "Mini Rail - 100mm Height - 35mm Crest width - 105° Angle - External",
     "genericName": "100/35 - 105 - Mini Rail (Ex)",
     "designWeight": 1.1923200000000003,
-    "selectedRmVendor": "SMALCO"
+    "selectedRmVendor": "SNALCO"
   },
   {
     "serialNumber": "119",
@@ -972,7 +972,7 @@ async function main() {
     "itemDescription": "60mm Waaree Flexible Module Bracket",
     "genericName": "Waaree Flexible Module Bracket",
     "designWeight": 1.47258,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "122",
@@ -988,7 +988,7 @@ async function main() {
     "itemDescription": "Flanges Module Mounting Bracket",
     "genericName": "Module Flange Bracket",
     "designWeight": 2.44701,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "124",
@@ -996,7 +996,7 @@ async function main() {
     "itemDescription": "67mm - Bottom Hook Clamp",
     "genericName": "Sunrack Bottom Clamp",
     "designWeight": 0.5065200000000001,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "125",
@@ -1028,7 +1028,7 @@ async function main() {
     "itemDescription": "Seam Clamp - 38mm Height - 21mm Gap - 30mm Seam Height - Top Thread",
     "genericName": "Standing Seam Walkway Clamp 2",
     "designWeight": 1.5101099999999998,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   },
   {
     "serialNumber": "130",
@@ -1036,7 +1036,7 @@ async function main() {
     "itemDescription": "C45 Strut Latch (for Magnelis Long Rail)",
     "genericName": "C45 Strut Latch (for Magnelis Long Rail)",
     "designWeight": 0.70821,
-    "selectedRmVendor": "Ratco"
+    "selectedRmVendor": "Ralco"
   },
   {
     "serialNumber": "129",
@@ -1044,7 +1044,7 @@ async function main() {
     "itemDescription": "C45 Strut Base (for Magnelis Long Rail)",
     "genericName": "C45 Strut Base (for Magnelis Long Rail)",
     "designWeight": 3.03075,
-    "selectedRmVendor": "Ratco"
+    "selectedRmVendor": "Ralco"
   },
   {
     "serialNumber": "131",
@@ -1052,7 +1052,7 @@ async function main() {
     "itemDescription": "U Base - 45mm Height - 26mm Gap",
     "genericName": "45x30 - U Channel",
     "designWeight": 0.67527,
-    "selectedRmVendor": "Ratco"
+    "selectedRmVendor": "Ralco"
   },
   {
     "serialNumber": "132",
@@ -1068,7 +1068,7 @@ async function main() {
     "itemDescription": "H Bracket - 102 / 41mm Gap - 120mm Height",
     "genericName": "H Bracket for 100mm Box Column",
     "designWeight": 4.531680000000001,
-    "selectedRmVendor": "SMALCO"
+    "selectedRmVendor": "SNALCO"
   },
   {
     "serialNumber": "134",
@@ -1076,7 +1076,7 @@ async function main() {
     "itemDescription": "100mm Box Column - Two M8 Opposite Slots",
     "genericName": "100mm Box Column",
     "designWeight": 3.32721,
-    "selectedRmVendor": "SMALCO"
+    "selectedRmVendor": "SNALCO"
   },
   {
     "serialNumber": "135",
@@ -1084,7 +1084,7 @@ async function main() {
     "itemDescription": "Slotted Elevator - 5Deg -",
     "genericName": "5 Deg Elevator",
     "designWeight": 1.74987,
-    "selectedRmVendor": "SMALCO"
+    "selectedRmVendor": "SNALCO"
   },
   {
     "serialNumber": "136",
@@ -1092,7 +1092,7 @@ async function main() {
     "itemDescription": "120mm Short Rail",
     "genericName": "120mm Short Rail",
     "designWeight": 1.3869900000000002,
-    "selectedRmVendor": "SMALCO"
+    "selectedRmVendor": "SNALCO"
   },
   {
     "serialNumber": "137",
@@ -1100,7 +1100,7 @@ async function main() {
     "itemDescription": "Strut Rail Nut",
     "genericName": "Strut Rail Nut",
     "designWeight": 0.6501600000000001,
-    "selectedRmVendor": "Ratco"
+    "selectedRmVendor": "Ralco"
   },
   {
     "serialNumber": "138",
@@ -1124,7 +1124,7 @@ async function main() {
     "itemDescription": "2 Part - Seam Clamp - Type 2 - Part A - 105mm Height",
     "genericName": "100mm Part A - 2 Part Seam Clamp",
     "designWeight": 1.0746000000000002,
-    "selectedRmVendor": "Reat"
+    "selectedRmVendor": "Regal"
   }
 ];
 
@@ -1166,7 +1166,7 @@ async function main() {
   const rmCodes = [
   {
     "itemSerialNumber": "1",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 01"
   },
   {
@@ -1186,7 +1186,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "1",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1201,7 +1201,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "1",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1211,12 +1211,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "1",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "2",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 07"
   },
   {
@@ -1236,7 +1236,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "2",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1251,7 +1251,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "2",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1261,12 +1261,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "2",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "3",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 09"
   },
   {
@@ -1286,7 +1286,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "3",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1301,7 +1301,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "3",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1311,12 +1311,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "3",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "4",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 10"
   },
   {
@@ -1336,7 +1336,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "4",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1351,7 +1351,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "4",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1361,12 +1361,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "4",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "5",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 11C"
   },
   {
@@ -1386,7 +1386,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "5",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1401,7 +1401,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "5",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1411,12 +1411,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "5",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "6",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 12"
   },
   {
@@ -1436,7 +1436,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "6",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1451,7 +1451,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "6",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1461,12 +1461,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "6",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "7",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 16"
   },
   {
@@ -1486,7 +1486,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "7",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1501,7 +1501,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "7",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1511,12 +1511,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "7",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "8",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 17"
   },
   {
@@ -1536,7 +1536,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "8",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1551,7 +1551,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "8",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1561,12 +1561,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "8",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "9",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 23"
   },
   {
@@ -1586,7 +1586,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "9",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1601,7 +1601,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "9",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1611,12 +1611,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "9",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "10",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 24"
   },
   {
@@ -1636,7 +1636,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "10",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1651,7 +1651,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "10",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1661,12 +1661,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "10",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "11",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 25A"
   },
   {
@@ -1686,7 +1686,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "11",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1701,7 +1701,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "11",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1711,12 +1711,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "11",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "12",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 26"
   },
   {
@@ -1736,7 +1736,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "12",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1751,7 +1751,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "12",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1761,12 +1761,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "12",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "13",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 27"
   },
   {
@@ -1786,7 +1786,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "13",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1801,7 +1801,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "13",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1811,12 +1811,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "13",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "14",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 28"
   },
   {
@@ -1836,7 +1836,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "14",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1851,7 +1851,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "14",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1861,12 +1861,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "14",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "15",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 29"
   },
   {
@@ -1886,7 +1886,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "15",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1901,7 +1901,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "15",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1911,12 +1911,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "15",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "16",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 30"
   },
   {
@@ -1936,7 +1936,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "16",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -1951,7 +1951,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "16",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -1961,12 +1961,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "16",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "17",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 31"
   },
   {
@@ -1986,7 +1986,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "17",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2001,7 +2001,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "17",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2011,12 +2011,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "17",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "18",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 34"
   },
   {
@@ -2036,7 +2036,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "18",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2051,7 +2051,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "18",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2061,12 +2061,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "18",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "19",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 35"
   },
   {
@@ -2086,7 +2086,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "19",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2101,7 +2101,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "19",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49703"
   },
   {
@@ -2111,12 +2111,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "19",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "20",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 36"
   },
   {
@@ -2136,7 +2136,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "20",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2151,7 +2151,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "20",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2161,12 +2161,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "20",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "21",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 38"
   },
   {
@@ -2186,7 +2186,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "21",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2201,7 +2201,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "21",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2211,12 +2211,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "21",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "22",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 39"
   },
   {
@@ -2236,7 +2236,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "22",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2251,7 +2251,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "22",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2261,12 +2261,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "22",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "23",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 40"
   },
   {
@@ -2286,7 +2286,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "23",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2301,7 +2301,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "23",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2311,12 +2311,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "23",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "24",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 41"
   },
   {
@@ -2336,7 +2336,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "24",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2351,7 +2351,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "24",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2361,12 +2361,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "24",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "25",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 42"
   },
   {
@@ -2386,7 +2386,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "25",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2401,7 +2401,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "25",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2411,12 +2411,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "25",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "26",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 43"
   },
   {
@@ -2436,7 +2436,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "26",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2451,7 +2451,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "26",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49702"
   },
   {
@@ -2461,12 +2461,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "26",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "27",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 44"
   },
   {
@@ -2486,7 +2486,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "27",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2501,7 +2501,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "27",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2511,12 +2511,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "27",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "28",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 46"
   },
   {
@@ -2536,7 +2536,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "28",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2551,7 +2551,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "28",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2561,12 +2561,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "28",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "29",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 47"
   },
   {
@@ -2586,7 +2586,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "29",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2601,7 +2601,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "29",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2611,12 +2611,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "29",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "30",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 48"
   },
   {
@@ -2636,7 +2636,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "30",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2651,7 +2651,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "30",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2661,12 +2661,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "30",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "31",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 49"
   },
   {
@@ -2686,7 +2686,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "31",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2701,7 +2701,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "31",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2711,12 +2711,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "31",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "32",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 50"
   },
   {
@@ -2736,7 +2736,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "32",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2751,7 +2751,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "32",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2761,12 +2761,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "32",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "33",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 51"
   },
   {
@@ -2786,7 +2786,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "33",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2801,7 +2801,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "33",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2811,12 +2811,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "33",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "34",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 52"
   },
   {
@@ -2836,7 +2836,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "34",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2851,7 +2851,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "34",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2861,12 +2861,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "34",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "35",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 54"
   },
   {
@@ -2886,7 +2886,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "35",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2901,7 +2901,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "35",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2911,12 +2911,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "35",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "36",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 55"
   },
   {
@@ -2936,7 +2936,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "36",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -2951,7 +2951,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "36",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -2961,12 +2961,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "36",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "37",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 56"
   },
   {
@@ -2986,7 +2986,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "37",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3001,7 +3001,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "37",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3011,12 +3011,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "37",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "38",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 57"
   },
   {
@@ -3036,7 +3036,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "38",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3051,7 +3051,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "38",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3061,12 +3061,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "38",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "39",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 58"
   },
   {
@@ -3086,7 +3086,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "39",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3101,7 +3101,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "39",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3111,12 +3111,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "39",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "40",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 59"
   },
   {
@@ -3136,7 +3136,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "40",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3151,7 +3151,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "40",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3161,12 +3161,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "40",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "41",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 60"
   },
   {
@@ -3186,7 +3186,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "41",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3201,7 +3201,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "41",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3211,12 +3211,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "41",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "42",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 63"
   },
   {
@@ -3236,7 +3236,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "42",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3251,7 +3251,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "42",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3261,12 +3261,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "42",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "43",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 64"
   },
   {
@@ -3286,7 +3286,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "43",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3301,7 +3301,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "43",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3311,12 +3311,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "43",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "44",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 65"
   },
   {
@@ -3336,7 +3336,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "44",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3351,7 +3351,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "44",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3361,12 +3361,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "44",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "45",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 68"
   },
   {
@@ -3386,7 +3386,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "45",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3401,7 +3401,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "45",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3411,12 +3411,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "45",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "46",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 69"
   },
   {
@@ -3436,7 +3436,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "46",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3451,7 +3451,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "46",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3461,12 +3461,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "46",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "47",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 72"
   },
   {
@@ -3486,7 +3486,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "47",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3501,7 +3501,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "47",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49705"
   },
   {
@@ -3511,12 +3511,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "47",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "48",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 73"
   },
   {
@@ -3536,7 +3536,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "48",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3551,7 +3551,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "48",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3561,12 +3561,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "48",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "49",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 74"
   },
   {
@@ -3586,7 +3586,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "49",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3601,7 +3601,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "49",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3611,12 +3611,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "49",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "50",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 75"
   },
   {
@@ -3636,7 +3636,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "50",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3651,7 +3651,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "50",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3661,12 +3661,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "50",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "51",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 76"
   },
   {
@@ -3686,7 +3686,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "51",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3701,7 +3701,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "51",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3711,12 +3711,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "51",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "52",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 77"
   },
   {
@@ -3736,7 +3736,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "52",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3751,7 +3751,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "52",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3761,12 +3761,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "52",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "53",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 81"
   },
   {
@@ -3786,7 +3786,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "53",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3801,7 +3801,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "53",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3811,12 +3811,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "53",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "54",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 82"
   },
   {
@@ -3836,7 +3836,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "54",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3851,7 +3851,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "54",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3861,12 +3861,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "54",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "55",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "LA25x25"
   },
   {
@@ -3886,7 +3886,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "55",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3901,7 +3901,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "55",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3911,12 +3911,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "55",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "56",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -3936,7 +3936,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "56",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -3951,7 +3951,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "56",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -3961,12 +3961,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "56",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "57",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 107"
   },
   {
@@ -3986,7 +3986,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "57",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4001,7 +4001,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "57",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4011,12 +4011,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "57",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "58",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4036,7 +4036,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "58",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4051,7 +4051,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "58",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4061,12 +4061,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "58",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "59",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4086,7 +4086,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "59",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4101,7 +4101,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "59",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4111,12 +4111,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "59",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "60",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4136,7 +4136,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "60",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4151,7 +4151,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "60",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4161,12 +4161,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "60",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "61",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4186,7 +4186,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "61",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4201,7 +4201,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "61",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4211,12 +4211,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "61",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "62",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4236,7 +4236,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "62",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4251,7 +4251,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "62",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4261,12 +4261,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "62",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "63",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4286,7 +4286,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "63",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4301,7 +4301,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "63",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49706"
   },
   {
@@ -4311,12 +4311,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "63",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "64",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4336,7 +4336,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "64",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5303"
   },
   {
@@ -4351,7 +4351,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "64",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4361,12 +4361,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "64",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "65",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4386,7 +4386,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "65",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4401,7 +4401,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "65",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4411,12 +4411,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "65",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "66",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 84"
   },
   {
@@ -4436,7 +4436,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "66",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4451,7 +4451,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "66",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4461,12 +4461,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "66",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "67",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 85"
   },
   {
@@ -4486,7 +4486,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "67",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4501,7 +4501,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "67",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4511,12 +4511,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "67",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "68",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 86"
   },
   {
@@ -4536,7 +4536,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "68",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4551,7 +4551,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "68",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4561,12 +4561,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "68",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "69",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 87"
   },
   {
@@ -4586,7 +4586,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "69",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4601,7 +4601,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "69",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4611,12 +4611,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "69",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "70",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4636,7 +4636,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "70",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4651,7 +4651,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "70",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4661,12 +4661,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "70",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "71",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -4686,7 +4686,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "71",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4701,7 +4701,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "71",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4711,12 +4711,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "71",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "72",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 112"
   },
   {
@@ -4736,7 +4736,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "72",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4751,7 +4751,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "72",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4761,12 +4761,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "72",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "73",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 111"
   },
   {
@@ -4786,7 +4786,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "73",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4801,7 +4801,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "73",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4811,12 +4811,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "73",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "74",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 108"
   },
   {
@@ -4836,7 +4836,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "74",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4851,7 +4851,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "74",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4861,12 +4861,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "74",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "75",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 89"
   },
   {
@@ -4886,7 +4886,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "75",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4901,7 +4901,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "75",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4911,12 +4911,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "75",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "76",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 90"
   },
   {
@@ -4936,7 +4936,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "76",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -4951,7 +4951,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "76",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -4961,12 +4961,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "76",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "77",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 91"
   },
   {
@@ -4986,7 +4986,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "77",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5001,7 +5001,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "77",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5011,12 +5011,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "77",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "78",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 92"
   },
   {
@@ -5036,7 +5036,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "78",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5051,7 +5051,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "78",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5061,12 +5061,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "78",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "79",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 93"
   },
   {
@@ -5086,7 +5086,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "79",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5101,7 +5101,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "79",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5111,12 +5111,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "79",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "80",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 94"
   },
   {
@@ -5136,7 +5136,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "80",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5151,7 +5151,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "80",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5161,12 +5161,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "80",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "81",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 95"
   },
   {
@@ -5186,7 +5186,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "81",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5201,7 +5201,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "81",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5211,12 +5211,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "81",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "82",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 97"
   },
   {
@@ -5236,7 +5236,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "82",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5251,7 +5251,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "82",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5261,12 +5261,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "82",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "83",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 98"
   },
   {
@@ -5286,7 +5286,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "83",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5301,7 +5301,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "83",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5311,12 +5311,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "83",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "84",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 99"
   },
   {
@@ -5336,7 +5336,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "84",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5351,7 +5351,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "84",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5361,12 +5361,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "84",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "85",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 100"
   },
   {
@@ -5386,7 +5386,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "85",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5401,7 +5401,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "85",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49707"
   },
   {
@@ -5411,12 +5411,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "85",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "86",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 102"
   },
   {
@@ -5436,7 +5436,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "86",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5451,7 +5451,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "86",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5461,12 +5461,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "86",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "87",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -5486,7 +5486,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "87",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5501,7 +5501,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "87",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5511,12 +5511,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "87",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "88",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -5536,7 +5536,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "88",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5551,7 +5551,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "88",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5561,12 +5561,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "88",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "89",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -5586,7 +5586,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "89",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5601,7 +5601,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "89",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5611,12 +5611,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "89",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "90",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -5636,7 +5636,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "90",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5651,7 +5651,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "90",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5661,12 +5661,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "90",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "91",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -5686,7 +5686,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "91",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5701,7 +5701,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "91",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5711,12 +5711,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "91",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "92",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -5736,7 +5736,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "92",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5751,7 +5751,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "92",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5761,12 +5761,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "92",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "93",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -5786,7 +5786,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "93",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5801,7 +5801,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "93",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49701"
   },
   {
@@ -5811,12 +5811,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "93",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "94",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -5836,7 +5836,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "94",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5306"
   },
   {
@@ -5851,7 +5851,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "94",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5861,12 +5861,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "94",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "95",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 103"
   },
   {
@@ -5886,7 +5886,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "95",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5901,7 +5901,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "95",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5911,12 +5911,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "95",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "96",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 104"
   },
   {
@@ -5936,7 +5936,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "96",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -5951,7 +5951,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "96",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -5961,12 +5961,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "96",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "97",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 105"
   },
   {
@@ -5986,7 +5986,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "97",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6001,7 +6001,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "97",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6011,12 +6011,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "97",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "98",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 106"
   },
   {
@@ -6036,7 +6036,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "98",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6051,7 +6051,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "98",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6061,12 +6061,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "98",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "99",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 109"
   },
   {
@@ -6086,7 +6086,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "99",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6101,7 +6101,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "99",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6111,12 +6111,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "99",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "100",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 110"
   },
   {
@@ -6136,7 +6136,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "100",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6151,7 +6151,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "100",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6161,12 +6161,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "100",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "101",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -6186,7 +6186,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "101",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5307"
   },
   {
@@ -6201,7 +6201,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "101",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6211,12 +6211,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "101",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "102",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 113"
   },
   {
@@ -6236,7 +6236,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "102",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6251,7 +6251,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "102",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6261,12 +6261,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "102",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "103",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 114"
   },
   {
@@ -6286,7 +6286,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "103",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6301,7 +6301,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "103",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6311,12 +6311,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "103",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "104",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 115"
   },
   {
@@ -6336,7 +6336,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "104",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6351,7 +6351,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "104",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6361,12 +6361,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "104",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "105",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 116"
   },
   {
@@ -6386,7 +6386,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "105",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6401,7 +6401,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "105",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6411,12 +6411,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "105",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "106",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 117"
   },
   {
@@ -6436,7 +6436,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "106",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6451,7 +6451,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "106",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6461,12 +6461,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "106",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "107",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 118"
   },
   {
@@ -6486,7 +6486,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "107",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6501,7 +6501,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "107",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6511,12 +6511,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "107",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "108",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 119"
   },
   {
@@ -6536,7 +6536,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "108",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6551,7 +6551,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "108",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6561,12 +6561,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "108",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "109",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 120"
   },
   {
@@ -6586,7 +6586,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "109",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6601,7 +6601,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "109",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6611,12 +6611,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "109",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "110",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 121"
   },
   {
@@ -6636,7 +6636,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "110",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6651,7 +6651,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "110",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6661,12 +6661,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "110",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "111",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 122"
   },
   {
@@ -6686,7 +6686,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "111",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6701,7 +6701,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "111",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6711,12 +6711,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "111",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "112",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 123"
   },
   {
@@ -6736,7 +6736,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "112",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6751,7 +6751,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "112",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6761,12 +6761,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "112",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "113",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -6786,7 +6786,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "113",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5315"
   },
   {
@@ -6801,7 +6801,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "113",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6811,12 +6811,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "113",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "114",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -6836,7 +6836,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "114",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6851,7 +6851,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "114",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6861,12 +6861,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "114",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "115",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -6886,7 +6886,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "115",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6901,7 +6901,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "115",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6911,12 +6911,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "115",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "116",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -6936,7 +6936,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "116",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -6951,7 +6951,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "116",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -6961,12 +6961,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "116",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "117",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -6986,7 +6986,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "117",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5311"
   },
   {
@@ -7001,7 +7001,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "117",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7011,12 +7011,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "117",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "118",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7036,7 +7036,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "118",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5312"
   },
   {
@@ -7051,7 +7051,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "118",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7061,12 +7061,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "118",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "119",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7086,7 +7086,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "119",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7101,7 +7101,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "119",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7111,12 +7111,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "119",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "120",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7136,7 +7136,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "120",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7151,7 +7151,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "120",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7161,12 +7161,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "120",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "121",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 124"
   },
   {
@@ -7186,7 +7186,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "121",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7201,7 +7201,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "121",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7211,12 +7211,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "121",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "122",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 125"
   },
   {
@@ -7236,7 +7236,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "122",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7251,7 +7251,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "122",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7261,12 +7261,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "122",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "123",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 126"
   },
   {
@@ -7286,7 +7286,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "123",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7301,7 +7301,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "123",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7311,12 +7311,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "123",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "124",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 127"
   },
   {
@@ -7336,7 +7336,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "124",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7351,7 +7351,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "124",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7361,12 +7361,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "124",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "125",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7386,7 +7386,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "125",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7401,7 +7401,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "125",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7411,12 +7411,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "125",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "126",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7436,7 +7436,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "126",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7451,7 +7451,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "126",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7461,12 +7461,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "126",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "127",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7486,7 +7486,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "127",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7501,7 +7501,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "127",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7511,12 +7511,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "127",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "128",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 128"
   },
   {
@@ -7536,7 +7536,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "128",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7551,7 +7551,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "128",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7561,12 +7561,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "128",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "130",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7586,7 +7586,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "130",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7601,7 +7601,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "130",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49708"
   },
   {
@@ -7611,12 +7611,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "130",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "129",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7636,7 +7636,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "129",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7651,7 +7651,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "129",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49709"
   },
   {
@@ -7661,12 +7661,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "129",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "131",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7686,7 +7686,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "131",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7701,7 +7701,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "131",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49710"
   },
   {
@@ -7711,12 +7711,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "131",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "132",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7736,7 +7736,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "132",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -7751,7 +7751,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "132",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7761,12 +7761,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "132",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "133",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7786,7 +7786,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "133",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5313"
   },
   {
@@ -7801,7 +7801,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "133",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7811,12 +7811,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "133",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "134",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7836,7 +7836,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "134",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5314"
   },
   {
@@ -7851,7 +7851,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "134",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7861,12 +7861,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "134",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "135",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7886,7 +7886,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "135",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5317"
   },
   {
@@ -7901,7 +7901,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "135",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7911,12 +7911,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "135",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "136",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7936,7 +7936,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "136",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": "SN 5318"
   },
   {
@@ -7951,7 +7951,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "136",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -7961,12 +7961,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "136",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "137",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -7986,7 +7986,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "137",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -8001,7 +8001,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "137",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": "RL 49704"
   },
   {
@@ -8011,12 +8011,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "137",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "138",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -8036,7 +8036,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "138",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -8051,7 +8051,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "138",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -8061,12 +8061,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "138",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "139",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": null
   },
   {
@@ -8086,7 +8086,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "139",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -8101,7 +8101,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "139",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -8111,12 +8111,12 @@ async function main() {
   },
   {
     "itemSerialNumber": "139",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   },
   {
     "itemSerialNumber": "140",
-    "vendorName": "Reat",
+    "vendorName": "Regal",
     "code": "MA 129"
   },
   {
@@ -8136,7 +8136,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "140",
-    "vendorName": "SMALCO",
+    "vendorName": "SNALCO",
     "code": null
   },
   {
@@ -8151,7 +8151,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "140",
-    "vendorName": "Ratco",
+    "vendorName": "Ralco",
     "code": null
   },
   {
@@ -8161,7 +8161,7 @@ async function main() {
   },
   {
     "itemSerialNumber": "140",
-    "vendorName": "Elantor",
+    "vendorName": "Eleanor",
     "code": null
   }
 ];

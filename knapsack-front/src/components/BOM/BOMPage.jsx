@@ -7,10 +7,19 @@ export default function BOMPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [bomData, setBomData] = useState(null);
+  const [editMode, setEditMode] = useState(false);  // NEW
+  const [selectedRow, setSelectedRow] = useState(null);  // NEW
+  const [profiles, setProfiles] = useState([]);  // NEW
 
   useEffect(() => {
     if (location.state?.bomData) {
       setBomData(location.state.bomData);
+
+      // Extract profiles from bomData
+      if (location.state.bomData.profilesMap) {
+        const profilesList = Object.values(location.state.bomData.profilesMap);
+        setProfiles(profilesList);
+      }
     } else {
       // No data provided, redirect back to home
       console.warn('No BOM data provided, redirecting to home');
@@ -20,6 +29,49 @@ export default function BOMPage() {
 
   const handleBack = () => {
     navigate('/');
+  };
+
+  const handleProfileChange = (profileSerialNumber) => {
+    if (!selectedRow || !profileSerialNumber) return;
+
+    const selectedProfile = profiles.find(p => p.serialNumber === profileSerialNumber);
+    if (!selectedProfile) return;
+
+    // Update bomData based on row type
+    const updatedBomData = { ...bomData };
+
+    if (selectedRow.calculationType === 'CUT_LENGTH') {
+      // Update ALL cut length rows with the same profile
+      updatedBomData.bomItems = bomData.bomItems.map(item => {
+        if (item.calculationType === 'CUT_LENGTH') {
+          return {
+            ...item,
+            sunrackCode: selectedProfile.sunrackCode,
+            profileImage: selectedProfile.profileImagePath,
+            itemDescription: selectedProfile.genericName,
+            profileSerialNumber: profileSerialNumber
+          };
+        }
+        return item;
+      });
+    } else if (selectedRow.calculationType === 'ACCESSORY') {
+      // Update only the selected row
+      updatedBomData.bomItems = bomData.bomItems.map(item => {
+        if (item.sn === selectedRow.sn) {
+          return {
+            ...item,
+            sunrackCode: selectedProfile.sunrackCode,
+            profileImage: selectedProfile.profileImagePath,
+            itemDescription: selectedProfile.genericName,
+            profileSerialNumber: profileSerialNumber
+          };
+        }
+        return item;
+      });
+    }
+
+    setBomData(updatedBomData);
+    setSelectedRow(null);  // Deselect after update
   };
 
   if (!bomData) {
@@ -65,6 +117,26 @@ export default function BOMPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {/* NEW: Enable Edit Button */}
+            <button
+              onClick={() => setEditMode(!editMode)}
+              className={`px-4 py-2 border rounded-lg transition-colors flex items-center gap-2 ${
+                editMode
+                  ? 'bg-purple-600 text-white border-purple-600'
+                  : 'text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              </svg>
+              {editMode ? 'Done Editing' : 'Enable Edit'}
+            </button>
+
             <button
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
               onClick={() => window.print()}
@@ -108,8 +180,44 @@ export default function BOMPage() {
             </div>
           </div>
 
+          {/* Profile Selector - Show when edit mode is ON */}
+          {editMode && (
+            <div className="px-6 py-4 bg-blue-50 border-b border-blue-200">
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-semibold text-gray-700">
+                  Select Profile:
+                </label>
+                <select
+                  className="flex-1 max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  value={selectedRow?.profileSerialNumber || ''}
+                  onChange={(e) => handleProfileChange(e.target.value)}
+                  disabled={!selectedRow}
+                >
+                  <option value="">
+                    {selectedRow ? '-- Choose a profile --' : '-- Click a row to select --'}
+                  </option>
+                  {profiles.map(profile => (
+                    <option key={profile.serialNumber} value={profile.serialNumber}>
+                      {profile.genericName} ({profile.sunrackCode || 'No Code'})
+                    </option>
+                  ))}
+                </select>
+                {selectedRow && (
+                  <span className="text-sm text-gray-600">
+                    Selected Row: {selectedRow.sn}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* BOM Table with integrated Spare columns */}
-          <BOMTable bomData={bomData} />
+          <BOMTable
+            bomData={bomData}
+            editMode={editMode}
+            selectedRow={selectedRow}
+            onRowSelect={setSelectedRow}
+          />
         </div>
       </main>
     </div>
