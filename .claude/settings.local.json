@@ -12,7 +12,9 @@
       "Bash(node scripts/importBomData.js:*)",
       "Bash(grep:*)",
       "Bash(node scripts/setDefaultProfile.js:*)",
-      "Bash(node scripts/seedBomFormulas.js:*)"
+      "Bash(node scripts/seedBomFormulas.js:*)",
+      "Bash(node -e:*)",
+      "Bash(node scripts/checkRmCodes.js:*)"
     ],
     "deny": [],
     "ask": []

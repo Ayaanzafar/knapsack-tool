@@ -135,6 +135,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
         hardwareItems.push({
           sunrackCode: profile.sunrackCode,
           preferredRmCode: profile.preferredRmCode,
+          profileImagePath: profile.profileImagePath,  // Use image path from DB
           itemDescription: profile.genericName,  // Use genericName from DB
           material: profile.material,
           length: profile.standardLength,
@@ -240,7 +241,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
       bomItems.push({
         sn: serialNumber++,
         sunrackCode: displayCode,  // Use RM code if available
-        profileImage: item.sunrackCode ? `/assets/bom-profiles/${item.sunrackCode}.png` : null,
+        profileImage: item.profileImagePath || null,  // Use image path from DB
         itemDescription: item.itemDescription,
         material: item.material,
         length: item.length,
