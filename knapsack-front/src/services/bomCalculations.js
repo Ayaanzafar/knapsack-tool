@@ -109,7 +109,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
     if (totalQty > 0) {
       bomItems.push({
         sn: serialNumber++,
-        sunrackCode: selectedProfile?.sunrackCode || 'MA-43',  // From DB
+        sunrackCode: selectedProfile?.preferredRmCode || selectedProfile?.sunrackCode || 'MA-43',  // Use RM code (Regal priority)
         profileImage: selectedProfile?.profileImagePath || '/assets/bom-profiles/MA-43.png',  // From DB
         itemDescription: selectedProfile?.genericName || '40mm Long Rail',  // Use genericName!
         material: 'AA 6000 T5/T6',
@@ -252,9 +252,20 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
     });
 
     if (totalQty > 0) {
+      // Find matching profile by sunrackCode to get preferredRmCode
+      let displayCode = item.sunrackCode;
+      if (item.sunrackCode) {
+        const matchingProfile = Object.values(profilesMap).find(
+          p => p.sunrackCode === item.sunrackCode
+        );
+        if (matchingProfile?.preferredRmCode) {
+          displayCode = matchingProfile.preferredRmCode;
+        }
+      }
+
       bomItems.push({
         sn: serialNumber++,
-        sunrackCode: item.sunrackCode,
+        sunrackCode: displayCode,  // Use RM code if available
         profileImage: item.sunrackCode ? `/assets/bom-profiles/${item.sunrackCode}.png` : null,
         itemDescription: item.itemDescription,
         material: item.material,

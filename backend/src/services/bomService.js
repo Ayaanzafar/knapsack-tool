@@ -3,12 +3,33 @@ const prisma = require('../prismaClient');
 class BomService {
   // Get all BOM master items
   async getAllMasterItems() {
-    return await prisma.bomMasterItem.findMany({
+    const items = await prisma.bomMasterItem.findMany({
       where: { isActive: true },
       orderBy: { serialNumber: 'asc' },
       include: {
-        formulas: true
+        formulas: true,
+        rmCodes: true  // Include RM codes
       }
+    });
+
+    // Add preferred RM code to each item
+    return items.map(item => {
+      // Find Regal's RM code first (priority)
+      let preferredRmCode = item.rmCodes.find(
+        rm => rm.vendorName === 'Regal' && rm.code !== null
+      )?.code;
+
+      // If Regal's code is not available, find any non-NULL code
+      if (!preferredRmCode) {
+        preferredRmCode = item.rmCodes.find(
+          rm => rm.code !== null
+        )?.code;
+      }
+
+      return {
+        ...item,
+        preferredRmCode: preferredRmCode || null
+      };
     });
   }
 

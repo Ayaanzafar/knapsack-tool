@@ -46,7 +46,7 @@ export default function BOMPage() {
         if (item.calculationType === 'CUT_LENGTH') {
           return {
             ...item,
-            sunrackCode: selectedProfile.sunrackCode,
+            sunrackCode: selectedProfile.preferredRmCode || selectedProfile.sunrackCode,
             profileImage: selectedProfile.profileImagePath,
             itemDescription: selectedProfile.genericName,
             profileSerialNumber: profileSerialNumber
@@ -60,7 +60,7 @@ export default function BOMPage() {
         if (item.sn === selectedRow.sn) {
           return {
             ...item,
-            sunrackCode: selectedProfile.sunrackCode,
+            sunrackCode: selectedProfile.preferredRmCode || selectedProfile.sunrackCode,
             profileImage: selectedProfile.profileImagePath,
             itemDescription: selectedProfile.genericName,
             profileSerialNumber: profileSerialNumber
