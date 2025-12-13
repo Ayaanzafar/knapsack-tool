@@ -1145,12 +1145,12 @@ async function main() {
           genericName: item.genericName,
           designWeight: item.designWeight,
           selectedRmVendor: item.selectedRmVendor,
-          uom: 'nos',  // Default value
-          material: 'Aluminum',  // Default value
-          category: 'Profile',  // Default value
-          isActive: true
-        }
-      });
+            uom: 'nos',  // Default value
+          material: 'AA 6000 T5/T6',  // Default value aligned with AA 6000 series
+            category: 'Profile',  // Default value
+            isActive: true
+          }
+        });
       console.log(`✓ Upserted item ${item.serialNumber}: ${item.genericName}`);
     } catch (error) {
       console.error(`✗ Failed to upsert item ${item.serialNumber}:`, error.message);

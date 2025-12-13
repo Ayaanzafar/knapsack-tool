@@ -112,7 +112,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
         sunrackCode: selectedProfile?.preferredRmCode || selectedProfile?.sunrackCode || 'MA-43',  // Use RM code (Regal priority)
         profileImage: selectedProfile?.profileImagePath || '/assets/bom-profiles/MA-43.png',  // From DB
         itemDescription: selectedProfile?.genericName || '40mm Long Rail',  // Use genericName!
-        material: 'AA 6000 T5/T6',
+        material: selectedProfile?.material || 'AA 6000 T5/T6',  // Prefer DB material
         length: cutLength,
         uom: 'Nos',
         calculationType: 'CUT_LENGTH',  // NEW: Mark as cut length type

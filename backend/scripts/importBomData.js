@@ -204,7 +204,7 @@ async function main() {
           designWeight: item.designWeight,
           selectedRmVendor: item.selectedRmVendor,
           uom: 'nos',  // Default value
-          material: 'Aluminum',  // Default value
+          material: 'AA 6000 T5/T6',  // Default value aligned with AA 6000 series
           category: 'Profile',  // Default value
           isActive: true
         }
