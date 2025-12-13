@@ -1,0 +1,2435 @@
+========================================
+  BOM DATA IMPORT SCRIPT
+========================================
+
+Reading Excel file from: d:\sunrack\All Profiles - 05-12-2025 - Product Codes.xlsx
+Reading sheet: Profiles
+
+Found 142 rows in Excel
+
+Excel Column Names:
+[
+  'RM CODE',   '__EMPTY',
+  '__EMPTY_1', '__EMPTY_2',
+  '__EMPTY_3', '__EMPTY_4',
+  '__EMPTY_5', '__EMPTY_6',
+  '__EMPTY_7', '__EMPTY_8'
+]
+
+First Row Sample:
+{
+  'RM CODE': 'Regal',
+  __EMPTY: 'Excellence',
+  __EMPTY_1: 'VARN',
+  __EMPTY_2: 'RC',
+  __EMPTY_3: 'SNALCO',
+  __EMPTY_4: 'Darshan',
+  __EMPTY_5: 'JM',
+  __EMPTY_6: 'Ralco',
+  __EMPTY_7: 'Sai deep',
+  __EMPTY_8: 'Eleanor'
+}
+
+=== GENERATING PRISMA SEED DATA ===
+
+
+✓ Processed 140 BOM items
+✓ Processed 1400 RM codes
+
+
+=== GENERATING SQL STATEMENTS ===
+
+-- UPDATE existing BOM items with new fields
+
+UPDATE bom_master_items SET
+  generic_name = 'Big Rail Nut',
+  design_weight = 0.6693300000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '1';
+UPDATE bom_master_items SET
+  generic_name = '80mm Mini Rail',
+  design_weight = 1.0192500000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '2';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Clamp - Part B (Type 1)',
+  design_weight = 0.74331,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '3';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Clamp - Part A (Type 1)',
+  design_weight = 1.46448,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '4';
+UPDATE bom_master_items SET
+  generic_name = '150mm Walkway Section',
+  design_weight = 0.9325800000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '5';
+UPDATE bom_master_items SET
+  generic_name = '25mm Base Rail',
+  design_weight = 0.5305500000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '6';
+UPDATE bom_master_items SET
+  generic_name = 'Mid Clamp - 25mm Module Gap',
+  design_weight = 0.8005500000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '7';
+UPDATE bom_master_items SET
+  generic_name = '35mm End Clamp (Type 1)',
+  design_weight = 0.50436,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '8';
+UPDATE bom_master_items SET
+  generic_name = '100mm Short Rail (In)',
+  design_weight = 1.31841,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '9';
+UPDATE bom_master_items SET
+  generic_name = '40mm End Clamp (Type 1)',
+  design_weight = 0.54486,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '10';
+UPDATE bom_master_items SET
+  generic_name = 'V Rail (Type 2)',
+  design_weight = 0.9282600000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '11';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam H Clamp (Type 1)',
+  design_weight = 1.46583,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '12';
+UPDATE bom_master_items SET
+  generic_name = '65mm Short Rail (In)_V2',
+  design_weight = 0.8850600000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '13';
+UPDATE bom_master_items SET
+  generic_name = '21mm Strut Channel',
+  design_weight = 0.62856,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '14';
+UPDATE bom_master_items SET
+  generic_name = 'Small Rail Nut',
+  design_weight = 0.48978000000000005,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '15';
+UPDATE bom_master_items SET
+  generic_name = 'Purlin Clamp',
+  design_weight = 1.21662,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '16';
+UPDATE bom_master_items SET
+  generic_name = '75mm Short Rail (In)_V2',
+  design_weight = 1.6394400000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '17';
+UPDATE bom_master_items SET
+  generic_name = '41mm Strut Channel',
+  design_weight = 0.70848,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '18';
+UPDATE bom_master_items SET
+  generic_name = 'Mid Clamp - 21mm Module Gap',
+  design_weight = 0.52893,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '19';
+UPDATE bom_master_items SET
+  generic_name = '9mm Circular Tube',
+  design_weight = 0.11442600000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '20';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam H Clamp (Type 2)',
+  design_weight = 1.54062,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '21';
+UPDATE bom_master_items SET
+  generic_name = '75/25mm - 90 -  Mini Rail',
+  design_weight = 1.0916100000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '22';
+UPDATE bom_master_items SET
+  generic_name = '70/27mm - 69 - Mini Rail',
+  design_weight = 1.0065600000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '23';
+UPDATE bom_master_items SET
+  generic_name = '75/36mm - 90 - Mini Rail',
+  design_weight = 1.23903,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '24';
+UPDATE bom_master_items SET
+  generic_name = '30mm End Clamp',
+  design_weight = 0.6102000000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '25';
+UPDATE bom_master_items SET
+  generic_name = '40mm Long Rail',
+  design_weight = 0.49194,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '26';
+UPDATE bom_master_items SET
+  generic_name = 'Inner U Cleat',
+  design_weight = 0.7735500000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '27';
+UPDATE bom_master_items SET
+  generic_name = 'Hook Rail Nut',
+  design_weight = 0.9890100000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '28';
+UPDATE bom_master_items SET
+  generic_name = 'Mid Clamp (M+)',
+  design_weight = 0.75465,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '29';
+UPDATE bom_master_items SET
+  generic_name = 'Proflex - Standing Seam Clamp - Part A',
+  design_weight = 1.5967799999999999,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '30';
+UPDATE bom_master_items SET
+  generic_name = 'Proflex - Standing Seam Clamp - Part B',
+  design_weight = 0.8332200000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '31';
+UPDATE bom_master_items SET
+  generic_name = '65mm Short Rail (Ex)',
+  design_weight = 0.74655,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '32';
+UPDATE bom_master_items SET
+  generic_name = '100mm Short Rail (Ex)',
+  design_weight = 1.07649,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '33';
+UPDATE bom_master_items SET
+  generic_name = 'Asbestos Curved Base',
+  design_weight = 0.86238,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '34';
+UPDATE bom_master_items SET
+  generic_name = '89mm L Cleat',
+  design_weight = 1.9356300000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '35';
+UPDATE bom_master_items SET
+  generic_name = 'L Type Long Rail_V2',
+  design_weight = 0.6342300000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '36';
+UPDATE bom_master_items SET
+  generic_name = '70mm Short Rail (In)',
+  design_weight = 0.90234,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '37';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Walkway Clamp 1',
+  design_weight = 1.55142,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '38';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Clamp - Part A (Type 2)',
+  design_weight = 1.03653,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '39';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Clamp - Part B (Type 2)',
+  design_weight = 0.55377,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '40';
+UPDATE bom_master_items SET
+  generic_name = 'FRP Walkway M Clamp',
+  design_weight = 0.6029100000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '41';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Clamp (Type 3) (2x)',
+  design_weight = 0.6458400000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '42';
+UPDATE bom_master_items SET
+  generic_name = 'Kalzip Clamp - Part B',
+  design_weight = 0.5931900000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '43';
+UPDATE bom_master_items SET
+  generic_name = 'Kalzip Clamp - Part A',
+  design_weight = 1.1256300000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '44';
+UPDATE bom_master_items SET
+  generic_name = 'Hat Base',
+  design_weight = 0.86778,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '45';
+UPDATE bom_master_items SET
+  generic_name = 'Rectangle Column',
+  design_weight = 0.541161,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '46';
+UPDATE bom_master_items SET
+  generic_name = 'External Long Rail Jointer',
+  design_weight = 0.55242,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '47';
+UPDATE bom_master_items SET
+  generic_name = 'Round Tube Bracket',
+  design_weight = 1.3151700000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '48';
+UPDATE bom_master_items SET
+  generic_name = 'Hand Rail Tube',
+  design_weight = 0.43443000000000004,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '49';
+UPDATE bom_master_items SET
+  generic_name = 'FRP Walkway M Clamp_V2',
+  design_weight = 0.50274,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '50';
+UPDATE bom_master_items SET
+  generic_name = 'L Type Long Rail_V3',
+  design_weight = 0.69093,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '51';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Clamp - Part B (Type 4)',
+  design_weight = 0.47681999999999997,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '52';
+UPDATE bom_master_items SET
+  generic_name = '75mm Standing Seam Clamp - External',
+  design_weight = 1.7298900000000004,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '53';
+UPDATE bom_master_items SET
+  generic_name = '65/17mm - 74 - Mini Rail (Ex)',
+  design_weight = 0.8575200000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '54';
+UPDATE bom_master_items SET
+  generic_name = 'L Angle - 25x25mm',
+  design_weight = 0.29619000000000006,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '55';
+UPDATE bom_master_items SET
+  generic_name = '35mm End Clamp (Type 2)',
+  design_weight = 0.6542100000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '56';
+UPDATE bom_master_items SET
+  generic_name = 'L Angle - 45x35mm',
+  design_weight = 0.5059800000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '57';
+UPDATE bom_master_items SET
+  generic_name = '70/42mm Mini Rail',
+  design_weight = 1.09512,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '58';
+UPDATE bom_master_items SET
+  generic_name = 'Round Tube Jointer',
+  design_weight = 0.5432400000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '59';
+UPDATE bom_master_items SET
+  generic_name = '40mm End Clamp (Type 2)',
+  design_weight = 0.7441200000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '60';
+UPDATE bom_master_items SET
+  generic_name = '35mm End Clamp (M+)',
+  design_weight = 0.6739200000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '61';
+UPDATE bom_master_items SET
+  generic_name = '175mm Walkway Section (2x)',
+  design_weight = 1.1156400000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '62';
+UPDATE bom_master_items SET
+  generic_name = 'Ballast Tray Clamp',
+  design_weight = 2.37492,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '63';
+UPDATE bom_master_items SET
+  generic_name = '97/36mm - 90 - Mini Rail (Ex)',
+  design_weight = 1.16316,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '64';
+UPDATE bom_master_items SET
+  generic_name = '33mm End Clamp',
+  design_weight = 0.60858,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '65';
+UPDATE bom_master_items SET
+  generic_name = 'FRP C Clamp',
+  design_weight = 0.6123600000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '66';
+UPDATE bom_master_items SET
+  generic_name = 'Kliplock 700 Clamp - Part B',
+  design_weight = 0.7095600000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '67';
+UPDATE bom_master_items SET
+  generic_name = 'Kliplock 700 Clamp - Part A',
+  design_weight = 1.09917,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '68';
+UPDATE bom_master_items SET
+  generic_name = 'Whistle Clamp',
+  design_weight = 2.3257800000000004,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '69';
+UPDATE bom_master_items SET
+  generic_name = 'CNT - Front Leg',
+  design_weight = 0.8653500000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '70';
+UPDATE bom_master_items SET
+  generic_name = 'CNT - Back Leg',
+  design_weight = 2.16513,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '71';
+UPDATE bom_master_items SET
+  generic_name = 'Mid Clamp (T4)',
+  design_weight = 0.79353,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '72';
+UPDATE bom_master_items SET
+  generic_name = '35mm End Clamp (T4)',
+  design_weight = 0.77031,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '73';
+UPDATE bom_master_items SET
+  generic_name = '80mm Short Rail(Ex)',
+  design_weight = 0.8712900000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '74';
+UPDATE bom_master_items SET
+  generic_name = 'Kalzip Flat Top Clamp',
+  design_weight = 1.12806,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '75';
+UPDATE bom_master_items SET
+  generic_name = 'L Type Long Rail - 60mm',
+  design_weight = 0.85239,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '76';
+UPDATE bom_master_items SET
+  generic_name = 'Outer U Cleat - 82mm',
+  design_weight = 2.1470400000000005,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '77';
+UPDATE bom_master_items SET
+  generic_name = 'Tata Short Rail',
+  design_weight = 1.7174700000000003,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '78';
+UPDATE bom_master_items SET
+  generic_name = 'Tata Universal Module Clamp',
+  design_weight = 1.5948900000000004,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '79';
+UPDATE bom_master_items SET
+  generic_name = 'Tata Rail Nut',
+  design_weight = 0.37287,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '80';
+UPDATE bom_master_items SET
+  generic_name = 'Multilock Seam Clamp - Part B',
+  design_weight = 0.5697000000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '81';
+UPDATE bom_master_items SET
+  generic_name = 'Multilock Seam Clamp - Part A',
+  design_weight = 1.019061,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '82';
+UPDATE bom_master_items SET
+  generic_name = 'L Type Long Rail Jointert_V2',
+  design_weight = 0.30564,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '83';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Clamp - 100mm',
+  design_weight = 2.1691800000000003,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '84';
+UPDATE bom_master_items SET
+  generic_name = 'External Long Rail_60mm',
+  design_weight = 0.8375400000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '85';
+UPDATE bom_master_items SET
+  generic_name = 'External 60mm Long Rail Jointer',
+  design_weight = 0.37583999999999995,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '86';
+UPDATE bom_master_items SET
+  generic_name = 'CNT - Face Leg',
+  design_weight = 1.40373,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '87';
+UPDATE bom_master_items SET
+  generic_name = '98/27 - 75 - Mini Rail (Ex)',
+  design_weight = 1.27224,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '88';
+UPDATE bom_master_items SET
+  generic_name = '98/27 - 69 - Mini Rail (Ex)',
+  design_weight = 1.27278,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '89';
+UPDATE bom_master_items SET
+  generic_name = '98/29 - 73 - Mini Rail (Ex)',
+  design_weight = 1.28655,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '90';
+UPDATE bom_master_items SET
+  generic_name = 'Emmvee Long Rail',
+  design_weight = 0.64341,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '91';
+UPDATE bom_master_items SET
+  generic_name = 'Araymond Strut Rail - 73mm',
+  design_weight = 1.39212,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '92';
+UPDATE bom_master_items SET
+  generic_name = '100mm Short Rail (AR)',
+  design_weight = 1.3300200000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '93';
+UPDATE bom_master_items SET
+  generic_name = 'UX Long Rail - Large U Base',
+  design_weight = 3.0623400000000003,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '94';
+UPDATE bom_master_items SET
+  generic_name = '25mm Base Rail W/O Flange',
+  design_weight = 0.38043000000000005,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '95';
+UPDATE bom_master_items SET
+  generic_name = 'Multilok Flat Top Seam Clamp - Part A',
+  design_weight = 1.0918800000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '96';
+UPDATE bom_master_items SET
+  generic_name = 'H Bracket_V2',
+  design_weight = 2.36844,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '97';
+UPDATE bom_master_items SET
+  generic_name = 'Kliplock 700 Flat Top Clamp - Part A',
+  design_weight = 1.192509,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '98';
+UPDATE bom_master_items SET
+  generic_name = '30mm End Clamp_V2',
+  design_weight = 0.6021,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '99';
+UPDATE bom_master_items SET
+  generic_name = 'Unified U Cleat',
+  design_weight = 1.8500400000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '100';
+UPDATE bom_master_items SET
+  generic_name = 'Height Extender - U Long Rail',
+  design_weight = 3.25566,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '101';
+UPDATE bom_master_items SET
+  generic_name = 'Bitumen Rail Splice',
+  design_weight = 0.36234,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '102';
+UPDATE bom_master_items SET
+  generic_name = 'RCC EW Channel (Purlin)',
+  design_weight = 1.11915,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '103';
+UPDATE bom_master_items SET
+  generic_name = 'RCC Column 40X60',
+  design_weight = 1.18449,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '104';
+UPDATE bom_master_items SET
+  generic_name = 'RCC Bracing 40X40',
+  design_weight = 0.8847900000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '105';
+UPDATE bom_master_items SET
+  generic_name = 'H Bracket-V3',
+  design_weight = 3.0969,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '106';
+UPDATE bom_master_items SET
+  generic_name = 'RCC EW Splice (Purlin splcie)',
+  design_weight = 1.10592,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '107';
+UPDATE bom_master_items SET
+  generic_name = 'RCC NS CHANNEL (Rafter)',
+  design_weight = 1.15884,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '108';
+UPDATE bom_master_items SET
+  generic_name = '100 - 27- Mono Rail (Ex)',
+  design_weight = 1.0208700000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '109';
+UPDATE bom_master_items SET
+  generic_name = '30mm End Clamp_Type 2',
+  design_weight = 0.6615,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '110';
+UPDATE bom_master_items SET
+  generic_name = 'Mid Clamp - 27mm Module Gap',
+  design_weight = 0.76275,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '111';
+UPDATE bom_master_items SET
+  generic_name = 'M8 Spacer',
+  design_weight = 0.12474,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '112';
+UPDATE bom_master_items SET
+  generic_name = '98/23 - 29 - Mini Rail (Ex)',
+  design_weight = 1.25388,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '113';
+UPDATE bom_master_items SET
+  generic_name = 'Flat Base (Type 2)',
+  design_weight = 3.9943800000000005,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '114';
+UPDATE bom_master_items SET
+  generic_name = 'Purlin Clamp (Type 2)',
+  design_weight = 0.70821,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '115';
+UPDATE bom_master_items SET
+  generic_name = 'Teeth Washer',
+  design_weight = 0.32805,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '116';
+UPDATE bom_master_items SET
+  generic_name = 'Bitumen Rail - 100mm',
+  design_weight = 1.3378500000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '117';
+UPDATE bom_master_items SET
+  generic_name = '100/35 - 105 - Mini Rail (Ex)',
+  design_weight = 1.1923200000000003,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '118';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Clamp - 65mm',
+  design_weight = 1.7901000000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '119';
+UPDATE bom_master_items SET
+  generic_name = 'Toe Guard',
+  design_weight = 0.864,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '120';
+UPDATE bom_master_items SET
+  generic_name = 'Waaree Flexible Module Bracket',
+  design_weight = 1.47258,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '121';
+UPDATE bom_master_items SET
+  generic_name = 'U Bracket',
+  design_weight = 2.2658400000000003,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '122';
+UPDATE bom_master_items SET
+  generic_name = 'Module Flange Bracket',
+  design_weight = 2.44701,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '123';
+UPDATE bom_master_items SET
+  generic_name = 'Sunrack Bottom Clamp',
+  design_weight = 0.5065200000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '124';
+UPDATE bom_master_items SET
+  generic_name = '117mm L Cleat',
+  design_weight = 3.07152,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '125';
+UPDATE bom_master_items SET
+  generic_name = '60mm T Bolt Short Rail',
+  design_weight = 0.65259,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '126';
+UPDATE bom_master_items SET
+  generic_name = 'Mid Clamp - 15mm Module Gap',
+  design_weight = 0.40257,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '127';
+UPDATE bom_master_items SET
+  generic_name = 'Standing Seam Walkway Clamp 2',
+  design_weight = 1.5101099999999998,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '128';
+UPDATE bom_master_items SET
+  generic_name = 'C45 Strut Latch (for Magnelis Long Rail)',
+  design_weight = 0.70821,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '130';
+UPDATE bom_master_items SET
+  generic_name = 'C45 Strut Base (for Magnelis Long Rail)',
+  design_weight = 3.03075,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '129';
+UPDATE bom_master_items SET
+  generic_name = '45x30 - U Channel',
+  design_weight = 0.67527,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '131';
+UPDATE bom_master_items SET
+  generic_name = 'C45 Rail Jointer (for Magnelis Long Rail)',
+  design_weight = 1.7450910000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '132';
+UPDATE bom_master_items SET
+  generic_name = 'H Bracket for 100mm Box Column',
+  design_weight = 4.531680000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '133';
+UPDATE bom_master_items SET
+  generic_name = '100mm Box Column',
+  design_weight = 3.32721,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '134';
+UPDATE bom_master_items SET
+  generic_name = '5 Deg Elevator',
+  design_weight = 1.74987,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '135';
+UPDATE bom_master_items SET
+  generic_name = '120mm Short Rail',
+  design_weight = 1.3869900000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '136';
+UPDATE bom_master_items SET
+  generic_name = 'Strut Rail Nut',
+  design_weight = 0.6501600000000001,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '137';
+UPDATE bom_master_items SET
+  generic_name = '150mm Short Rail',
+  design_weight = 2.15946,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '138';
+UPDATE bom_master_items SET
+  generic_name = '150mm Inter-Lock Column',
+  design_weight = 3.47571,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '139';
+UPDATE bom_master_items SET
+  generic_name = '100mm Part A - 2 Part Seam Clamp',
+  design_weight = 1.0746000000000002,
+  selected_rm_vendor = 'Reat'
+WHERE serial_number = '140';
+
+
+-- INSERT RM Codes
+
+-- RM Codes for Item 1
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('1', 'Elantor', NULL);
+
+-- RM Codes for Item 2
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('2', 'Elantor', NULL);
+
+-- RM Codes for Item 3
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('3', 'Elantor', NULL);
+
+-- RM Codes for Item 4
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('4', 'Elantor', NULL);
+
+-- RM Codes for Item 5
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('5', 'Elantor', NULL);
+
+-- RM Codes for Item 6
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('6', 'Elantor', NULL);
+
+-- RM Codes for Item 7
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('7', 'Elantor', NULL);
+
+-- RM Codes for Item 8
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('8', 'Elantor', NULL);
+
+-- RM Codes for Item 9
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('9', 'Elantor', NULL);
+
+-- RM Codes for Item 10
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('10', 'Elantor', NULL);
+
+-- RM Codes for Item 11
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('11', 'Elantor', NULL);
+
+-- RM Codes for Item 12
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('12', 'Elantor', NULL);
+
+-- RM Codes for Item 13
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('13', 'Elantor', NULL);
+
+-- RM Codes for Item 14
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('14', 'Elantor', NULL);
+
+-- RM Codes for Item 15
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('15', 'Elantor', NULL);
+
+-- RM Codes for Item 16
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('16', 'Elantor', NULL);
+
+-- RM Codes for Item 17
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('17', 'Elantor', NULL);
+
+-- RM Codes for Item 18
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('18', 'Elantor', NULL);
+
+-- RM Codes for Item 19
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('19', 'Elantor', NULL);
+
+-- RM Codes for Item 20
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('20', 'Elantor', NULL);
+
+-- RM Codes for Item 21
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('21', 'Elantor', NULL);
+
+-- RM Codes for Item 22
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('22', 'Elantor', NULL);
+
+-- RM Codes for Item 23
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('23', 'Elantor', NULL);
+
+-- RM Codes for Item 24
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('24', 'Elantor', NULL);
+
+-- RM Codes for Item 25
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('25', 'Elantor', NULL);
+
+-- RM Codes for Item 26
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('26', 'Elantor', NULL);
+
+-- RM Codes for Item 27
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('27', 'Elantor', NULL);
+
+-- RM Codes for Item 28
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('28', 'Elantor', NULL);
+
+-- RM Codes for Item 29
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('29', 'Elantor', NULL);
+
+-- RM Codes for Item 30
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('30', 'Elantor', NULL);
+
+-- RM Codes for Item 31
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('31', 'Elantor', NULL);
+
+-- RM Codes for Item 32
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('32', 'Elantor', NULL);
+
+-- RM Codes for Item 33
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('33', 'Elantor', NULL);
+
+-- RM Codes for Item 34
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('34', 'Elantor', NULL);
+
+-- RM Codes for Item 35
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('35', 'Elantor', NULL);
+
+-- RM Codes for Item 36
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('36', 'Elantor', NULL);
+
+-- RM Codes for Item 37
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('37', 'Elantor', NULL);
+
+-- RM Codes for Item 38
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('38', 'Elantor', NULL);
+
+-- RM Codes for Item 39
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('39', 'Elantor', NULL);
+
+-- RM Codes for Item 40
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('40', 'Elantor', NULL);
+
+-- RM Codes for Item 41
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('41', 'Elantor', NULL);
+
+-- RM Codes for Item 42
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('42', 'Elantor', NULL);
+
+-- RM Codes for Item 43
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('43', 'Elantor', NULL);
+
+-- RM Codes for Item 44
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('44', 'Elantor', NULL);
+
+-- RM Codes for Item 45
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('45', 'Elantor', NULL);
+
+-- RM Codes for Item 46
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('46', 'Elantor', NULL);
+
+-- RM Codes for Item 47
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('47', 'Elantor', NULL);
+
+-- RM Codes for Item 48
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('48', 'Elantor', NULL);
+
+-- RM Codes for Item 49
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('49', 'Elantor', NULL);
+
+-- RM Codes for Item 50
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('50', 'Elantor', NULL);
+
+-- RM Codes for Item 51
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('51', 'Elantor', NULL);
+
+-- RM Codes for Item 52
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('52', 'Elantor', NULL);
+
+-- RM Codes for Item 53
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('53', 'Elantor', NULL);
+
+-- RM Codes for Item 54
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('54', 'Elantor', NULL);
+
+-- RM Codes for Item 55
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('55', 'Elantor', NULL);
+
+-- RM Codes for Item 56
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('56', 'Elantor', NULL);
+
+-- RM Codes for Item 57
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('57', 'Elantor', NULL);
+
+-- RM Codes for Item 58
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('58', 'Elantor', NULL);
+
+-- RM Codes for Item 59
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('59', 'Elantor', NULL);
+
+-- RM Codes for Item 60
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('60', 'Elantor', NULL);
+
+-- RM Codes for Item 61
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('61', 'Elantor', NULL);
+
+-- RM Codes for Item 62
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('62', 'Elantor', NULL);
+
+-- RM Codes for Item 63
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('63', 'Elantor', NULL);
+
+-- RM Codes for Item 64
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('64', 'Elantor', NULL);
+
+-- RM Codes for Item 65
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('65', 'Elantor', NULL);
+
+-- RM Codes for Item 66
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('66', 'Elantor', NULL);
+
+-- RM Codes for Item 67
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('67', 'Elantor', NULL);
+
+-- RM Codes for Item 68
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('68', 'Elantor', NULL);
+
+-- RM Codes for Item 69
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('69', 'Elantor', NULL);
+
+-- RM Codes for Item 70
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('70', 'Elantor', NULL);
+
+-- RM Codes for Item 71
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('71', 'Elantor', NULL);
+
+-- RM Codes for Item 72
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('72', 'Elantor', NULL);
+
+-- RM Codes for Item 73
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('73', 'Elantor', NULL);
+
+-- RM Codes for Item 74
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('74', 'Elantor', NULL);
+
+-- RM Codes for Item 75
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('75', 'Elantor', NULL);
+
+-- RM Codes for Item 76
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('76', 'Elantor', NULL);
+
+-- RM Codes for Item 77
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('77', 'Elantor', NULL);
+
+-- RM Codes for Item 78
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('78', 'Elantor', NULL);
+
+-- RM Codes for Item 79
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('79', 'Elantor', NULL);
+
+-- RM Codes for Item 80
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('80', 'Elantor', NULL);
+
+-- RM Codes for Item 81
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('81', 'Elantor', NULL);
+
+-- RM Codes for Item 82
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('82', 'Elantor', NULL);
+
+-- RM Codes for Item 83
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('83', 'Elantor', NULL);
+
+-- RM Codes for Item 84
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('84', 'Elantor', NULL);
+
+-- RM Codes for Item 85
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('85', 'Elantor', NULL);
+
+-- RM Codes for Item 86
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('86', 'Elantor', NULL);
+
+-- RM Codes for Item 87
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('87', 'Elantor', NULL);
+
+-- RM Codes for Item 88
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('88', 'Elantor', NULL);
+
+-- RM Codes for Item 89
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('89', 'Elantor', NULL);
+
+-- RM Codes for Item 90
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('90', 'Elantor', NULL);
+
+-- RM Codes for Item 91
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('91', 'Elantor', NULL);
+
+-- RM Codes for Item 92
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('92', 'Elantor', NULL);
+
+-- RM Codes for Item 93
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('93', 'Elantor', NULL);
+
+-- RM Codes for Item 94
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('94', 'Elantor', NULL);
+
+-- RM Codes for Item 95
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('95', 'Elantor', NULL);
+
+-- RM Codes for Item 96
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('96', 'Elantor', NULL);
+
+-- RM Codes for Item 97
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('97', 'Elantor', NULL);
+
+-- RM Codes for Item 98
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('98', 'Elantor', NULL);
+
+-- RM Codes for Item 99
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('99', 'Elantor', NULL);
+
+-- RM Codes for Item 100
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('100', 'Elantor', NULL);
+
+-- RM Codes for Item 101
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('101', 'Elantor', NULL);
+
+-- RM Codes for Item 102
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('102', 'Elantor', NULL);
+
+-- RM Codes for Item 103
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('103', 'Elantor', NULL);
+
+-- RM Codes for Item 104
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('104', 'Elantor', NULL);
+
+-- RM Codes for Item 105
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('105', 'Elantor', NULL);
+
+-- RM Codes for Item 106
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('106', 'Elantor', NULL);
+
+-- RM Codes for Item 107
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('107', 'Elantor', NULL);
+
+-- RM Codes for Item 108
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('108', 'Elantor', NULL);
+
+-- RM Codes for Item 109
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('109', 'Elantor', NULL);
+
+-- RM Codes for Item 110
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('110', 'Elantor', NULL);
+
+-- RM Codes for Item 111
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('111', 'Elantor', NULL);
+
+-- RM Codes for Item 112
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('112', 'Elantor', NULL);
+
+-- RM Codes for Item 113
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('113', 'Elantor', NULL);
+
+-- RM Codes for Item 114
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('114', 'Elantor', NULL);
+
+-- RM Codes for Item 115
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('115', 'Elantor', NULL);
+
+-- RM Codes for Item 116
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('116', 'Elantor', NULL);
+
+-- RM Codes for Item 117
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('117', 'Elantor', NULL);
+
+-- RM Codes for Item 118
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('118', 'Elantor', NULL);
+
+-- RM Codes for Item 119
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('119', 'Elantor', NULL);
+
+-- RM Codes for Item 120
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('120', 'Elantor', NULL);
+
+-- RM Codes for Item 121
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('121', 'Elantor', NULL);
+
+-- RM Codes for Item 122
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('122', 'Elantor', NULL);
+
+-- RM Codes for Item 123
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('123', 'Elantor', NULL);
+
+-- RM Codes for Item 124
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('124', 'Elantor', NULL);
+
+-- RM Codes for Item 125
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('125', 'Elantor', NULL);
+
+-- RM Codes for Item 126
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('126', 'Elantor', NULL);
+
+-- RM Codes for Item 127
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('127', 'Elantor', NULL);
+
+-- RM Codes for Item 128
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('128', 'Elantor', NULL);
+
+-- RM Codes for Item 130
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('130', 'Elantor', NULL);
+
+-- RM Codes for Item 129
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('129', 'Elantor', NULL);
+
+-- RM Codes for Item 131
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('131', 'Elantor', NULL);
+
+-- RM Codes for Item 132
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('132', 'Elantor', NULL);
+
+-- RM Codes for Item 133
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('133', 'Elantor', NULL);
+
+-- RM Codes for Item 134
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('134', 'Elantor', NULL);
+
+-- RM Codes for Item 135
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('135', 'Elantor', NULL);
+
+-- RM Codes for Item 136
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('136', 'Elantor', NULL);
+
+-- RM Codes for Item 137
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('137', 'Elantor', NULL);
+
+-- RM Codes for Item 138
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('138', 'Elantor', NULL);
+
+-- RM Codes for Item 139
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('139', 'Elantor', NULL);
+
+-- RM Codes for Item 140
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'Reat', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'Excellence', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'VARN', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'RC', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'SMALCO', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'Darshan', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'JM', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'Ratco', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'Sai deep', NULL);
+INSERT INTO rm_codes (item_serial_number, vendor_name, code) VALUES ('140', 'Elantor', NULL);
+
+
+=== GENERATING PRISMA SEED FILE ===
+
+
+✓ Prisma seed file created at: D:\react\knapsack-tool\backend\scripts\seedBomData.js
+
+To run the seed:
+  node scripts/seedBomData.js

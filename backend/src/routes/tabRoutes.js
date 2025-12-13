@@ -25,4 +25,7 @@ router.get('/:tabId/rows', rowController.getRowsByTabId.bind(rowController));
 // PUT /api/tabs/:tabId/rows/reorder - Reorder rows
 router.put('/:tabId/rows/reorder', rowController.reorderRows.bind(rowController));
 
+// PUT /api/tabs/:id/profile - Update tab's long rail profile
+router.put('/:id/profile', tabController.updateTabProfile.bind(tabController));
+
 module.exports = router;

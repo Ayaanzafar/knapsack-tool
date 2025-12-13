@@ -5,11 +5,17 @@ class TabService {
   async createTab(projectId, data) {
     const { name, createdAt, settings } = data;
 
+    // Get default profile (40mm Long Rail - serial number 26)
+    const defaultProfile = await prisma.bomMasterItem.findFirst({
+      where: { genericName: '40mm Long Rail' }
+    });
+
     return await prisma.tab.create({
       data: {
         projectId: parseInt(projectId),
         name: name || 'Untitled Tab',
         createdAt: createdAt ? new Date(createdAt) : new Date(),
+        longRailProfileSerialNumber: defaultProfile?.serialNumber || '26',
         // Settings
         moduleLength: settings?.moduleLength || 2278,
         moduleWidth: settings?.moduleWidth || 1134,
@@ -108,6 +114,21 @@ class TabService {
     return await prisma.tab.update({
       where: { id: parseInt(id) },
       data: updateData
+    });
+  }
+
+  // Update tab's long rail profile
+  async updateTabProfile(id, profileSerialNumber) {
+    return await prisma.tab.update({
+      where: { id: parseInt(id) },
+      data: {
+        longRailProfileSerialNumber: profileSerialNumber
+      },
+      include: {
+        rows: {
+          orderBy: { rowNumber: 'asc' }
+        }
+      }
     });
   }
 

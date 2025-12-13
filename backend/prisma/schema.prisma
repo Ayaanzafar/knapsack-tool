@@ -57,6 +57,9 @@ model Tab {
   userMode           String   @default("normal") @map("user_mode") @db.VarChar(20)
   enableSb2          Boolean  @default(false) @map("enable_sb2")
 
+  // BOM Profile Selection
+  longRailProfileSerialNumber String? @map("long_rail_profile_serial_number") @db.VarChar(20)
+
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   rows    TabRow[]
 
@@ -87,16 +90,20 @@ model BomMasterItem {
   serialNumber     String   @unique @map("serial_number") @db.VarChar(20)
   sunrackCode      String?  @unique @map("sunrack_code") @db.VarChar(50)
   itemDescription  String   @map("item_description") @db.VarChar(255)
+  genericName      String   @map("generic_name") @db.VarChar(100)
+  designWeight     Decimal  @map("design_weight") @db.Decimal(10, 3)
   material         String?  @db.VarChar(100)
   standardLength   Int?     @map("standard_length")
   uom              String   @db.VarChar(20)
   category         String?  @db.VarChar(50)
   profileImagePath String?  @map("profile_image_path") @db.VarChar(255)
+  selectedRmVendor String?  @map("selected_rm_vendor") @db.VarChar(50)
   isActive         Boolean  @default(true) @map("is_active")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   formulas BomFormula[]
+  rmCodes  RmCode[]
 
   @@index([sunrackCode])
   @@index([category])
@@ -115,6 +122,19 @@ model BomFormula {
   masterItem BomMasterItem @relation(fields: [itemSerialNumber], references: [serialNumber])
 
   @@map("bom_formulas")
+}
+
+// RM Codes Table - Stores RM vendor codes for each BOM item
+model RmCode {
+  id               Int     @id @default(autoincrement())
+  itemSerialNumber String  @map("item_serial_number") @db.VarChar(20)
+  vendorName       String  @map("vendor_name") @db.VarChar(50)
+  code             String? @db.VarChar(50)
+
+  masterItem BomMasterItem @relation(fields: [itemSerialNumber], references: [serialNumber], onDelete: Cascade)
+
+  @@index([itemSerialNumber])
+  @@map("rm_codes")
 }
 
 // Generated BOM Table - Stores generated BOM snapshots for historical reference

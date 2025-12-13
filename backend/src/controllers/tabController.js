@@ -44,6 +44,17 @@ class TabController {
     }
   }
 
+  // PUT /api/tabs/:id/profile - Update tab's long rail profile
+  async updateTabProfile(req, res, next) {
+    try {
+      const { profileSerialNumber } = req.body;
+      const tab = await tabService.updateTabProfile(req.params.id, profileSerialNumber);
+      res.json(tab);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // DELETE /api/tabs/:id - Delete tab
   async deleteTab(req, res, next) {
     try {

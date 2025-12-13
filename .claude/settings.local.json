@@ -8,7 +8,10 @@
       "Bash(npm install:*)",
       "Bash(npx prisma init:*)",
       "Bash(npx prisma:*)",
-      "Bash(node prisma/seed.js:*)"
+      "Bash(node prisma/seed.js:*)",
+      "Bash(node scripts/importBomData.js:*)",
+      "Bash(grep:*)",
+      "Bash(node scripts/setDefaultProfile.js:*)"
     ],
     "deny": [],
     "ask": []
