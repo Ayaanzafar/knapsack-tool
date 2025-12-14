@@ -12,6 +12,7 @@ export default function BOMPage() {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);  // NEW
   const [profiles, setProfiles] = useState([]);  // NEW
+  const [sparePercentage, setSparePercentage] = useState(1);
   const [aluminumRate, setAluminumRate] = useState(527.85);  // NEW: Aluminum rate per kg
   const [changeLog, setChangeLog] = useState([]); // NEW: for edit tracking
   const [isSaving, setIsSaving] = useState(false); // NEW: for save feedback
@@ -50,9 +51,13 @@ export default function BOMPage() {
           if (data.bomData.aluminumRate) {
             setAluminumRate(data.bomData.aluminumRate);
           }
+          // Set initial spare percentage from bomData if available
+          if (typeof data.bomData.sparePercentage === 'number') {
+            setSparePercentage(data.bomData.sparePercentage);
+          }
         } else {
-            console.error('BOM data is missing or invalid.', data);
-            navigate('/');
+          console.error('BOM data is missing or invalid.', data);
+          navigate('/');
         }
       } catch (error) {
         console.error('Failed to load BOM data:', error);
@@ -72,12 +77,10 @@ export default function BOMPage() {
 
     const updatedBomData = { ...bomData };
     updatedBomData.bomItems = bomData.bomItems.map(item => {
-      // If item has weight data, recalculate cost
-      if (item.wt !== null && item.wt !== undefined && item.wt > 0) {
-        return {
-          ...item,
-          cost: item.wt * aluminumRate
-        };
+      const profile = bomData.profilesMap[item.profileSerialNumber];
+      if (profile) {
+        const weightCost = calculateWeightAndCost(item, profile, aluminumRate);
+        return { ...item, ...weightCost };
       }
       return item;
     });
@@ -85,12 +88,41 @@ export default function BOMPage() {
     setBomData(updatedBomData);
   }, [aluminumRate, loading]);
 
+  // Recalculate all items when spare percentage changes
+  useEffect(() => {
+    if (!bomData || loading) return;
+
+    const updatedBomData = { ...bomData };
+    updatedBomData.bomItems = bomData.bomItems.map(item => {
+      // For each item, recalculate spare, final total, weight and cost
+      const totalQty = item.totalQuantity;
+      const spareQty = Math.ceil(totalQty * (sparePercentage / 100));
+      const finalTotal = totalQty + spareQty;
+
+      const updatedItem = {
+        ...item,
+        spareQuantity: spareQty,
+        finalTotal: finalTotal
+      };
+
+      const profile = bomData.profilesMap[updatedItem.profileSerialNumber];
+      if (profile) {
+        const weightCost = calculateWeightAndCost(updatedItem, profile, aluminumRate);
+        return { ...updatedItem, ...weightCost };
+      }
+
+      return updatedItem;
+    });
+
+    setBomData(updatedBomData);
+  }, [sparePercentage]);
+
   const handleBack = () => {
     navigate('/');
   };
 
   // Helper function to calculate weight and cost for an item
-  const calculateWeightAndCost = (item, profile) => {
+  const calculateWeightAndCost = (item, profile, aluRate) => {
     const result = {
       wtPerRm: null,
       rm: null,
@@ -112,7 +144,7 @@ export default function BOMPage() {
       result.wtPerRm = parseFloat(profile.designWeight);
       result.rm = (lengthToUse / 1000) * item.finalTotal;  // Convert mm to meters
       result.wt = result.rm * result.wtPerRm;
-      result.cost = result.wt * aluminumRate;
+      result.cost = result.wt * aluRate;
     }
 
     return result;
@@ -180,6 +212,46 @@ export default function BOMPage() {
     setBomData(updatedBomData);
   };
 
+  const handleItemUpdate = (itemSn, field, value) => {
+    const newBomItems = bomData.bomItems.map(item => {
+      if (item.sn === itemSn) {
+        let updatedItem = { ...item };
+
+        // Update the specific field that was changed
+        if (field.startsWith('quantity_')) {
+          const tabName = field.split('_')[1];
+          updatedItem.quantities = { ...updatedItem.quantities, [tabName]: Number(value) || 0 };
+        } else if (field === 'spareQuantity') {
+          updatedItem.spareQuantity = Number(value) || 0;
+        }
+
+        // Recalculate derived fields for the updated item
+        const totalQty = Object.values(updatedItem.quantities).reduce((sum, q) => sum + q, 0);
+        updatedItem.totalQuantity = totalQty;
+
+        // If a building quantity was changed, recalculate spare based on global percentage
+        if (field.startsWith('quantity_')) {
+          updatedItem.spareQuantity = Math.ceil(totalQty * (sparePercentage / 100));
+        }
+        
+        const finalTotal = totalQty + updatedItem.spareQuantity;
+        updatedItem.finalTotal = finalTotal;
+        
+        // Recalculate weight and cost
+        const profile = bomData.profilesMap[updatedItem.profileSerialNumber];
+        if (profile) {
+          const weightCost = calculateWeightAndCost(updatedItem, profile, aluminumRate);
+          updatedItem = { ...updatedItem, ...weightCost };
+        }
+
+        return updatedItem;
+      }
+      return item;
+    });
+
+    setBomData({ ...bomData, bomItems: newBomItems });
+  };
+
   const handleSaveChanges = async () => {
     const bomId = location.state?.bomId;
     if (!bomId) {
@@ -189,8 +261,18 @@ export default function BOMPage() {
 
     setIsSaving(true);
     try {
+      // Construct a clean data object to save, sending only what the backend needs.
+      const dataToSave = {
+        projectInfo: bomData.projectInfo,
+        tabs: bomData.tabs,
+        panelCounts: bomData.panelCounts,
+        bomItems: bomData.bomItems,
+        aluminumRate: aluminumRate,
+        sparePercentage: sparePercentage,
+      };
+
       // Save the changes to backend
-      await bomAPI.updateBOM(bomId, bomData, changeLog);
+      await bomAPI.updateBOM(bomId, dataToSave, changeLog);
 
       // Reload the BOM from backend to get recalculated weights and costs
       const freshData = await bomAPI.getBOMById(bomId);
@@ -383,6 +465,21 @@ export default function BOMPage() {
                   className="w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
+
+              {/* Spare Percentage Input */}
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                  Spare %:
+                </label>
+                <input
+                  type="number"
+                  value={sparePercentage}
+                  onChange={(e) => setSparePercentage(parseFloat(e.target.value) || 0)}
+                  step="0.1"
+                  min="0"
+                  className="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
             </div>
           </div>
 
@@ -392,6 +489,7 @@ export default function BOMPage() {
             editMode={editMode}
             onProfileChange={handleProfileChange}
             profileOptions={profileOptions}
+            onItemUpdate={handleItemUpdate}
             aluminumRate={aluminumRate}
           />
         </div>

@@ -1,7 +1,7 @@
 // src/components/BOM/BOMTableRow.jsx
 import ComboBox from '../ComboBox';
 
-export default function BOMTableRow({ item, tabs, isEven, editMode, onProfileChange, profileOptions }) {
+export default function BOMTableRow({ item, tabs, isEven, editMode, onProfileChange, profileOptions, onItemUpdate }) {
   const {
     sn,
     sunrackCode,
@@ -35,6 +35,10 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, onProfileCha
       return 'bg-blue-50';
     }
     return isEven ? 'bg-white' : 'bg-gray-50';
+  };
+  
+  const handleInputChange = (field, value) => {
+    onItemUpdate(sn, field, value);
   };
 
   return (
@@ -112,7 +116,16 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, onProfileCha
           key={`qty-${index}-${tabName}`}
           className={`border border-gray-400 px-2 py-2 text-sm text-center font-medium ${getCellBgColor()}`}
         >
-          {quantities[tabName] || 0}
+          {editMode ? (
+            <input
+              type="number"
+              value={quantities[tabName] || 0}
+              onChange={(e) => handleInputChange(`quantity_${tabName}`, e.target.value)}
+              className="w-16 p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          ) : (
+            quantities[tabName] || 0
+          )}
         </td>
       ))}
 
@@ -126,7 +139,16 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, onProfileCha
 
       {/* Spare Quantity */}
       <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-green-50`}>
-        {spareQuantity}
+        {editMode ? (
+          <input
+            type="number"
+            value={spareQuantity}
+            onChange={(e) => handleInputChange('spareQuantity', e.target.value)}
+            className="w-20 p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        ) : (
+          spareQuantity
+        )}
       </td>
 
       {/* Final Total Quantity */}
