@@ -3,40 +3,73 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BOMTable from './BOMTable';
 import ComboBox from '../ComboBox';
+import { bomAPI } from '../../services/api';
 
 export default function BOMPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [bomData, setBomData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);  // NEW
   const [selectedRow, setSelectedRow] = useState(null);  // NEW
   const [profiles, setProfiles] = useState([]);  // NEW
   const [aluminumRate, setAluminumRate] = useState(527.85);  // NEW: Aluminum rate per kg
+  const [changeLog, setChangeLog] = useState([]); // NEW: for edit tracking
+  const [isSaving, setIsSaving] = useState(false); // NEW: for save feedback
 
   useEffect(() => {
-    if (location.state?.bomData) {
-      setBomData(location.state.bomData);
+    const loadBOM = async () => {
+      try {
+        setLoading(true);
+        let data;
+        let bomId = location.state?.bomId;
 
-      // Extract profiles from bomData
-      if (location.state.bomData.profilesMap) {
-        const profilesList = Object.values(location.state.bomData.profilesMap);
-        setProfiles(profilesList);
-      }
+        if (bomId) {
+          // Fetch BOM from database
+          data = await bomAPI.getBOMById(bomId);
+          setChangeLog(data.changeLog || []);
+        } else if (location.state?.bomData) {
+          // Fallback: Direct BOM data
+          data = { bomData: location.state.bomData };
+        } else {
+          // No data provided, redirect
+          console.warn('No BOM data or ID provided, redirecting to home');
+          navigate('/');
+          return;
+        }
 
-      // Set initial aluminum rate from bomData if available
-      if (location.state.bomData.aluminumRate) {
-        setAluminumRate(location.state.bomData.aluminumRate);
+        if (data && data.bomData) {
+          setBomData(data.bomData);
+
+          // Extract profiles from bomData
+          if (data.bomData.profilesMap) {
+            const profilesList = Object.values(data.bomData.profilesMap);
+            setProfiles(profilesList);
+          }
+
+          // Set initial aluminum rate from bomData if available
+          if (data.bomData.aluminumRate) {
+            setAluminumRate(data.bomData.aluminumRate);
+          }
+        } else {
+            console.error('BOM data is missing or invalid.', data);
+            navigate('/');
+        }
+      } catch (error) {
+        console.error('Failed to load BOM data:', error);
+        alert('Failed to load BOM. It may have been deleted or an error occurred.');
+        navigate('/');
+      } finally {
+        setLoading(false);
       }
-    } else {
-      // No data provided, redirect back to home
-      console.warn('No BOM data provided, redirecting to home');
-      navigate('/');
-    }
+    };
+
+    loadBOM();
   }, [location.state, navigate]);
 
   // Recalculate costs when aluminum rate changes
   useEffect(() => {
-    if (!bomData) return;
+    if (!bomData || loading) return;
 
     const updatedBomData = { ...bomData };
     updatedBomData.bomItems = bomData.bomItems.map(item => {
@@ -51,7 +84,7 @@ export default function BOMPage() {
     });
 
     setBomData(updatedBomData);
-  }, [aluminumRate]);
+  }, [aluminumRate, loading]);
 
   const handleBack = () => {
     navigate('/');
@@ -100,19 +133,54 @@ export default function BOMPage() {
     setSelectedRow(null);  // Deselect after update
   };
 
-    const handleToggleEditMode = () => {
+  const handleSaveChanges = async () => {
+    const bomId = location.state?.bomId;
+    if (!bomId) {
+      alert('Cannot save changes: BOM ID is missing.');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await bomAPI.updateBOM(bomId, bomData, changeLog);
+      alert('Changes saved successfully!');
+    } catch (error) {
+      console.error('Failed to save changes:', error);
+      alert(`Failed to save changes: ${error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggleEditMode = () => {
     if (editMode) {
-      setSelectedRow(null); // Clear selection when exiting edit mode
+      // Exiting edit mode, so save changes
+      handleSaveChanges();
+      setSelectedRow(null); // Clear selection
     }
     setEditMode(!editMode);
   };
 
-  if (!bomData) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading BOM...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!bomData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-red-600">Error</h2>
+          <p className="text-gray-600">Could not load BOM data. It might have been deleted or is invalid.</p>
+          <button onClick={handleBack} className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg">
+            Go Back
+          </button>
         </div>
       </div>
     );
@@ -158,21 +226,34 @@ export default function BOMPage() {
             {/* NEW: Enable Edit Button */}
             <button
               onClick={handleToggleEditMode}
+              disabled={isSaving}
               className={`px-4 py-2 border rounded-lg transition-colors flex items-center gap-2 ${
                 editMode
                   ? 'bg-purple-600 text-white border-purple-600'
                   : 'text-gray-700 border-gray-300 hover:bg-gray-50'
-              }`}
+              } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-              </svg>
-              {editMode ? 'Done Editing' : 'Enable Edit'}
+              {isSaving ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                  {editMode ? 'Done Editing' : 'Enable Edit'}
+                </>
+              )}
             </button>
 
             <button

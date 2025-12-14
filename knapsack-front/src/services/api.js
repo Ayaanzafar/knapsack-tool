@@ -210,6 +210,30 @@ export const bomAPI = {
     const response = await apiClient.post('/bom/formulas', data);
     return response.data;
   },
+
+  // Save a new BOM to the database
+  saveBOM: async (projectId, bomData) => {
+    const response = await apiClient.post('/bom/save', { projectId, bomData });
+    return response.data;
+  },
+
+  // Get all BOMs for a specific project
+  getBOMsByProject: async (projectId) => {
+    const response = await apiClient.get(`/bom/project/${projectId}`);
+    return response.data;
+  },
+
+  // Get a specific BOM by its ID
+  getBOMById: async (bomId) => {
+    const response = await apiClient.get(`/bom/${bomId}`);
+    return response.data;
+  },
+
+  // Update an existing BOM
+  updateBOM: async (bomId, bomData, changeLog) => {
+    const response = await apiClient.put(`/bom/${bomId}`, { bomData, changeLog });
+    return response.data;
+  },
 };
 
 export default apiClient;

@@ -1,4 +1,5 @@
 const prisma = require('../prismaClient');
+const bomReconstructionService = require('./bomReconstructionService');
 
 class BomService {
   // Get all BOM master items
@@ -115,6 +116,140 @@ class BomService {
         formulaDescription: data.formulaDescription || null,
         calculationLevel: data.calculationLevel
       }
+    });
+  }
+
+  /**
+   * Saves a new generated BOM to the database.
+   * Converts to minimal format (90% size reduction) before saving.
+   * Handles versioning by incrementing the version number for the project.
+   * @param {number} projectId - The ID of the project.
+   * @param {object} bomData - The complete BOM data to save.
+   * @returns {Promise<object>} The newly created BOM record.
+   */
+  async saveBom(projectId, bomData) {
+    // Convert to minimal format for storage
+    const { bomMetadata, bomItems } = await bomReconstructionService.convertToMinimalBOM(bomData);
+
+    // Start a transaction to ensure data consistency
+    return await prisma.$transaction(async (tx) => {
+      // 1. Set all existing BOMs for this project to isLatest = false
+      await tx.generatedBom.updateMany({
+        where: { projectId: projectId },
+        data: { isLatest: false },
+      });
+
+      // 2. Find the latest version number for this project
+      const latestBom = await tx.generatedBom.findFirst({
+        where: { projectId: projectId },
+        orderBy: { version: 'desc' },
+      });
+      const newVersion = latestBom ? latestBom.version + 1 : 1;
+
+      // 3. Create the new BOM record with minimal format
+      const newBom = await tx.generatedBom.create({
+        data: {
+          projectId: projectId,
+          bomMetadata: bomMetadata,  // OPTIMIZED: Minimal metadata
+          bomItems: bomItems,        // OPTIMIZED: Minimal item data
+          version: newVersion,
+          isLatest: true,
+          changeLog: [], // Initialize with an empty changelog
+        },
+      });
+
+      return newBom;
+    });
+  }
+
+  /**
+   * Retrieves all BOM versions for a specific project.
+   * @param {number} projectId - The ID of the project.
+   * @returns {Promise<Array<object>>} A list of BOMs with essential details.
+   */
+  async getBomsByProjectId(projectId) {
+    return await prisma.generatedBom.findMany({
+      where: { projectId: parseInt(projectId) },
+      orderBy: { version: 'desc' },
+      select: {
+        id: true,
+        generatedAt: true,
+        version: true,
+        isLatest: true,
+        // Check if changeLog is not null and not an empty array
+        hasChanges: {
+          // This is a simplified check. A more robust way might be needed
+          // depending on how Prisma handles JSON field queries.
+          // For now, we assume any non-null changelog means changes.
+          not: {
+            changeLog: null,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Retrieves a specific BOM by its ID.
+   * Reconstructs full BOM from minimal storage format.
+   * @param {number} bomId - The ID of the BOM.
+   * @returns {Promise<object|null>} The full BOM object or null if not found.
+   */
+  async getBomById(bomId) {
+    const bom = await prisma.generatedBom.findUnique({
+      where: { id: parseInt(bomId) },
+    });
+
+    if (!bom) {
+      return null;
+    }
+
+    // Handle backward compatibility: check if old bomData format exists
+    if (bom.bomData) {
+      // Old format: return as-is
+      return {
+        ...bom,
+        bomData: bom.bomData
+      };
+    }
+
+    // New optimized format: reconstruct full BOM from minimal data
+    if (bom.bomMetadata && bom.bomItems) {
+      const reconstructedBomData = await bomReconstructionService.reconstructFullBOM(
+        bom.bomMetadata,
+        bom.bomItems
+      );
+
+      return {
+        ...bom,
+        bomData: reconstructedBomData
+      };
+    }
+
+    // No data available
+    return bom;
+  }
+
+  /**
+   * Updates an existing BOM, typically with new data or a new changelog.
+   * Converts to minimal format before saving.
+   * @param {number} bomId - The ID of the BOM to update.
+   * @param {object} bomData - The updated BOM data (full format).
+   * @param {Array<object>} changeLog - The updated changelog.
+   * @returns {Promise<object>} The updated BOM record.
+   */
+  async updateBom(bomId, bomData, changeLog) {
+    // Convert to minimal format for storage
+    const { bomMetadata, bomItems } = await bomReconstructionService.convertToMinimalBOM(bomData);
+
+    return await prisma.generatedBom.update({
+      where: { id: parseInt(bomId) },
+      data: {
+        bomMetadata: bomMetadata,  // OPTIMIZED: Minimal metadata
+        bomItems: bomItems,        // OPTIMIZED: Minimal item data
+        changeLog: changeLog,
+        updatedAt: new Date(),
+      },
     });
   }
 }

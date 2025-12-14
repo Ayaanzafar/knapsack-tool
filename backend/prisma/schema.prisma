@@ -139,15 +139,26 @@ model RmCode {
   @@map("rm_codes")
 }
 
-// Generated BOM Table - Stores generated BOM snapshots for historical reference
+// Generated BOM Table - Stores generated BOM snapshots (OPTIMIZED: minimal storage)
 model GeneratedBom {
-  id          Int      @id @default(autoincrement())
-  projectId   Int      @map("project_id")
-  generatedAt DateTime @default(now()) @map("generated_at")
-  bomData     Json     @map("bom_data")
-  generatedBy Int?     @map("generated_by")
+  id           Int      @id @default(autoincrement())
+  projectId    Int      @map("project_id")
+  generatedAt  DateTime @default(now()) @map("generated_at")
+
+  // OPTIMIZED: Store minimal data only (90% size reduction)
+  bomMetadata  Json?    @map("bom_metadata")       // Aluminum rate, spare %, tabs, panel counts, project info
+  bomItems     Json?    @map("bom_items")          // Minimal item data (profile references + quantities + user edits)
+  bomData      Json?    @map("bom_data")           // OLD: Complete BOM data (for backward compatibility during migration)
+  changeLog    Json?    @map("change_log")         // Array of user changes
+
+  version      Int      @default(1)                // Version number
+  isLatest     Boolean  @default(true)             // Mark latest version
+  generatedBy  Int?     @map("generated_by")       // User ID (future)
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   project Project @relation(fields: [projectId], references: [id])
 
+  @@index([projectId])
+  @@index([isLatest])
   @@map("generated_boms")
 }

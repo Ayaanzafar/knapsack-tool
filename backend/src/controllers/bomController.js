@@ -86,6 +86,60 @@ class BomController {
       next(error);
     }
   }
+
+  // POST /api/bom/save - Save a new BOM
+  async saveBom(req, res, next) {
+    try {
+      const { projectId, bomData } = req.body;
+      if (!projectId || !bomData) {
+        return res.status(400).json({ error: 'projectId and bomData are required' });
+      }
+      const savedBom = await bomService.saveBom(projectId, bomData);
+      res.status(201).json({ bomId: savedBom.id, message: 'BOM saved successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // GET /api/bom/project/:projectId - Get all BOMs for a project
+  async getBomsByProjectId(req, res, next) {
+    try {
+      const { projectId } = req.params;
+      const boms = await bomService.getBomsByProjectId(projectId);
+      res.json({ boms });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // GET /api/bom/:bomId - Get a specific BOM by ID
+  async getBomById(req, res, next) {
+    try {
+      const { bomId } = req.params;
+      const bom = await bomService.getBomById(bomId);
+      if (!bom) {
+        return res.status(404).json({ error: 'BOM not found' });
+      }
+      res.json(bom);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // PUT /api/bom/:bomId - Update a BOM
+  async updateBom(req, res, next) {
+    try {
+      const { bomId } = req.params;
+      const { bomData, changeLog } = req.body;
+      if (!bomData || !changeLog) {
+        return res.status(400).json({ error: 'bomData and changeLog are required' });
+      }
+      const updatedBom = await bomService.updateBom(bomId, bomData, changeLog);
+      res.json(updatedBom);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new BomController();

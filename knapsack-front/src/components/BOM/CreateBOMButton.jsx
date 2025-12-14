@@ -2,12 +2,21 @@
 import { useNavigate } from 'react-router-dom';
 import { collectBOMData, getActiveCutLengths } from '../../services/bomDataCollection';
 import { generateCompleteBOM } from '../../services/bomCalculations';
+import { bomAPI } from '../../services/api';
+import { getCurrentProjectId } from '../../lib/tabStorageAPI';
+
 
 export default function CreateBOMButton({ tabsData, projectName }) {
   const navigate = useNavigate();
 
   const handleCreateBOM = async () => {
     try {
+      // Get project ID
+      const projectId = getCurrentProjectId();
+      if (!projectId) {
+        throw new Error('Project ID not found. Cannot save BOM.');
+      }
+
       // Collect data from all tabs
       const bomData = collectBOMData(tabsData, projectName);
 
@@ -17,11 +26,14 @@ export default function CreateBOMButton({ tabsData, projectName }) {
       // Generate complete BOM structure (NOW ASYNC!)
       const completeBOM = await generateCompleteBOM(bomData, activeCutLengths);
 
-      // Navigate to BOM page with data
-      navigate('/bom', { state: { bomData: completeBOM } });
+      // Save to database
+      const savedBOM = await bomAPI.saveBOM(projectId, completeBOM);
+
+      // Navigate to BOM page with bomId
+      navigate('/bom', { state: { bomId: savedBOM.bomId } });
     } catch (error) {
-      console.error('Error generating BOM:', error);
-      alert('Failed to generate BOM. Please check the console for details.');
+      console.error('Error generating or saving BOM:', error);
+      alert('Failed to create or save BOM. Please check the console for details.');
     }
   };
 

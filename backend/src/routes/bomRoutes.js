@@ -28,4 +28,18 @@ router.get('/formulas', bomController.getAllFormulas.bind(bomController));
 // POST /api/bom/formulas - Create formula
 router.post('/formulas', bomController.createFormula.bind(bomController));
 
+// BOM Storage Routes
+// POST /api/bom/save - Save a new BOM
+router.post('/save', bomController.saveBom.bind(bomController));
+
+// GET /api/bom/project/:projectId - Get all BOMs for a project
+router.get('/project/:projectId', bomController.getBomsByProjectId.bind(bomController));
+
+// GET /api/bom/:bomId - Get a specific BOM by ID
+router.get('/:bomId', bomController.getBomById.bind(bomController));
+
+// PUT /api/bom/:bomId - Update a BOM
+router.put('/:bomId', bomController.updateBom.bind(bomController));
+
+
 module.exports = router;
