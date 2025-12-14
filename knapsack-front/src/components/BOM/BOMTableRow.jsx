@@ -11,8 +11,18 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, 
     quantities,
     totalQuantity,
     spareQuantity,
-    finalTotal
+    finalTotal,
+    wtPerRm,
+    rm,
+    wt,
+    cost
   } = item;
+
+  // Format numbers for display
+  const formatNumber = (value, decimals = 2) => {
+    if (value === null || value === undefined) return '-';
+    return typeof value === 'number' ? value.toFixed(decimals) : '-';
+  };
 
   const rowClasses = `
     ${editMode ? 'cursor-pointer' : ''}
@@ -124,6 +134,29 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, 
       {/* Final Total Quantity */}
       <td className={`border border-gray-400 px-3 py-2 text-sm text-center font-bold bg-purple-50 ${getCellBorderClasses(true)}`}>
         {finalTotal}
+      </td>
+
+      {/* Blank separator column */}
+      <td className="bg-gray-200"></td>
+
+      {/* Wt/RM (Weight per Running Meter) */}
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-yellow-50 ${getCellBorderClasses(true)}`}>
+        {formatNumber(wtPerRm, 2)}
+      </td>
+
+      {/* RM (Running Meters) */}
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-yellow-50 ${getCellBorderClasses(true)}`}>
+        {formatNumber(rm, 1)}
+      </td>
+
+      {/* Wt (Total Weight) */}
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-orange-50 ${getCellBorderClasses(true)}`}>
+        {formatNumber(wt, 1)}
+      </td>
+
+      {/* Cost */}
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center font-bold bg-green-50 ${getCellBorderClasses(true)}`}>
+        {cost !== null && cost !== undefined ? `₹${formatNumber(cost, 0)}` : '-'}
       </td>
     </tr>
   );

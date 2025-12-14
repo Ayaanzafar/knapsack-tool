@@ -98,6 +98,8 @@ model BomMasterItem {
   category         String?  @db.VarChar(50)
   profileImagePath String?  @map("profile_image_path") @db.VarChar(255)
   selectedRmVendor String?  @map("selected_rm_vendor") @db.VarChar(50)
+  costPerPiece     Decimal? @map("cost_per_piece") @db.Decimal(10, 2)
+  itemType         String?  @map("item_type") @db.VarChar(20)
   isActive         Boolean  @default(true) @map("is_active")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")

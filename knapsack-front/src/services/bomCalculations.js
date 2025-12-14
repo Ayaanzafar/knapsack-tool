@@ -72,13 +72,55 @@ export function calculateTabQuantities(tabCalculation) {
 }
 
 /**
+ * Calculate weight and cost for a BOM item
+ * @param {Object} item - BOM item
+ * @param {Object} profilesMap - Map of profile serial numbers to profile data
+ * @param {Number} aluminumRate - Rate per kg for aluminum
+ * @returns {Object} - Weight and cost calculations
+ */
+function calculateWeightAndCost(item, profilesMap, aluminumRate = 527.85) {
+  const result = {
+    wtPerRm: null,  // Weight per running meter (kg/m)
+    rm: null,       // Running meters
+    wt: null,       // Total weight (kg)
+    cost: null      // Total cost
+  };
+
+  // Try to find the profile in profilesMap by sunrackCode
+  const profile = Object.values(profilesMap).find(p =>
+    p.sunrackCode === item.sunrackCode ||
+    p.preferredRmCode === item.sunrackCode
+  );
+
+  if (profile) {
+    // Determine the length to use: item.length (for cut lengths) or profile.standardLength (for accessories)
+    const lengthToUse = item.length || profile.standardLength;
+
+    // Check if it has design weight (weight-based calculation)
+    if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
+      result.wtPerRm = parseFloat(profile.designWeight);
+      result.rm = (lengthToUse / 1000) * item.finalTotal;  // Convert mm to meters
+      result.wt = result.rm * result.wtPerRm;
+      result.cost = result.wt * aluminumRate;
+    }
+    // Check if it has cost per piece (piece-based calculation)
+    else if (profile.costPerPiece && profile.costPerPiece > 0) {
+      result.cost = parseFloat(profile.costPerPiece) * item.finalTotal;
+    }
+  }
+
+  return result;
+}
+
+/**
  * Generate complete BOM items with quantities for all tabs
  * @param {Object} bomData - Collected BOM data from bomDataCollection
  * @param {Array} activeCutLengths - Active cut lengths (non-zero)
  * @param {Object} profilesMap - Map of profile serial numbers to profile data
+ * @param {Number} aluminumRate - Rate per kg for aluminum (default: 527.85)
  * @returns {Array} - Array of BOM items with quantities per tab
  */
-export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
+export async function generateBOMItems(bomData, activeCutLengths, profilesMap, aluminumRate = 527.85) {
   const bomItems = [];
   let serialNumber = 1;
 
@@ -107,7 +149,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
     });
 
     if (totalQty > 0) {
-      bomItems.push({
+      const item = {
         sn: serialNumber++,
         sunrackCode: selectedProfile?.preferredRmCode || selectedProfile?.sunrackCode || 'MA-43',  // Use RM code (Regal priority)
         profileImage: selectedProfile?.profileImagePath || '/assets/bom-profiles/MA-43.png',  // From DB
@@ -121,7 +163,16 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
         totalQuantity: totalQty,
         spareQuantity: Math.ceil(totalQty * 0.01),
         finalTotal: totalQty + Math.ceil(totalQty * 0.01)
-      });
+      };
+
+      // Calculate weight and cost
+      const weightCost = calculateWeightAndCost(item, profilesMap, aluminumRate);
+      item.wtPerRm = weightCost.wtPerRm;
+      item.rm = weightCost.rm;
+      item.wt = weightCost.wt;
+      item.cost = weightCost.cost;
+
+      bomItems.push(item);
     }
   });
 
@@ -238,7 +289,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
       // Use RM code if available, otherwise use sunrack code
       const displayCode = item.preferredRmCode || item.sunrackCode;
 
-      bomItems.push({
+      const bomItem = {
         sn: serialNumber++,
         sunrackCode: displayCode,  // Use RM code if available
         profileImage: item.profileImagePath || null,  // Use image path from DB
@@ -252,7 +303,16 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
         totalQuantity: totalQty,
         spareQuantity: Math.ceil(totalQty * 0.01),
         finalTotal: totalQty + Math.ceil(totalQty * 0.01)
-      });
+      };
+
+      // Calculate weight and cost
+      const weightCost = calculateWeightAndCost(bomItem, profilesMap, aluminumRate);
+      bomItem.wtPerRm = weightCost.wtPerRm;
+      bomItem.rm = weightCost.rm;
+      bomItem.wt = weightCost.wt;
+      bomItem.cost = weightCost.cost;
+
+      bomItems.push(bomItem);
     }
   });
 
@@ -263,9 +323,10 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap) {
  * Complete BOM generation pipeline
  * @param {Object} bomData - Collected BOM data
  * @param {Array} activeCutLengths - Active cut lengths
+ * @param {Number} aluminumRate - Rate per kg for aluminum (default: 527.85)
  * @returns {Object} - Complete BOM structure
  */
-export async function generateCompleteBOM(bomData, activeCutLengths) {
+export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRate = 527.85) {
   // Fetch all profiles from API
   const response = await fetch(`${API_URL}/api/bom/master-items`);
   const allProfiles = await response.json();
@@ -276,13 +337,14 @@ export async function generateCompleteBOM(bomData, activeCutLengths) {
     profilesMap[profile.serialNumber] = profile;
   });
 
-  const bomItems = await generateBOMItems(bomData, activeCutLengths, profilesMap);
+  const bomItems = await generateBOMItems(bomData, activeCutLengths, profilesMap, aluminumRate);
 
   return {
     projectInfo: bomData.projectInfo,
     tabs: bomData.tabs,
     panelCounts: bomData.panelCounts,
     profilesMap: profilesMap,  // NEW: Pass profiles to BOM page
-    bomItems: bomItems
+    bomItems: bomItems,
+    aluminumRate: aluminumRate  // NEW: Pass aluminum rate to BOM page
   };
 }

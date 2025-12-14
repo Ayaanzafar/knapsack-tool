@@ -11,6 +11,7 @@ export default function BOMPage() {
   const [editMode, setEditMode] = useState(false);  // NEW
   const [selectedRow, setSelectedRow] = useState(null);  // NEW
   const [profiles, setProfiles] = useState([]);  // NEW
+  const [aluminumRate, setAluminumRate] = useState(527.85);  // NEW: Aluminum rate per kg
 
   useEffect(() => {
     if (location.state?.bomData) {
@@ -21,12 +22,36 @@ export default function BOMPage() {
         const profilesList = Object.values(location.state.bomData.profilesMap);
         setProfiles(profilesList);
       }
+
+      // Set initial aluminum rate from bomData if available
+      if (location.state.bomData.aluminumRate) {
+        setAluminumRate(location.state.bomData.aluminumRate);
+      }
     } else {
       // No data provided, redirect back to home
       console.warn('No BOM data provided, redirecting to home');
       navigate('/');
     }
   }, [location.state, navigate]);
+
+  // Recalculate costs when aluminum rate changes
+  useEffect(() => {
+    if (!bomData) return;
+
+    const updatedBomData = { ...bomData };
+    updatedBomData.bomItems = bomData.bomItems.map(item => {
+      // If item has weight data, recalculate cost
+      if (item.wt !== null && item.wt !== undefined && item.wt > 0) {
+        return {
+          ...item,
+          cost: item.wt * aluminumRate
+        };
+      }
+      return item;
+    });
+
+    setBomData(updatedBomData);
+  }, [aluminumRate]);
 
   const handleBack = () => {
     navigate('/');
@@ -193,6 +218,26 @@ export default function BOMPage() {
             </div>
           </div>
 
+          {/* Settings Bar - Always visible */}
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex items-center gap-6">
+              {/* Aluminum Rate Input */}
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                  Aluminum Rate (₹/kg):
+                </label>
+                <input
+                  type="number"
+                  value={aluminumRate}
+                  onChange={(e) => setAluminumRate(parseFloat(e.target.value) || 0)}
+                  step="0.01"
+                  min="0"
+                  className="w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Profile Selector - Show when edit mode is ON */}
           {editMode && (
             <div className="px-6 py-4 bg-blue-50 border-b border-blue-200">
@@ -223,6 +268,7 @@ export default function BOMPage() {
             editMode={editMode}
             selectedRow={selectedRow}
             onRowSelect={setSelectedRow}
+            aluminumRate={aluminumRate}
           />
         </div>
       </main>
