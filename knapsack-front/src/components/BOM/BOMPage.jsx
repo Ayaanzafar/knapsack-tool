@@ -11,7 +11,6 @@ export default function BOMPage() {
   const [bomData, setBomData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);  // NEW
-  const [selectedRow, setSelectedRow] = useState(null);  // NEW
   const [profiles, setProfiles] = useState([]);  // NEW
   const [aluminumRate, setAluminumRate] = useState(527.85);  // NEW: Aluminum rate per kg
   const [changeLog, setChangeLog] = useState([]); // NEW: for edit tracking
@@ -119,8 +118,8 @@ export default function BOMPage() {
     return result;
   };
 
-  const handleProfileChange = (profileSerialNumber) => {
-    if (!selectedRow || !profileSerialNumber) return;
+  const handleProfileChange = (profileSerialNumber, itemToUpdate) => {
+    if (!itemToUpdate || !profileSerialNumber) return;
 
     const selectedProfile = profiles.find(p => p.serialNumber === profileSerialNumber);
     if (!selectedProfile) return;
@@ -128,7 +127,7 @@ export default function BOMPage() {
     // Update bomData based on row type
     const updatedBomData = { ...bomData };
 
-    if (selectedRow.calculationType === 'CUT_LENGTH') {
+    if (itemToUpdate.calculationType === 'CUT_LENGTH') {
       // Update ALL cut length rows with the same profile
       updatedBomData.bomItems = bomData.bomItems.map(item => {
         if (item.calculationType === 'CUT_LENGTH') {
@@ -152,10 +151,10 @@ export default function BOMPage() {
         }
         return item;
       });
-    } else if (selectedRow.calculationType === 'ACCESSORY') {
+    } else if (itemToUpdate.calculationType === 'ACCESSORY') {
       // Update only the selected row
       updatedBomData.bomItems = bomData.bomItems.map(item => {
-        if (item.sn === selectedRow.sn) {
+        if (item.sn === itemToUpdate.sn) {
           const updatedItem = {
             ...item,
             sunrackCode: selectedProfile.preferredRmCode || selectedProfile.sunrackCode,
@@ -179,7 +178,6 @@ export default function BOMPage() {
     }
 
     setBomData(updatedBomData);
-    setSelectedRow(null);  // Deselect after update
   };
 
   const handleSaveChanges = async () => {
@@ -226,7 +224,6 @@ export default function BOMPage() {
     if (editMode) {
       // Exiting edit mode, so save changes
       handleSaveChanges();
-      setSelectedRow(null); // Clear selection
     }
     setEditMode(!editMode);
   };
@@ -389,36 +386,12 @@ export default function BOMPage() {
             </div>
           </div>
 
-          {/* Profile Selector - Show when edit mode is ON */}
-          {editMode && (
-            <div className="px-6 py-4 bg-blue-50 border-b border-blue-200">
-              <div className="flex items-center gap-4">
-                <label className="text-sm font-semibold text-gray-700">
-                  Select Profile:
-                </label>
-                <div className="flex-1 max-w-md">
-                  <ComboBox
-                    options={profileOptions}
-                    value={selectedRow?.profileSerialNumber || ''}
-                    onChange={handleProfileChange}
-                    placeholder={selectedRow ? '-- Choose a profile --' : '-- Click a row to select --'}
-                  />
-                </div>
-                {selectedRow && (
-                  <span className="text-sm text-gray-600">
-                    Selected Row: {selectedRow.sn}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* BOM Table with integrated Spare columns */}
           <BOMTable
             bomData={bomData}
             editMode={editMode}
-            selectedRow={selectedRow}
-            onRowSelect={setSelectedRow}
+            onProfileChange={handleProfileChange}
+            profileOptions={profileOptions}
             aluminumRate={aluminumRate}
           />
         </div>

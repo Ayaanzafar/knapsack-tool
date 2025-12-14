@@ -1,7 +1,7 @@
 // // src/components/BOM/BOMTable.jsx
 import BOMTableRow from './BOMTableRow';
 
-export default function BOMTable({ bomData, editMode, selectedRow, onRowSelect, aluminumRate }) {
+export default function BOMTable({ bomData, editMode, onProfileChange, profileOptions, aluminumRate }) {
   const { tabs, panelCounts, bomItems, projectInfo } = bomData;
 
   return (
@@ -210,8 +210,8 @@ export default function BOMTable({ bomData, editMode, selectedRow, onRowSelect, 
               tabs={tabs}
               isEven={index % 2 === 0}
               editMode={editMode}
-              isSelected={selectedRow?.sn === item.sn}
-              onSelect={() => onRowSelect(item)}
+              profileOptions={profileOptions}
+              onProfileChange={onProfileChange}
             />
           ))}
         </tbody>

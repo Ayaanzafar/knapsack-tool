@@ -1,5 +1,7 @@
 // src/components/BOM/BOMTableRow.jsx
-export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, onSelect }) {
+import ComboBox from '../ComboBox';
+
+export default function BOMTableRow({ item, tabs, isEven, editMode, onProfileChange, profileOptions }) {
   const {
     sn,
     sunrackCode,
@@ -15,7 +17,9 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, 
     wtPerRm,
     rm,
     wt,
-    cost
+    cost,
+    profileSerialNumber,
+    calculationType,
   } = item;
 
   // Format numbers for display
@@ -24,46 +28,31 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, 
     return typeof value === 'number' ? value.toFixed(decimals) : '-';
   };
 
-  const rowClasses = `
-    ${editMode ? 'cursor-pointer' : ''}
-  `;
+  const isEditable = calculationType === 'CUT_LENGTH' || calculationType === 'ACCESSORY';
 
   const getCellBgColor = (isTotalCol = false) => {
-    if (isSelected) {
-      return 'bg-purple-200';
-    }
     if (isTotalCol) {
       return 'bg-blue-50';
     }
     return isEven ? 'bg-white' : 'bg-gray-50';
   };
 
-  const getCellBorderClasses = (isSpareCol = false) => {
-    if (isSelected && !isSpareCol) {
-      return 'border-t-4 border-purple-500';
-    }
-    return '';
-  };
-
-  const hoverClass = editMode ? 'hover:bg-blue-100' : '';
-
   return (
     <tr
-      className={`${rowClasses} ${hoverClass}`}
-      onClick={() => editMode && onSelect && onSelect()}
+      className={isEven ? 'bg-white' : 'bg-gray-50'}
     >
       {/* S.N */}
-      <td className={`border border-gray-400 px-2 py-2 text-sm text-center font-medium ${getCellBgColor()} ${getCellBorderClasses()}`}>
+      <td className={`border border-gray-400 px-2 py-2 text-sm text-center font-medium ${getCellBgColor()}`}>
         {sn}
       </td>
 
       {/* Sunrack Code */}
-      <td className={`border border-gray-400 px-2 py-2 text-sm text-center font-medium ${getCellBgColor()} ${getCellBorderClasses()}`}>
+      <td className={`border border-gray-400 px-2 py-2 text-sm text-center font-medium ${getCellBgColor()}`}>
         {sunrackCode || '-'}
       </td>
 
       {/* Profile Image */}
-      <td className={`border border-gray-400 px-2 py-2 text-center ${getCellBgColor()} ${getCellBorderClasses()}`}>
+      <td className={`border border-gray-400 px-2 py-2 text-center ${getCellBgColor()}`}>
         {profileImage ? (
           <div className="flex justify-center">
             <img
@@ -89,22 +78,31 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, 
       </td>
 
       {/* Item Description */}
-      <td className={`border border-gray-400 px-3 py-2 text-sm text-left ${getCellBgColor()} ${getCellBorderClasses()}`}>
-        {itemDescription}
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-left ${getCellBgColor()}`}>
+        {editMode && isEditable ? (
+          <ComboBox
+            options={profileOptions}
+            value={profileSerialNumber}
+            onChange={(newProfileSerial) => onProfileChange(newProfileSerial, item)}
+            placeholder="-- Change Profile --"
+          />
+        ) : (
+          itemDescription
+        )}
       </td>
 
       {/* Material */}
-      <td className={`border border-gray-400 px-2 py-2 text-sm text-center ${getCellBgColor()} ${getCellBorderClasses()}`}>
+      <td className={`border border-gray-400 px-2 py-2 text-sm text-center ${getCellBgColor()}`}>
         {material}
       </td>
 
       {/* Length */}
-      <td className={`border border-gray-400 px-2 py-2 text-sm text-center ${getCellBgColor()} ${getCellBorderClasses()}`}>
+      <td className={`border border-gray-400 px-2 py-2 text-sm text-center ${getCellBgColor()}`}>
         {length || '-'}
       </td>
 
       {/* UoM */}
-      <td className={`border border-gray-400 px-2 py-2 text-sm text-center ${getCellBgColor()} ${getCellBorderClasses()}`}>
+      <td className={`border border-gray-400 px-2 py-2 text-sm text-center ${getCellBgColor()}`}>
         {uom}
       </td>
 
@@ -112,14 +110,14 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, 
       {tabs.map((tabName, index) => (
         <td
           key={`qty-${index}-${tabName}`}
-          className={`border border-gray-400 px-2 py-2 text-sm text-center font-medium ${getCellBgColor()} ${getCellBorderClasses()}`}
+          className={`border border-gray-400 px-2 py-2 text-sm text-center font-medium ${getCellBgColor()}`}
         >
           {quantities[tabName] || 0}
         </td>
       ))}
 
       {/* Total Quantity */}
-      <td className={`border border-gray-400 px-2 py-2 text-sm text-center font-bold ${getCellBgColor(true)} ${getCellBorderClasses()}`}>
+      <td className={`border border-gray-400 px-2 py-2 text-sm text-center font-bold ${getCellBgColor(true)}`}>
         {totalQuantity}
       </td>
 
@@ -127,12 +125,12 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, 
       <td className="bg-gray-200"></td>
 
       {/* Spare Quantity */}
-      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-green-50 ${getCellBorderClasses(true)}`}>
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-green-50`}>
         {spareQuantity}
       </td>
 
       {/* Final Total Quantity */}
-      <td className={`border border-gray-400 px-3 py-2 text-sm text-center font-bold bg-purple-50 ${getCellBorderClasses(true)}`}>
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center font-bold bg-purple-50`}>
         {finalTotal}
       </td>
 
@@ -140,22 +138,22 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, isSelected, 
       <td className="bg-gray-200"></td>
 
       {/* Wt/RM (Weight per Running Meter) */}
-      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-yellow-50 ${getCellBorderClasses(true)}`}>
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-yellow-50`}>
         {formatNumber(wtPerRm, 2)}
       </td>
 
       {/* RM (Running Meters) */}
-      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-yellow-50 ${getCellBorderClasses(true)}`}>
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-yellow-50`}>
         {formatNumber(rm, 1)}
       </td>
 
       {/* Wt (Total Weight) */}
-      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-orange-50 ${getCellBorderClasses(true)}`}>
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-orange-50`}>
         {formatNumber(wt, 1)}
       </td>
 
       {/* Cost */}
-      <td className={`border border-gray-400 px-3 py-2 text-sm text-center font-bold bg-green-50 ${getCellBorderClasses(true)}`}>
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center font-bold bg-green-50`}>
         {cost !== null && cost !== undefined ? `₹${formatNumber(cost, 0)}` : '-'}
       </td>
     </tr>
