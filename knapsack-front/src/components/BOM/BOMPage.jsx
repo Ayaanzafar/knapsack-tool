@@ -90,6 +90,35 @@ export default function BOMPage() {
     navigate('/');
   };
 
+  // Helper function to calculate weight and cost for an item
+  const calculateWeightAndCost = (item, profile) => {
+    const result = {
+      wtPerRm: null,
+      rm: null,
+      wt: null,
+      cost: null
+    };
+
+    // Check if profile has cost_per_piece (for fasteners)
+    if (profile.costPerPiece && profile.costPerPiece > 0) {
+      result.cost = parseFloat(profile.costPerPiece) * item.finalTotal;
+      return result;
+    }
+
+    // Weight-based calculation for aluminum profiles
+    // Use item.length (for cut lengths) or profile.standardLength (for accessories)
+    const lengthToUse = item.length || profile.standardLength;
+
+    if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
+      result.wtPerRm = parseFloat(profile.designWeight);
+      result.rm = (lengthToUse / 1000) * item.finalTotal;  // Convert mm to meters
+      result.wt = result.rm * result.wtPerRm;
+      result.cost = result.wt * aluminumRate;
+    }
+
+    return result;
+  };
+
   const handleProfileChange = (profileSerialNumber) => {
     if (!selectedRow || !profileSerialNumber) return;
 
@@ -103,13 +132,23 @@ export default function BOMPage() {
       // Update ALL cut length rows with the same profile
       updatedBomData.bomItems = bomData.bomItems.map(item => {
         if (item.calculationType === 'CUT_LENGTH') {
-          return {
+          const updatedItem = {
             ...item,
             sunrackCode: selectedProfile.preferredRmCode || selectedProfile.sunrackCode,
             profileImage: selectedProfile.profileImagePath,
             itemDescription: selectedProfile.genericName,
+            material: selectedProfile.material,
             profileSerialNumber: profileSerialNumber
           };
+
+          // Recalculate weight and cost
+          const weightCost = calculateWeightAndCost(updatedItem, selectedProfile);
+          updatedItem.wtPerRm = weightCost.wtPerRm;
+          updatedItem.rm = weightCost.rm;
+          updatedItem.wt = weightCost.wt;
+          updatedItem.cost = weightCost.cost;
+
+          return updatedItem;
         }
         return item;
       });
@@ -117,13 +156,23 @@ export default function BOMPage() {
       // Update only the selected row
       updatedBomData.bomItems = bomData.bomItems.map(item => {
         if (item.sn === selectedRow.sn) {
-          return {
+          const updatedItem = {
             ...item,
             sunrackCode: selectedProfile.preferredRmCode || selectedProfile.sunrackCode,
             profileImage: selectedProfile.profileImagePath,
             itemDescription: selectedProfile.genericName,
+            material: selectedProfile.material,
             profileSerialNumber: profileSerialNumber
           };
+
+          // Recalculate weight and cost
+          const weightCost = calculateWeightAndCost(updatedItem, selectedProfile);
+          updatedItem.wtPerRm = weightCost.wtPerRm;
+          updatedItem.rm = weightCost.rm;
+          updatedItem.wt = weightCost.wt;
+          updatedItem.cost = weightCost.cost;
+
+          return updatedItem;
         }
         return item;
       });
@@ -142,7 +191,28 @@ export default function BOMPage() {
 
     setIsSaving(true);
     try {
+      // Save the changes to backend
       await bomAPI.updateBOM(bomId, bomData, changeLog);
+
+      // Reload the BOM from backend to get recalculated weights and costs
+      const freshData = await bomAPI.getBOMById(bomId);
+
+      if (freshData && freshData.bomData) {
+        setBomData(freshData.bomData);
+        setChangeLog(freshData.changeLog || []);
+
+        // Update profiles list
+        if (freshData.bomData.profilesMap) {
+          const profilesList = Object.values(freshData.bomData.profilesMap);
+          setProfiles(profilesList);
+        }
+
+        // Update aluminum rate
+        if (freshData.bomData.aluminumRate) {
+          setAluminumRate(freshData.bomData.aluminumRate);
+        }
+      }
+
       alert('Changes saved successfully!');
     } catch (error) {
       console.error('Failed to save changes:', error);
