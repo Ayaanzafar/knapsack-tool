@@ -86,6 +86,12 @@ function calculateWeightAndCost(item, profilesMap, aluminumRate = 527.85) {
     cost: null      // Total cost
   };
 
+  // Check if item has cost_per_piece directly (for fasteners)
+  if (item.costPerPiece && item.costPerPiece > 0) {
+    result.cost = parseFloat(item.costPerPiece) * item.finalTotal;
+    return result;
+  }
+
   // Try to find the profile in profilesMap by sunrackCode
   const profile = Object.values(profilesMap).find(p =>
     p.sunrackCode === item.sunrackCode ||
@@ -103,7 +109,7 @@ function calculateWeightAndCost(item, profilesMap, aluminumRate = 527.85) {
       result.wt = result.rm * result.wtPerRm;
       result.cost = result.wt * aluminumRate;
     }
-    // Check if it has cost per piece (piece-based calculation)
+    // Check if it has cost per piece (piece-based calculation) from profile
     else if (profile.costPerPiece && profile.costPerPiece > 0) {
       result.cost = parseFloat(profile.costPerPiece) * item.finalTotal;
     }
@@ -179,7 +185,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
   // 2. Build hardware items from database (items with formulas) + hardcoded hardware
   const hardwareItems = [];
 
-  // Add items from database that have formulas
+  // Add all items from database that have formulas (including fasteners)
   Object.values(profilesMap).forEach(profile => {
     if (profile.formulas && profile.formulas.length > 0) {
       profile.formulas.forEach(formula => {
@@ -191,89 +197,12 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
           material: profile.material,
           length: profile.standardLength,
           uom: profile.uom,
-          formulaKey: formula.formulaKey
+          formulaKey: formula.formulaKey,
+          costPerPiece: profile.costPerPiece  // NEW: Include cost per piece for fasteners
         });
       });
     }
   });
-
-  // Add hardcoded hardware items (not in database as aluminum profiles)
-  const hardcodedHardware = [
-    {
-      sunrackCode: null,
-      itemDescription: 'M8x60 Hex Head Bolt for U-cleat',
-      material: 'SS304',
-      length: null,
-      uom: 'Nos',
-      formulaKey: 'M8x60_BOLT'
-    },
-    {
-      sunrackCode: null,
-      itemDescription: 'M8x20 Allen Head Bolt for End & Mid Clamps',
-      material: 'SS304',
-      length: null,
-      uom: 'Nos',
-      formulaKey: 'M8x20_BOLT'
-    },
-    {
-      sunrackCode: null,
-      itemDescription: 'M8 Hex Nuts for Outer U-Cleat Bolt',
-      material: 'SS304',
-      length: null,
-      uom: 'Nos',
-      formulaKey: 'M8_HEX_NUTS'
-    },
-    {
-      sunrackCode: null,
-      itemDescription: 'M8 Plain Washer - 2 for U-Cleat Bolt',
-      material: 'SS304',
-      length: null,
-      uom: 'Nos',
-      formulaKey: 'M8_PLAIN_WASHER'
-    },
-    {
-      sunrackCode: null,
-      itemDescription: 'M8 Spring washers - 1 for All Bolts',
-      material: 'SS304',
-      length: null,
-      uom: 'Nos',
-      formulaKey: 'M8_SPRING_WASHER'
-    },
-    {
-      sunrackCode: null,
-      itemDescription: 'SDS 4.2X13mm for Rail jointer',
-      material: 'GI',
-      length: null,
-      uom: 'Nos',
-      formulaKey: 'SDS_4_2X13MM'
-    },
-    {
-      sunrackCode: null,
-      itemDescription: 'SDS 5.5X63mm for U Cleat',
-      material: 'GI',
-      length: null,
-      uom: 'Nos',
-      formulaKey: 'SDS_5_5X63MM'
-    },
-    {
-      sunrackCode: null,
-      itemDescription: 'Rubber Pad 40x40mm for U- cleat',
-      material: 'EPDM',
-      length: null,
-      uom: 'Nos',
-      formulaKey: 'RUBBER_PAD'
-    },
-    {
-      sunrackCode: null,
-      itemDescription: 'Blind Rivets - 4.5x15mm',
-      material: 'Al 5000',
-      length: null,
-      uom: 'Nos',
-      formulaKey: 'BLIND_RIVETS'
-    }
-  ];
-
-  hardwareItems.push(...hardcodedHardware);
 
   hardwareItems.forEach(item => {
     const quantities = {};
@@ -299,6 +228,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
         uom: item.uom,
         calculationType: 'ACCESSORY',  // NEW: Mark as accessory type
         formulaKey: item.formulaKey,
+        costPerPiece: item.costPerPiece,  // NEW: Pass cost per piece for fasteners
         quantities: quantities,
         totalQuantity: totalQty,
         spareQuantity: Math.ceil(totalQty * 0.01),
