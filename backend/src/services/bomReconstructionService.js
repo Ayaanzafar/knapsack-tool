@@ -155,7 +155,12 @@ class BomReconstructionService {
 
       // Calculate totals
       const totalQuantity = Object.values(item.quantities || {}).reduce((sum, qty) => sum + qty, 0);
-      const spareQuantity = Math.ceil(totalQuantity * (sparePercentage / 100));
+
+      // Check for manual spare quantity override
+      const spareQuantity = item.userEdits?.manualSpareQuantity !== undefined && item.userEdits?.manualSpareQuantity !== null
+        ? item.userEdits.manualSpareQuantity
+        : Math.ceil(totalQuantity * (sparePercentage / 100));
+
       const finalTotal = totalQuantity + spareQuantity;
 
       // Build full item with profile data

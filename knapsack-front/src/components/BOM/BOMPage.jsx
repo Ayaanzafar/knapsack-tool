@@ -217,26 +217,45 @@ export default function BOMPage() {
       if (item.sn === itemSn) {
         let updatedItem = { ...item };
 
+        // Initialize userEdits if it doesn't exist
+        if (!updatedItem.userEdits) {
+          updatedItem.userEdits = {};
+        }
+
         // Update the specific field that was changed
         if (field.startsWith('quantity_')) {
           const tabName = field.split('_')[1];
           updatedItem.quantities = { ...updatedItem.quantities, [tabName]: Number(value) || 0 };
         } else if (field === 'spareQuantity') {
-          updatedItem.spareQuantity = Number(value) || 0;
+          // Manual spare quantity override
+          const manualSpare = Number(value) || 0;
+          updatedItem.spareQuantity = manualSpare;
+          updatedItem.userEdits = { ...updatedItem.userEdits, manualSpareQuantity: manualSpare };
+        } else if (field === 'resetSpare') {
+          // Reset manual spare override - remove from userEdits
+          const { manualSpareQuantity, ...restEdits } = updatedItem.userEdits;
+          updatedItem.userEdits = Object.keys(restEdits).length > 0 ? restEdits : null;
         }
 
         // Recalculate derived fields for the updated item
         const totalQty = Object.values(updatedItem.quantities).reduce((sum, q) => sum + q, 0);
         updatedItem.totalQuantity = totalQty;
 
-        // If a building quantity was changed, recalculate spare based on global percentage
-        if (field.startsWith('quantity_')) {
-          updatedItem.spareQuantity = Math.ceil(totalQty * (sparePercentage / 100));
+        // If a building quantity was changed OR spare was reset, recalculate spare based on global percentage
+        if (field.startsWith('quantity_') || field === 'resetSpare') {
+          // Check if there's a manual override
+          if (updatedItem.userEdits?.manualSpareQuantity !== undefined) {
+            // Keep manual override
+            updatedItem.spareQuantity = updatedItem.userEdits.manualSpareQuantity;
+          } else {
+            // Auto-calculate from percentage
+            updatedItem.spareQuantity = Math.ceil(totalQty * (sparePercentage / 100));
+          }
         }
-        
+
         const finalTotal = totalQty + updatedItem.spareQuantity;
         updatedItem.finalTotal = finalTotal;
-        
+
         // Recalculate weight and cost
         const profile = bomData.profilesMap[updatedItem.profileSerialNumber];
         if (profile) {
