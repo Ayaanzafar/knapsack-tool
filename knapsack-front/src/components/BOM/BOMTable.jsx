@@ -1,7 +1,7 @@
 // // src/components/BOM/BOMTable.jsx
 import BOMTableRow from './BOMTableRow';
 
-export default function BOMTable({ bomData, editMode, onProfileChange, profileOptions, onItemUpdate, aluminumRate }) {
+export default function BOMTable({ bomData, editMode, onProfileChange, profileOptions, onItemUpdate, aluminumRate, sparePercentage }) {
   const { tabs, panelCounts, bomItems, projectInfo } = bomData;
 
   return (
@@ -104,12 +104,12 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
             {/* Blank separator column */}
             <th className="bg-gray-200 w-4"></th>
 
-            {/* Spare section - "1%" label spanning 2 columns */}
+            {/* Spare section - spare percentage label spanning 2 columns */}
             <th
               colSpan={2}
               className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
-              1%
+              {sparePercentage}%
             </th>
 
             {/* Blank separator column */}
@@ -120,7 +120,7 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
               colSpan={4}
               className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
-              Aluminum Rate per kg: {aluminumRate}
+              Aluminum Rate per kg: ₹{aluminumRate}
             </th>
 
           </tr>

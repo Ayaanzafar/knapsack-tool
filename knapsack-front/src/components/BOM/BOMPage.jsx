@@ -462,7 +462,10 @@ export default function BOMPage() {
                   onChange={(e) => setAluminumRate(parseFloat(e.target.value) || 0)}
                   step="0.01"
                   min="0"
-                  className="w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  disabled={!editMode}
+                  className={`w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                    !editMode ? 'bg-gray-100 cursor-not-allowed' : ''
+                  }`}
                 />
               </div>
 
@@ -477,7 +480,10 @@ export default function BOMPage() {
                   onChange={(e) => setSparePercentage(parseFloat(e.target.value) || 0)}
                   step="0.1"
                   min="0"
-                  className="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  disabled={!editMode}
+                  className={`w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                    !editMode ? 'bg-gray-100 cursor-not-allowed' : ''
+                  }`}
                 />
               </div>
             </div>
@@ -491,6 +497,7 @@ export default function BOMPage() {
             profileOptions={profileOptions}
             onItemUpdate={handleItemUpdate}
             aluminumRate={aluminumRate}
+            sparePercentage={sparePercentage}
           />
         </div>
       </main>
