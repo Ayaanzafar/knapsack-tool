@@ -6,7 +6,7 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
+        <table className="w-full border-collapse">
         <thead>
           <tr className="bg-yellow-400">
 
@@ -217,7 +217,7 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
           ))}
         </tbody>
       </table>
-    </div >
+    </div>
   );
 }
 

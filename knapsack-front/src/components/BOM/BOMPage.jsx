@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BOMTable from './BOMTable';
 import ComboBox from '../ComboBox';
+import AddRowModal from './AddRowModal';
 import { bomAPI } from '../../services/api';
 
 export default function BOMPage() {
@@ -16,6 +17,8 @@ export default function BOMPage() {
   const [aluminumRate, setAluminumRate] = useState(527.85);  // NEW: Aluminum rate per kg
   const [changeLog, setChangeLog] = useState([]); // NEW: for edit tracking
   const [isSaving, setIsSaving] = useState(false); // NEW: for save feedback
+  const [showAddModal, setShowAddModal] = useState(false); // NEW: Add row modal
+  const [addAfterRow, setAddAfterRow] = useState(1); // NEW: Row number to add after (1-based)
 
   useEffect(() => {
     const loadBOM = async () => {
@@ -54,6 +57,11 @@ export default function BOMPage() {
           // Set initial spare percentage from bomData if available
           if (typeof data.bomData.sparePercentage === 'number') {
             setSparePercentage(data.bomData.sparePercentage);
+          }
+
+          // Set default addAfterRow to last row number
+          if (data.bomData.bomItems && data.bomData.bomItems.length > 0) {
+            setAddAfterRow(data.bomData.bomItems.length);
           }
         } else {
           console.error('BOM data is missing or invalid.', data);
@@ -269,6 +277,87 @@ export default function BOMPage() {
     });
 
     setBomData({ ...bomData, bomItems: newBomItems });
+  };
+
+  const handleAddRowClick = () => {
+    setShowAddModal(true);
+  };
+
+  const handleAddRowConfirm = (newItemData) => {
+    const profile = profiles.find(p => p.serialNumber === newItemData.profileSerialNumber);
+    if (!profile) {
+      alert('Profile not found');
+      return;
+    }
+
+    console.log('Selected profile for add row:', profile);
+    console.log('Profile has designWeight:', profile.designWeight);
+    console.log('Profile has standardLength:', profile.standardLength);
+    console.log('Profile has costPerPiece:', profile.costPerPiece);
+    console.log('Custom length provided:', newItemData.customLength);
+
+    // Validate addAfterRow
+    const maxRow = bomData.bomItems.length;
+    const insertAfter = Math.max(0, Math.min(addAfterRow, maxRow));
+
+    // Calculate totals
+    const totalQty = Object.values(newItemData.quantities).reduce((sum, qty) => sum + qty, 0);
+    const spareQty = Math.ceil(totalQty * (sparePercentage / 100));
+    const finalTotal = totalQty + spareQty;
+
+    // Create new item
+    const newItem = {
+      sn: insertAfter + 1, // Temporary SN
+      profileSerialNumber: newItemData.profileSerialNumber,
+      sunrackCode: profile.preferredRmCode || profile.sunrackCode,
+      profileImage: profile.profileImagePath,
+      itemDescription: profile.genericName,
+      material: profile.material,
+      length: newItemData.customLength,
+      uom: profile.uom,
+      calculationType: newItemData.customLength ? 'CUT_LENGTH' : 'ACCESSORY',
+      quantities: newItemData.quantities,
+      totalQuantity: totalQty,
+      spareQuantity: spareQty,
+      finalTotal: finalTotal,
+      userEdits: {
+        addedManually: true,
+        reason: newItemData.reason
+      }
+    };
+
+    // Calculate weight and cost
+    const weightCost = calculateWeightAndCost(newItem, profile, aluminumRate);
+    console.log('Calculated weight and cost:', weightCost);
+    newItem.wtPerRm = weightCost.wtPerRm;
+    newItem.rm = weightCost.rm;
+    newItem.wt = weightCost.wt;
+    newItem.cost = weightCost.cost;
+
+    // Insert into array at the specified position
+    const updatedItems = [...bomData.bomItems];
+    updatedItems.splice(insertAfter, 0, newItem);
+
+    // Renumber all S.N
+    updatedItems.forEach((item, index) => {
+      item.sn = index + 1;
+    });
+
+    // Add to change log
+    const newChangeLog = [...changeLog, {
+      type: 'ADD_ROW',
+      itemName: newItem.itemDescription,
+      rowNumber: insertAfter + 1,
+      reason: newItemData.reason,
+      timestamp: new Date().toISOString()
+    }];
+
+    setBomData({ ...bomData, bomItems: updatedItems });
+    setChangeLog(newChangeLog);
+    setShowAddModal(false);
+
+    // Reset addAfterRow to new last row
+    setAddAfterRow(updatedItems.length);
   };
 
   const handleSaveChanges = async () => {
@@ -505,6 +594,39 @@ export default function BOMPage() {
                   }`}
                 />
               </div>
+
+              {/* Add Row Section - Only visible in edit mode */}
+              {editMode && (
+                <>
+                  <div className="h-8 w-px bg-gray-300"></div>
+
+                  {/* Add After Input */}
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                      Add After:
+                    </label>
+                    <input
+                      type="number"
+                      value={addAfterRow}
+                      onChange={(e) => setAddAfterRow(parseInt(e.target.value) || 1)}
+                      min="0"
+                      max={bomData.bomItems.length}
+                      className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  {/* Add Row Button */}
+                  <button
+                    onClick={handleAddRowClick}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 text-sm font-semibold"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                    </svg>
+                    Add Row
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -520,6 +642,16 @@ export default function BOMPage() {
           />
         </div>
       </main>
+
+      {/* Add Row Modal */}
+      <AddRowModal
+        isOpen={showAddModal}
+        afterRowNumber={addAfterRow}
+        profiles={profiles}
+        tabs={bomData.tabs}
+        onClose={() => setShowAddModal(false)}
+        onAdd={handleAddRowConfirm}
+      />
     </div>
   );
 }
