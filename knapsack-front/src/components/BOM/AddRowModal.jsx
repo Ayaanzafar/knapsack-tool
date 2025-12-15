@@ -122,7 +122,7 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
           </div>
 
           {/* Custom Length */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Custom Length (mm): <span className="text-gray-500 text-xs">(Optional - leave empty for standard length)</span>
             </label>
@@ -133,7 +133,7 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
               placeholder="e.g., 5500"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-          </div>
+          </div> */}
 
           {/* Calculation Method Section */}
           <div>
