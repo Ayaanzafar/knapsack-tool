@@ -170,18 +170,32 @@ export default function BOMPage() {
       wtPerRm: null,
       rm: null,
       wt: null,
-      cost: null
+      cost: null,
+      costPerPiece: null
     };
+
+    // Check for user override (Rate Per Piece edit)
+    if (item.userEdits?.userProvidedCostPerPiece !== undefined) {
+      result.costPerPiece = parseFloat(item.userEdits.userProvidedCostPerPiece);
+      result.cost = result.costPerPiece * item.finalTotal;
+      return result;
+    } else if (item.userEdits?.costPerPiece !== undefined) {
+      // Legacy support
+      result.costPerPiece = parseFloat(item.userEdits.costPerPiece);
+      result.cost = result.costPerPiece * item.finalTotal;
+      return result;
+    }
 
     // Check if profile has cost_per_piece (for fasteners)
     if (profile.costPerPiece && profile.costPerPiece > 0) {
-      result.cost = parseFloat(profile.costPerPiece) * item.finalTotal;
+      result.costPerPiece = parseFloat(profile.costPerPiece);
+      result.cost = result.costPerPiece * item.finalTotal;
       return result;
     }
 
     // Weight-based calculation for aluminum profiles
-    // Use item.length (for cut lengths) or profile.standardLength (for accessories)
-    const lengthToUse = item.length || profile.standardLength;
+    // Use item.length (for cut lengths) or user-provided standard length or profile.standardLength (for accessories)
+    const lengthToUse = item.length || item.userEdits?.userProvidedStandardLength || profile.standardLength;
 
     if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
       result.wtPerRm = parseFloat(profile.designWeight);
