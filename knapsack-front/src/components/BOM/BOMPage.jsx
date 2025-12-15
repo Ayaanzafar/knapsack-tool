@@ -1,12 +1,14 @@
 // src/components/BOM/BOMPage.jsx
 // src/components/BOM/BOMPage.jsx
+// src/components/BOM/BOMPage.jsx
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BOMTable from './BOMTable';
 import ComboBox from '../ComboBox';
 import AddRowModal from './AddRowModal';
-import DeleteRowModal from './DeleteRowModal'; // NEW
-import ChangeLogDisplay from './ChangeLogDisplay'; // NEW
+import DeleteRowModal from './DeleteRowModal';
+import ReviewChangesModal from './ReviewChangesModal'; // NEW
+import ChangeLogDisplay from './ChangeLogDisplay';
 import { bomAPI } from '../../services/api';
 
 export default function BOMPage() {
@@ -26,6 +28,11 @@ export default function BOMPage() {
   // NEW: Delete Modal State
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+
+  // NEW: Review Changes State
+  const [baselineBomItems, setBaselineBomItems] = useState([]);
+  const [changesToReview, setChangesToReview] = useState([]);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
   useEffect(() => {
     const loadBOM = async () => {
@@ -382,8 +389,20 @@ export default function BOMPage() {
       timestamp: new Date().toISOString()
     }];
 
+    // Update state
     setBomData({ ...bomData, bomItems: updatedItems });
     setChangeLog(newChangeLog);
+    
+    // Update baseline to match new structure so it doesn't flag as "changed" later
+    if (baselineBomItems) {
+      const updatedBaseline = [...baselineBomItems];
+      // Insert deep copy of new item
+      updatedBaseline.splice(insertAfter, 0, JSON.parse(JSON.stringify(newItem)));
+      // Renumber
+      updatedBaseline.forEach((item, index) => { item.sn = index + 1; });
+      setBaselineBomItems(updatedBaseline);
+    }
+
     setShowAddModal(false);
 
     // Reset addAfterRow to new last row
@@ -417,6 +436,15 @@ export default function BOMPage() {
 
     setBomData({ ...bomData, bomItems: updatedItems });
     setChangeLog(newChangeLog);
+
+    // Update baseline to match new structure
+    if (baselineBomItems) {
+      // Find item in baseline using SN (before re-indexing)
+      const updatedBaseline = baselineBomItems.filter(item => item.sn !== itemToDelete.sn);
+      // Renumber
+      updatedBaseline.forEach((item, index) => { item.sn = index + 1; });
+      setBaselineBomItems(updatedBaseline);
+    }
     
     setDeleteModalOpen(false);
     setItemToDelete(null);
@@ -479,10 +507,134 @@ export default function BOMPage() {
 
   const handleToggleEditMode = () => {
     if (editMode) {
-      // Exiting edit mode, so save changes
-      handleSaveChanges();
+      // Exiting edit mode -> Check for changes instead of direct save
+      handleDoneEditing();
+    } else {
+      // Entering edit mode -> Snapshot the current state as baseline
+      if (bomData?.bomItems) {
+        setBaselineBomItems(JSON.parse(JSON.stringify(bomData.bomItems)));
+      }
+      setEditMode(true);
     }
-    setEditMode(!editMode);
+  };
+
+  const handleDoneEditing = () => {
+    // 1. Compare current items with baseline
+    const changes = [];
+    
+    // We assume the structure is synced (Add/Delete handled separately).
+    // Loop through current items to find edits.
+    bomData.bomItems.forEach((currentItem) => {
+      // Find matching item in baseline by SN if possible, or fallback to index if structure is synced
+      // Since we update baseline on Add/Delete, index matching should be safe-ish,
+      // but let's try to match by SN to be robust, assuming SNs are unique.
+      const baselineItem = baselineBomItems.find(b => b.sn === currentItem.sn);
+      
+      if (baselineItem) {
+        // Check Quantities Per Tab
+        Object.keys(currentItem.quantities).forEach(tabName => {
+          const oldQty = baselineItem.quantities[tabName] || 0;
+          const newQty = currentItem.quantities[tabName] || 0;
+          
+          if (oldQty !== newQty) {
+            changes.push({
+              id: `${currentItem.sn}-${tabName}`, // Unique ID for the change
+              type: 'EDIT_QUANTITY',
+              itemName: currentItem.itemDescription,
+              rowNumber: currentItem.sn,
+              tabName: tabName,
+              oldValue: oldQty,
+              newValue: newQty
+            });
+          }
+        });
+
+        // Check Spare Quantity (if manually overridden)
+        // Note: spareQuantity might auto-calculate, so we only care if it's a manual edit difference?
+        // Or do we care about the value change regardless? 
+        // User asked for "quantity from original quantity".
+        // Let's stick to tab quantities for now as per request.
+      }
+    });
+
+    if (changes.length > 0) {
+      // 2. If changes found, open review modal
+      setChangesToReview(changes);
+      setReviewModalOpen(true);
+    } else {
+      // 3. No changes, just save and exit
+      handleSaveChanges();
+      setEditMode(false);
+    }
+  };
+
+  const handleReviewConfirm = (changesWithReasons) => {
+    // 1. Add new changes to log
+    const newLogEntries = changesWithReasons.map(change => ({
+      type: change.type,
+      itemName: change.itemName,
+      rowNumber: change.rowNumber,
+      tabName: change.tabName,
+      oldValue: change.oldValue,
+      newValue: change.newValue,
+      reason: change.reason,
+      timestamp: new Date().toISOString()
+    }));
+
+    const updatedChangeLog = [...changeLog, ...newLogEntries];
+    setChangeLog(updatedChangeLog);
+
+    // 2. Save everything
+    // We need to use the updated change log in the save function. 
+    // Since state update is async, we can pass it directly or modify handleSaveChanges to accept it.
+    // For now, let's update state and call a modified save logic or just rely on the state update being fast enough?
+    // No, React state updates are batched. Better to pass it explicitly.
+    
+    // Actually, handleSaveChanges uses 'changeLog' from state. 
+    // Let's create a helper to save with explicit data.
+    saveWithExplicitData(bomData, updatedChangeLog);
+
+    setReviewModalOpen(false);
+    setEditMode(false);
+  };
+
+  // Duplicate of handleSaveChanges but accepts data as args to avoid state race conditions
+  const saveWithExplicitData = async (currentBomData, currentChangeLog) => {
+    const bomId = location.state?.bomId;
+    if (!bomId) return;
+
+    setIsSaving(true);
+    try {
+      const dataToSave = {
+        projectInfo: currentBomData.projectInfo,
+        tabs: currentBomData.tabs,
+        panelCounts: currentBomData.panelCounts,
+        bomItems: currentBomData.bomItems,
+        aluminumRate: aluminumRate,
+        sparePercentage: sparePercentage,
+      };
+
+      await bomAPI.updateBOM(bomId, dataToSave, currentChangeLog);
+      
+      // Reload fresh data
+      const freshData = await bomAPI.getBOMById(bomId);
+      if (freshData && freshData.bomData) {
+        setBomData(freshData.bomData);
+        setChangeLog(freshData.changeLog || []);
+        if (freshData.bomData.profilesMap) {
+          setProfiles(Object.values(freshData.bomData.profilesMap));
+        }
+        if (freshData.bomData.aluminumRate) {
+          setAluminumRate(freshData.bomData.aluminumRate);
+        }
+      }
+      alert('Changes saved successfully!');
+    } catch (error) {
+      console.error('Failed to save changes:', error);
+      alert(`Failed to save changes: ${error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (loading) {
@@ -732,6 +884,14 @@ export default function BOMPage() {
         itemDescription={itemToDelete?.itemDescription}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
+      />
+
+      {/* Review Changes Modal */}
+      <ReviewChangesModal
+        isOpen={reviewModalOpen}
+        changes={changesToReview}
+        onCancel={() => setReviewModalOpen(false)}
+        onConfirm={handleReviewConfirm}
       />
     </div>
   );
