@@ -1,5 +1,6 @@
 // src/components/BOM/AddRowModal.jsx
 import { useState, useEffect } from 'react';
+import ComboBox from '../ComboBox'; // NEW: Import ComboBox
 
 export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, onClose, onAdd }) {
   const [selectedProfile, setSelectedProfile] = useState('');
@@ -66,7 +67,8 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
         alert('Please enter a valid Standard Length for weight-based calculation');
         return;
       }
-    } else if (calculationMethod === 'cost_per_piece') {
+    }
+    else if (calculationMethod === 'cost_per_piece') {
       if (!costPerPiece || parseFloat(costPerPiece) <= 0) {
         alert('Please enter a valid Cost Per Piece');
         return;
@@ -88,6 +90,12 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
 
   if (!isOpen) return null;
 
+  // Prepare options for ComboBox
+  const profileOptions = profiles.map(profile => ({
+    value: profile.serialNumber,
+    label: `${profile.genericName} (${profile.preferredRmCode || profile.sunrackCode || 'No Code'})`
+  }));
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -100,27 +108,21 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
 
         {/* Body */}
         <div className="p-6 space-y-6">
-          {/* Select Profile */}
+          {/* Select Profile using ComboBox */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Select Profile: <span className="text-red-500">*</span>
             </label>
-            <select
+            <ComboBox
+              options={profileOptions}
               value={selectedProfile}
-              onChange={(e) => setSelectedProfile(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">-- Choose a profile --</option>
-              {profiles.map(profile => (
-                <option key={profile.serialNumber} value={profile.serialNumber}>
-                  {profile.genericName} ({profile.preferredRmCode || profile.sunrackCode || 'No Code'})
-                </option>
-              ))}
-            </select>
+              onChange={(value) => setSelectedProfile(value)}
+              placeholder="-- Choose a profile --"
+            />
           </div>
 
           {/* Custom Length */}
-          {/* <div>
+          <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Custom Length (mm): <span className="text-gray-500 text-xs">(Optional - leave empty for standard length)</span>
             </label>
@@ -131,7 +133,7 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
               placeholder="e.g., 5500"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-          </div> */}
+          </div>
 
           {/* Calculation Method Section */}
           <div>
