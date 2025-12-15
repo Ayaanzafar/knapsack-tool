@@ -1,9 +1,12 @@
 // src/components/BOM/BOMPage.jsx
+// src/components/BOM/BOMPage.jsx
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BOMTable from './BOMTable';
 import ComboBox from '../ComboBox';
 import AddRowModal from './AddRowModal';
+import DeleteRowModal from './DeleteRowModal'; // NEW
+import ChangeLogDisplay from './ChangeLogDisplay'; // NEW
 import { bomAPI } from '../../services/api';
 
 export default function BOMPage() {
@@ -11,14 +14,18 @@ export default function BOMPage() {
   const navigate = useNavigate();
   const [bomData, setBomData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);  // NEW
-  const [profiles, setProfiles] = useState([]);  // NEW
+  const [editMode, setEditMode] = useState(false);
+  const [profiles, setProfiles] = useState([]);
   const [sparePercentage, setSparePercentage] = useState(1);
-  const [aluminumRate, setAluminumRate] = useState(527.85);  // NEW: Aluminum rate per kg
-  const [changeLog, setChangeLog] = useState([]); // NEW: for edit tracking
-  const [isSaving, setIsSaving] = useState(false); // NEW: for save feedback
-  const [showAddModal, setShowAddModal] = useState(false); // NEW: Add row modal
-  const [addAfterRow, setAddAfterRow] = useState(1); // NEW: Row number to add after (1-based)
+  const [aluminumRate, setAluminumRate] = useState(527.85);
+  const [changeLog, setChangeLog] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addAfterRow, setAddAfterRow] = useState(1);
+  
+  // NEW: Delete Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     const loadBOM = async () => {
@@ -383,6 +390,43 @@ export default function BOMPage() {
     setAddAfterRow(updatedItems.length);
   };
 
+  const handleDeleteRowClick = (item) => {
+    setItemToDelete(item);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = (reason) => {
+    if (!itemToDelete) return;
+
+    // Remove item
+    const updatedItems = bomData.bomItems.filter(item => item.sn !== itemToDelete.sn);
+
+    // Renumber S.N
+    updatedItems.forEach((item, index) => {
+      item.sn = index + 1;
+    });
+
+    // Add to change log
+    const newChangeLog = [...changeLog, {
+      type: 'DELETE_ROW',
+      itemName: itemToDelete.itemDescription,
+      rowNumber: itemToDelete.sn, // Store original SN for reference
+      reason: reason,
+      timestamp: new Date().toISOString()
+    }];
+
+    setBomData({ ...bomData, bomItems: updatedItems });
+    setChangeLog(newChangeLog);
+    
+    setDeleteModalOpen(false);
+    setItemToDelete(null);
+
+    // Update addAfterRow if it's now out of bounds
+    if (addAfterRow > updatedItems.length) {
+      setAddAfterRow(updatedItems.length);
+    }
+  };
+
   const handleSaveChanges = async () => {
     const bomId = location.state?.bomId;
     if (!bomId) {
@@ -662,7 +706,13 @@ export default function BOMPage() {
             onItemUpdate={handleItemUpdate}
             aluminumRate={aluminumRate}
             sparePercentage={sparePercentage}
+            onDeleteRow={handleDeleteRowClick}
           />
+          
+          {/* Change Log Display / Disclaimer */}
+          <div className="px-6 pb-6">
+            <ChangeLogDisplay changeLog={changeLog} />
+          </div>
         </div>
       </main>
 
@@ -674,6 +724,14 @@ export default function BOMPage() {
         tabs={bomData.tabs}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddRowConfirm}
+      />
+
+      {/* Delete Row Modal */}
+      <DeleteRowModal
+        isOpen={deleteModalOpen}
+        itemDescription={itemToDelete?.itemDescription}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
       />
     </div>
   );
