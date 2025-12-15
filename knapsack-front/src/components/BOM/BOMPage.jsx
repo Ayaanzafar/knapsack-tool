@@ -241,7 +241,7 @@ export default function BOMPage() {
           updatedItem.userEdits = { ...updatedItem.userEdits, manualSpareQuantity: manualSpare };
         } else if (field === 'resetSpare') {
           // Reset manual spare override - remove from userEdits
-          const { manualSpareQuantity, ...restEdits } = updatedItem.userEdits;
+          const { manualSpareQuantity: _manualSpareQuantity, ...restEdits } = updatedItem.userEdits;
           updatedItem.userEdits = Object.keys(restEdits).length > 0 ? restEdits : null;
         }
 
@@ -290,12 +290,6 @@ export default function BOMPage() {
       return;
     }
 
-    console.log('Selected profile for add row:', profile);
-    console.log('Profile has designWeight:', profile.designWeight);
-    console.log('Profile has standardLength:', profile.standardLength);
-    console.log('Profile has costPerPiece:', profile.costPerPiece);
-    console.log('Custom length provided:', newItemData.customLength);
-
     // Validate addAfterRow
     const maxRow = bomData.bomItems.length;
     const insertAfter = Math.max(0, Math.min(addAfterRow, maxRow));
@@ -305,7 +299,13 @@ export default function BOMPage() {
     const spareQty = Math.ceil(totalQty * (sparePercentage / 100));
     const finalTotal = totalQty + spareQty;
 
-    // Create new item
+    // Determine calculation type
+    let calculationType = 'ACCESSORY';
+    if (newItemData.customLength) {
+      calculationType = 'CUT_LENGTH';
+    }
+
+    // Create new item with user-provided cost data
     const newItem = {
       sn: insertAfter + 1, // Temporary SN
       profileSerialNumber: newItemData.profileSerialNumber,
@@ -313,26 +313,48 @@ export default function BOMPage() {
       profileImage: profile.profileImagePath,
       itemDescription: profile.genericName,
       material: profile.material,
-      length: newItemData.customLength,
+      length: newItemData.customLength || newItemData.standardLength,
       uom: profile.uom,
-      calculationType: newItemData.customLength ? 'CUT_LENGTH' : 'ACCESSORY',
+      calculationType: calculationType,
       quantities: newItemData.quantities,
       totalQuantity: totalQty,
       spareQuantity: spareQty,
       finalTotal: finalTotal,
       userEdits: {
         addedManually: true,
-        reason: newItemData.reason
+        reason: newItemData.reason,
+        // Store user's calculation preferences
+        userProvidedStandardLength: newItemData.standardLength || null,
+        userProvidedCostPerPiece: newItemData.costPerPiece || null,
+        calculationMethod: newItemData.calculationMethod
       }
     };
 
+    // Create a modified profile object with user overrides
+    const profileForCalculation = {
+      ...profile,
+      // Override profile values with user-provided values if they exist
+      standardLength: newItemData.standardLength || profile.standardLength,
+      costPerPiece: newItemData.costPerPiece || profile.costPerPiece
+    };
+
+    // IMPORTANT: Force the calculation method
+    // If user selected cost_per_piece, temporarily modify profile to prioritize it
+    if (newItemData.calculationMethod === 'cost_per_piece' && newItemData.costPerPiece) {
+      profileForCalculation.costPerPiece = parseFloat(newItemData.costPerPiece);
+    } else if (newItemData.calculationMethod === 'standard_length') {
+      // If standard length selected, ensure costPerPiece doesn't interfere
+      // Set costPerPiece to null/0 to force weight-based calculation
+      profileForCalculation.costPerPiece = null;
+    }
+
     // Calculate weight and cost
-    const weightCost = calculateWeightAndCost(newItem, profile, aluminumRate);
-    console.log('Calculated weight and cost:', weightCost);
+    const weightCost = calculateWeightAndCost(newItem, profileForCalculation, aluminumRate);
     newItem.wtPerRm = weightCost.wtPerRm;
     newItem.rm = weightCost.rm;
     newItem.wt = weightCost.wt;
     newItem.cost = weightCost.cost;
+    newItem.costPerPiece = weightCost.costPerPiece; // Ensure this is captured if returned
 
     // Insert into array at the specified position
     const updatedItems = [...bomData.bomItems];
@@ -343,12 +365,13 @@ export default function BOMPage() {
       item.sn = index + 1;
     });
 
-    // Add to change log
+    // Add to change log with calculation method
     const newChangeLog = [...changeLog, {
       type: 'ADD_ROW',
       itemName: newItem.itemDescription,
       rowNumber: insertAfter + 1,
       reason: newItemData.reason,
+      calculationMethod: newItemData.calculationMethod,
       timestamp: new Date().toISOString()
     }];
 

@@ -6,6 +6,9 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
   const [quantities, setQuantities] = useState({});
   const [customLength, setCustomLength] = useState('');
   const [reason, setReason] = useState('');
+  const [standardLength, setStandardLength] = useState('');
+  const [costPerPiece, setCostPerPiece] = useState('');
+  const [calculationMethod, setCalculationMethod] = useState('standard_length'); // or 'cost_per_piece'
 
   // Initialize quantities when tabs change
   useEffect(() => {
@@ -22,6 +25,9 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
       setSelectedProfile('');
       setCustomLength('');
       setReason('');
+      setStandardLength('');
+      setCostPerPiece('');
+      setCalculationMethod('standard_length');
       const initialQuantities = {};
       tabs.forEach(tab => {
         initialQuantities[tab] = 0;
@@ -54,10 +60,26 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
       return;
     }
 
+    // NEW VALIDATION: Check calculation method requirements
+    if (calculationMethod === 'standard_length') {
+      if (!standardLength || parseFloat(standardLength) <= 0) {
+        alert('Please enter a valid Standard Length for weight-based calculation');
+        return;
+      }
+    } else if (calculationMethod === 'cost_per_piece') {
+      if (!costPerPiece || parseFloat(costPerPiece) <= 0) {
+        alert('Please enter a valid Cost Per Piece');
+        return;
+      }
+    }
+
     onAdd({
       profileSerialNumber: selectedProfile,
       quantities: quantities,
       customLength: customLength ? parseInt(customLength) : null,
+      standardLength: standardLength ? parseInt(standardLength) : null,
+      costPerPiece: costPerPiece ? parseFloat(costPerPiece) : null,
+      calculationMethod: calculationMethod,
       reason: reason
     });
 
@@ -98,7 +120,7 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
           </div>
 
           {/* Custom Length */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Custom Length (mm): <span className="text-gray-500 text-xs">(Optional - leave empty for standard length)</span>
             </label>
@@ -109,6 +131,88 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
               placeholder="e.g., 5500"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
+          </div> */}
+
+          {/* Calculation Method Section */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Cost Calculation Method: <span className="text-red-500">*</span>
+            </label>
+
+            <div className="space-y-4">
+              {/* Radio Button 1: Standard Length */}
+              <div className="flex items-start gap-3">
+                <input
+                  type="radio"
+                  id="calc-standard-length"
+                  name="calculationMethod"
+                  value="standard_length"
+                  checked={calculationMethod === 'standard_length'}
+                  onChange={(e) => setCalculationMethod(e.target.value)}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <label htmlFor="calc-standard-length" className="text-sm font-medium text-gray-700 cursor-pointer">
+                    Calculate based on Standard Length (Weight-based)
+                  </label>
+                  <div className="mt-2">
+                    <label className="block text-xs text-gray-600 mb-1">
+                      Standard Length (mm):
+                    </label>
+                    <input
+                      type="number"
+                      value={standardLength}
+                      onChange={(e) => setStandardLength(e.target.value)}
+                      placeholder="e.g., 6000"
+                      disabled={calculationMethod !== 'standard_length'}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                        calculationMethod !== 'standard_length' ? 'bg-gray-100 cursor-not-allowed' : 'border-gray-300'
+                      }`}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Cost = (Length/1000) × Quantity × Weight/RM × Aluminum Rate
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Radio Button 2: Cost Per Piece */}
+              <div className="flex items-start gap-3">
+                <input
+                  type="radio"
+                  id="calc-cost-per-piece"
+                  name="calculationMethod"
+                  value="cost_per_piece"
+                  checked={calculationMethod === 'cost_per_piece'}
+                  onChange={(e) => setCalculationMethod(e.target.value)}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <label htmlFor="calc-cost-per-piece" className="text-sm font-medium text-gray-700 cursor-pointer">
+                    Calculate based on Cost Per Piece (Direct cost)
+                  </label>
+                  <div className="mt-2">
+                    <label className="block text-xs text-gray-600 mb-1">
+                      Cost Per Piece (₹):
+                    </label>
+                    <input
+                      type="number"
+                      value={costPerPiece}
+                      onChange={(e) => setCostPerPiece(e.target.value)}
+                      placeholder="e.g., 25.50"
+                      step="0.01"
+                      disabled={calculationMethod !== 'cost_per_piece'}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                        calculationMethod !== 'cost_per_piece' ? 'bg-gray-100 cursor-not-allowed' : 'border-gray-300'
+                      }`}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Cost = Cost Per Piece × Quantity
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Quantities per Building */}
