@@ -71,20 +71,10 @@ class BomService {
   }
 
   // Update BOM master item
-  async updateMasterItem(id, data) {
+  async updateMasterItem(serialNumber, data) {
     return await prisma.bomMasterItem.update({
-      where: { id: parseInt(id) },
-      data: {
-        serialNumber: data.serialNumber,
-        sunrackCode: data.sunrackCode,
-        itemDescription: data.itemDescription,
-        material: data.material,
-        standardLength: data.standardLength,
-        uom: data.uom,
-        category: data.category,
-        profileImagePath: data.profileImagePath,
-        updatedAt: new Date()
-      }
+      where: { serialNumber: serialNumber },
+      data: data, // Allow partial updates
     });
   }
 

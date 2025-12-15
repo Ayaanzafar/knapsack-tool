@@ -222,6 +222,18 @@ class BomReconstructionService {
       costPerPiece: null
     };
 
+    // Check for user override (Rate Per Piece edit)
+    if (item.userEdits?.userProvidedCostPerPiece !== undefined) {
+      result.costPerPiece = parseFloat(item.userEdits.userProvidedCostPerPiece);
+      result.cost = result.costPerPiece * item.finalTotal;
+      return result;
+    } else if (item.userEdits?.costPerPiece !== undefined) {
+      // Legacy support
+      result.costPerPiece = parseFloat(item.userEdits.costPerPiece);
+      result.cost = result.costPerPiece * item.finalTotal;
+      return result;
+    }
+
     // Check if profile has cost_per_piece (for fasteners/accessories)
     if (profile.costPerPiece && profile.costPerPiece > 0) {
       result.costPerPiece = parseFloat(profile.costPerPiece);

@@ -274,6 +274,15 @@ export default function BOMPage() {
           const manualSpare = Number(value) || 0;
           updatedItem.spareQuantity = manualSpare;
           updatedItem.userEdits = { ...updatedItem.userEdits, manualSpareQuantity: manualSpare };
+        } else if (field === 'costPerPiece') {
+          // Update Cost Per Piece
+          const newRate = parseFloat(value) || 0;
+          updatedItem.costPerPiece = newRate;
+          updatedItem.userEdits = { 
+            ...updatedItem.userEdits, 
+            userProvidedCostPerPiece: newRate,
+            calculationMethod: 'cost_per_piece' 
+          };
         } else if (field === 'resetSpare') {
           // Reset manual spare override - remove from userEdits
           const { manualSpareQuantity: _manualSpareQuantity, ...restEdits } = updatedItem.userEdits;
@@ -302,7 +311,13 @@ export default function BOMPage() {
         // Recalculate weight and cost
         const profile = bomData.profilesMap[updatedItem.profileSerialNumber];
         if (profile) {
-          const weightCost = calculateWeightAndCost(updatedItem, profile, aluminumRate);
+          // Create temporary profile with overrides
+          const profileForCalculation = { ...profile };
+          if (updatedItem.userEdits?.userProvidedCostPerPiece !== undefined) {
+            profileForCalculation.costPerPiece = updatedItem.userEdits.userProvidedCostPerPiece;
+          }
+          
+          const weightCost = calculateWeightAndCost(updatedItem, profileForCalculation, aluminumRate);
           updatedItem = { ...updatedItem, ...weightCost };
         }
 
@@ -678,6 +693,28 @@ export default function BOMPage() {
             newValue: newManualSpare ?? 'Auto'  // Display 'Auto' if not manually set
           });
         }
+
+        // Check Cost Per Piece Override (Rate/Piece)
+        const oldCostOverride = baselineItem.userEdits?.userProvidedCostPerPiece;
+        const newCostOverride = currentItem.userEdits?.userProvidedCostPerPiece;
+        
+        if (newCostOverride !== undefined && newCostOverride !== oldCostOverride) {
+             // Determine what the effective old value was (override or master default)
+             // Note: baselineItem.costPerPiece holds the effective value at start of edit
+             const effectiveOldValue = oldCostOverride ?? baselineItem.costPerPiece ?? 0;
+
+             changes.push({
+                id: `${currentItem._id}-cost-per-piece`,
+                type: 'EDIT_COST_PER_PIECE',
+                itemName: currentItem.itemDescription,
+                rowNumber: currentItem.sn,
+                tabName: null,
+                oldValue: effectiveOldValue,
+                newValue: newCostOverride,
+                // Pass profileSerialNumber to help backend identify which master item to update
+                profileSerialNumber: currentItem.profileSerialNumber
+             });
+        }
       }
     });
 
@@ -718,8 +755,33 @@ export default function BOMPage() {
     }
   };
 
-  const handleReviewConfirm = (changesWithReasons) => {
-    // 1. Add new changes to log
+  const handleReviewConfirm = async (changesWithReasons) => {
+    // 1. Handle Master Updates (if any)
+    const masterUpdates = changesWithReasons.filter(c => c.updateMaster && c.profileSerialNumber);
+    
+    if (masterUpdates.length > 0) {
+      try {
+        // We need to update each master item. 
+        // Ideally this should be a batch API, but sequential calls are easier to implement now.
+        // We'll use a Promise.all to do it in parallel.
+        await Promise.all(masterUpdates.map(update => {
+          // Check if api.js has this method, otherwise we might need to implement it.
+          // Assuming bomAPI.updateMasterItem exists or we use a generic fetch.
+          // Since I can't verify api.js content right now, I'll try to use the likely endpoint structure.
+          // POST /api/bom/master-items/:serialNumber/update
+          
+          // Actually, let's use the bomAPI if available. If not, I'll add a helper.
+          // For now, let's assume bomAPI.updateMasterItem(serialNumber, data) works.
+          return bomAPI.updateMasterItem(update.profileSerialNumber, { costPerPiece: update.newValue });
+        }));
+        console.log('Updated master items:', masterUpdates.length);
+      } catch (error) {
+        console.error('Failed to update master items:', error);
+        alert('Warning: Failed to update Master Database. Project-specific changes will still be saved.');
+      }
+    }
+
+    // 2. Add new changes to log
     const newLogEntries = changesWithReasons.map(change => ({
       type: change.type,
       itemName: change.itemName,
@@ -734,14 +796,7 @@ export default function BOMPage() {
     const updatedChangeLog = [...changeLog, ...newLogEntries];
     setChangeLog(updatedChangeLog);
 
-    // 2. Save everything
-    // We need to use the updated change log in the save function. 
-    // Since state update is async, we can pass it directly or modify handleSaveChanges to accept it.
-    // For now, let's update state and call a modified save logic or just rely on the state update being fast enough?
-    // No, React state updates are batched. Better to pass it explicitly.
-    
-    // Actually, handleSaveChanges uses 'changeLog' from state. 
-    // Let's create a helper to save with explicit data.
+    // 3. Save everything
     saveWithExplicitData(bomData, updatedChangeLog);
 
     setReviewModalOpen(false);

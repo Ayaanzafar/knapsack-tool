@@ -19,6 +19,7 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
     rm,
     wt,
     cost,
+    costPerPiece, // Destructured
     profileSerialNumber,
     calculationType,
     userEdits,
@@ -233,6 +234,25 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
       {/* Wt (Total Weight) */}
       <td className={`border border-gray-400 px-3 py-2 text-sm text-center bg-orange-50`}>
         {formatNumber(wt, 1)}
+      </td>
+
+      {/* Rate Per Piece */}
+      <td className={`border border-gray-400 px-3 py-2 text-sm text-center ${getCellBgColor()}`}>
+        {calculationType === 'ACCESSORY' ? (
+          editMode ? (
+            <input
+              type="number"
+              value={costPerPiece || 0}
+              onChange={(e) => handleInputChange('costPerPiece', e.target.value)}
+              className="w-20 p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              step="0.01"
+            />
+          ) : (
+            formatNumber(costPerPiece, 2)
+          )
+        ) : (
+          '-'
+        )}
       </td>
 
       {/* Cost */}

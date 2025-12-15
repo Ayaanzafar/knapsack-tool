@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfirm }) {
   const [reasons, setReasons] = useState({});
+  const [updateMasterMap, setUpdateMasterMap] = useState({}); // New state for checkboxes
 
   if (!isOpen) return null;
 
@@ -10,6 +11,13 @@ export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfir
     setReasons(prev => ({
       ...prev,
       [id]: value
+    }));
+  };
+
+  const handleUpdateMasterChange = (id, checked) => {
+    setUpdateMasterMap(prev => ({
+      ...prev,
+      [id]: checked
     }));
   };
 
@@ -27,19 +35,21 @@ export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfir
       return;
     }
 
-    // Combine changes with their reasons
+    // Combine changes with their reasons and master update flag
     const changesWithReasons = changes.map(change => ({
       ...change,
-      reason: reasons[change.id]
+      reason: reasons[change.id],
+      updateMaster: updateMasterMap[change.id] || false // Include the flag
     }));
 
     onConfirm(changesWithReasons);
     setReasons({}); // Reset form
+    setUpdateMasterMap({});
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="bg-purple-600 text-white px-6 py-4 rounded-t-lg shrink-0">
           <h2 className="text-xl font-bold flex items-center gap-2">
@@ -56,11 +66,12 @@ export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfir
         {/* Scrollable Body */}
         <div className="p-6 overflow-y-auto flex-1">
           <table className="w-full border-collapse">
-            <thead className="bg-gray-50 sticky top-0">
+            <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
               <tr>
                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Item Details</th>
                 <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Location</th>
                 <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Change</th>
+                <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Update Master DB?</th>
                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Reason <span className="text-red-500">*</span></th>
               </tr>
             </thead>
@@ -72,7 +83,7 @@ export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfir
                     <div className="text-xs text-gray-500">Row {change.rowNumber}</div>
                   </td>
                   <td className="px-4 py-3 text-sm text-center text-gray-600 font-medium">
-                    {change.tabName}
+                    {change.tabName || '-'}
                   </td>
                   <td className="px-4 py-3 text-sm text-center">
                     <div className="flex items-center justify-center gap-2">
@@ -82,9 +93,19 @@ export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfir
                       </svg>
                       <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">{change.newValue}</span>
                     </div>
-                    <div className="text-xs text-gray-400 mt-1">
-                      Difference: {change.newValue > change.oldValue ? '+' : ''}{change.newValue - change.oldValue}
-                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {change.type === 'EDIT_COST_PER_PIECE' && (
+                      <div className="flex flex-col items-center">
+                        <input
+                          type="checkbox"
+                          checked={updateMasterMap[change.id] || false}
+                          onChange={(e) => handleUpdateMasterChange(change.id, e.target.checked)}
+                          className="w-4 h-4 text-purple-600 rounded cursor-pointer"
+                        />
+                        <span className="text-[10px] text-gray-500 mt-1">Apply to Future</span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <input
