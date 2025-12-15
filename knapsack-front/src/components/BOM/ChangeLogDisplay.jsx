@@ -23,6 +23,12 @@ export default function ChangeLogDisplay({ changeLog }) {
 
       case 'REORDER_ROW':
         return `Item "${change.itemName}" moved from ${change.oldValue} to ${change.newValue}.`;
+      
+      case 'EDIT_SPARE_QUANTITY':
+        return `Manual spare quantity for "${change.itemName}" (Row ${change.rowNumber}) changed from ${change.oldValue} to ${change.newValue}.`;
+
+      case 'CHANGE_ALUMINUM_RATE':
+        return `Global aluminum rate changed from ₹${change.oldValue} to ₹${change.newValue}.`;
 
       default:
         return 'Change recorded';

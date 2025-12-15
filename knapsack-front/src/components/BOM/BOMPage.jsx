@@ -43,6 +43,10 @@ export default function BOMPage() {
   const [changesToReview, setChangesToReview] = useState([]);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
+  // NEW: Baselines for global settings
+  const [baselineSparePercentage, setBaselineSparePercentage] = useState(1);
+  const [baselineAluminumRate, setBaselineAluminumRate] = useState(527.85);
+
   // NEW: Drag Reason State
   const [dragModalOpen, setDragModalOpen] = useState(false);
   const [pendingDrag, setPendingDrag] = useState(null); // { oldIndex, newIndex, item }
@@ -595,16 +599,22 @@ export default function BOMPage() {
     }
   };
 
-  const handleDiscardChanges = () => {
-    if (window.confirm('Are you sure you want to discard all unsaved changes? This will revert the BOM to its state before you started editing.')) {
-      if (baselineBomItems && baselineBomItems.length > 0) {
-        // Revert to baseline
-        setBomData(prev => ({ ...prev, bomItems: JSON.parse(JSON.stringify(baselineBomItems)) }));
-      }
-      setEditMode(false);
-      setBaselineBomItems([]);
-    }
-  };
+          const handleDiscardChanges = () => {
+            if (window.confirm('Are you sure you want to discard all unsaved changes? This will revert the BOM to its state before you started editing.')) {
+              if (bomData) { // Check bomData exists to avoid errors
+                // Revert bomItems
+                setBomData(prev => ({ ...prev, bomItems: JSON.parse(JSON.stringify(baselineBomItems)) }));
+                // Revert global settings
+                setSparePercentage(baselineSparePercentage);
+                setAluminumRate(baselineAluminumRate);
+              }
+              
+              setEditMode(false);
+              setBaselineBomItems([]);
+              setBaselineSparePercentage(1); // Reset to a neutral default for next edit session
+              setBaselineAluminumRate(527.85); // Reset to a neutral default for next edit session
+            }
+          };
 
   const handleToggleEditMode = () => {
     if (editMode) {
@@ -614,6 +624,8 @@ export default function BOMPage() {
       // Entering edit mode -> Snapshot the current state as baseline
       if (bomData?.bomItems) {
         setBaselineBomItems(JSON.parse(JSON.stringify(bomData.bomItems)));
+        setBaselineSparePercentage(sparePercentage); // NEW
+        setBaselineAluminumRate(aluminumRate);     // NEW
       }
       setEditMode(true);
     }
@@ -626,10 +638,8 @@ export default function BOMPage() {
     // We assume the structure is synced (Add/Delete handled separately).
     // Loop through current items to find edits.
     bomData.bomItems.forEach((currentItem) => {
-      // Find matching item in baseline by SN if possible, or fallback to index if structure is synced
-      // Since we update baseline on Add/Delete, index matching should be safe-ish,
-      // but let's try to match by SN to be robust, assuming SNs are unique.
-      const baselineItem = baselineBomItems.find(b => b.sn === currentItem.sn);
+      // Find matching item in baseline by _id
+      const baselineItem = baselineBomItems.find(b => b._id === currentItem._id);
       
       if (baselineItem) {
         // Check Quantities Per Tab
@@ -639,7 +649,7 @@ export default function BOMPage() {
           
           if (oldQty !== newQty) {
             changes.push({
-              id: `${currentItem.sn}-${tabName}`, // Unique ID for the change
+              id: `${currentItem._id}-${tabName}`, // Unique ID for the change
               type: 'EDIT_QUANTITY',
               itemName: currentItem.itemDescription,
               rowNumber: currentItem.sn,
@@ -650,13 +660,52 @@ export default function BOMPage() {
           }
         });
 
-        // Check Spare Quantity (if manually overridden)
-        // Note: spareQuantity might auto-calculate, so we only care if it's a manual edit difference?
-        // Or do we care about the value change regardless? 
-        // User asked for "quantity from original quantity".
-        // Let's stick to tab quantities for now as per request.
+        // Check Spare Quantity (manual override)
+        // If currentItem.userEdits?.manualSpareQuantity exists and differs from baseline's
+        const oldManualSpare = baselineItem.userEdits?.manualSpareQuantity;
+        const newManualSpare = currentItem.userEdits?.manualSpareQuantity;
+
+        // Only log if it was manually set and changed, or if it was manually set and then unset
+        // Check if baseline had a manual spare or if current has one and they are different
+        if ((oldManualSpare !== undefined || newManualSpare !== undefined) && (oldManualSpare !== newManualSpare)) {
+          changes.push({
+            id: `${currentItem._id}-manual-spare`,
+            type: 'EDIT_SPARE_QUANTITY', // NEW change type
+            itemName: currentItem.itemDescription,
+            rowNumber: currentItem.sn,
+            tabName: null,
+            oldValue: oldManualSpare ?? 'Auto', // Display 'Auto' if not manually set
+            newValue: newManualSpare ?? 'Auto'  // Display 'Auto' if not manually set
+          });
+        }
       }
     });
+
+    // Detect Global Spare Percentage Change
+    if (baselineSparePercentage !== sparePercentage) {
+        changes.push({
+            id: `global-spare-pct`,
+            type: 'CHANGE_SPARE_PERCENTAGE',
+            itemName: 'Global Settings',
+            rowNumber: null,
+            tabName: null,
+            oldValue: baselineSparePercentage,
+            newValue: sparePercentage
+        });
+    }
+
+    // Detect Global Aluminum Rate Change
+    if (baselineAluminumRate !== aluminumRate) {
+        changes.push({
+            id: `global-aluminum-rate`,
+            type: 'CHANGE_ALUMINUM_RATE', // NEW change type
+            itemName: 'Global Settings',
+            rowNumber: null,
+            tabName: null,
+            oldValue: baselineAluminumRate,
+            newValue: aluminumRate
+        });
+    }
 
     if (changes.length > 0) {
       // 2. If changes found, open review modal
