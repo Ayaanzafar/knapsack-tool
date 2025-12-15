@@ -216,7 +216,7 @@ export default function BOMPage() {
           };
 
           // Recalculate weight and cost
-          const weightCost = calculateWeightAndCost(updatedItem, selectedProfile);
+          const weightCost = calculateWeightAndCost(updatedItem, selectedProfile, aluminumRate);
           updatedItem.wtPerRm = weightCost.wtPerRm;
           updatedItem.rm = weightCost.rm;
           updatedItem.wt = weightCost.wt;
@@ -240,7 +240,7 @@ export default function BOMPage() {
           };
 
           // Recalculate weight and cost
-          const weightCost = calculateWeightAndCost(updatedItem, selectedProfile);
+          const weightCost = calculateWeightAndCost(updatedItem, selectedProfile, aluminumRate);
           updatedItem.wtPerRm = weightCost.wtPerRm;
           updatedItem.rm = weightCost.rm;
           updatedItem.wt = weightCost.wt;
