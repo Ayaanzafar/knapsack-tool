@@ -8,8 +8,17 @@ import ComboBox from '../ComboBox';
 import AddRowModal from './AddRowModal';
 import DeleteRowModal from './DeleteRowModal';
 import ReviewChangesModal from './ReviewChangesModal'; // NEW
+import ReasonModal from './ReasonModal'; // NEW
 import ChangeLogDisplay from './ChangeLogDisplay';
 import { bomAPI } from '../../services/api';
+import { arrayMove } from '@dnd-kit/sortable'; // NEW
+
+const ensureStableIds = (items) => {
+  return items.map(item => ({
+    ...item,
+    _id: item._id || `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  }));
+};
 
 export default function BOMPage() {
   const location = useLocation();
@@ -34,6 +43,10 @@ export default function BOMPage() {
   const [changesToReview, setChangesToReview] = useState([]);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
+  // NEW: Drag Reason State
+  const [dragModalOpen, setDragModalOpen] = useState(false);
+  const [pendingDrag, setPendingDrag] = useState(null); // { oldIndex, newIndex, item }
+
   useEffect(() => {
     const loadBOM = async () => {
       try {
@@ -56,6 +69,10 @@ export default function BOMPage() {
         }
 
         if (data && data.bomData) {
+          // Ensure every item has a stable ID for drag-and-drop
+          if (data.bomData.bomItems) {
+            data.bomData.bomItems = ensureStableIds(data.bomData.bomItems);
+          }
           setBomData(data.bomData);
 
           // Extract profiles from bomData
@@ -319,8 +336,9 @@ export default function BOMPage() {
       calculationType = 'CUT_LENGTH';
     }
 
-    // Create new item with user-provided cost data
+    // Create new item
     const newItem = {
+      _id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       sn: insertAfter + 1, // Temporary SN
       profileSerialNumber: newItemData.profileSerialNumber,
       sunrackCode: profile.preferredRmCode || profile.sunrackCode,
@@ -407,6 +425,78 @@ export default function BOMPage() {
 
     // Reset addAfterRow to new last row
     setAddAfterRow(updatedItems.length);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      // Use _id (which is passed as id to dnd-kit)
+      const oldIndex = bomData.bomItems.findIndex((item) => item._id === active.id);
+      const newIndex = bomData.bomItems.findIndex((item) => item._id === over.id);
+      
+      // Optimistically move the item in the UI
+      const newItems = arrayMove(bomData.bomItems, oldIndex, newIndex);
+      
+      // Renumber temporarily for display
+      const renumberedItems = newItems.map((item, index) => ({
+        ...item,
+        sn: index + 1
+      }));
+
+      // Update UI
+      setBomData({ ...bomData, bomItems: renumberedItems });
+
+      // Store pending drag details and open modal with a slight delay to allow paint
+      setPendingDrag({
+        oldIndex,
+        newIndex,
+        item: bomData.bomItems[oldIndex],
+        originalItems: bomData.bomItems // Store original order for revert
+      });
+      setTimeout(() => setDragModalOpen(true), 150);
+    }
+  };
+
+  const handleDragConfirm = (reason) => {
+    if (!pendingDrag) return;
+
+    const { item, oldIndex, newIndex } = pendingDrag;
+
+    // Log the change
+    const newChangeLog = [...changeLog, {
+      type: 'REORDER_ROW',
+      itemName: item.itemDescription,
+      rowNumber: newIndex + 1,
+      oldValue: `Row ${oldIndex + 1}`,
+      newValue: `Row ${newIndex + 1}`,
+      reason: reason,
+      timestamp: new Date().toISOString()
+    }];
+
+    setChangeLog(newChangeLog);
+
+    // Update baseline to match new order so it doesn't flag as "changed" later
+    if (baselineBomItems) {
+      const newBaseline = arrayMove(baselineBomItems, oldIndex, newIndex);
+      newBaseline.forEach((itm, idx) => { itm.sn = idx + 1; });
+      setBaselineBomItems(newBaseline);
+    }
+
+    // Save to DB immediately to persist the new order and the log
+    saveWithExplicitData(bomData, newChangeLog);
+
+    setDragModalOpen(false);
+    setPendingDrag(null);
+  };
+
+  const handleDragCancel = () => {
+    if (pendingDrag) {
+      // Revert to original order
+      setBomData({ ...bomData, bomItems: pendingDrag.originalItems });
+    }
+    setDragModalOpen(false);
+    setPendingDrag(null);
   };
 
   const handleDeleteRowClick = (item) => {
@@ -619,6 +709,10 @@ export default function BOMPage() {
       // Reload fresh data
       const freshData = await bomAPI.getBOMById(bomId);
       if (freshData && freshData.bomData) {
+        // Ensure stable IDs are preserved/generated after reload
+        if (freshData.bomData.bomItems) {
+          freshData.bomData.bomItems = ensureStableIds(freshData.bomData.bomItems);
+        }
         setBomData(freshData.bomData);
         setChangeLog(freshData.changeLog || []);
         if (freshData.bomData.profilesMap) {
@@ -859,6 +953,7 @@ export default function BOMPage() {
             aluminumRate={aluminumRate}
             sparePercentage={sparePercentage}
             onDeleteRow={handleDeleteRowClick}
+            onDragEnd={handleDragEnd}
           />
           
           {/* Change Log Display / Disclaimer */}
@@ -884,6 +979,15 @@ export default function BOMPage() {
         itemDescription={itemToDelete?.itemDescription}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
+      />
+
+      {/* Drag Reason Modal */}
+      <ReasonModal
+        isOpen={dragModalOpen}
+        title="Confirm Move"
+        message={`You moved "${pendingDrag?.item?.itemDescription}" from Row ${pendingDrag ? pendingDrag.oldIndex + 1 : ''} to Row ${pendingDrag ? pendingDrag.newIndex + 1 : ''}.`}
+        onClose={handleDragCancel}
+        onConfirm={handleDragConfirm}
       />
 
       {/* Review Changes Modal */}

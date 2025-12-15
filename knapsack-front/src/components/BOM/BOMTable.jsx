@@ -1,11 +1,74 @@
-// // src/components/BOM/BOMTable.jsx
+// src/components/BOM/BOMTable.jsx
 import BOMTableRow from './BOMTableRow';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
-export default function BOMTable({ bomData, editMode, onProfileChange, profileOptions, onItemUpdate, aluminumRate, sparePercentage, onDeleteRow }) {
+function SortableBOMTableRow(props) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: props.item._id || props.item.sn, disabled: !props.editMode });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    position: 'relative',
+    zIndex: isDragging ? 999 : 'auto',
+  };
+
+  return (
+    <BOMTableRow
+      {...props}
+      ref={setNodeRef}
+      style={style}
+      dragHandleProps={{ ...attributes, ...listeners }}
+    />
+  );
+}
+
+// We need to modify BOMTableRow slightly to accept ref and style if we pass them directly,
+// but since BOMTableRow is a functional component, we can't attach ref directly unless we forwardRef.
+// Alternatively, SortableBOMTableRow can return the tr directly, but that duplicates code.
+// Better: Have BOMTableRow accept a wrapper prop or just wrap it in a Fragment? No, tr must be direct child of tbody.
+// Let's assume BOMTableRow returns a `tr`. `useSortable` needs the ref on the DOM element.
+// So we need to forwardRef in BOMTableRow OR pass a prop like `rowRef`.,
+// Let's modify BOMTableRow to accept `rowRef` and `style` props.
+
+export default function BOMTable({ bomData, editMode, onProfileChange, profileOptions, onItemUpdate, aluminumRate, sparePercentage, onDeleteRow, onDragEnd }) {
   const { tabs, panelCounts, bomItems, projectInfo } = bomData;
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   return (
     <div className="overflow-x-auto">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={onDragEnd}
+      >
         <table className="w-full border-collapse">
         <thead>
           <tr className="bg-yellow-400">
@@ -157,7 +220,7 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
               UoM
             </th>
 
-            {/* column under "Building Code" / "No. of Panels" is blank on row 3 */}
+            {/* column under "Building Code" / "No. of Panels" is blank on 3 */}
 
 
             {/* Qty. under each Tn */}
@@ -210,21 +273,27 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
         </thead>
 
         <tbody>
-          {bomItems.map((item, index) => (
-            <BOMTableRow
-              key={`${item.sn}-${index}`}
-              item={item}
-              tabs={tabs}
-              isEven={index % 2 === 0}
-              editMode={editMode}
-              profileOptions={profileOptions}
-              onProfileChange={onProfileChange}
-              onItemUpdate={onItemUpdate}
-              onDeleteRow={onDeleteRow}
-            />
-          ))}
+          <SortableContext
+            items={bomItems.map(item => item._id || item.sn)}
+            strategy={verticalListSortingStrategy}
+          >
+            {bomItems.map((item, index) => (
+              <SortableBOMTableRow
+                key={item._id || item.sn}
+                item={item}
+                tabs={tabs}
+                isEven={index % 2 === 0}
+                editMode={editMode}
+                profileOptions={profileOptions}
+                onProfileChange={onProfileChange}
+                onItemUpdate={onItemUpdate}
+                onDeleteRow={onDeleteRow}
+              />
+            ))}
+          </SortableContext>
         </tbody>
       </table>
+      </DndContext>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 // src/components/BOM/BOMTableRow.jsx
+import React, { forwardRef } from 'react';
 import ComboBox from '../ComboBox';
 
-export default function BOMTableRow({ item, tabs, isEven, editMode, onProfileChange, profileOptions, onItemUpdate, onDeleteRow }) {
+const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange, profileOptions, onItemUpdate, onDeleteRow, dragHandleProps, ...props }, ref) => {
   const {
     sn,
     sunrackCode,
@@ -51,20 +52,36 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, onProfileCha
 
   return (
     <tr
+      ref={ref}
+      {...props}
       className={isEven ? 'bg-white' : 'bg-gray-50'}
     >
       {/* Actions Column (Edit Mode Only) */}
       {editMode && (
         <td className={`border border-gray-400 px-2 py-2 text-center ${getCellBgColor()}`}>
-          <button
-            onClick={() => onDeleteRow(item)}
-            className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors"
-            title="Delete Item"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-          </button>
+          <div className="flex items-center justify-center gap-2">
+            {/* Drag Handle */}
+            <div
+              className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+              title="Drag to reorder"
+              {...dragHandleProps}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            
+            {/* Delete Button */}
+            <button
+              onClick={() => onDeleteRow(item)}
+              className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors"
+              title="Delete Item"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
         </td>
       )}
 
@@ -224,4 +241,6 @@ export default function BOMTableRow({ item, tabs, isEven, editMode, onProfileCha
       </td>
     </tr>
   );
-}
+});
+
+export default BOMTableRow;
