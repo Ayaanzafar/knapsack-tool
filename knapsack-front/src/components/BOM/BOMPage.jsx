@@ -1009,11 +1009,7 @@ export default function BOMPage() {
         }}
         bomData={bomData}
         originalBomData={originalBomData}
-        onCancel={() => {
-          setReviewModalOpen(false);
-          changeTracker.stopTracking();
-          window.location.reload();
-        }}
+        onCancel={() => setReviewModalOpen(false)}
         onConfirm={handleReviewConfirm}
       />
     </div>
