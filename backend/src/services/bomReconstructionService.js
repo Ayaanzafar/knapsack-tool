@@ -243,7 +243,7 @@ class BomReconstructionService {
 
     // Weight-based calculation for aluminum profiles
     // Use item.length (for cut lengths) or profile.standardLength (for accessories)
-    const lengthToUse = item.length || profile.standardLength;
+    const lengthToUse = item.length || item.userEdits?.userProvidedStandardLength || profile.standardLength;
 
     if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
       result.wtPerRm = parseFloat(profile.designWeight);

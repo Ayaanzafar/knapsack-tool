@@ -198,32 +198,41 @@ export default function BOMPage() {
       cost: null,
       costPerPiece: null
     };
-
-    if (item.userEdits?.userProvidedCostPerPiece !== undefined) {
-      result.costPerPiece = parseFloat(item.userEdits.userProvidedCostPerPiece);
-      result.cost = result.costPerPiece * item.finalTotal;
-      return result;
-    } else if (item.userEdits?.costPerPiece !== undefined) {
-      result.costPerPiece = parseFloat(item.userEdits.costPerPiece);
-      result.cost = result.costPerPiece * item.finalTotal;
+  
+    const finalTotal = parseFloat(item.finalTotal) || 0;
+  
+    if (item.userEdits?.userProvidedCostPerPiece !== undefined && item.userEdits?.userProvidedCostPerPiece !== null) {
+      result.costPerPiece = parseFloat(item.userEdits.userProvidedCostPerPiece) || 0;
+      result.cost = result.costPerPiece * finalTotal;
       return result;
     }
-
-    if (profile.costPerPiece && profile.costPerPiece > 0) {
-      result.costPerPiece = parseFloat(profile.costPerPiece);
-      result.cost = result.costPerPiece * item.finalTotal;
+  
+    const profileCostPerPiece = parseFloat(profile?.costPerPiece) || 0;
+    if (profileCostPerPiece > 0) {
+      result.costPerPiece = profileCostPerPiece;
+      result.cost = result.costPerPiece * finalTotal;
       return result;
     }
-
-    const lengthToUse = item.length || item.userEdits?.userProvidedStandardLength || profile.standardLength;
-
-    if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
-      result.wtPerRm = parseFloat(profile.designWeight);
-      result.rm = (lengthToUse / 1000) * item.finalTotal;
+  
+    const lengthToUse = parseFloat(item.length || item.userEdits?.userProvidedStandardLength || profile?.standardLength) || 0;
+    const designWeight = parseFloat(profile?.designWeight) || 0;
+    const rate = parseFloat(aluRate) || 0;
+  
+    if (designWeight > 0 && lengthToUse > 0) {
+      result.wtPerRm = designWeight;
+      result.rm = (lengthToUse / 1000) * finalTotal;
       result.wt = result.rm * result.wtPerRm;
-      result.cost = result.wt * aluRate;
+      result.cost = result.wt * rate;
     }
-
+  
+    // Safeguard against NaN
+    if (isNaN(result.cost)) {
+      result.cost = 0;
+    }
+    if (isNaN(result.costPerPiece)) {
+      result.costPerPiece = 0;
+    }
+  
     return result;
   };
 
