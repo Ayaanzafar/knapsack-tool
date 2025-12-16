@@ -64,6 +64,11 @@ export default function BOMPage() {
             data.bomData.bomItems = ensureStableIds(data.bomData.bomItems);
           }
           
+          if (data.bomData.profilesMap) {
+            const profilesList = Object.values(data.bomData.profilesMap);
+            setProfiles(profilesList);
+          }
+
           const pendingChanges = changeTracker.getChanges();
           const pendingAdditions = changeTracker.getAdditions();
           const pendingDeletions = changeTracker.getDeletions();
@@ -75,7 +80,7 @@ export default function BOMPage() {
             let items = [...data.bomData.bomItems];
 
             // 1. Apply deletions
-            const deletedIds = new Set(pendingDeletions);
+            const deletedIds = new Set(pendingDeletions.map(d => d.rowId));
             items = items.filter(item => !deletedIds.has(item._id));
 
             // 2. Apply additions
@@ -101,6 +106,20 @@ export default function BOMPage() {
                     setAluminumRate(change.newValue);
                   } else if (change.type === 'CHANGE_SPARE_PERCENTAGE') {
                     setSparePercentage(change.newValue);
+                  } else if (change.type === 'EDIT_PROFILE') {
+                    const selectedProfile = profiles.find(p => p.serialNumber === change.newValue);
+                    if(selectedProfile) {
+                      updatedItem.profileSerialNumber = change.newValue;
+                      updatedItem.sunrackCode = selectedProfile.preferredRmCode || selectedProfile.sunrackCode;
+                      updatedItem.profileImage = selectedProfile.profileImagePath;
+                      updatedItem.itemDescription = selectedProfile.genericName;
+                      updatedItem.material = selectedProfile.material;
+                      const weightCost = calculateWeightAndCost(updatedItem, selectedProfile, aluminumRate);
+                      updatedItem.wtPerRm = weightCost.wtPerRm;
+                      updatedItem.rm = weightCost.rm;
+                      updatedItem.wt = weightCost.wt;
+                      updatedItem.cost = weightCost.cost;
+                    }
                   }
                 }
               }
@@ -111,11 +130,6 @@ export default function BOMPage() {
           }
 
           setBomData(data.bomData);
-
-          if (data.bomData.profilesMap) {
-            const profilesList = Object.values(data.bomData.profilesMap);
-            setProfiles(profilesList);
-          }
 
           if (data.bomData.aluminumRate) {
             setAluminumRate(data.bomData.aluminumRate);
@@ -241,6 +255,19 @@ export default function BOMPage() {
 
     const selectedProfile = profiles.find(p => p.serialNumber === profileSerialNumber);
     if (!selectedProfile) return;
+
+    const originalProfile = profiles.find(p => p.serialNumber === itemToUpdate.profileSerialNumber);
+
+    changeTracker.trackChange({
+      id: `${itemToUpdate._id}-profile`,
+      type: 'EDIT_PROFILE',
+      oldValue: itemToUpdate.profileSerialNumber,
+      newValue: profileSerialNumber,
+      itemName: itemToUpdate.itemDescription,
+      rowNumber: itemToUpdate.sn,
+      oldProfileName: originalProfile?.genericName,
+      newProfileName: selectedProfile.genericName,
+    });
 
     const updatedBomData = { ...bomData };
 
@@ -669,16 +696,25 @@ export default function BOMPage() {
       }
     }
 
-    const newLogEntries = changesWithReasons.map(change => ({
-      type: change.type,
-      itemName: change.itemName,
-      rowNumber: change.rowNumber,
-      tabName: change.tabName,
-      oldValue: change.oldValue,
-      newValue: change.newValue,
-      reason: change.reason,
-      timestamp: new Date().toISOString()
-    }));
+    const newLogEntries = changesWithReasons.map(change => {
+      const logEntry = {
+        type: change.type,
+        itemName: change.itemName,
+        rowNumber: change.rowNumber,
+        tabName: change.tabName,
+        oldValue: change.oldValue,
+        newValue: change.newValue,
+        reason: change.reason,
+        timestamp: new Date().toISOString()
+      };
+
+      if (change.type === 'EDIT_PROFILE') {
+        logEntry.oldProfileName = change.oldProfileName;
+        logEntry.newProfileName = change.newProfileName;
+      }
+
+      return logEntry;
+    });
 
     const updatedChangeLog = [...changeLog, ...newLogEntries];
     setChangeLog(updatedChangeLog);

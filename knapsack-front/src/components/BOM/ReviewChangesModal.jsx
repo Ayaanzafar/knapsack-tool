@@ -127,11 +127,15 @@ export default function ReviewChangesModal({ isOpen, changes, bomData, originalB
                   </td>
                   <td className="px-4 py-3 text-sm text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-medium">{change.oldValue}</span>
+                      <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-medium">
+                        {change.type === 'EDIT_PROFILE' ? change.oldProfileName : change.oldValue}
+                      </span>
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                       </svg>
-                      <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">{change.newValue}</span>
+                      <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">
+                        {change.type === 'EDIT_PROFILE' ? change.newProfileName : change.newValue}
+                      </span>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-center">

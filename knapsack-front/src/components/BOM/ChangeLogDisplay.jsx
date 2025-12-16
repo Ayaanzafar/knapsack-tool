@@ -18,8 +18,8 @@ export default function ChangeLogDisplay({ changeLog }) {
       case 'CHANGE_SPARE_PERCENTAGE':
         return `Spare percentage changed globally from ${change.oldValue}% to ${change.newValue}%.`;
 
-      case 'CHANGE_PROFILE':
-        return `Profile for "${change.itemName}" (Row ${change.rowNumber}) changed from "${change.oldValue}" to "${change.newValue}".`;
+      case 'EDIT_PROFILE':
+        return `Profile for "${change.itemName}" changed from "${change.oldProfileName}" to "${change.newProfileName}".`;
 
       case 'REORDER_ROW':
         return `Item "${change.itemName}" moved from ${change.oldValue} to ${change.newValue}.`;
