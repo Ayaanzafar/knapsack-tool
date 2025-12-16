@@ -1,17 +1,15 @@
-// src/components/BOM/BOMPage.jsx
-// src/components/BOM/BOMPage.jsx
-// src/components/BOM/BOMPage.jsx
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BOMTable from './BOMTable';
 import ComboBox from '../ComboBox';
 import AddRowModal from './AddRowModal';
 import DeleteRowModal from './DeleteRowModal';
-import ReviewChangesModal from './ReviewChangesModal'; // NEW
-import ReasonModal from './ReasonModal'; // NEW
+import ReviewChangesModal from './ReviewChangesModal';
+import ReasonModal from './ReasonModal';
 import ChangeLogDisplay from './ChangeLogDisplay';
 import { bomAPI } from '../../services/api';
-import { arrayMove } from '@dnd-kit/sortable'; // NEW
+import { arrayMove } from '@dnd-kit/sortable';
+import * as changeTracker from '../../lib/changeTracker';
 
 const ensureStableIds = (items) => {
   return items.map(item => ({
@@ -34,22 +32,13 @@ export default function BOMPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [addAfterRow, setAddAfterRow] = useState(1);
   
-  // NEW: Delete Modal State
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
-  // NEW: Review Changes State
-  const [baselineBomItems, setBaselineBomItems] = useState([]);
-  const [changesToReview, setChangesToReview] = useState([]);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
-  // NEW: Baselines for global settings
-  const [baselineSparePercentage, setBaselineSparePercentage] = useState(1);
-  const [baselineAluminumRate, setBaselineAluminumRate] = useState(527.85);
-
-  // NEW: Drag Reason State
   const [dragModalOpen, setDragModalOpen] = useState(false);
-  const [pendingDrag, setPendingDrag] = useState(null); // { oldIndex, newIndex, item }
+  const [pendingDrag, setPendingDrag] = useState(null);
 
   useEffect(() => {
     const loadBOM = async () => {
@@ -59,42 +48,81 @@ export default function BOMPage() {
         let bomId = location.state?.bomId;
 
         if (bomId) {
-          // Fetch BOM from database
           data = await bomAPI.getBOMById(bomId);
           setChangeLog(data.changeLog || []);
         } else if (location.state?.bomData) {
-          // Fallback: Direct BOM data
           data = { bomData: location.state.bomData };
         } else {
-          // No data provided, redirect
           console.warn('No BOM data or ID provided, redirecting to home');
           navigate('/');
           return;
         }
 
         if (data && data.bomData) {
-          // Ensure every item has a stable ID for drag-and-drop
           if (data.bomData.bomItems) {
             data.bomData.bomItems = ensureStableIds(data.bomData.bomItems);
           }
+          
+          const pendingChanges = changeTracker.getChanges();
+          const pendingAdditions = changeTracker.getAdditions();
+          const pendingDeletions = changeTracker.getDeletions();
+
+          if (pendingChanges.length > 0 || pendingAdditions.length > 0 || pendingDeletions.length > 0) {
+            console.log('Applying pending changes from last session...');
+            setEditMode(true); // Re-enter edit mode if changes were pending
+
+            let items = [...data.bomData.bomItems];
+
+            // 1. Apply deletions
+            const deletedIds = new Set(pendingDeletions);
+            items = items.filter(item => !deletedIds.has(item._id));
+
+            // 2. Apply additions
+            items = [...items, ...pendingAdditions];
+
+            // 3. Renumber SNs after structural changes
+            items = items.map((item, index) => ({ ...item, sn: index + 1 }));
+
+            // 4. Apply field-level edits
+            items = items.map(item => {
+              let updatedItem = { ...item };
+              for (const change of pendingChanges) {
+                const [itemId, field] = change.id.split('-');
+                if (item._id === itemId) {
+                  if (field === 'manual' && change.type === 'EDIT_SPARE_QUANTITY') {
+                     updatedItem.spareQuantity = change.newValue;
+                     if (!updatedItem.userEdits) updatedItem.userEdits = {};
+                     updatedItem.userEdits.manualSpareQuantity = change.newValue;
+                  } else if (change.type === 'EDIT_QUANTITY') {
+                    if (!updatedItem.quantities) updatedItem.quantities = {};
+                    updatedItem.quantities[change.tabName] = change.newValue;
+                  } else if (change.type === 'CHANGE_ALUMINUM_RATE') {
+                    setAluminumRate(change.newValue);
+                  } else if (change.type === 'CHANGE_SPARE_PERCENTAGE') {
+                    setSparePercentage(change.newValue);
+                  }
+                }
+              }
+              return updatedItem;
+            });
+            
+            data.bomData.bomItems = items;
+          }
+
           setBomData(data.bomData);
 
-          // Extract profiles from bomData
           if (data.bomData.profilesMap) {
             const profilesList = Object.values(data.bomData.profilesMap);
             setProfiles(profilesList);
           }
 
-          // Set initial aluminum rate from bomData if available
           if (data.bomData.aluminumRate) {
             setAluminumRate(data.bomData.aluminumRate);
           }
-          // Set initial spare percentage from bomData if available
           if (typeof data.bomData.sparePercentage === 'number') {
             setSparePercentage(data.bomData.sparePercentage);
           }
 
-          // Set default addAfterRow to last row number
           if (data.bomData.bomItems && data.bomData.bomItems.length > 0) {
             setAddAfterRow(data.bomData.bomItems.length);
           }
@@ -114,7 +142,6 @@ export default function BOMPage() {
     loadBOM();
   }, [location.state, navigate]);
 
-  // Recalculate costs when aluminum rate changes
   useEffect(() => {
     if (!bomData || loading) return;
 
@@ -131,13 +158,11 @@ export default function BOMPage() {
     setBomData(updatedBomData);
   }, [aluminumRate, loading]);
 
-  // Recalculate all items when spare percentage changes
   useEffect(() => {
     if (!bomData || loading) return;
 
     const updatedBomData = { ...bomData };
     updatedBomData.bomItems = bomData.bomItems.map(item => {
-      // For each item, recalculate spare, final total, weight and cost
       const totalQty = item.totalQuantity;
       const spareQty = Math.ceil(totalQty * (sparePercentage / 100));
       const finalTotal = totalQty + spareQty;
@@ -164,7 +189,6 @@ export default function BOMPage() {
     navigate('/');
   };
 
-  // Helper function to calculate weight and cost for an item
   const calculateWeightAndCost = (item, profile, aluRate) => {
     const result = {
       wtPerRm: null,
@@ -174,32 +198,27 @@ export default function BOMPage() {
       costPerPiece: null
     };
 
-    // Check for user override (Rate Per Piece edit)
     if (item.userEdits?.userProvidedCostPerPiece !== undefined) {
       result.costPerPiece = parseFloat(item.userEdits.userProvidedCostPerPiece);
       result.cost = result.costPerPiece * item.finalTotal;
       return result;
     } else if (item.userEdits?.costPerPiece !== undefined) {
-      // Legacy support
       result.costPerPiece = parseFloat(item.userEdits.costPerPiece);
       result.cost = result.costPerPiece * item.finalTotal;
       return result;
     }
 
-    // Check if profile has cost_per_piece (for fasteners)
     if (profile.costPerPiece && profile.costPerPiece > 0) {
       result.costPerPiece = parseFloat(profile.costPerPiece);
       result.cost = result.costPerPiece * item.finalTotal;
       return result;
     }
 
-    // Weight-based calculation for aluminum profiles
-    // Use item.length (for cut lengths) or user-provided standard length or profile.standardLength (for accessories)
     const lengthToUse = item.length || item.userEdits?.userProvidedStandardLength || profile.standardLength;
 
     if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
       result.wtPerRm = parseFloat(profile.designWeight);
-      result.rm = (lengthToUse / 1000) * item.finalTotal;  // Convert mm to meters
+      result.rm = (lengthToUse / 1000) * item.finalTotal;
       result.wt = result.rm * result.wtPerRm;
       result.cost = result.wt * aluRate;
     }
@@ -213,11 +232,9 @@ export default function BOMPage() {
     const selectedProfile = profiles.find(p => p.serialNumber === profileSerialNumber);
     if (!selectedProfile) return;
 
-    // Update bomData based on row type
     const updatedBomData = { ...bomData };
 
     if (itemToUpdate.calculationType === 'CUT_LENGTH') {
-      // Update ALL cut length rows with the same profile
       updatedBomData.bomItems = bomData.bomItems.map(item => {
         if (item.calculationType === 'CUT_LENGTH') {
           const updatedItem = {
@@ -229,7 +246,6 @@ export default function BOMPage() {
             profileSerialNumber: profileSerialNumber
           };
 
-          // Recalculate weight and cost
           const weightCost = calculateWeightAndCost(updatedItem, selectedProfile, aluminumRate);
           updatedItem.wtPerRm = weightCost.wtPerRm;
           updatedItem.rm = weightCost.rm;
@@ -241,7 +257,6 @@ export default function BOMPage() {
         return item;
       });
     } else if (itemToUpdate.calculationType === 'ACCESSORY') {
-      // Update only the selected row
       updatedBomData.bomItems = bomData.bomItems.map(item => {
         if (item.sn === itemToUpdate.sn) {
           const updatedItem = {
@@ -253,7 +268,6 @@ export default function BOMPage() {
             profileSerialNumber: profileSerialNumber
           };
 
-          // Recalculate weight and cost
           const weightCost = calculateWeightAndCost(updatedItem, selectedProfile, aluminumRate);
           updatedItem.wtPerRm = weightCost.wtPerRm;
           updatedItem.rm = weightCost.rm;
@@ -270,26 +284,52 @@ export default function BOMPage() {
   };
 
   const handleItemUpdate = (itemSn, field, value) => {
+    const originalItem = bomData.bomItems.find(item => item.sn === itemSn);
+    if (!originalItem) return;
+
+    let oldValue; // Variable to store the original value for tracking
+
     const newBomItems = bomData.bomItems.map(item => {
       if (item.sn === itemSn) {
         let updatedItem = { ...item };
 
-        // Initialize userEdits if it doesn't exist
         if (!updatedItem.userEdits) {
           updatedItem.userEdits = {};
         }
 
-        // Update the specific field that was changed
         if (field.startsWith('quantity_')) {
           const tabName = field.split('_')[1];
+          oldValue = originalItem.quantities[tabName] || 0;
           updatedItem.quantities = { ...updatedItem.quantities, [tabName]: Number(value) || 0 };
+          
+          changeTracker.trackChange({
+            id: `${item._id}-${tabName}`,
+            type: 'EDIT_QUANTITY',
+            oldValue: oldValue,
+            newValue: updatedItem.quantities[tabName],
+            itemName: item.itemDescription,
+            rowNumber: item.sn,
+            tabName: tabName,
+          });
+
         } else if (field === 'spareQuantity') {
-          // Manual spare quantity override
+          oldValue = originalItem.userEdits?.manualSpareQuantity ?? 'Auto';
           const manualSpare = Number(value) || 0;
           updatedItem.spareQuantity = manualSpare;
           updatedItem.userEdits = { ...updatedItem.userEdits, manualSpareQuantity: manualSpare };
+
+          changeTracker.trackChange({
+            id: `${item._id}-manual-spare`,
+            type: 'EDIT_SPARE_QUANTITY',
+            oldValue: oldValue,
+            newValue: manualSpare,
+            itemName: item.itemDescription,
+            rowNumber: item.sn,
+            tabName: null,
+          });
+
         } else if (field === 'costPerPiece') {
-          // Update Cost Per Piece
+          oldValue = originalItem.userEdits?.userProvidedCostPerPiece ?? originalItem.costPerPiece ?? 0;
           const newRate = parseFloat(value) || 0;
           updatedItem.costPerPiece = newRate;
           updatedItem.userEdits = { 
@@ -297,24 +337,41 @@ export default function BOMPage() {
             userProvidedCostPerPiece: newRate,
             calculationMethod: 'cost_per_piece' 
           };
+
+          changeTracker.trackChange({
+            id: `${item._id}-cost-per-piece`,
+            type: 'EDIT_COST_PER_PIECE',
+            oldValue: oldValue,
+            newValue: newRate,
+            itemName: item.itemDescription,
+            rowNumber: item.sn,
+            tabName: null,
+            profileSerialNumber: item.profileSerialNumber
+          });
+
         } else if (field === 'resetSpare') {
-          // Reset manual spare override - remove from userEdits
+          oldValue = originalItem.userEdits?.manualSpareQuantity ?? 'Auto';
           const { manualSpareQuantity: _manualSpareQuantity, ...restEdits } = updatedItem.userEdits;
           updatedItem.userEdits = Object.keys(restEdits).length > 0 ? restEdits : null;
+          
+          changeTracker.trackChange({
+            id: `${item._id}-manual-spare`,
+            type: 'EDIT_SPARE_QUANTITY',
+            oldValue: oldValue,
+            newValue: 'Auto',
+            itemName: item.itemDescription,
+            rowNumber: item.sn,
+            tabName: null,
+          });
         }
 
-        // Recalculate derived fields for the updated item
         const totalQty = Object.values(updatedItem.quantities).reduce((sum, q) => sum + q, 0);
         updatedItem.totalQuantity = totalQty;
 
-        // If a building quantity was changed OR spare was reset, recalculate spare based on global percentage
         if (field.startsWith('quantity_') || field === 'resetSpare') {
-          // Check if there's a manual override
           if (updatedItem.userEdits?.manualSpareQuantity !== undefined) {
-            // Keep manual override
             updatedItem.spareQuantity = updatedItem.userEdits.manualSpareQuantity;
           } else {
-            // Auto-calculate from percentage
             updatedItem.spareQuantity = Math.ceil(totalQty * (sparePercentage / 100));
           }
         }
@@ -322,10 +379,8 @@ export default function BOMPage() {
         const finalTotal = totalQty + updatedItem.spareQuantity;
         updatedItem.finalTotal = finalTotal;
 
-        // Recalculate weight and cost
         const profile = bomData.profilesMap[updatedItem.profileSerialNumber];
         if (profile) {
-          // Create temporary profile with overrides
           const profileForCalculation = { ...profile };
           if (updatedItem.userEdits?.userProvidedCostPerPiece !== undefined) {
             profileForCalculation.costPerPiece = updatedItem.userEdits.userProvidedCostPerPiece;
@@ -343,6 +398,7 @@ export default function BOMPage() {
     setBomData({ ...bomData, bomItems: newBomItems });
   };
 
+
   const handleAddRowClick = () => {
     setShowAddModal(true);
   };
@@ -354,25 +410,21 @@ export default function BOMPage() {
       return;
     }
 
-    // Validate addAfterRow
     const maxRow = bomData.bomItems.length;
     const insertAfter = Math.max(0, Math.min(addAfterRow, maxRow));
 
-    // Calculate totals
     const totalQty = Object.values(newItemData.quantities).reduce((sum, qty) => sum + qty, 0);
     const spareQty = Math.ceil(totalQty * (sparePercentage / 100));
     const finalTotal = totalQty + spareQty;
 
-    // Determine calculation type
     let calculationType = 'ACCESSORY';
     if (newItemData.customLength) {
       calculationType = 'CUT_LENGTH';
     }
 
-    // Create new item
     const newItem = {
       _id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      sn: insertAfter + 1, // Temporary SN
+      sn: insertAfter + 1,
       profileSerialNumber: newItemData.profileSerialNumber,
       sunrackCode: profile.preferredRmCode || profile.sunrackCode,
       profileImage: profile.profileImagePath,
@@ -388,75 +440,44 @@ export default function BOMPage() {
       userEdits: {
         addedManually: true,
         reason: newItemData.reason,
-        // Store user's calculation preferences
         userProvidedStandardLength: newItemData.standardLength || null,
         userProvidedCostPerPiece: newItemData.costPerPiece || null,
         calculationMethod: newItemData.calculationMethod
       }
     };
 
-    // Create a modified profile object with user overrides
     const profileForCalculation = {
       ...profile,
-      // Override profile values with user-provided values if they exist
       standardLength: newItemData.standardLength || profile.standardLength,
       costPerPiece: newItemData.costPerPiece || profile.costPerPiece
     };
 
-    // IMPORTANT: Force the calculation method
-    // If user selected cost_per_piece, temporarily modify profile to prioritize it
     if (newItemData.calculationMethod === 'cost_per_piece' && newItemData.costPerPiece) {
       profileForCalculation.costPerPiece = parseFloat(newItemData.costPerPiece);
     } else if (newItemData.calculationMethod === 'standard_length') {
-      // If standard length selected, ensure costPerPiece doesn't interfere
-      // Set costPerPiece to null/0 to force weight-based calculation
       profileForCalculation.costPerPiece = null;
     }
 
-    // Calculate weight and cost
     const weightCost = calculateWeightAndCost(newItem, profileForCalculation, aluminumRate);
     newItem.wtPerRm = weightCost.wtPerRm;
     newItem.rm = weightCost.rm;
     newItem.wt = weightCost.wt;
     newItem.cost = weightCost.cost;
-    newItem.costPerPiece = weightCost.costPerPiece; // Ensure this is captured if returned
+    newItem.costPerPiece = weightCost.costPerPiece;
 
-    // Insert into array at the specified position
     const updatedItems = [...bomData.bomItems];
     updatedItems.splice(insertAfter, 0, newItem);
 
-    // Renumber all S.N
     updatedItems.forEach((item, index) => {
       item.sn = index + 1;
     });
 
-    // Add to change log with calculation method
-    const newChangeLog = [...changeLog, {
-      type: 'ADD_ROW',
-      itemName: newItem.itemDescription,
-      rowNumber: insertAfter + 1,
-      reason: newItemData.reason,
-      calculationMethod: newItemData.calculationMethod,
-      timestamp: new Date().toISOString()
-    }];
+    changeTracker.trackRowAddition(newItem);
 
-    // Update state
     setBomData({ ...bomData, bomItems: updatedItems });
-    setChangeLog(newChangeLog);
     
-    // Update baseline to match new structure so it doesn't flag as "changed" later
-    if (baselineBomItems) {
-      const updatedBaseline = [...baselineBomItems];
-      // Insert deep copy of new item
-      updatedBaseline.splice(insertAfter, 0, JSON.parse(JSON.stringify(newItem)));
-      // Renumber
-      updatedBaseline.forEach((item, index) => { item.sn = index + 1; });
-      setBaselineBomItems(updatedBaseline);
-    }
-
     setShowAddModal(false);
 
-    // Reset addAfterRow to new last row
     setAddAfterRow(updatedItems.length);
   };
 
@@ -464,28 +485,23 @@ export default function BOMPage() {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      // Use _id (which is passed as id to dnd-kit)
       const oldIndex = bomData.bomItems.findIndex((item) => item._id === active.id);
       const newIndex = bomData.bomItems.findIndex((item) => item._id === over.id);
       
-      // Optimistically move the item in the UI
       const newItems = arrayMove(bomData.bomItems, oldIndex, newIndex);
       
-      // Renumber temporarily for display
       const renumberedItems = newItems.map((item, index) => ({
         ...item,
         sn: index + 1
       }));
 
-      // Update UI
       setBomData({ ...bomData, bomItems: renumberedItems });
 
-      // Store pending drag details and open modal with a slight delay to allow paint
       setPendingDrag({
         oldIndex,
         newIndex,
         item: bomData.bomItems[oldIndex],
-        originalItems: bomData.bomItems // Store original order for revert
+        originalItems: bomData.bomItems
       });
       setTimeout(() => setDragModalOpen(true), 150);
     }
@@ -496,7 +512,6 @@ export default function BOMPage() {
 
     const { item, oldIndex, newIndex } = pendingDrag;
 
-    // Log the change
     const newChangeLog = [...changeLog, {
       type: 'REORDER_ROW',
       itemName: item.itemDescription,
@@ -508,15 +523,7 @@ export default function BOMPage() {
     }];
 
     setChangeLog(newChangeLog);
-
-    // Update baseline to match new order so it doesn't flag as "changed" later
-    if (baselineBomItems) {
-      const newBaseline = arrayMove(baselineBomItems, oldIndex, newIndex);
-      newBaseline.forEach((itm, idx) => { itm.sn = idx + 1; });
-      setBaselineBomItems(newBaseline);
-    }
-
-    // Save to DB immediately to persist the new order and the log
+    
     saveWithExplicitData(bomData, newChangeLog);
 
     setDragModalOpen(false);
@@ -525,7 +532,6 @@ export default function BOMPage() {
 
   const handleDragCancel = () => {
     if (pendingDrag) {
-      // Revert to original order
       setBomData({ ...bomData, bomItems: pendingDrag.originalItems });
     }
     setDragModalOpen(false);
@@ -540,39 +546,19 @@ export default function BOMPage() {
   const handleDeleteConfirm = (reason) => {
     if (!itemToDelete) return;
 
-    // Remove item
+    changeTracker.trackRowDeletion({ rowId: itemToDelete._id, reason: reason });
+
     const updatedItems = bomData.bomItems.filter(item => item.sn !== itemToDelete.sn);
 
-    // Renumber S.N
     updatedItems.forEach((item, index) => {
       item.sn = index + 1;
     });
 
-    // Add to change log
-    const newChangeLog = [...changeLog, {
-      type: 'DELETE_ROW',
-      itemName: itemToDelete.itemDescription,
-      rowNumber: itemToDelete.sn, // Store original SN for reference
-      reason: reason,
-      timestamp: new Date().toISOString()
-    }];
-
     setBomData({ ...bomData, bomItems: updatedItems });
-    setChangeLog(newChangeLog);
-
-    // Update baseline to match new structure
-    if (baselineBomItems) {
-      // Find item in baseline using SN (before re-indexing)
-      const updatedBaseline = baselineBomItems.filter(item => item.sn !== itemToDelete.sn);
-      // Renumber
-      updatedBaseline.forEach((item, index) => { item.sn = index + 1; });
-      setBaselineBomItems(updatedBaseline);
-    }
     
     setDeleteModalOpen(false);
     setItemToDelete(null);
 
-    // Update addAfterRow if it's now out of bounds
     if (addAfterRow > updatedItems.length) {
       setAddAfterRow(updatedItems.length);
     }
@@ -587,7 +573,6 @@ export default function BOMPage() {
 
     setIsSaving(true);
     try {
-      // Construct a clean data object to save, sending only what the backend needs.
       const dataToSave = {
         projectInfo: bomData.projectInfo,
         tabs: bomData.tabs,
@@ -597,23 +582,19 @@ export default function BOMPage() {
         sparePercentage: sparePercentage,
       };
 
-      // Save the changes to backend
       await bomAPI.updateBOM(bomId, dataToSave, changeLog);
 
-      // Reload the BOM from backend to get recalculated weights and costs
       const freshData = await bomAPI.getBOMById(bomId);
 
       if (freshData && freshData.bomData) {
         setBomData(freshData.bomData);
         setChangeLog(freshData.changeLog || []);
 
-        // Update profiles list
         if (freshData.bomData.profilesMap) {
           const profilesList = Object.values(freshData.bomData.profilesMap);
           setProfiles(profilesList);
         }
 
-        // Update aluminum rate
         if (freshData.bomData.aluminumRate) {
           setAluminumRate(freshData.bomData.aluminumRate);
         }
@@ -625,167 +606,49 @@ export default function BOMPage() {
       alert(`Failed to save changes: ${error.message}`);
     } finally {
       setIsSaving(false);
+      changeTracker.stopTracking(); // Stop tracking on successful save
     }
   };
 
-          const handleDiscardChanges = () => {
-            if (window.confirm('Are you sure you want to discard all unsaved changes? This will revert the BOM to its state before you started editing.')) {
-              if (bomData) { // Check bomData exists to avoid errors
-                // Revert bomItems
-                setBomData(prev => ({ ...prev, bomItems: JSON.parse(JSON.stringify(baselineBomItems)) }));
-                // Revert global settings
-                setSparePercentage(baselineSparePercentage);
-                setAluminumRate(baselineAluminumRate);
-              }
-              
-              setEditMode(false);
-              setBaselineBomItems([]);
-              setBaselineSparePercentage(1); // Reset to a neutral default for next edit session
-              setBaselineAluminumRate(527.85); // Reset to a neutral default for next edit session
-            }
-          };
+  const handleDiscardChanges = async () => {
+    if (window.confirm('Are you sure you want to discard all unsaved changes? This will reload the BOM data.')) {
+      changeTracker.stopTracking(); // Clear any tracked changes
+      setEditMode(false);
+      // Reload the entire component to fetch fresh data
+      window.location.reload();
+    }
+  };
 
   const handleToggleEditMode = () => {
     if (editMode) {
-      // Exiting edit mode -> Check for changes instead of direct save
       handleDoneEditing();
     } else {
-      // Entering edit mode -> Snapshot the current state as baseline
-      if (bomData?.bomItems) {
-        setBaselineBomItems(JSON.parse(JSON.stringify(bomData.bomItems)));
-        setBaselineSparePercentage(sparePercentage); // NEW
-        setBaselineAluminumRate(aluminumRate);     // NEW
-      }
+      changeTracker.startTracking(); // Start tracking changes
       setEditMode(true);
     }
   };
 
   const handleDoneEditing = () => {
-    // 1. Compare current items with baseline
-    const changes = [];
-    
-    // We assume the structure is synced (Add/Delete handled separately).
-    // Loop through current items to find edits.
-    bomData.bomItems.forEach((currentItem) => {
-      // Find matching item in baseline by _id
-      const baselineItem = baselineBomItems.find(b => b._id === currentItem._id);
-      
-      if (baselineItem) {
-        // Check Quantities Per Tab
-        Object.keys(currentItem.quantities).forEach(tabName => {
-          const oldQty = baselineItem.quantities[tabName] || 0;
-          const newQty = currentItem.quantities[tabName] || 0;
-          
-          if (oldQty !== newQty) {
-            changes.push({
-              id: `${currentItem._id}-${tabName}`, // Unique ID for the change
-              type: 'EDIT_QUANTITY',
-              itemName: currentItem.itemDescription,
-              rowNumber: currentItem.sn,
-              tabName: tabName,
-              oldValue: oldQty,
-              newValue: newQty
-            });
-          }
-        });
+    const changes = changeTracker.getChanges();
+    const additions = changeTracker.getAdditions();
+    const deletions = changeTracker.getDeletions();
 
-        // Check Spare Quantity (manual override)
-        // If currentItem.userEdits?.manualSpareQuantity exists and differs from baseline's
-        const oldManualSpare = baselineItem.userEdits?.manualSpareQuantity;
-        const newManualSpare = currentItem.userEdits?.manualSpareQuantity;
-
-        // Only log if it was manually set and changed, or if it was manually set and then unset
-        // Check if baseline had a manual spare or if current has one and they are different
-        if ((oldManualSpare !== undefined || newManualSpare !== undefined) && (oldManualSpare !== newManualSpare)) {
-          changes.push({
-            id: `${currentItem._id}-manual-spare`,
-            type: 'EDIT_SPARE_QUANTITY', // NEW change type
-            itemName: currentItem.itemDescription,
-            rowNumber: currentItem.sn,
-            tabName: null,
-            oldValue: oldManualSpare ?? 'Auto', // Display 'Auto' if not manually set
-            newValue: newManualSpare ?? 'Auto'  // Display 'Auto' if not manually set
-          });
-        }
-
-        // Check Cost Per Piece Override (Rate/Piece)
-        const oldCostOverride = baselineItem.userEdits?.userProvidedCostPerPiece;
-        const newCostOverride = currentItem.userEdits?.userProvidedCostPerPiece;
-        
-        if (newCostOverride !== undefined && newCostOverride !== oldCostOverride) {
-             // Determine what the effective old value was (override or master default)
-             // Note: baselineItem.costPerPiece holds the effective value at start of edit
-             const effectiveOldValue = oldCostOverride ?? baselineItem.costPerPiece ?? 0;
-
-             changes.push({
-                id: `${currentItem._id}-cost-per-piece`,
-                type: 'EDIT_COST_PER_PIECE',
-                itemName: currentItem.itemDescription,
-                rowNumber: currentItem.sn,
-                tabName: null,
-                oldValue: effectiveOldValue,
-                newValue: newCostOverride,
-                // Pass profileSerialNumber to help backend identify which master item to update
-                profileSerialNumber: currentItem.profileSerialNumber
-             });
-        }
-      }
-    });
-
-    // Detect Global Spare Percentage Change
-    if (baselineSparePercentage !== sparePercentage) {
-        changes.push({
-            id: `global-spare-pct`,
-            type: 'CHANGE_SPARE_PERCENTAGE',
-            itemName: 'Global Settings',
-            rowNumber: null,
-            tabName: null,
-            oldValue: baselineSparePercentage,
-            newValue: sparePercentage
-        });
-    }
-
-    // Detect Global Aluminum Rate Change
-    if (baselineAluminumRate !== aluminumRate) {
-        changes.push({
-            id: `global-aluminum-rate`,
-            type: 'CHANGE_ALUMINUM_RATE', // NEW change type
-            itemName: 'Global Settings',
-            rowNumber: null,
-            tabName: null,
-            oldValue: baselineAluminumRate,
-            newValue: aluminumRate
-        });
-    }
-
-    if (changes.length > 0) {
-      // 2. If changes found, open review modal
-      setChangesToReview(changes);
+    if (changes.length > 0 || additions.length > 0 || deletions.length > 0) {
       setReviewModalOpen(true);
     } else {
-      // 3. No changes, just save and exit
-      handleSaveChanges();
+      // No changes detected, just exit edit mode without saving
+      // alert('No changes were made.');
       setEditMode(false);
+      changeTracker.stopTracking(); // Ensure tracking is stopped
     }
   };
 
   const handleReviewConfirm = async (changesWithReasons) => {
-    // 1. Handle Master Updates (if any)
     const masterUpdates = changesWithReasons.filter(c => c.updateMaster && c.profileSerialNumber);
     
     if (masterUpdates.length > 0) {
       try {
-        // We need to update each master item. 
-        // Ideally this should be a batch API, but sequential calls are easier to implement now.
-        // We'll use a Promise.all to do it in parallel.
         await Promise.all(masterUpdates.map(update => {
-          // Check if api.js has this method, otherwise we might need to implement it.
-          // Assuming bomAPI.updateMasterItem exists or we use a generic fetch.
-          // Since I can't verify api.js content right now, I'll try to use the likely endpoint structure.
-          // POST /api/bom/master-items/:serialNumber/update
-          
-          // Actually, let's use the bomAPI if available. If not, I'll add a helper.
-          // For now, let's assume bomAPI.updateMasterItem(serialNumber, data) works.
           return bomAPI.updateMasterItem(update.profileSerialNumber, { costPerPiece: update.newValue });
         }));
         console.log('Updated master items:', masterUpdates.length);
@@ -795,7 +658,6 @@ export default function BOMPage() {
       }
     }
 
-    // 2. Add new changes to log
     const newLogEntries = changesWithReasons.map(change => ({
       type: change.type,
       itemName: change.itemName,
@@ -810,14 +672,13 @@ export default function BOMPage() {
     const updatedChangeLog = [...changeLog, ...newLogEntries];
     setChangeLog(updatedChangeLog);
 
-    // 3. Save everything
     saveWithExplicitData(bomData, updatedChangeLog);
 
     setReviewModalOpen(false);
     setEditMode(false);
+    changeTracker.stopTracking();
   };
 
-  // Duplicate of handleSaveChanges but accepts data as args to avoid state race conditions
   const saveWithExplicitData = async (currentBomData, currentChangeLog) => {
     const bomId = location.state?.bomId;
     if (!bomId) return;
@@ -835,10 +696,8 @@ export default function BOMPage() {
 
       await bomAPI.updateBOM(bomId, dataToSave, currentChangeLog);
       
-      // Reload fresh data
       const freshData = await bomAPI.getBOMById(bomId);
       if (freshData && freshData.bomData) {
-        // Ensure stable IDs are preserved/generated after reload
         if (freshData.bomData.bomItems) {
           freshData.bomData.bomItems = ensureStableIds(freshData.bomData.bomItems);
         }
@@ -857,6 +716,7 @@ export default function BOMPage() {
       alert(`Failed to save changes: ${error.message}`);
     } finally {
       setIsSaving(false);
+      changeTracker.stopTracking(); // Stop tracking on successful save
     }
   };
 
@@ -892,7 +752,6 @@ export default function BOMPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b shadow-sm sticky top-0 z-10">
         <div className="px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -922,7 +781,6 @@ export default function BOMPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {/* NEW: Discard Changes Button */}
             {editMode && (
               <button
                 onClick={handleDiscardChanges}
@@ -937,7 +795,6 @@ export default function BOMPage() {
               </button>
             )}
 
-            {/* NEW: Enable Edit Button */}
             <button
               onClick={handleToggleEditMode}
               disabled={isSaving}
@@ -992,10 +849,8 @@ export default function BOMPage() {
         </div>
       </header>
 
-      {/* BOM Content */}
       <main className="container mx-auto px-6 py-6">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {/* Project Info Bar */}
           <div className="bg-linear-to-r from-purple-600 to-indigo-600 text-white px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
@@ -1013,10 +868,8 @@ export default function BOMPage() {
             </div>
           </div>
 
-          {/* Settings Bar - Always visible */}
           <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
             <div className="flex items-center gap-6">
-              {/* Aluminum Rate Input */}
               <div className="flex items-center gap-3">
                 <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
                   Aluminum Rate (₹/kg):
@@ -1024,7 +877,17 @@ export default function BOMPage() {
                 <input
                   type="number"
                   value={aluminumRate}
-                  onChange={(e) => setAluminumRate(parseFloat(e.target.value) || 0)}
+                  onChange={(e) => {
+                    const newValue = parseFloat(e.target.value) || 0;
+                    changeTracker.trackChange({
+                      id: 'global-aluminum-rate',
+                      type: 'CHANGE_ALUMINUM_RATE',
+                      oldValue: aluminumRate,
+                      newValue: newValue,
+                      itemName: 'Global Settings',
+                    });
+                    setAluminumRate(newValue);
+                  }}
                   step="0.01"
                   min="0"
                   disabled={!editMode}
@@ -1034,7 +897,6 @@ export default function BOMPage() {
                 />
               </div>
 
-              {/* Spare Percentage Input */}
               <div className="flex items-center gap-3">
                 <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
                   Spare %:
@@ -1042,7 +904,17 @@ export default function BOMPage() {
                 <input
                   type="number"
                   value={sparePercentage}
-                  onChange={(e) => setSparePercentage(parseFloat(e.target.value) || 0)}
+                  onChange={(e) => {
+                    const newValue = parseFloat(e.target.value) || 0;
+                    changeTracker.trackChange({
+                        id: `global-spare-pct`,
+                        type: 'CHANGE_SPARE_PERCENTAGE',
+                        oldValue: sparePercentage,
+                        newValue: newValue,
+                        itemName: 'Global Settings',
+                    });
+                    setSparePercentage(newValue);
+                  }}
                   step="0.1"
                   min="0"
                   disabled={!editMode}
@@ -1052,12 +924,10 @@ export default function BOMPage() {
                 />
               </div>
 
-              {/* Add Row Section - Only visible in edit mode */}
               {editMode && (
                 <>
                   <div className="h-8 w-px bg-gray-300"></div>
 
-                  {/* Add After Input */}
                   <div className="flex items-center gap-3">
                     <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
                       Add After:
@@ -1072,7 +942,6 @@ export default function BOMPage() {
                     />
                   </div>
 
-                  {/* Add Row Button */}
                   <button
                     onClick={handleAddRowClick}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 text-sm font-semibold"
@@ -1087,7 +956,6 @@ export default function BOMPage() {
             </div>
           </div>
 
-          {/* BOM Table with integrated Spare columns */}
           <BOMTable
             bomData={bomData}
             editMode={editMode}
@@ -1100,14 +968,12 @@ export default function BOMPage() {
             onDragEnd={handleDragEnd}
           />
           
-          {/* Change Log Display / Disclaimer */}
           <div className="px-6 pb-6">
             <ChangeLogDisplay changeLog={changeLog} />
           </div>
         </div>
       </main>
 
-      {/* Add Row Modal */}
       <AddRowModal
         isOpen={showAddModal}
         afterRowNumber={addAfterRow}
@@ -1117,7 +983,6 @@ export default function BOMPage() {
         onAdd={handleAddRowConfirm}
       />
 
-      {/* Delete Row Modal */}
       <DeleteRowModal
         isOpen={deleteModalOpen}
         itemDescription={itemToDelete?.itemDescription}
@@ -1125,7 +990,6 @@ export default function BOMPage() {
         onConfirm={handleDeleteConfirm}
       />
 
-      {/* Drag Reason Modal */}
       <ReasonModal
         isOpen={dragModalOpen}
         title="Confirm Move"
@@ -1134,11 +998,19 @@ export default function BOMPage() {
         onConfirm={handleDragConfirm}
       />
 
-      {/* Review Changes Modal */}
       <ReviewChangesModal
         isOpen={reviewModalOpen}
-        changes={changesToReview}
-        onCancel={() => setReviewModalOpen(false)}
+        changes={{
+          updates: changeTracker.getChanges(),
+          additions: changeTracker.getAdditions(),
+          deletions: changeTracker.getDeletions(),
+        }}
+        bomData={bomData}
+        onCancel={() => {
+          setReviewModalOpen(false);
+          changeTracker.stopTracking();
+          window.location.reload();
+        }}
         onConfirm={handleReviewConfirm}
       />
     </div>

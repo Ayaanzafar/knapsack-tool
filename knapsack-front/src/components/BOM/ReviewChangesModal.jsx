@@ -1,9 +1,51 @@
 // src/components/BOM/ReviewChangesModal.jsx
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
-export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfirm }) {
+export default function ReviewChangesModal({ isOpen, changes, bomData, onCancel, onConfirm }) {
   const [reasons, setReasons] = useState({});
-  const [updateMasterMap, setUpdateMasterMap] = useState({}); // New state for checkboxes
+  const [updateMasterMap, setUpdateMasterMap] = useState({});
+
+  const allChanges = useMemo(() => {
+    if (!isOpen) return [];
+    
+    const updates = changes.updates || [];
+    const additions = (changes.additions || []).map(item => ({
+      id: item._id,
+      type: 'ADD_ROW',
+      itemName: item.itemDescription,
+      rowNumber: item.sn,
+      oldValue: 'N/A',
+      newValue: 'Added',
+      reason: item.userEdits?.reason,
+      ...item
+    }));
+    const deletions = (changes.deletions || []).map(deletion => {
+      const deletedItem = bomData.bomItems.find(item => item._id === deletion.rowId);
+      return {
+        id: deletion.rowId,
+        type: 'DELETE_ROW',
+        itemName: deletedItem?.itemDescription || `Item ID: ${deletion.rowId}`,
+        rowNumber: deletedItem?.sn || 'N/A',
+        oldValue: 'Present',
+        newValue: 'Deleted',
+        reason: deletion.reason,
+      };
+    });
+
+    return [...updates, ...additions, ...deletions];
+  }, [isOpen, changes, bomData]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const initialReasons = {};
+      allChanges.forEach(change => {
+        if (change.reason) {
+          initialReasons[change.id] = change.reason;
+        }
+      });
+      setReasons(initialReasons);
+    }
+  }, [isOpen, allChanges]);
 
   if (!isOpen) return null;
 
@@ -22,8 +64,7 @@ export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfir
   };
 
   const isFormValid = () => {
-    // Check if all changes have a reason provided
-    return changes.every(change => {
+    return allChanges.every(change => {
       const reason = reasons[change.id];
       return reason && reason.trim().length > 0;
     });
@@ -35,15 +76,14 @@ export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfir
       return;
     }
 
-    // Combine changes with their reasons and master update flag
-    const changesWithReasons = changes.map(change => ({
+    const changesWithReasons = allChanges.map(change => ({
       ...change,
       reason: reasons[change.id],
-      updateMaster: updateMasterMap[change.id] || false // Include the flag
+      updateMaster: updateMasterMap[change.id] || false
     }));
 
     onConfirm(changesWithReasons);
-    setReasons({}); // Reset form
+    setReasons({});
     setUpdateMasterMap({});
   };
 
@@ -76,7 +116,7 @@ export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfir
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {changes.map((change) => (
+              {allChanges.map((change) => (
                 <tr key={change.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-sm text-gray-900">
                     <div className="font-medium">{change.itemName}</div>
@@ -113,7 +153,8 @@ export default function ReviewChangesModal({ isOpen, changes, onCancel, onConfir
                       value={reasons[change.id] || ''}
                       onChange={(e) => handleReasonChange(change.id, e.target.value)}
                       placeholder="Why was this changed?"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      disabled={change.type === 'ADD_ROW' || change.type === 'DELETE_ROW'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100"
                     />
                   </td>
                 </tr>
