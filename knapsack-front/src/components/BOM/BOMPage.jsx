@@ -256,6 +256,27 @@ export default function BOMPage() {
     return result;
   };
 
+  // Format numbers in Indian style (lakhs, crores)
+  const formatIndianNumber = (value, decimals = 2) => {
+    if (value === null || value === undefined) return '0';
+    if (typeof value !== 'number') return '0';
+
+    const fixedValue = value.toFixed(decimals);
+    const [integerPart, decimalPart] = fixedValue.split('.');
+
+    // Indian numbering: first comma after 3 digits, then every 2 digits
+    let lastThree = integerPart.slice(-3);
+    let otherNumbers = integerPart.slice(0, -3);
+
+    if (otherNumbers !== '') {
+      lastThree = ',' + lastThree;
+    }
+
+    let formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+
+    return decimalPart ? `${formatted}.${decimalPart}` : formatted;
+  };
+
   const handleProfileChange = (profileSerialNumber, itemToUpdate) => {
     if (!itemToUpdate || !profileSerialNumber) return;
 
@@ -1054,7 +1075,7 @@ export default function BOMPage() {
 
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
             <div className="grid grid-cols-3 gap-4">
-
+              
               <div className="p-4 bg-white rounded-lg shadow">
                 <p className="text-sm font-semibold text-gray-600">Total Capacity</p>
                 <p className="text-2xl font-bold text-gray-800">
@@ -1064,16 +1085,17 @@ export default function BOMPage() {
               <div className="p-4 bg-white rounded-lg shadow">
                 <p className="text-sm font-semibold text-gray-600">Cost/Wp</p>
                 <p className="text-2xl font-bold text-gray-800">
-                  ₹{
-                    (bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0) /
-                      (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp)
-                    ).toFixed(2)}
+                  ₹{formatIndianNumber(
+                    bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0) /
+                      (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp),
+                    2
+                  )}
                 </p>
               </div>
               <div className="p-4 bg-white rounded-lg shadow">
                 <p className="text-sm font-semibold text-gray-600">Total Cost</p>
                 <p className="text-2xl font-bold text-gray-800">
-                  ₹{bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0).toFixed(2)}
+                  ₹{formatIndianNumber(bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0), 2)}
                 </p>
               </div>
             </div>

@@ -34,6 +34,27 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
     return typeof value === 'number' ? value.toFixed(decimals) : '-';
   };
 
+  // Format numbers in Indian style (lakhs, crores)
+  const formatIndianNumber = (value, decimals = 2) => {
+    if (value === null || value === undefined) return '-';
+    if (typeof value !== 'number') return '-';
+
+    const fixedValue = value.toFixed(decimals);
+    const [integerPart, decimalPart] = fixedValue.split('.');
+
+    // Indian numbering: first comma after 3 digits, then every 2 digits
+    let lastThree = integerPart.slice(-3);
+    let otherNumbers = integerPart.slice(0, -3);
+
+    if (otherNumbers !== '') {
+      lastThree = ',' + lastThree;
+    }
+
+    let formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+
+    return decimalPart ? `${formatted}.${decimalPart}` : formatted;
+  };
+
   const isEditable = calculationType === 'CUT_LENGTH' || calculationType === 'ACCESSORY';
 
   const getCellBgColor = (isTotalCol = false) => {
@@ -257,7 +278,7 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
 
       {/* Cost */}
       <td className={`border border-gray-400 px-3 py-2 text-sm text-center font-bold bg-green-50`}>
-        {cost !== null && cost !== undefined ? `₹${formatNumber(cost, 0)}` : '-'}
+        {cost !== null && cost !== undefined ? `₹${formatIndianNumber(cost, 2)}` : '-'}
       </td>
     </tr>
   );
