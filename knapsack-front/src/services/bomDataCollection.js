@@ -162,6 +162,7 @@ export function collectBOMData(tabsData, projectName) {
       totalTabs: tabs.length,
       generatedAt: new Date().toISOString()
     },
+    moduleWp: 710,
     tabs: [],
     panelCounts: {},
     tabCalculations: {},

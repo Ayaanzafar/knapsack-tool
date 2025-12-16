@@ -27,12 +27,13 @@ export default function BOMPage() {
   const [editMode, setEditMode] = useState(false);
   const [profiles, setProfiles] = useState([]);
   const [sparePercentage, setSparePercentage] = useState(1);
+  const [moduleWp, setModuleWp] = useState(710);
   const [aluminumRate, setAluminumRate] = useState(527.85);
   const [changeLog, setChangeLog] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addAfterRow, setAddAfterRow] = useState(1);
-  
+
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -63,7 +64,7 @@ export default function BOMPage() {
           if (data.bomData.bomItems) {
             data.bomData.bomItems = ensureStableIds(data.bomData.bomItems);
           }
-          
+
           if (data.bomData.profilesMap) {
             const profilesList = Object.values(data.bomData.profilesMap);
             setProfiles(profilesList);
@@ -96,9 +97,9 @@ export default function BOMPage() {
                 const [itemId, field] = change.id.split('-');
                 if (item._id === itemId) {
                   if (field === 'manual' && change.type === 'EDIT_SPARE_QUANTITY') {
-                     updatedItem.spareQuantity = change.newValue;
-                     if (!updatedItem.userEdits) updatedItem.userEdits = {};
-                     updatedItem.userEdits.manualSpareQuantity = change.newValue;
+                    updatedItem.spareQuantity = change.newValue;
+                    if (!updatedItem.userEdits) updatedItem.userEdits = {};
+                    updatedItem.userEdits.manualSpareQuantity = change.newValue;
                   } else if (change.type === 'EDIT_QUANTITY') {
                     if (!updatedItem.quantities) updatedItem.quantities = {};
                     updatedItem.quantities[change.tabName] = change.newValue;
@@ -106,9 +107,11 @@ export default function BOMPage() {
                     setAluminumRate(change.newValue);
                   } else if (change.type === 'CHANGE_SPARE_PERCENTAGE') {
                     setSparePercentage(change.newValue);
+                  } else if (change.type === 'CHANGE_MODULE_WP') {
+                    setModuleWp(change.newValue);
                   } else if (change.type === 'EDIT_PROFILE') {
                     const selectedProfile = profiles.find(p => p.serialNumber === change.newValue);
-                    if(selectedProfile) {
+                    if (selectedProfile) {
                       updatedItem.profileSerialNumber = change.newValue;
                       updatedItem.sunrackCode = selectedProfile.preferredRmCode || selectedProfile.sunrackCode;
                       updatedItem.profileImage = selectedProfile.profileImagePath;
@@ -125,7 +128,7 @@ export default function BOMPage() {
               }
               return updatedItem;
             });
-            
+
             data.bomData.bomItems = items;
           }
 
@@ -136,6 +139,9 @@ export default function BOMPage() {
           }
           if (typeof data.bomData.sparePercentage === 'number') {
             setSparePercentage(data.bomData.sparePercentage);
+          }
+          if (typeof data.bomData.moduleWp === 'number') {
+            setModuleWp(data.bomData.moduleWp);
           }
 
           if (data.bomData.bomItems && data.bomData.bomItems.length > 0) {
@@ -212,33 +218,33 @@ export default function BOMPage() {
       cost: null,
       costPerPiece: null
     };
-  
+
     const finalTotal = parseFloat(item.finalTotal) || 0;
-  
+
     if (item.userEdits?.userProvidedCostPerPiece !== undefined && item.userEdits?.userProvidedCostPerPiece !== null) {
       result.costPerPiece = parseFloat(item.userEdits.userProvidedCostPerPiece) || 0;
       result.cost = result.costPerPiece * finalTotal;
       return result;
     }
-  
+
     const profileCostPerPiece = parseFloat(profile?.costPerPiece) || 0;
     if (profileCostPerPiece > 0) {
       result.costPerPiece = profileCostPerPiece;
       result.cost = result.costPerPiece * finalTotal;
       return result;
     }
-  
+
     const lengthToUse = parseFloat(item.length || item.userEdits?.userProvidedStandardLength || profile?.standardLength) || 0;
     const designWeight = parseFloat(profile?.designWeight) || 0;
     const rate = parseFloat(aluRate) || 0;
-  
+
     if (designWeight > 0 && lengthToUse > 0) {
       result.wtPerRm = designWeight;
       result.rm = (lengthToUse / 1000) * finalTotal;
       result.wt = result.rm * result.wtPerRm;
       result.cost = result.wt * rate;
     }
-  
+
     // Safeguard against NaN
     if (isNaN(result.cost)) {
       result.cost = 0;
@@ -246,7 +252,7 @@ export default function BOMPage() {
     if (isNaN(result.costPerPiece)) {
       result.costPerPiece = 0;
     }
-  
+
     return result;
   };
 
@@ -338,7 +344,7 @@ export default function BOMPage() {
           const tabName = field.split('_')[1];
           oldValue = originalItem.quantities[tabName] || 0;
           updatedItem.quantities = { ...updatedItem.quantities, [tabName]: Number(value) || 0 };
-          
+
           changeTracker.trackChange({
             id: `${item._id}-${tabName}`,
             type: 'EDIT_QUANTITY',
@@ -369,10 +375,10 @@ export default function BOMPage() {
           oldValue = originalItem.userEdits?.userProvidedCostPerPiece ?? originalItem.costPerPiece ?? 0;
           const newRate = parseFloat(value) || 0;
           updatedItem.costPerPiece = newRate;
-          updatedItem.userEdits = { 
-            ...updatedItem.userEdits, 
+          updatedItem.userEdits = {
+            ...updatedItem.userEdits,
             userProvidedCostPerPiece: newRate,
-            calculationMethod: 'cost_per_piece' 
+            calculationMethod: 'cost_per_piece'
           };
 
           changeTracker.trackChange({
@@ -390,7 +396,7 @@ export default function BOMPage() {
           oldValue = originalItem.userEdits?.manualSpareQuantity ?? 'Auto';
           const { manualSpareQuantity: _manualSpareQuantity, ...restEdits } = updatedItem.userEdits;
           updatedItem.userEdits = Object.keys(restEdits).length > 0 ? restEdits : null;
-          
+
           changeTracker.trackChange({
             id: `${item._id}-manual-spare`,
             type: 'EDIT_SPARE_QUANTITY',
@@ -422,7 +428,7 @@ export default function BOMPage() {
           if (updatedItem.userEdits?.userProvidedCostPerPiece !== undefined) {
             profileForCalculation.costPerPiece = updatedItem.userEdits.userProvidedCostPerPiece;
           }
-          
+
           const weightCost = calculateWeightAndCost(updatedItem, profileForCalculation, aluminumRate);
           updatedItem = { ...updatedItem, ...weightCost };
         }
@@ -512,7 +518,7 @@ export default function BOMPage() {
     changeTracker.trackRowAddition(newItem);
 
     setBomData({ ...bomData, bomItems: updatedItems });
-    
+
     setShowAddModal(false);
 
     setAddAfterRow(updatedItems.length);
@@ -524,9 +530,9 @@ export default function BOMPage() {
     if (over && active.id !== over.id) {
       const oldIndex = bomData.bomItems.findIndex((item) => item._id === active.id);
       const newIndex = bomData.bomItems.findIndex((item) => item._id === over.id);
-      
+
       const newItems = arrayMove(bomData.bomItems, oldIndex, newIndex);
-      
+
       const renumberedItems = newItems.map((item, index) => ({
         ...item,
         sn: index + 1
@@ -560,7 +566,7 @@ export default function BOMPage() {
     }];
 
     setChangeLog(newChangeLog);
-    
+
     saveWithExplicitData(bomData, newChangeLog);
 
     setDragModalOpen(false);
@@ -592,7 +598,7 @@ export default function BOMPage() {
     });
 
     setBomData({ ...bomData, bomItems: updatedItems });
-    
+
     setDeleteModalOpen(false);
     setItemToDelete(null);
 
@@ -662,6 +668,13 @@ export default function BOMPage() {
     } else {
       setOriginalBomData(bomData); // Save a snapshot of the original data
       changeTracker.startTracking(); // Start tracking changes
+      changeTracker.trackChange({
+        id: `global-module-wp`,
+        type: 'CHANGE_MODULE_WP',
+        oldValue: moduleWp,
+        newValue: moduleWp,
+        itemName: 'Global Settings',
+      });
       setEditMode(true);
     }
   };
@@ -683,7 +696,7 @@ export default function BOMPage() {
 
   const handleReviewConfirm = async (changesWithReasons) => {
     const masterUpdates = changesWithReasons.filter(c => c.updateMaster && c.profileSerialNumber);
-    
+
     if (masterUpdates.length > 0) {
       try {
         await Promise.all(masterUpdates.map(update => {
@@ -739,10 +752,11 @@ export default function BOMPage() {
         bomItems: currentBomData.bomItems,
         aluminumRate: aluminumRate,
         sparePercentage: sparePercentage,
+        moduleWp: moduleWp,
       };
 
       await bomAPI.updateBOM(bomId, dataToSave, currentChangeLog);
-      
+
       const freshData = await bomAPI.getBOMById(bomId);
       if (freshData && freshData.bomData) {
         if (freshData.bomData.bomItems) {
@@ -845,11 +859,10 @@ export default function BOMPage() {
             <button
               onClick={handleToggleEditMode}
               disabled={isSaving}
-              className={`px-4 py-2 border rounded-lg transition-colors flex items-center gap-2 ${
-                editMode
+              className={`px-4 py-2 border rounded-lg transition-colors flex items-center gap-2 ${editMode
                   ? 'bg-purple-600 text-white border-purple-600'
                   : 'text-gray-700 border-gray-300 hover:bg-gray-50'
-              } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+                } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {isSaving ? (
                 <>
@@ -938,9 +951,8 @@ export default function BOMPage() {
                   step="0.01"
                   min="0"
                   disabled={!editMode}
-                  className={`w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                    !editMode ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
+                  className={`w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${!editMode ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                 />
               </div>
 
@@ -954,20 +966,45 @@ export default function BOMPage() {
                   onChange={(e) => {
                     const newValue = parseFloat(e.target.value) || 0;
                     changeTracker.trackChange({
-                        id: `global-spare-pct`,
-                        type: 'CHANGE_SPARE_PERCENTAGE',
-                        oldValue: sparePercentage,
-                        newValue: newValue,
-                        itemName: 'Global Settings',
+                      id: `global-spare-pct`,
+                      type: 'CHANGE_SPARE_PERCENTAGE',
+                      oldValue: sparePercentage,
+                      newValue: newValue,
+                      itemName: 'Global Settings',
                     });
                     setSparePercentage(newValue);
                   }}
                   step="0.1"
                   min="0"
                   disabled={!editMode}
-                  className={`w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                    !editMode ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
+                  className={`w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${!editMode ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
+                />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                  Module Wp:
+                </label>
+                <input
+                  type="number"
+                  value={moduleWp}
+                  onChange={(e) => {
+                    const newValue = parseFloat(e.target.value) || 0;
+                    changeTracker.trackChange({
+                      id: `global-module-wp`,
+                      type: 'CHANGE_MODULE_WP',
+                      oldValue: moduleWp,
+                      newValue: newValue,
+                      itemName: 'Global Settings',
+                    });
+                    setModuleWp(newValue);
+                  }}
+                  step="1"
+                  min="0"
+                  disabled={!editMode}
+                  className={`w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${!editMode ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                 />
               </div>
 
@@ -1014,7 +1051,34 @@ export default function BOMPage() {
             onDeleteRow={handleDeleteRowClick}
             onDragEnd={handleDragEnd}
           />
-          
+
+          <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+            <div className="grid grid-cols-3 gap-4">
+
+              <div className="p-4 bg-white rounded-lg shadow">
+                <p className="text-sm font-semibold text-gray-600">Total Capacity</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {((Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp) / 1000).toFixed(2)} kWp
+                </p>
+              </div>
+              <div className="p-4 bg-white rounded-lg shadow">
+                <p className="text-sm font-semibold text-gray-600">Cost/Wp</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  ₹{
+                    (bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0) /
+                      (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp)
+                    ).toFixed(2)}
+                </p>
+              </div>
+              <div className="p-4 bg-white rounded-lg shadow">
+                <p className="text-sm font-semibold text-gray-600">Total Cost</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  ₹{bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0).toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="px-6 pb-6">
             <ChangeLogDisplay changeLog={changeLog} />
           </div>

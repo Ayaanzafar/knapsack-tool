@@ -20,6 +20,7 @@ class BomReconstructionService {
     const bomMetadata = {
       aluminumRate: fullBomData.aluminumRate || 527.85,
       sparePercentage: fullBomData.sparePercentage || 1.0,
+      moduleWp: fullBomData.moduleWp || 710,
       tabs: fullBomData.tabs || [],
       panelCounts: fullBomData.panelCounts || {},
       projectInfo: fullBomData.projectInfo || {}
@@ -138,6 +139,7 @@ class BomReconstructionService {
     // 3. Rebuild full BOM items with profile data
     const aluminumRate = bomMetadata.aluminumRate || 527.85;
     const sparePercentage = bomMetadata.sparePercentage || 1.0;
+    const moduleWp = bomMetadata.moduleWp || 710;
 
     const fullBomItems = bomItems.map((item, index) => {
       // Try to find profile by serial number first, then fallback to formula key
@@ -201,7 +203,8 @@ class BomReconstructionService {
       profilesMap: profilesMap,
       bomItems: fullBomItems,
       aluminumRate: aluminumRate,
-      sparePercentage: sparePercentage
+      sparePercentage: sparePercentage,
+      moduleWp: moduleWp
     };
   }
 
