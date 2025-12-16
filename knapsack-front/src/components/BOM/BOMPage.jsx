@@ -7,6 +7,7 @@ import DeleteRowModal from './DeleteRowModal';
 import ReviewChangesModal from './ReviewChangesModal';
 import ReasonModal from './ReasonModal';
 import ChangeLogDisplay from './ChangeLogDisplay';
+import PrintSettingsModal from './PrintSettingsModal';
 import { bomAPI } from '../../services/api';
 import { arrayMove } from '@dnd-kit/sortable';
 import * as changeTracker from '../../lib/changeTracker';
@@ -41,6 +42,8 @@ export default function BOMPage() {
 
   const [dragModalOpen, setDragModalOpen] = useState(false);
   const [pendingDrag, setPendingDrag] = useState(null);
+
+  const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
 
   useEffect(() => {
     const loadBOM = async () => {
@@ -753,6 +756,34 @@ export default function BOMPage() {
     changeTracker.stopTracking();
   };
 
+  const handlePrintSettings = (settings, action) => {
+    if (action === 'preview') {
+      // Navigate to print preview page with data
+      navigate('/bom/print-preview', {
+        state: {
+          bomData,
+          printSettings: settings,
+          aluminumRate,
+          sparePercentage,
+          moduleWp
+        }
+      });
+    } else if (action === 'direct') {
+      // Navigate to print preview and auto-print
+      navigate('/bom/print-preview', {
+        state: {
+          bomData,
+          printSettings: settings,
+          aluminumRate,
+          sparePercentage,
+          moduleWp,
+          autoPrint: true
+        }
+      });
+    }
+    setPrintSettingsModalOpen(false);
+  };
+
   const saveWithExplicitData = async (currentBomData, currentChangeLog) => {
     const bomId = location.state?.bomId;
     if (!bomId) return;
@@ -903,7 +934,7 @@ export default function BOMPage() {
 
             <button
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-              onClick={() => window.print()}
+              onClick={() => setPrintSettingsModalOpen(true)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1147,6 +1178,12 @@ export default function BOMPage() {
         originalBomData={originalBomData}
         onCancel={() => setReviewModalOpen(false)}
         onConfirm={handleReviewConfirm}
+      />
+
+      <PrintSettingsModal
+        isOpen={printSettingsModalOpen}
+        onClose={() => setPrintSettingsModalOpen(false)}
+        onPrint={handlePrintSettings}
       />
     </div>
   );

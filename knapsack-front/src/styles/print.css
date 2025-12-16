@@ -1,0 +1,81 @@
+/* Print Styles for BOM */
+
+/* Hide elements that shouldn't print */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  /* Preserve colors */
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    box-shadow: none !important;
+  }
+
+  /* Table print behavior */
+  table {
+    page-break-inside: auto;
+    width: 100%;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  /* Preserve background colors */
+  .bg-yellow-400,
+  .bg-yellow-50,
+  .bg-green-50,
+  .bg-blue-50,
+  .bg-purple-50,
+  .bg-orange-50,
+  .bg-gray-50,
+  .bg-gray-200,
+  .bg-white {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Remove shadows and transitions */
+  .shadow,
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl {
+    box-shadow: none !important;
+  }
+
+  /* Ensure proper font sizes */
+  body {
+    font-size: 10pt;
+  }
+
+  h1 {
+    font-size: 16pt;
+  }
+
+  h2 {
+    font-size: 14pt;
+  }
+
+  h3 {
+    font-size: 12pt;
+  }
+
+  /* Borders for tables */
+  .border,
+  .border-gray-400 {
+    border: 1px solid #9ca3af !important;
+  }
+
+  /* Remove hover effects */
+  *:hover {
+    background-color: inherit !important;
+  }
+}
