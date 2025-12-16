@@ -689,13 +689,6 @@ export default function BOMPage() {
     } else {
       setOriginalBomData(bomData); // Save a snapshot of the original data
       changeTracker.startTracking(); // Start tracking changes
-      changeTracker.trackChange({
-        id: `global-module-wp`,
-        type: 'CHANGE_MODULE_WP',
-        oldValue: moduleWp,
-        newValue: moduleWp,
-        itemName: 'Global Settings',
-      });
       setEditMode(true);
     }
   };
