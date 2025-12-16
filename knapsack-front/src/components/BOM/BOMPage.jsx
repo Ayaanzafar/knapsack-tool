@@ -1075,7 +1075,7 @@ export default function BOMPage() {
 
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
             <div className="grid grid-cols-3 gap-4">
-              
+
               <div className="p-4 bg-white rounded-lg shadow">
                 <p className="text-sm font-semibold text-gray-600">Total Capacity</p>
                 <p className="text-2xl font-bold text-gray-800">
@@ -1098,6 +1098,18 @@ export default function BOMPage() {
                   ₹{formatIndianNumber(bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0), 2)}
                 </p>
               </div>
+            </div>
+
+            {/* Important Notes Section */}
+            <div className="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+              <h3 className="text-lg font-bold text-gray-800 mb-3">Note:</h3>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Cut Length of Long Rails subject to change during detailing based on availability.</li>
+                <li>For all Roofs purlins are assumed to be at 1300mm where details of existing purlins are not shown in layout shared by client.</li>
+                <li>Length of Long Rails subject to change based on actual purlin locations at site to fix the Long rail only on purlin. If any extra length of rails are required, they shall be charged extra.</li>
+                <li>For Roofs with purlin span more than 1.7m, 2 Long Rails + 1 Mini Rail per each side of panel are considered.</li>
+                <li>Purlin Details of sheds T10, T11, T14, T15 are not mentioned in report. They are assumed to be 1.5m. If the actual span is more than 1.7m, an extra Mini rail must be considered additionally (at extra cost).</li>
+              </ol>
             </div>
           </div>
 
