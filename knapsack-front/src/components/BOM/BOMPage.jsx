@@ -22,6 +22,7 @@ export default function BOMPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [bomData, setBomData] = useState(null);
+  const [originalBomData, setOriginalBomData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [profiles, setProfiles] = useState([]);
@@ -623,6 +624,7 @@ export default function BOMPage() {
     if (editMode) {
       handleDoneEditing();
     } else {
+      setOriginalBomData(bomData); // Save a snapshot of the original data
       changeTracker.startTracking(); // Start tracking changes
       setEditMode(true);
     }
@@ -1006,6 +1008,7 @@ export default function BOMPage() {
           deletions: changeTracker.getDeletions(),
         }}
         bomData={bomData}
+        originalBomData={originalBomData}
         onCancel={() => {
           setReviewModalOpen(false);
           changeTracker.stopTracking();

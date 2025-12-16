@@ -1,7 +1,7 @@
 // src/components/BOM/ReviewChangesModal.jsx
 import { useState, useMemo, useEffect } from 'react';
 
-export default function ReviewChangesModal({ isOpen, changes, bomData, onCancel, onConfirm }) {
+export default function ReviewChangesModal({ isOpen, changes, bomData, originalBomData, onCancel, onConfirm }) {
   const [reasons, setReasons] = useState({});
   const [updateMasterMap, setUpdateMasterMap] = useState({});
 
@@ -20,7 +20,7 @@ export default function ReviewChangesModal({ isOpen, changes, bomData, onCancel,
       ...item
     }));
     const deletions = (changes.deletions || []).map(deletion => {
-      const deletedItem = bomData.bomItems.find(item => item._id === deletion.rowId);
+      const deletedItem = originalBomData.bomItems.find(item => item._id === deletion.rowId);
       return {
         id: deletion.rowId,
         type: 'DELETE_ROW',
@@ -33,7 +33,7 @@ export default function ReviewChangesModal({ isOpen, changes, bomData, onCancel,
     });
 
     return [...updates, ...additions, ...deletions];
-  }, [isOpen, changes, bomData]);
+  }, [isOpen, changes, bomData, originalBomData]);
 
   useEffect(() => {
     if (isOpen) {
