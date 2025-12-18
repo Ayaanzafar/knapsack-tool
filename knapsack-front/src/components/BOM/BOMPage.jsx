@@ -863,8 +863,13 @@ export default function BOMPage() {
           <div className="flex items-center gap-4">
             <button
               onClick={handleBack}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2 text-gray-700"
-              title="Back to main page"
+              disabled={editMode}
+              className={`p-2 rounded-lg transition-colors flex items-center gap-2 ${
+                editMode
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'hover:bg-gray-100 text-gray-700'
+              }`}
+              title={editMode ? "Exit edit mode to go back" : "Back to main page"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
