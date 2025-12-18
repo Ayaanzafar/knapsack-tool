@@ -101,12 +101,29 @@ export default function BOMPrintPreview() {
       <style>{`
         @page {
           size: A4 ${orientation};
-          margin: 0.3cm;
+          margin-top: 1cm;
+          margin-right: 0.3cm;
+          margin-left: 0.3cm;
+          margin-bottom: 0.4in; /* ✅ critical: same effect as browser bottom margin */
         }
 
+        /* Hide custom page number on screen */
+        .page-number {
+          display: none;
+        }
+
+        /* =========================
+          PRINT STYLES
+        ========================= */
         @media print {
-          /* Apply actual font size reduction based on scale */
+
+          /* --- PRINT PAGE SAFE AREA --- */
           .print-content {
+            box-sizing: border-box !important;
+
+            /* ✅ this is the key: page-level bottom safety */
+            padding-bottom: 35mm !important;
+
             font-size: ${scale}% !important;
           }
 
@@ -114,18 +131,26 @@ export default function BOMPrintPreview() {
             font-size: inherit !important;
           }
 
-          /* Scale down specific elements */
+          /* --- CUSTOM FOOTER --- */
+          .page-number{
+              bottom: 4mm !important;
+              right: 6mm !important;
+              background: transparent !important;
+              padding: 0 !important;
+            }
+
+
+          /* --- TABLE SCALING (prevents bottom collision) --- */
           .print-content table {
-            font-size: ${scale * 0.9}% !important;
+            zoom: 0.96; /* ✅ IMPORTANT: reduces table height per page */
           }
 
           .print-content th,
           .print-content td {
-            padding: ${scale > 80 ? '0.15rem' : '0.1rem'} ${scale > 80 ? '0.25rem' : '0.15rem'} !important;
-            font-size: ${scale > 90 ? '0.65rem' : scale > 80 ? '0.6rem' : '0.55rem'} !important;
             line-height: 1.2 !important;
           }
 
+          /* --- HEADINGS --- */
           .print-content h1 {
             font-size: ${scale > 80 ? '1.25rem' : '1.1rem'} !important;
           }
@@ -138,21 +163,9 @@ export default function BOMPrintPreview() {
             font-size: ${scale > 80 ? '0.85rem' : '0.75rem'} !important;
           }
 
+          /* --- SUMMARY / NOTES --- */
           .print-content .summary-card {
             padding: ${scale > 80 ? '0.5rem' : '0.35rem'} !important;
-          }
-
-          .print-content .summary-card p:first-child {
-            font-size: ${scale > 80 ? '0.65rem' : '0.6rem'} !important;
-          }
-
-          .print-content .summary-card p:last-child {
-            font-size: ${scale > 80 ? '1rem' : '0.85rem'} !important;
-          }
-
-          .print-content img {
-            max-width: ${scale > 80 ? '32px' : '24px'} !important;
-            max-height: ${scale > 80 ? '32px' : '24px'} !important;
           }
 
           .print-content .notes-section {
@@ -161,15 +174,18 @@ export default function BOMPrintPreview() {
           }
 
           .print-content .notes-section h3 {
-            font-size: ${scale > 80 ? '0.75rem' : '0.65rem'} !important;
             margin-bottom: ${scale > 80 ? '0.35rem' : '0.25rem'} !important;
           }
 
-          .print-content .notes-section li {
-            margin-bottom: ${scale > 80 ? '0.15rem' : '0.1rem'} !important;
+          .print-content img {
+            max-width: ${scale > 80 ? '32px' : '24px'} !important;
+            max-height: ${scale > 80 ? '32px' : '24px'} !important;
           }
         }
 
+        /* =========================
+          SCREEN PREVIEW
+        ========================= */
         @media screen {
           .print-content {
             margin: 2rem auto;
@@ -180,6 +196,7 @@ export default function BOMPrintPreview() {
             transform-origin: top center;
           }
         }
+
       `}</style>
 
       {/* Action Buttons & Controls - Hidden in print */}
@@ -464,7 +481,7 @@ export default function BOMPrintPreview() {
               <p className="text-lg font-bold text-gray-800">
                 ₹{formatIndianNumber(
                   bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0) /
-                    (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp),
+                  (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp),
                   2
                 )}
               </p>
@@ -508,7 +525,11 @@ export default function BOMPrintPreview() {
             </div>
           )}
         </div>
+
+        {/* Page Number - Outside content container */}
       </div>
+
+      <div className="page-number"></div>
 
     </>
   );
