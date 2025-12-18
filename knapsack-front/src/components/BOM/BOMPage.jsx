@@ -9,6 +9,7 @@ import ReasonModal from './ReasonModal';
 import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
 import { bomAPI } from '../../services/api';
+import axios from 'axios';
 import { arrayMove } from '@dnd-kit/sortable';
 import * as changeTracker from '../../lib/changeTracker';
 
@@ -756,6 +757,49 @@ export default function BOMPage() {
     changeTracker.stopTracking();
   };
 
+  const exportToPDF = async (settings) => {
+    try {
+      setIsSaving(true);
+
+      const payload = {
+        bomData,
+        printSettings: settings,
+        aluminumRate,
+        sparePercentage,
+        moduleWp,
+        changeLog
+      };
+
+      // Create a form and submit it to bypass IDM/CORS issues
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bom/export-pdf`;
+      form.target = '_blank'; // Open in new tab
+
+      // Create hidden input with JSON payload
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'jsonPayload';
+      input.value = JSON.stringify(payload);
+
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+
+      // Show success message after a short delay
+      setTimeout(() => {
+        alert('PDF export initiated! Check your browser downloads or new tab.');
+      }, 500);
+
+    } catch (error) {
+      console.error('Export PDF Failed:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handlePrintSettings = (settings, action) => {
     if (action === 'preview') {
       // Navigate to print preview page with data
@@ -782,6 +826,9 @@ export default function BOMPage() {
           autoPrint: true
         }
       });
+    } else if (action === 'pdf') {
+      // Call export API
+      exportToPDF(settings);
     }
     setPrintSettingsModalOpen(false);
   };
@@ -866,11 +913,10 @@ export default function BOMPage() {
             <button
               onClick={handleBack}
               disabled={editMode}
-              className={`p-2 rounded-lg transition-colors flex items-center gap-2 ${
-                editMode
+              className={`p-2 rounded-lg transition-colors flex items-center gap-2 ${editMode
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'hover:bg-gray-100 text-gray-700'
-              }`}
+                }`}
               title={editMode ? "Exit edit mode to go back" : "Back to main page"}
             >
               <svg
@@ -912,8 +958,8 @@ export default function BOMPage() {
               onClick={handleToggleEditMode}
               disabled={isSaving}
               className={`px-4 py-2 border rounded-lg transition-colors flex items-center gap-2 ${editMode
-                  ? 'bg-purple-600 text-white border-purple-600'
-                  : 'text-gray-700 border-gray-300 hover:bg-gray-50'
+                ? 'bg-purple-600 text-white border-purple-600'
+                : 'text-gray-700 border-gray-300 hover:bg-gray-50'
                 } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {isSaving ? (
@@ -1118,7 +1164,7 @@ export default function BOMPage() {
                 <p className="text-2xl font-bold text-gray-800">
                   ₹{formatIndianNumber(
                     bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0) /
-                      (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp),
+                    (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp),
                     2
                   )}
                 </p>

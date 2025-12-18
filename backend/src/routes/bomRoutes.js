@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bomController = require('../controllers/bomController');
+const pdfController = require('../controllers/pdfController');
 
 // Master Items Routes
 // GET /api/bom/master-items - Get all master items
@@ -40,6 +41,13 @@ router.get('/:bomId', bomController.getBomById.bind(bomController));
 
 // PUT /api/bom/:bomId - Update a BOM
 router.put('/:bomId', bomController.updateBom.bind(bomController));
+
+
+// Export PDF
+router.post('/export-pdf', pdfController.exportPdf);
+
+// Get temporary data for PDF generation
+router.get('/temp-data/:id', pdfController.getTempData);
 
 
 module.exports = router;

@@ -15,7 +15,50 @@ export default function BOMPrintPreview() {
   const [changeLog, setChangeLog] = useState([]);
 
   useEffect(() => {
-    // Get data from location state
+    // Check if loading from temp data (for PDF export)
+    const searchParams = new URLSearchParams(location.search);
+    const tempId = searchParams.get('tempId');
+
+    if (tempId) {
+      // Load from backend temp storage for PDF generation
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bom/temp-data/${tempId}`)
+        .then(res => res.json())
+        .then(data => {
+          setBomData(data.bomData);
+          setPrintSettings(data.printSettings);
+          setAluminumRate(data.aluminumRate || 527.85);
+          setSparePercentage(data.sparePercentage || 1);
+          setModuleWp(data.moduleWp || 710);
+          setChangeLog(data.changeLog || []);
+
+          const { includeQuantity, includeSpare, includeCosting } = data.printSettings;
+          const allThree = includeQuantity && includeSpare && includeCosting;
+
+          if (allThree) {
+            setScale(75);
+          } else {
+            setScale(90);
+          }
+
+          // Signal that page is ready for PDF generation
+          window.bomPageReady = true;
+
+          // Auto-print if requested
+          if (searchParams.get('autoPrint') === 'true') {
+            setTimeout(() => {
+              window.print();
+            }, 1000);
+          }
+        })
+        .catch(err => {
+          console.error('Failed to load temp data:', err);
+          alert('Failed to load print data');
+          navigate(-1);
+        });
+      return;
+    }
+
+    // Get data from location state (normal navigation)
     if (location.state?.bomData && location.state?.printSettings) {
       setBomData(location.state.bomData);
       setPrintSettings(location.state.printSettings);
@@ -46,7 +89,7 @@ export default function BOMPrintPreview() {
       alert('No print data available');
       navigate(-1);
     }
-  }, [location.state, navigate]);
+  }, [location.state, location.search, navigate]);
 
   // Format numbers in Indian style
   const formatIndianNumber = (value, decimals = 2) => {

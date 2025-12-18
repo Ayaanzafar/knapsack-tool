@@ -128,88 +128,86 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
 
             {/* Checkboxes */}
             <div className="space-y-4 mb-6">
-          {/* Quantity Section */}
-          <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-            <input
-              type="checkbox"
-              checked={settings.includeQuantity}
-              onChange={() => handleCheckboxChange('includeQuantity')}
-              className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
-            />
-            <div className="flex-1">
-              <div className="font-semibold text-gray-800">Quantities</div>
-              <div className="text-xs text-gray-500 mt-1">
-                Item details, building codes, and quantity breakdown per building
-              </div>
-            </div>
-          </label>
+              {/* Quantity Section */}
+              <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  checked={settings.includeQuantity}
+                  onChange={() => handleCheckboxChange('includeQuantity')}
+                  className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
+                />
+                <div className="flex-1">
+                  <div className="font-semibold text-gray-800">Quantities</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Item details, building codes, and quantity breakdown per building
+                  </div>
+                </div>
+              </label>
 
-          {/* Spare Section */}
-          <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-            <input
-              type="checkbox"
-              checked={settings.includeSpare}
-              onChange={() => handleCheckboxChange('includeSpare')}
-              className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
-            />
-            <div className="flex-1">
-              <div className="font-semibold text-gray-800">Spare Quantities</div>
-              <div className="text-xs text-gray-500 mt-1">
-                Spare percentage, spare quantity, and total quantity columns
-              </div>
-            </div>
-          </label>
+              {/* Spare Section */}
+              <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  checked={settings.includeSpare}
+                  onChange={() => handleCheckboxChange('includeSpare')}
+                  className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
+                />
+                <div className="flex-1">
+                  <div className="font-semibold text-gray-800">Spare Quantities</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Spare percentage, spare quantity, and total quantity columns
+                  </div>
+                </div>
+              </label>
 
-          {/* Costing Section */}
-          <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-            <input
-              type="checkbox"
-              checked={settings.includeCosting}
-              onChange={() => handleCheckboxChange('includeCosting')}
-              className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
-            />
-            <div className="flex-1">
-              <div className="font-semibold text-gray-800">Costing & Weight</div>
-              <div className="text-xs text-gray-500 mt-1">
-                Weight per RM, running meters, total weight, rate per piece, and cost
-              </div>
-            </div>
-          </label>
+              {/* Costing Section */}
+              <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  checked={settings.includeCosting}
+                  onChange={() => handleCheckboxChange('includeCosting')}
+                  className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
+                />
+                <div className="flex-1">
+                  <div className="font-semibold text-gray-800">Costing & Weight</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Weight per RM, running meters, total weight, rate per piece, and cost
+                  </div>
+                </div>
+              </label>
 
-          {/* Disclaimer/Changelog Section */}
-          <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-            <input
-              type="checkbox"
-              checked={settings.includeDisclaimer}
-              onChange={() => handleCheckboxChange('includeDisclaimer')}
-              className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
-            />
-            <div className="flex-1">
-              <div className="font-semibold text-gray-800">
-                Disclaimer/Changelog
-                {changeLog && changeLog.length > 0 && (
-                  <span className="ml-2 text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full">
-                    {changeLog.length} changes
-                  </span>
-                )}
-              </div>
-              <div className="text-xs text-gray-500 mt-1">
-                Show change history and modifications made to this BOM
-              </div>
-            </div>
-          </label>
+              {/* Disclaimer/Changelog Section */}
+              <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  checked={settings.includeDisclaimer}
+                  onChange={() => handleCheckboxChange('includeDisclaimer')}
+                  className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
+                />
+                <div className="flex-1">
+                  <div className="font-semibold text-gray-800">
+                    Disclaimer/Changelog
+                    {changeLog && changeLog.length > 0 && (
+                      <span className="ml-2 text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full">
+                        {changeLog.length} changes
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Show change history and modifications made to this BOM
+                  </div>
+                </div>
+              </label>
             </div>
 
             {/* Orientation Indicator */}
-            <div className={`mb-6 p-3 border rounded-lg ${
-              orientation === 'landscape'
+            <div className={`mb-6 p-3 border rounded-lg ${orientation === 'landscape'
                 ? 'bg-blue-50 border-blue-200'
                 : 'bg-green-50 border-green-200'
-            }`}>
+              }`}>
               <div className="flex items-center gap-2 text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${
-                  orientation === 'landscape' ? 'text-blue-600' : 'text-green-600'
-                }`} viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${orientation === 'landscape' ? 'text-blue-600' : 'text-green-600'
+                  }`} viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
                 <span className={orientation === 'landscape' ? 'text-blue-800' : 'text-green-800'}>
@@ -264,6 +262,16 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
             {/* Action Buttons */}
             <div className="mt-auto space-y-3">
               <button
+                onClick={() => onPrint(settings, 'pdf')}
+                className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center justify-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0 1 1 0 002 0z" clipRule="evenodd" />
+                </svg>
+                Export HTML PDF
+              </button>
+
+              <button
                 onClick={handleDirectPrint}
                 className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center gap-2"
               >
@@ -287,11 +295,10 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
             <div className="mb-4 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <h3 className="text-lg font-semibold text-gray-800">Live Preview</h3>
-                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  orientation === 'landscape'
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${orientation === 'landscape'
                     ? 'bg-blue-500 text-white'
                     : 'bg-green-500 text-white'
-                }`}>
+                  }`}>
                   {orientation === 'landscape' ? '📄 LANDSCAPE' : '📄 PORTRAIT'}
                 </span>
               </div>
@@ -317,168 +324,168 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                   }}
                 >
                   <div className="p-3 h-full flex flex-col">
-                  {/* Page Number */}
-                  <div className="text-right text-xs text-gray-500 mb-1">Page 1</div>
+                    {/* Page Number */}
+                    <div className="text-right text-xs text-gray-500 mb-1">Page 1</div>
 
-                  {/* Header */}
-                  <div className="mb-2 border-b-2 border-purple-600 pb-1">
-                    <h1 className="text-base font-bold text-gray-900">Bill of Materials (BOM)</h1>
-                    <p className="text-xs text-gray-700">{bomData.projectInfo.projectName}</p>
-                    <p className="text-xs text-gray-500">
-                      Generated: {new Date(bomData.projectInfo.generatedAt).toLocaleString()}
-                    </p>
-                  </div>
+                    {/* Header */}
+                    <div className="mb-2 border-b-2 border-purple-600 pb-1">
+                      <h1 className="text-base font-bold text-gray-900">Bill of Materials (BOM)</h1>
+                      <p className="text-xs text-gray-700">{bomData.projectInfo.projectName}</p>
+                      <p className="text-xs text-gray-500">
+                        Generated: {new Date(bomData.projectInfo.generatedAt).toLocaleString()}
+                      </p>
+                    </div>
 
-                  {/* BOM Table */}
-                  <div className="flex-1 overflow-hidden">
-                    <table className="w-full border-collapse text-xs">
-                      <thead>
-                        {/* Row 1: Main headers */}
-                        <tr className="bg-yellow-400">
-                          {includeQuantity && (
-                            <>
-                              <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
-                                {bomData.projectInfo.projectName}
-                              </th>
-                              <th colSpan={2} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
-                                Building Code
-                              </th>
-                              {bomData.tabs.map((tab, index) => (
-                                <th key={`bc-${index}`} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
-                                  {tab}
-                                </th>
-                              ))}
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Total</th>
-                            </>
-                          )}
-                          {includeSpare && (
-                            <>
-                              <th rowSpan={2} className="bg-gray-200 w-4"></th>
-                              <th rowSpan={2} colSpan={2} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">Spare</th>
-                            </>
-                          )}
-                          {includeCosting && (
-                            <>
-                              <th className="bg-gray-200 w-4"></th>
-                              <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
-                                Weight Calculation and Cost Calculation
-                              </th>
-                            </>
-                          )}
-                        </tr>
-
-                        {/* Row 2: Secondary headers */}
-                        <tr className="bg-yellow-400">
-                          {includeQuantity && (
-                            <>
-                              <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
-                                BOM for U Cleat Long Rail
-                              </th>
-                              <th colSpan={2} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
-                                No. of Panels
-                              </th>
-                              {bomData.tabs.map((tab, index) => (
-                                <th key={`panel-${index}`} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
-                                  {bomData.panelCounts[tab] || 0}
-                                </th>
-                              ))}
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
-                                {Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0)}
-                              </th>
-                            </>
-                          )}
-                          {includeCosting && (
-                            <>
-                              <th className="bg-gray-200 w-4"></th>
-                              <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
-                                Aluminum Rate per kg: ₹{aluminumRate}
-                              </th>
-                            </>
-                          )}
-                        </tr>
-
-                        {/* Row 3: Column headers */}
-                        <tr className="bg-yellow-400">
-                          {includeQuantity && (
-                            <>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">S.N</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Sunrack<br />Code</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Profile</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Item Description</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Material</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Length<br />(mm)</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">UoM</th>
-                              {bomData.tabs.map((_, index) => (
-                                <th key={`qty-${index}`} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Qty.</th>
-                              ))}
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Quantity</th>
-                            </>
-                          )}
-                          {includeSpare && (
-                            <>
-                              <th className="bg-gray-200 w-4"></th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Spare<br />Quantity</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Total<br />Quantity</th>
-                            </>
-                          )}
-                          {includeCosting && (
-                            <>
-                              <th className="bg-gray-200 w-4"></th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Wt/RM<br />(kg/m)</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">RM<br />(m)</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Wt<br />(kg)</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Rate/Piece<br />(₹)</th>
-                              <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Cost<br />(₹)</th>
-                            </>
-                          )}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {bomData.bomItems.map((item, index) => (
-                          <tr key={item._id || item.sn} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    {/* BOM Table */}
+                    <div className="flex-1 overflow-hidden">
+                      <table className="w-full border-collapse text-xs">
+                        <thead>
+                          {/* Row 1: Main headers */}
+                          <tr className="bg-yellow-400">
                             {includeQuantity && (
                               <>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.sn}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.sunrackCode || '-'}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-center">
-                                  {item.profileImage ? (
-                                    <img src={item.profileImage} alt={item.sunrackCode} className="w-8 h-8 object-contain mx-auto" />
-                                  ) : '-'}
-                                </td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-left">{item.itemDescription || '-'}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.material || '-'}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.length || '-'}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.uom}</td>
-                                {bomData.tabs.map((tab, idx) => (
-                                  <td key={`qty-${idx}`} className="border border-gray-400 px-2 py-1 text-xs text-center">
-                                    {item.quantities[tab] || 0}
-                                  </td>
+                                <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
+                                  {bomData.projectInfo.projectName}
+                                </th>
+                                <th colSpan={2} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+                                  Building Code
+                                </th>
+                                {bomData.tabs.map((tab, index) => (
+                                  <th key={`bc-${index}`} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+                                    {tab}
+                                  </th>
                                 ))}
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center font-bold bg-blue-50">{item.totalQuantity}</td>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Total</th>
                               </>
                             )}
                             {includeSpare && (
                               <>
-                                <td className="bg-gray-200"></td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-green-50">{item.spareQuantity}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center font-bold bg-purple-50">{item.finalTotal}</td>
+                                <th rowSpan={2} className="bg-gray-200 w-4"></th>
+                                <th rowSpan={2} colSpan={2} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">Spare</th>
                               </>
                             )}
                             {includeCosting && (
                               <>
-                                <td className="bg-gray-200"></td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">{formatNumber(item.wtPerRm, 2)}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">{formatNumber(item.rm, 1)}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-orange-50">{formatNumber(item.wt, 1)}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center">{formatNumber(item.costPerPiece, 2)}</td>
-                                <td className="border border-gray-400 px-2 py-1 text-xs text-center font-bold bg-green-50">₹{formatIndianNumber(item.cost, 2)}</td>
+                                <th className="bg-gray-200 w-4"></th>
+                                <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
+                                  Weight Calculation and Cost Calculation
+                                </th>
                               </>
                             )}
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+
+                          {/* Row 2: Secondary headers */}
+                          <tr className="bg-yellow-400">
+                            {includeQuantity && (
+                              <>
+                                <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
+                                  BOM for U Cleat Long Rail
+                                </th>
+                                <th colSpan={2} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+                                  No. of Panels
+                                </th>
+                                {bomData.tabs.map((tab, index) => (
+                                  <th key={`panel-${index}`} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+                                    {bomData.panelCounts[tab] || 0}
+                                  </th>
+                                ))}
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
+                                  {Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0)}
+                                </th>
+                              </>
+                            )}
+                            {includeCosting && (
+                              <>
+                                <th className="bg-gray-200 w-4"></th>
+                                <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
+                                  Aluminum Rate per kg: ₹{aluminumRate}
+                                </th>
+                              </>
+                            )}
+                          </tr>
+
+                          {/* Row 3: Column headers */}
+                          <tr className="bg-yellow-400">
+                            {includeQuantity && (
+                              <>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">S.N</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Sunrack<br />Code</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Profile</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Item Description</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Material</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Length<br />(mm)</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">UoM</th>
+                                {bomData.tabs.map((_, index) => (
+                                  <th key={`qty-${index}`} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Qty.</th>
+                                ))}
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Quantity</th>
+                              </>
+                            )}
+                            {includeSpare && (
+                              <>
+                                <th className="bg-gray-200 w-4"></th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Spare<br />Quantity</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Total<br />Quantity</th>
+                              </>
+                            )}
+                            {includeCosting && (
+                              <>
+                                <th className="bg-gray-200 w-4"></th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Wt/RM<br />(kg/m)</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">RM<br />(m)</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Wt<br />(kg)</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Rate/Piece<br />(₹)</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Cost<br />(₹)</th>
+                              </>
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {bomData.bomItems.map((item, index) => (
+                            <tr key={item._id || item.sn} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                              {includeQuantity && (
+                                <>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.sn}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.sunrackCode || '-'}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-center">
+                                    {item.profileImage ? (
+                                      <img src={item.profileImage} alt={item.sunrackCode} className="w-8 h-8 object-contain mx-auto" />
+                                    ) : '-'}
+                                  </td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-left">{item.itemDescription || '-'}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.material || '-'}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.length || '-'}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center">{item.uom}</td>
+                                  {bomData.tabs.map((tab, idx) => (
+                                    <td key={`qty-${idx}`} className="border border-gray-400 px-2 py-1 text-xs text-center">
+                                      {item.quantities[tab] || 0}
+                                    </td>
+                                  ))}
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center font-bold bg-blue-50">{item.totalQuantity}</td>
+                                </>
+                              )}
+                              {includeSpare && (
+                                <>
+                                  <td className="bg-gray-200"></td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-green-50">{item.spareQuantity}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center font-bold bg-purple-50">{item.finalTotal}</td>
+                                </>
+                              )}
+                              {includeCosting && (
+                                <>
+                                  <td className="bg-gray-200"></td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">{formatNumber(item.wtPerRm, 2)}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">{formatNumber(item.rm, 1)}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-orange-50">{formatNumber(item.wt, 1)}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center">{formatNumber(item.costPerPiece, 2)}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center font-bold bg-green-50">₹{formatIndianNumber(item.cost, 2)}</td>
+                                </>
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
 
@@ -510,7 +517,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                         <p className="text-sm font-bold text-gray-800">
                           ₹{formatIndianNumber(
                             bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0) /
-                              (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp),
+                            (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp),
                             2
                           )}
                         </p>
