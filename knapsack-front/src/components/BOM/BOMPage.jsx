@@ -765,7 +765,8 @@ export default function BOMPage() {
           printSettings: settings,
           aluminumRate,
           sparePercentage,
-          moduleWp
+          moduleWp,
+          changeLog
         }
       });
     } else if (action === 'direct') {
@@ -777,6 +778,7 @@ export default function BOMPage() {
           aluminumRate,
           sparePercentage,
           moduleWp,
+          changeLog,
           autoPrint: true
         }
       });
@@ -1189,6 +1191,11 @@ export default function BOMPage() {
         isOpen={printSettingsModalOpen}
         onClose={() => setPrintSettingsModalOpen(false)}
         onPrint={handlePrintSettings}
+        bomData={bomData}
+        aluminumRate={aluminumRate}
+        sparePercentage={sparePercentage}
+        moduleWp={moduleWp}
+        changeLog={changeLog}
       />
     </div>
   );

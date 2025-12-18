@@ -12,6 +12,7 @@ export default function BOMPrintPreview() {
   const [sparePercentage, setSparePercentage] = useState(1);
   const [moduleWp, setModuleWp] = useState(710);
   const [scale, setScale] = useState(100); // Scale percentage for zoom
+  const [changeLog, setChangeLog] = useState([]);
 
   useEffect(() => {
     // Get data from location state
@@ -21,6 +22,7 @@ export default function BOMPrintPreview() {
       setAluminumRate(location.state.aluminumRate || 527.85);
       setSparePercentage(location.state.sparePercentage || 1);
       setModuleWp(location.state.moduleWp || 710);
+      setChangeLog(location.state.changeLog || []);
 
       // Set smart default scale based on sections selected
       const { includeQuantity, includeSpare, includeCosting } = location.state.printSettings;
@@ -495,6 +497,25 @@ export default function BOMPrintPreview() {
               <li>Purlin Details of sheds T10, T11, T14, T15 are not mentioned in report. They are assumed to be 1.5m. If the actual span is more than 1.7m, an extra Mini rail must be considered additionally (at extra cost).</li>
             </ol>
           </div>
+
+          {/* Disclaimer/Changelog Section */}
+          {printSettings?.includeDisclaimer && changeLog && changeLog.length > 0 && (
+            <div className="p-3 bg-red-50 border-l-4 border-red-400 rounded mt-4 notes-section">
+              <h3 className="text-sm font-bold text-gray-800 mb-2">Disclaimer - Changes Made to this BOM:</h3>
+              <div className="space-y-1">
+                {changeLog.map((change, idx) => (
+                  <div key={idx} className="text-xs text-gray-700">
+                    <strong>{change.type}:</strong> {change.itemName}
+                    {change.tabName && ` (${change.tabName})`}
+                    {change.oldValue !== undefined && change.newValue !== undefined &&
+                      ` - Changed from ${change.oldValue} to ${change.newValue}`
+                    }
+                    {change.reason && ` - Reason: ${change.reason}`}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
