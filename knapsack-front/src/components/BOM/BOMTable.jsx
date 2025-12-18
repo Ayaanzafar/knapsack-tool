@@ -117,6 +117,7 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
             {/* Spare section header */}
             <th
               colSpan={2}
+              rowSpan={2}
               className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
               Spare
@@ -175,12 +176,12 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
             <th className="bg-gray-200 w-4"></th>
 
             {/* Spare section - spare percentage label spanning 2 columns */}
-            <th
+            {/* <th
               colSpan={2}
               className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
               {sparePercentage}%
-            </th>
+            </th> */}
 
             {/* Blank separator column */}
             <th className="bg-gray-200 w-4"></th>

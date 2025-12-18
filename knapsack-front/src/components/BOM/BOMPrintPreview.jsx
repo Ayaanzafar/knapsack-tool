@@ -304,8 +304,8 @@ export default function BOMPrintPreview() {
 
                   {includeSpare && (
                     <>
-                      <th className="bg-gray-200 w-4"></th>
-                      <th colSpan={2} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">Spare</th>
+                      <th rowSpan={2} className="bg-gray-200 w-4"></th>
+                      <th rowSpan={2} colSpan={2} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">Spare</th>
                     </>
                   )}
 
@@ -336,15 +336,6 @@ export default function BOMPrintPreview() {
                       ))}
                       <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
                         {Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0)}
-                      </th>
-                    </>
-                  )}
-
-                  {includeSpare && (
-                    <>
-                      <th className="bg-gray-200 w-4"></th>
-                      <th colSpan={2} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
-                        {sparePercentage}%
                       </th>
                     </>
                   )}
