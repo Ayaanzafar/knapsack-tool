@@ -75,7 +75,7 @@ sudo systemctl status knapsack-backend
 sudo journalctl -u knapsack-backend -f
 
 # Check if API is responding
-curl http://localhost:5000/api/health
+curl http://localhost:5050/api/health
 ```
 
 ## Common Commands
