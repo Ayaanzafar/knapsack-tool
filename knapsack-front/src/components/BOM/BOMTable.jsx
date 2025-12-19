@@ -128,7 +128,7 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
 
             {/* Weight & Cost Calculation section header */}
             <th
-              colSpan={5}
+              colSpan={6}
               className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
               Weight Calculation and Cost Calculation
@@ -188,7 +188,7 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
 
             {/* Weight & Cost section - Aluminum Rate */}
             <th
-              colSpan={5}
+              colSpan={6}
               className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
               Aluminum Rate per kg: ₹{aluminumRate}
@@ -266,6 +266,9 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
               Wt<br />(kg)
             </th>
             <th className="border border-gray-400 px-3 py-2 text-xs font-bold text-center">
+              Al Rate/Kg<br />(₹/kg)
+            </th>
+            <th className="border border-gray-400 px-3 py-2 text-xs font-bold text-center">
               Rate/Piece<br />(₹)
             </th>
             <th className="border border-gray-400 px-3 py-2 text-xs font-bold text-center">
@@ -288,6 +291,7 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
                 tabs={tabs}
                 isEven={index % 2 === 0}
                 editMode={editMode}
+                aluminumRate={aluminumRate}
                 profileOptions={profileOptions}
                 onProfileChange={onProfileChange}
                 onItemUpdate={onItemUpdate}

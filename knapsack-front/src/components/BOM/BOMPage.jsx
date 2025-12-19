@@ -240,7 +240,7 @@ export default function BOMPage() {
 
     const lengthToUse = parseFloat(item.length || item.userEdits?.userProvidedStandardLength || profile?.standardLength) || 0;
     const designWeight = parseFloat(profile?.designWeight) || 0;
-    const rate = parseFloat(aluRate) || 0;
+    const rate = parseFloat(item.userEdits?.manualAluminumRate ?? aluRate) || 0;
 
     if (designWeight > 0 && lengthToUse > 0) {
       result.wtPerRm = designWeight;
@@ -417,6 +417,31 @@ export default function BOMPage() {
             profileSerialNumber: item.profileSerialNumber
           });
 
+        } else if (field === 'manualAluminumRate') {
+          oldValue = originalItem.userEdits?.manualAluminumRate ?? aluminumRate;
+
+          const parsed = value === '' || value === null || value === undefined ? null : parseFloat(value);
+          const isValid = parsed !== null && !isNaN(parsed);
+          const isSameAsGlobal = isValid && Math.abs(parsed - aluminumRate) < 1e-9;
+          const useGlobal = !isValid || isSameAsGlobal;
+
+          if (useGlobal) {
+            const { manualAluminumRate: _manualAluminumRate, ...restEdits } = updatedItem.userEdits;
+            updatedItem.userEdits = Object.keys(restEdits).length > 0 ? restEdits : null;
+          } else {
+            updatedItem.userEdits = { ...updatedItem.userEdits, manualAluminumRate: parsed };
+          }
+
+          changeTracker.trackChange({
+            id: `${item._id}-aluminum-rate`,
+            type: 'EDIT_ALUMINUM_RATE_OVERRIDE',
+            oldValue: oldValue,
+            newValue: useGlobal ? aluminumRate : parsed,
+            itemName: item.itemDescription,
+            rowNumber: item.sn,
+            tabName: null,
+          });
+
         } else if (field === 'resetSpare') {
           oldValue = originalItem.userEdits?.manualSpareQuantity ?? 'Auto';
           const { manualSpareQuantity: _manualSpareQuantity, ...restEdits } = updatedItem.userEdits;
@@ -427,6 +452,20 @@ export default function BOMPage() {
             type: 'EDIT_SPARE_QUANTITY',
             oldValue: oldValue,
             newValue: 'Auto',
+            itemName: item.itemDescription,
+            rowNumber: item.sn,
+            tabName: null,
+          });
+        } else if (field === 'resetAluminumRate') {
+          oldValue = originalItem.userEdits?.manualAluminumRate ?? aluminumRate;
+          const { manualAluminumRate: _manualAluminumRate, ...restEdits } = updatedItem.userEdits;
+          updatedItem.userEdits = Object.keys(restEdits).length > 0 ? restEdits : null;
+
+          changeTracker.trackChange({
+            id: `${item._id}-aluminum-rate`,
+            type: 'EDIT_ALUMINUM_RATE_OVERRIDE',
+            oldValue: oldValue,
+            newValue: aluminumRate,
             itemName: item.itemDescription,
             rowNumber: item.sn,
             tabName: null,

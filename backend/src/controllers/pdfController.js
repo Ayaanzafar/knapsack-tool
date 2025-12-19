@@ -110,7 +110,7 @@ const generateBOMHtml = (data, req) => {
     if (includeCosting) {
         headerRow1 += `
       <th class="bg-gray-200 w-4"></th>
-      <th colspan="5" class="border border-gray-400 px-2 py-1 text-sm font-bold text-center">Weight Calculation and Cost Calculation</th>
+      <th colspan="6" class="border border-gray-400 px-2 py-1 text-sm font-bold text-center">Weight Calculation and Cost Calculation</th>
     `;
     }
 
@@ -126,7 +126,7 @@ const generateBOMHtml = (data, req) => {
     if (includeCosting) {
         headerRow2 += `
       <th class="bg-gray-200 w-4"></th>
-      <th colspan="5" class="border border-gray-400 px-2 py-1 text-sm font-bold text-center">Aluminum Rate per kg: ₹${aluminumRate}</th>
+      <th colspan="6" class="border border-gray-400 px-2 py-1 text-sm font-bold text-center">Aluminum Rate per kg: ₹${aluminumRate}</th>
     `;
     }
 
@@ -157,6 +157,7 @@ const generateBOMHtml = (data, req) => {
       <th class="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Wt/RM<br>(kg/m)</th>
       <th class="border border-gray-400 px-2 py-1 text-xs font-bold text-center">RM<br>(m)</th>
       <th class="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Wt<br>(kg)</th>
+      <th class="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Al Rate/Kg<br>(₹/kg)</th>
       <th class="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Rate/Piece<br>(₹)</th>
       <th class="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Cost<br>(₹)</th>
     `;
@@ -166,6 +167,8 @@ const generateBOMHtml = (data, req) => {
     const tableRows = bomData.bomItems.map((item, index) => {
         const isEven = index % 2 === 0;
         const bgClass = isEven ? 'bg-white' : 'bg-gray-50';
+        const hasManualAlRate = item.userEdits && item.userEdits.manualAluminumRate !== undefined && item.userEdits.manualAluminumRate !== null;
+        const effectiveAlRate = hasManualAlRate ? item.userEdits.manualAluminumRate : aluminumRate;
         let rowHtml = `<tr class="${bgClass}">`;
 
         if (includeQuantity) {
@@ -203,6 +206,7 @@ const generateBOMHtml = (data, req) => {
         <td class="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">${formatNumber(item.wtPerRm, 2)}</td>
         <td class="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">${formatNumber(item.rm, 1)}</td>
         <td class="border border-gray-400 px-2 py-1 text-xs text-center bg-orange-50">${formatNumber(item.wt, 1)}</td>
+        <td class="border border-gray-400 px-2 py-1 text-xs text-center ${hasManualAlRate ? 'bg-blue-100' : 'bg-orange-50'}">${formatNumber(Number(effectiveAlRate) || 0, 2)}</td>
         <td class="border border-gray-400 px-2 py-1 text-xs text-center">${formatNumber(item.costPerPiece, 2)}</td>
         <td class="border border-gray-400 px-2 py-1 text-xs text-center font-bold bg-green-50 text-right">₹${formatIndianNumber(item.cost, 2)}</td>
       `;

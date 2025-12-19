@@ -247,12 +247,13 @@ class BomReconstructionService {
     // Weight-based calculation for aluminum profiles
     // Use item.length (for cut lengths) or profile.standardLength (for accessories)
     const lengthToUse = item.length || item.userEdits?.userProvidedStandardLength || profile.standardLength;
+    const effectiveAluminumRate = parseFloat(item.userEdits?.manualAluminumRate ?? aluminumRate) || 0;
 
     if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
       result.wtPerRm = parseFloat(profile.designWeight);
       result.rm = (lengthToUse / 1000) * item.finalTotal;  // Convert mm to meters
       result.wt = result.rm * result.wtPerRm;
-      result.cost = result.wt * aluminumRate;
+      result.cost = result.wt * effectiveAluminumRate;
     }
 
     return result;
