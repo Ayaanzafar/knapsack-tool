@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { TextField } from './ui';
 import { parseNumList } from '../lib/storage';
 
-export default function GlobalInputs({ settings, setSettings }) {
+export default function GlobalInputs({ settings, setSettings, applyToAll }) {
   // Local state for lengthsInput to prevent cursor jumping
   const [localLengthsInput, setLocalLengthsInput] = useState(settings.lengthsInput || '');
   const debounceTimerRef = useRef(null);
@@ -192,6 +192,19 @@ export default function GlobalInputs({ settings, setSettings }) {
               onChange={e => updateSetting('purlinDistance', e.target.value)}
               className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
             />
+            {applyToAll && (
+              <button
+                onClick={() => applyToAll('purlinDistance', purlinDistance)}
+                className="mt-2 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-1.5"
+                title="Apply this value to all tabs"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                  <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                </svg>
+                Apply to All Tabs
+              </button>
+            )}
           </div>
         </div>
       </div>

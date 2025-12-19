@@ -8,7 +8,7 @@ import CreateTabDialog from './components/CreateTabDialog';
 import CloseTabConfirmDialog from './components/CloseTabConfirmDialog';
 import RenameTabDialog from './components/RenameTabDialog';
 import CreateBOMButton from './components/BOM/CreateBOMButton';
-import { projectAPI } from './services/api';
+import { projectAPI, tabAPI } from './services/api';
 import {
   loadTabs,
   createTab,
@@ -238,6 +238,38 @@ export default function App() {
     });
   };
 
+  // Apply a setting to all tabs
+  const applySettingToAll = async (key, value) => {
+    if (!window.confirm(`Are you sure you want to apply this value (${value}) to ALL tabs?`)) return;
+
+    // Optimistic UI update
+    setTabsData(currentTabsData => ({
+      ...currentTabsData,
+      tabs: currentTabsData.tabs.map(tab => ({
+        ...tab,
+        settings: {
+          ...tab.settings,
+          [key]: value
+        }
+      }))
+    }));
+
+    // Server update
+    try {
+      // Update all tabs in parallel
+      await Promise.all(
+        tabsData.tabs.map(tab =>
+          tabAPI.update(tab.id, {
+            settings: { ...tab.settings, [key]: value }
+          })
+        )
+      );
+    } catch (err) {
+      console.error('Failed to apply setting to all tabs:', err);
+      alert('Failed to save changes to server. Please refresh.');
+    }
+  };
+
   const selectedRow = activeTab?.rows.find(r => r.id === activeTab.selectedRowId);
 
   // Loading state
@@ -303,6 +335,7 @@ export default function App() {
           <GlobalInputs
             settings={activeTab?.settings}
             setSettings={updateSettings}
+            applyToAll={applySettingToAll}
           />
         </div>
 
