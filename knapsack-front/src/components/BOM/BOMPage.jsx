@@ -41,8 +41,6 @@ export default function BOMPage() {
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
-  const [dragModalOpen, setDragModalOpen] = useState(false);
-  const [pendingDrag, setPendingDrag] = useState(null);
 
   const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
 
@@ -602,48 +600,14 @@ export default function BOMPage() {
         sn: index + 1
       }));
 
-      setBomData({ ...bomData, bomItems: renumberedItems });
+      const updatedBomData = { ...bomData, bomItems: renumberedItems };
+      setBomData(updatedBomData);
 
-      setPendingDrag({
-        oldIndex,
-        newIndex,
-        item: bomData.bomItems[oldIndex],
-        originalItems: bomData.bomItems
-      });
-      setTimeout(() => setDragModalOpen(true), 150);
+      // Save directly without asking for reason or adding to changelog
+      saveWithExplicitData(updatedBomData, changeLog);
     }
   };
 
-  const handleDragConfirm = (reason) => {
-    if (!pendingDrag) return;
-
-    const { item, oldIndex, newIndex } = pendingDrag;
-
-    const newChangeLog = [...changeLog, {
-      type: 'REORDER_ROW',
-      itemName: item.itemDescription,
-      rowNumber: newIndex + 1,
-      oldValue: `Row ${oldIndex + 1}`,
-      newValue: `Row ${newIndex + 1}`,
-      reason: reason,
-      timestamp: new Date().toISOString()
-    }];
-
-    setChangeLog(newChangeLog);
-
-    saveWithExplicitData(bomData, newChangeLog);
-
-    setDragModalOpen(false);
-    setPendingDrag(null);
-  };
-
-  const handleDragCancel = () => {
-    if (pendingDrag) {
-      setBomData({ ...bomData, bomItems: pendingDrag.originalItems });
-    }
-    setDragModalOpen(false);
-    setPendingDrag(null);
-  };
 
   const handleDeleteRowClick = (item) => {
     setItemToDelete(item);
@@ -1249,14 +1213,6 @@ export default function BOMPage() {
         itemDescription={itemToDelete?.itemDescription}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
-      />
-
-      <ReasonModal
-        isOpen={dragModalOpen}
-        title="Confirm Move"
-        message={`You moved "${pendingDrag?.item?.itemDescription}" from Row ${pendingDrag ? pendingDrag.oldIndex + 1 : ''} to Row ${pendingDrag ? pendingDrag.newIndex + 1 : ''}.`}
-        onClose={handleDragCancel}
-        onConfirm={handleDragConfirm}
       />
 
       <ReviewChangesModal
