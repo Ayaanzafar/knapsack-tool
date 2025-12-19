@@ -2,6 +2,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import '../../styles/print.css';
+import { API_URL } from '../../services/config';
 
 export default function BOMPrintPreview() {
   const location = useLocation();
@@ -21,7 +22,7 @@ export default function BOMPrintPreview() {
 
     if (tempId) {
       // Load from backend temp storage for PDF generation
-      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bom/temp-data/${tempId}`)
+      fetch(`${API_URL}/api/bom/temp-data/${tempId}`)
         .then(res => res.json())
         .then(data => {
           setBomData(data.bomData);

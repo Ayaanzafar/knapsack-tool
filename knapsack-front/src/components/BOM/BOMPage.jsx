@@ -8,6 +8,7 @@ import ReviewChangesModal from './ReviewChangesModal';
 import ReasonModal from './ReasonModal';
 import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
+import { API_URL } from '../../services/config';
 import { bomAPI } from '../../services/api';
 import axios from 'axios';
 import { arrayMove } from '@dnd-kit/sortable';
@@ -776,7 +777,7 @@ export default function BOMPage() {
       // Create a form and submit it to bypass IDM/CORS issues
       const form = document.createElement('form');
       form.method = 'POST';
-      form.action = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bom/export-pdf`;
+      form.action = `${API_URL}/api/bom/export-pdf`;
       form.target = '_blank'; // Open in new tab
 
       // Create hidden input with JSON payload
