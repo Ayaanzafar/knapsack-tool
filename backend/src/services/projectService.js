@@ -6,6 +6,8 @@ class ProjectService {
     return await prisma.project.create({
       data: {
         name: data.name || 'Untitled Project',
+        clientName: data.clientName || null,
+        projectId: data.projectId || null,
         userId: data.userId || null
       }
     });
@@ -46,12 +48,18 @@ class ProjectService {
 
   // Update project
   async updateProject(id, data) {
+    const updateData = {
+      updatedAt: new Date()
+    };
+
+    // Only include fields that are provided
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.clientName !== undefined) updateData.clientName = data.clientName;
+    if (data.projectId !== undefined) updateData.projectId = data.projectId;
+
     return await prisma.project.update({
       where: { id: parseInt(id) },
-      data: {
-        name: data.name,
-        updatedAt: new Date()
-      }
+      data: updateData
     });
   }
 

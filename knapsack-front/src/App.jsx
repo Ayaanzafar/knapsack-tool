@@ -26,6 +26,8 @@ export default function App() {
   // State
   const [tabsData, setTabsData] = useState({ tabs: [], activeTabId: null });
   const [projectName, setProjectName] = useState('Untitled Project');
+  const [clientName, setClientName] = useState('');
+  const [projectId, setProjectId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -47,6 +49,8 @@ export default function App() {
         // Initialize project (create or get existing)
         const project = await initializeProject();
         setProjectName(project.name);
+        setClientName(project.clientName || '');
+        setProjectId(project.projectId || '');
 
         // Load tabs
         const loadedTabsData = await loadTabs();
@@ -131,13 +135,39 @@ export default function App() {
   const handleProjectNameChange = async (newName) => {
     try {
       setProjectName(newName);
-      const projectId = getCurrentProjectId();
-      if (projectId) {
-        await projectAPI.update(projectId, { name: newName });
+      const currentProjectId = getCurrentProjectId();
+      if (currentProjectId) {
+        await projectAPI.update(currentProjectId, { name: newName });
       }
     } catch (err) {
       console.error('Failed to update project name:', err);
       // Don't show error to user, just log it
+    }
+  };
+
+  // Update client name
+  const handleClientNameChange = async (newClientName) => {
+    try {
+      setClientName(newClientName);
+      const currentProjectId = getCurrentProjectId();
+      if (currentProjectId) {
+        await projectAPI.update(currentProjectId, { clientName: newClientName });
+      }
+    } catch (err) {
+      console.error('Failed to update client name:', err);
+    }
+  };
+
+  // Update project ID
+  const handleProjectIdChange = async (newProjectId) => {
+    try {
+      setProjectId(newProjectId);
+      const currentProjectId = getCurrentProjectId();
+      if (currentProjectId) {
+        await projectAPI.update(currentProjectId, { projectId: newProjectId });
+      }
+    } catch (err) {
+      console.error('Failed to update project ID:', err);
     }
   };
 
@@ -250,6 +280,10 @@ export default function App() {
         setSettings={updateSettings}
         projectName={projectName}
         setProjectName={handleProjectNameChange}
+        clientName={clientName}
+        setClientName={handleClientNameChange}
+        projectId={projectId}
+        setProjectId={handleProjectIdChange}
       />
 
       {/* Tab Bar */}

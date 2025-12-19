@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `projects` ADD COLUMN `client_name` VARCHAR(255) NULL,
+    ADD COLUMN `project_id` VARCHAR(100) NULL;

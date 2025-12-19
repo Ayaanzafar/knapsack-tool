@@ -2,33 +2,55 @@
 import { useState, useEffect } from 'react';
 import { exportToFile, DEFAULT_SETTINGS, DEFAULT_LENGTHS } from '../lib/storage';
 
-export default function Header({ userMode, setUserMode, settings, setSettings, projectName, setProjectName }) {
+export default function Header({
+  userMode,
+  setUserMode,
+  settings,
+  setSettings,
+  projectName,
+  setProjectName,
+  clientName,
+  setClientName,
+  projectId,
+  setProjectId
+}) {
   const [showSettings, setShowSettings] = useState(false);
-  const [isEditingProject, setIsEditingProject] = useState(false);
+  const [isEditingProjectInfo, setIsEditingProjectInfo] = useState(false);
+  const [tempClientName, setTempClientName] = useState(clientName || '');
+  const [tempProjectId, setTempProjectId] = useState(projectId || '');
   const [tempProjectName, setTempProjectName] = useState(projectName || 'Untitled Project');
 
-  // Sync tempProjectName with projectName
+  // Sync temp values with props
   useEffect(() => {
+    setTempClientName(clientName || '');
+    setTempProjectId(projectId || '');
     setTempProjectName(projectName || 'Untitled Project');
-  }, [projectName]);
+  }, [clientName, projectId, projectName]);
 
-  const handleSaveProjectName = () => {
-    const trimmed = tempProjectName.trim();
-    if (trimmed) {
-      setProjectName(trimmed);
+  const handleSaveProjectInfo = () => {
+    const trimmedProjectName = tempProjectName.trim();
+    const trimmedClientName = tempClientName.trim();
+    const trimmedProjectId = tempProjectId.trim();
+
+    // Save all three fields
+    if (trimmedProjectName) {
+      setProjectName(trimmedProjectName);
     } else {
       setTempProjectName(projectName || 'Untitled Project');
     }
-    setIsEditingProject(false);
+
+    setClientName(trimmedClientName);
+    setProjectId(trimmedProjectId);
+
+    setIsEditingProjectInfo(false);
   };
 
-  const handleProjectKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSaveProjectName();
-    } else if (e.key === 'Escape') {
-      setTempProjectName(projectName || 'Untitled Project');
-      setIsEditingProject(false);
-    }
+  const handleCancelEdit = () => {
+    // Revert to original values
+    setTempClientName(clientName || '');
+    setTempProjectId(projectId || '');
+    setTempProjectName(projectName || 'Untitled Project');
+    setIsEditingProjectInfo(false);
   };
 
   const handleExport = () => {
@@ -69,41 +91,10 @@ export default function Header({ userMode, setUserMode, settings, setSettings, p
 
   return (
     <header className="border-b bg-white">
-      {/* <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between"> */}
-      <div className="max-w-7xl px-4 py-4 flex ml-50 items-center justify-between">
-      {/* <div className="max-w-7xl px-4 py-4 ml-8 flex items-center justify-between"> */}
+      {/* First Row: Title and Settings */}
+      <div className="max-w-7xl px-4 py-3 flex ml-50 items-center justify-between border-b border-gray-200">
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-semibold">Preliminary Calculation for Long Rail</h1>
-          <span className="text-gray-300">|</span>
-          {isEditingProject ? (
-            <input
-              type="text"
-              value={tempProjectName}
-              onChange={(e) => setTempProjectName(e.target.value)}
-              onBlur={handleSaveProjectName}
-              onKeyDown={handleProjectKeyDown}
-              className="border-b-2 border-purple-500 px-2 py-1 text-sm focus:outline-none w-64"
-              autoFocus
-              maxLength={255}
-            />
-          ) : (
-            <div
-              onClick={() => setIsEditingProject(true)}
-              className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded transition-colors"
-              title="Click to edit project name"
-            >
-              <span className="text-sm text-gray-600">Project:</span>
-              <span className="font-medium text-sm">{projectName}</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 text-gray-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-              </svg>
-            </div>
-          )}
         </div>
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -191,6 +182,114 @@ export default function Header({ userMode, setUserMode, settings, setSettings, p
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Second Row: Client Name, Project Id, Project Name */}
+      <div className="max-w-7xl px-4 py-3 ml-50">
+        <div className="flex items-center gap-6">
+          {isEditingProjectInfo ? (
+            <>
+              {/* Edit Mode: All fields editable */}
+              <div className="flex items-center gap-6">
+                {/* Client Name */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 font-medium">Client Name:</label>
+                  <input
+                    type="text"
+                    value={tempClientName}
+                    onChange={(e) => setTempClientName(e.target.value)}
+                    placeholder="Enter client name"
+                    className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-48"
+                  />
+                </div>
+
+                {/* Project ID */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 font-medium">Project ID:</label>
+                  <input
+                    type="text"
+                    value={tempProjectId}
+                    onChange={(e) => setTempProjectId(e.target.value)}
+                    placeholder="Enter project ID"
+                    className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-40"
+                  />
+                </div>
+
+                {/* Project Name */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 font-medium">Project Name:</label>
+                  <input
+                    type="text"
+                    value={tempProjectName}
+                    onChange={(e) => setTempProjectName(e.target.value)}
+                    placeholder="Enter project name"
+                    className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64"
+                    maxLength={255}
+                  />
+                </div>
+
+                {/* Done Button */}
+                <button
+                  onClick={handleSaveProjectInfo}
+                  className="px-4 py-1.5 bg-purple-600 text-white text-sm font-medium rounded hover:bg-purple-700 transition-colors"
+                >
+                  Done
+                </button>
+
+                {/* Cancel Button */}
+                <button
+                  onClick={handleCancelEdit}
+                  className="px-4 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Display Mode: All fields read-only */}
+              <div className="flex items-center gap-6">
+                {/* Client Name */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 font-medium">Client Name:</label>
+                  <span className="text-sm font-medium text-gray-800">
+                    {clientName || <span className="text-gray-400 italic">Not set</span>}
+                  </span>
+                </div>
+
+                {/* Project ID */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 font-medium">Project ID:</label>
+                  <span className="text-sm font-medium text-gray-800">
+                    {projectId || <span className="text-gray-400 italic">Not set</span>}
+                  </span>
+                </div>
+
+                {/* Project Name */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 font-medium">Project Name:</label>
+                  <span className="text-sm font-medium text-gray-800">{projectName}</span>
+                </div>
+
+                {/* Edit Pencil Icon */}
+                <button
+                  onClick={() => setIsEditingProjectInfo(true)}
+                  className="p-1.5 rounded hover:bg-gray-100 transition-colors"
+                  title="Edit project information"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </header>
