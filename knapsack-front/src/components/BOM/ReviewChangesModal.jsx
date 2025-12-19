@@ -49,6 +49,9 @@ export default function ReviewChangesModal({ isOpen, changes, bomData, originalB
 
   if (!isOpen) return null;
 
+  // Check if any change requires the "Update Master DB?" option
+  const hasUpdateMasterChanges = allChanges.some(change => change.type === 'EDIT_COST_PER_PIECE');
+
   const handleReasonChange = (id, value) => {
     setReasons(prev => ({
       ...prev,
@@ -111,7 +114,9 @@ export default function ReviewChangesModal({ isOpen, changes, bomData, originalB
                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Item Details</th>
                 <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Location</th>
                 <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Change</th>
-                <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Update Master DB?</th>
+                {hasUpdateMasterChanges && (
+                  <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Update Master DB?</th>
+                )}
                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Reason <span className="text-red-500">*</span></th>
               </tr>
             </thead>
@@ -138,19 +143,21 @@ export default function ReviewChangesModal({ isOpen, changes, bomData, originalB
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-center">
-                    {change.type === 'EDIT_COST_PER_PIECE' && (
-                      <div className="flex flex-col items-center">
-                        <input
-                          type="checkbox"
-                          checked={updateMasterMap[change.id] || false}
-                          onChange={(e) => handleUpdateMasterChange(change.id, e.target.checked)}
-                          className="w-4 h-4 text-purple-600 rounded cursor-pointer"
-                        />
-                        <span className="text-[10px] text-gray-500 mt-1">Apply to Future</span>
-                      </div>
-                    )}
-                  </td>
+                  {hasUpdateMasterChanges && (
+                    <td className="px-4 py-3 text-center">
+                      {change.type === 'EDIT_COST_PER_PIECE' && (
+                        <div className="flex flex-col items-center">
+                          <input
+                            type="checkbox"
+                            checked={updateMasterMap[change.id] || false}
+                            onChange={(e) => handleUpdateMasterChange(change.id, e.target.checked)}
+                            className="w-4 h-4 text-purple-600 rounded cursor-pointer"
+                          />
+                          <span className="text-[10px] text-gray-500 mt-1">Apply to Future</span>
+                        </div>
+                      )}
+                    </td>
+                  )}
                   <td className="px-4 py-3">
                     <input
                       type="text"

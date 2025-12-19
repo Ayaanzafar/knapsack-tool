@@ -367,7 +367,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                             {includeCosting && (
                               <>
                                 <th className="bg-gray-200 w-4"></th>
-                                <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
+                                <th colSpan={6} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
                                   Weight Calculation and Cost Calculation
                                 </th>
                               </>
@@ -397,7 +397,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                             {includeCosting && (
                               <>
                                 <th className="bg-gray-200 w-4"></th>
-                                <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
+                                <th colSpan={6} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
                                   Aluminum Rate per kg: ₹{aluminumRate}
                                 </th>
                               </>
@@ -434,6 +434,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                                 <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Wt/RM<br />(kg/m)</th>
                                 <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">RM<br />(m)</th>
                                 <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Wt<br />(kg)</th>
+                                <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Al Rate/Kg<br />(₹/kg)</th>
                                 <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Rate/Piece<br />(₹)</th>
                                 <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">Cost<br />(₹)</th>
                               </>
@@ -477,7 +478,12 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                                   <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">{formatNumber(item.wtPerRm, 2)}</td>
                                   <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">{formatNumber(item.rm, 1)}</td>
                                   <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-orange-50">{formatNumber(item.wt, 1)}</td>
-                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center">{formatNumber(item.costPerPiece, 2)}</td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-orange-50">
+                                    {((item.wtPerRm > 0 || item.wt > 0) && !item.costPerPiece) ? formatNumber(item.userEdits?.manualAluminumRate || aluminumRate, 2) : '-'}
+                                  </td>
+                                  <td className="border border-gray-400 px-2 py-1 text-xs text-center">
+                                    {item.costPerPiece ? formatNumber(item.costPerPiece, 2) : '-'}
+                                  </td>
                                   <td className="border border-gray-400 px-2 py-1 text-xs text-center font-bold bg-green-50">₹{formatIndianNumber(item.cost, 2)}</td>
                                 </>
                               )}

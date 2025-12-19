@@ -793,7 +793,7 @@ export default function RailTable({
                 className="px-2 py-2 text-center font-medium text-gray-600 border-b"
                 title="Drag to reorder"
               >
-                ⋮⋮
+                
               </th>
               <th
                 rowSpan={2}

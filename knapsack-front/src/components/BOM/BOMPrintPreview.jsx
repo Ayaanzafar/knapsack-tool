@@ -501,8 +501,12 @@ export default function BOMPrintPreview() {
                           <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">{formatNumber(item.wtPerRm, 2)}</td>
                           <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-yellow-50">{formatNumber(item.rm, 1)}</td>
                           <td className="border border-gray-400 px-2 py-1 text-xs text-center bg-orange-50">{formatNumber(item.wt, 1)}</td>
-                          <td className={`border border-gray-400 px-2 py-1 text-xs text-center ${hasManualAlRate ? 'bg-blue-100' : 'bg-orange-50'}`}>{formatNumber(Number(effectiveAlRate) || 0, 2)}</td>
-                          <td className="border border-gray-400 px-2 py-1 text-xs text-center">{formatNumber(item.costPerPiece, 2)}</td>
+                          <td className={`border border-gray-400 px-2 py-1 text-xs text-center ${hasManualAlRate ? 'bg-blue-100' : 'bg-orange-50'}`}>
+                            {((item.wtPerRm > 0 || item.wt > 0) && !item.costPerPiece) ? formatNumber(Number(effectiveAlRate) || 0, 2) : '-'}
+                          </td>
+                          <td className="border border-gray-400 px-2 py-1 text-xs text-center">
+                            {item.costPerPiece ? formatNumber(item.costPerPiece, 2) : '-'}
+                          </td>
                           <td className="border border-gray-400 px-2 py-1 text-xs text-center font-bold bg-green-50">
                             ₹{formatIndianNumber(item.cost, 2)}
                           </td>
