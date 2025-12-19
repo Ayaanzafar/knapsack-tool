@@ -186,112 +186,126 @@ export default function Header({
       </div>
 
       {/* Second Row: Client Name, Project Id, Project Name */}
-      <div className="max-w-7xl px-4 py-3 ml-50">
-        <div className="flex items-center gap-6">
-          {isEditingProjectInfo ? (
-            <>
-              {/* Edit Mode: All fields editable */}
-              <div className="flex items-center gap-6">
-                {/* Client Name */}
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 font-medium">Client Name:</label>
-                  <input
-                    type="text"
-                    value={tempClientName}
-                    onChange={(e) => setTempClientName(e.target.value)}
-                    placeholder="Enter client name"
-                    className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-48"
-                  />
-                </div>
+      {/* Second Row: Client / Project Info (Option 1 – Chip + Value) */}
+<div className="max-w-7xl px-4 py-3 ml-50">
+  <div className="flex items-center gap-8 flex-wrap">
+    {isEditingProjectInfo ? (
+      <>
+        {/* === EDIT MODE (unchanged logic, improved spacing only) === */}
+        <div className="flex items-center gap-6 flex-wrap">
+          {/* Client Name */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
+              Client
+            </span>
+            <input
+              type="text"
+              value={tempClientName}
+              onChange={(e) => setTempClientName(e.target.value)}
+              placeholder="Client name"
+              className="border border-gray-300 rounded px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 w-48"
+            />
+          </div>
 
-                {/* Project ID */}
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 font-medium">Project ID:</label>
-                  <input
-                    type="text"
-                    value={tempProjectId}
-                    onChange={(e) => setTempProjectId(e.target.value)}
-                    placeholder="Enter project ID"
-                    className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-40"
-                  />
-                </div>
+          {/* Project ID */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
+              Project ID
+            </span>
+            <input
+              type="text"
+              value={tempProjectId}
+              onChange={(e) => setTempProjectId(e.target.value)}
+              placeholder="ID"
+              className="border border-gray-300 rounded px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 w-36"
+            />
+          </div>
 
-                {/* Project Name */}
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 font-medium">Project Name:</label>
-                  <input
-                    type="text"
-                    value={tempProjectName}
-                    onChange={(e) => setTempProjectName(e.target.value)}
-                    placeholder="Enter project name"
-                    className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64"
-                    maxLength={255}
-                  />
-                </div>
+          {/* Project Name */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
+              Project
+            </span>
+            <input
+              type="text"
+              value={tempProjectName}
+              onChange={(e) => setTempProjectName(e.target.value)}
+              placeholder="Project name"
+              className="border border-gray-300 rounded px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 w-64"
+              maxLength={255}
+            />
+          </div>
 
-                {/* Done Button */}
-                <button
-                  onClick={handleSaveProjectInfo}
-                  className="px-4 py-1.5 bg-purple-600 text-white text-sm font-medium rounded hover:bg-purple-700 transition-colors"
-                >
-                  Done
-                </button>
-
-                {/* Cancel Button */}
-                <button
-                  onClick={handleCancelEdit}
-                  className="px-4 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded hover:bg-gray-300 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Display Mode: All fields read-only */}
-              <div className="flex items-center gap-6">
-                {/* Client Name */}
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 font-medium">Client Name:</label>
-                  <span className="text-sm font-medium text-gray-800">
-                    {clientName || <span className="text-gray-400 italic">Not set</span>}
-                  </span>
-                </div>
-
-                {/* Project ID */}
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 font-medium">Project ID:</label>
-                  <span className="text-sm font-medium text-gray-800">
-                    {projectId || <span className="text-gray-400 italic">Not set</span>}
-                  </span>
-                </div>
-
-                {/* Project Name */}
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 font-medium">Project Name:</label>
-                  <span className="text-sm font-medium text-gray-800">{projectName}</span>
-                </div>
-
-                {/* Edit Pencil Icon */}
-                <button
-                  onClick={() => setIsEditingProjectInfo(true)}
-                  className="p-1.5 rounded hover:bg-gray-100 transition-colors"
-                  title="Edit project information"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-gray-500"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                </button>
-              </div>
-            </>
-          )}
+          {/* Actions */}
+          <button
+            onClick={handleSaveProjectInfo}
+            className="px-4 py-1.5 bg-purple-600 text-white text-sm font-medium rounded hover:bg-purple-700"
+          >
+            Done
+          </button>
+          <button
+            onClick={handleCancelEdit}
+            className="px-4 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded hover:bg-gray-300"
+          >
+            Cancel
+          </button>
         </div>
-      </div>
+      </>
+    ) : (
+      <>
+        {/* === DISPLAY MODE (Option 1 applied) === */}
+        <div className="flex items-center gap-8 flex-wrap">
+          {/* Client */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
+              Client Name
+            </span>
+            <span className="text-sm font-semibold text-amber-700">
+              {clientName || <span className="italic text-gray-400">Not set</span>}
+            </span>
+          </div>
+
+          {/* Project ID */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
+              Project ID
+            </span>
+            <span className="text-sm font-semibold text-amber-700">
+              {projectId || <span className="italic text-gray-400">Not set</span>}
+            </span>
+          </div>
+
+          {/* Project Name */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
+              Project
+            </span>
+            <span className="text-sm font-semibold text-amber-700">
+              {projectName}
+            </span>
+          </div>
+
+          {/* Edit */}
+          <button
+            onClick={() => setIsEditingProjectInfo(true)}
+            className="p-1.5 rounded hover:bg-gray-100"
+            title="Edit project information"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-500 hover:text-purple-600 transition-colors"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+          </button>
+        </div>
+      </>
+    )}
+  </div>
+</div>
+
     </header>
   );
 }
