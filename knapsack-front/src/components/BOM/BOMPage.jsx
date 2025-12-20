@@ -869,6 +869,43 @@ export default function BOMPage() {
     setUserNotes(updatedNotes);
   };
 
+  const handleResetGlobalParameters = () => {
+    if (window.confirm('⚠️ Are you sure you want to reset Aluminum Rate, Spare %, and Module Wp to default values? This action cannot be undone.')) {
+      const defaultAluminumRate = 527.85;
+      const defaultSparePercentage = 1;
+      const defaultModuleWp = 710;
+
+      // Track changes for all three parameters
+      changeTracker.trackChange({
+        id: 'global-aluminum-rate',
+        type: 'CHANGE_ALUMINUM_RATE',
+        oldValue: aluminumRate,
+        newValue: defaultAluminumRate,
+        itemName: 'Global Settings',
+      });
+
+      changeTracker.trackChange({
+        id: 'global-spare-pct',
+        type: 'CHANGE_SPARE_PERCENTAGE',
+        oldValue: sparePercentage,
+        newValue: defaultSparePercentage,
+        itemName: 'Global Settings',
+      });
+
+      changeTracker.trackChange({
+        id: 'global-module-wp',
+        type: 'CHANGE_MODULE_WP',
+        oldValue: moduleWp,
+        newValue: defaultModuleWp,
+        itemName: 'Global Settings',
+      });
+
+      setAluminumRate(defaultAluminumRate);
+      setSparePercentage(defaultSparePercentage);
+      setModuleWp(defaultModuleWp);
+    }
+  };
+
   const saveWithExplicitData = async (currentBomData, currentChangeLog) => {
     const bomId = location.state?.bomId;
     if (!bomId) return;
@@ -1067,11 +1104,12 @@ export default function BOMPage() {
           </div>
 
           <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-3">
-                <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                  Aluminum Rate (₹/kg):
-                </label>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3">
+                  <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                    Aluminum Rate (₹/kg):
+                  </label>
                 <input
                   type="number"
                   value={aluminumRate}
@@ -1149,6 +1187,17 @@ export default function BOMPage() {
               {editMode && (
                 <>
                   <div className="h-8 w-px bg-gray-300"></div>
+                  <button
+                    onClick={handleResetGlobalParameters}
+                    className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Reset to default values (Al Rate: 527.85, Spare %: 1, Module Wp: 710)"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+
+                  <div className="h-8 w-px bg-gray-300"></div>
 
                   <div className="flex items-center gap-3">
                     <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
@@ -1176,6 +1225,7 @@ export default function BOMPage() {
                 </>
               )}
             </div>
+          </div>
           </div>
 
           <BOMTable
