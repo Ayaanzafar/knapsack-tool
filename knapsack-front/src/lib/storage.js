@@ -1,7 +1,7 @@
 // src/lib/storage.js
 const STORAGE_KEY = 'railOptimizerSettings';
 
-export const DEFAULT_LENGTHS = [1595, 1798, 2400, 2750, 3200, 3600, 4800];
+export const DEFAULT_LENGTHS = [1595, 1798, 2400, 2750, 3600, 4800];
 
 export const DEFAULT_SETTINGS = {
   userMode: 'normal',

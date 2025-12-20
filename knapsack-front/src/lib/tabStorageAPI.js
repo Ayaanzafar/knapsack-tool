@@ -13,13 +13,12 @@ export const DEFAULT_TAB = {
     buffer: 15,
     purlinDistance: 1700,
     railsPerSide: 2,
-    lengthsInput: '1595, 1798, 2400, 2750, 3200, 3600, 4800',
+    lengthsInput: '1595, 1798, 2400, 2750, 3600, 4800',
     enabledLengths: {
       1595: true,
       1798: true,
       2400: true,
       2750: true,
-      3200: true,
       3600: true,
       4800: true
     },
