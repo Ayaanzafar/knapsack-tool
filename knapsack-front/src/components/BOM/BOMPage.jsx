@@ -8,6 +8,7 @@ import ReviewChangesModal from './ReviewChangesModal';
 import ReasonModal from './ReasonModal';
 import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
+import NotesSection from './NotesSection';
 import { API_URL } from '../../services/config';
 import { bomAPI } from '../../services/api';
 import axios from 'axios';
@@ -42,8 +43,10 @@ export default function BOMPage() {
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
-
   const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
+
+  const [userNotes, setUserNotes] = useState([]);
+  const [originalUserNotes, setOriginalUserNotes] = useState([]);
 
   useEffect(() => {
     const loadBOM = async () => {
@@ -145,6 +148,9 @@ export default function BOMPage() {
           }
           if (typeof data.bomData.moduleWp === 'number') {
             setModuleWp(data.bomData.moduleWp);
+          }
+          if (data.bomData.userNotes && Array.isArray(data.bomData.userNotes)) {
+            setUserNotes(data.bomData.userNotes);
           }
 
           if (data.bomData.bomItems && data.bomData.bomItems.length > 0) {
@@ -652,6 +658,7 @@ export default function BOMPage() {
         bomItems: bomData.bomItems,
         aluminumRate: aluminumRate,
         sparePercentage: sparePercentage,
+        userNotes: userNotes,
       };
 
       await bomAPI.updateBOM(bomId, dataToSave, changeLog);
@@ -670,6 +677,10 @@ export default function BOMPage() {
         if (freshData.bomData.aluminumRate) {
           setAluminumRate(freshData.bomData.aluminumRate);
         }
+
+        if (freshData.bomData.userNotes && Array.isArray(freshData.bomData.userNotes)) {
+          setUserNotes(freshData.bomData.userNotes);
+        }
       }
 
       alert('Changes saved successfully!');
@@ -685,6 +696,7 @@ export default function BOMPage() {
   const handleDiscardChanges = async () => {
     if (window.confirm('Are you sure you want to discard all unsaved changes? This will reload the BOM data.')) {
       changeTracker.stopTracking(); // Clear any tracked changes
+      setUserNotes([...originalUserNotes]); // Restore original notes
       setEditMode(false);
       // Reload the entire component to fetch fresh data
       window.location.reload();
@@ -696,23 +708,35 @@ export default function BOMPage() {
       handleDoneEditing();
     } else {
       setOriginalBomData(bomData); // Save a snapshot of the original data
+      setOriginalUserNotes([...userNotes]); // Save original notes
       changeTracker.startTracking(); // Start tracking changes
       setEditMode(true);
     }
   };
 
-  const handleDoneEditing = () => {
+  const handleDoneEditing = async () => {
     const changes = changeTracker.getChanges();
     const additions = changeTracker.getAdditions();
     const deletions = changeTracker.getDeletions();
 
-    if (changes.length > 0 || additions.length > 0 || deletions.length > 0) {
+    // Check if notes have changed
+    const notesChanged = JSON.stringify(userNotes) !== JSON.stringify(originalUserNotes);
+
+    const hasBomChanges = changes.length > 0 || additions.length > 0 || deletions.length > 0;
+
+    if (hasBomChanges) {
+      // BOM changes exist - show review modal
       setReviewModalOpen(true);
+    } else if (notesChanged) {
+      // Only notes changed - save directly without review modal
+      await saveWithExplicitData(bomData, changeLog);
+      setEditMode(false);
+      setOriginalUserNotes([...userNotes]);
+      changeTracker.stopTracking();
     } else {
       // No changes detected, just exit edit mode without saving
-      // alert('No changes were made.');
       setEditMode(false);
-      changeTracker.stopTracking(); // Ensure tracking is stopped
+      changeTracker.stopTracking();
     }
   };
 
@@ -754,10 +778,11 @@ export default function BOMPage() {
     const updatedChangeLog = [...changeLog, ...newLogEntries];
     setChangeLog(updatedChangeLog);
 
-    saveWithExplicitData(bomData, updatedChangeLog);
+    await saveWithExplicitData(bomData, updatedChangeLog);
 
     setReviewModalOpen(false);
     setEditMode(false);
+    setOriginalUserNotes([...userNotes]); // Update original notes after save
     changeTracker.stopTracking();
   };
 
@@ -771,7 +796,8 @@ export default function BOMPage() {
         aluminumRate,
         sparePercentage,
         moduleWp,
-        changeLog
+        changeLog,
+        userNotes
       };
 
       // Create a form and submit it to bypass IDM/CORS issues
@@ -814,7 +840,8 @@ export default function BOMPage() {
           aluminumRate,
           sparePercentage,
           moduleWp,
-          changeLog
+          changeLog,
+          userNotes
         }
       });
     } else if (action === 'direct') {
@@ -827,6 +854,7 @@ export default function BOMPage() {
           sparePercentage,
           moduleWp,
           changeLog,
+          userNotes,
           autoPrint: true
         }
       });
@@ -835,6 +863,10 @@ export default function BOMPage() {
       exportToPDF(settings);
     }
     setPrintSettingsModalOpen(false);
+  };
+
+  const handleNotesChange = (updatedNotes) => {
+    setUserNotes(updatedNotes);
   };
 
   const saveWithExplicitData = async (currentBomData, currentChangeLog) => {
@@ -851,6 +883,7 @@ export default function BOMPage() {
         aluminumRate: aluminumRate,
         sparePercentage: sparePercentage,
         moduleWp: moduleWp,
+        userNotes: userNotes,
       };
 
       await bomAPI.updateBOM(bomId, dataToSave, currentChangeLog);
@@ -867,6 +900,9 @@ export default function BOMPage() {
         }
         if (freshData.bomData.aluminumRate) {
           setAluminumRate(freshData.bomData.aluminumRate);
+        }
+        if (freshData.bomData.userNotes && Array.isArray(freshData.bomData.userNotes)) {
+          setUserNotes(freshData.bomData.userNotes);
         }
       }
       alert('Changes saved successfully!');
@@ -1181,17 +1217,12 @@ export default function BOMPage() {
               </div>
             </div>
 
-            {/* Important Notes Section */}
-            <div className="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
-              <h3 className="text-lg font-bold text-gray-800 mb-3">Note:</h3>
-              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                <li>Cut Length of Long Rails subject to change during detailing based on availability.</li>
-                <li>For all Roofs purlins are assumed to be at 1300mm where details of existing purlins are not shown in layout shared by client.</li>
-                <li>Length of Long Rails subject to change based on actual purlin locations at site to fix the Long rail only on purlin. If any extra length of rails are required, they shall be charged extra.</li>
-                <li>For Roofs with purlin span more than 1.7m, 2 Long Rails + 1 Mini Rail per each side of panel are considered.</li>
-                <li>Purlin Details of sheds T10, T11, T14, T15 are not mentioned in report. They are assumed to be 1.5m. If the actual span is more than 1.7m, an extra Mini rail must be considered additionally (at extra cost).</li>
-              </ol>
-            </div>
+            {/* Notes Section */}
+            <NotesSection
+              userNotes={userNotes}
+              onNotesChange={handleNotesChange}
+              editMode={editMode}
+            />
           </div>
 
           <div className="px-6 pb-6">

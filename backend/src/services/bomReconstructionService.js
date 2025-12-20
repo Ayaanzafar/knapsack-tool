@@ -23,7 +23,8 @@ class BomReconstructionService {
       moduleWp: fullBomData.moduleWp || 710,
       tabs: fullBomData.tabs || [],
       panelCounts: fullBomData.panelCounts || {},
-      projectInfo: fullBomData.projectInfo || {}
+      projectInfo: fullBomData.projectInfo || {},
+      userNotes: fullBomData.userNotes || []
     };
 
     // If profileSerialNumber is missing in items, we need to look it up
@@ -204,7 +205,8 @@ class BomReconstructionService {
       bomItems: fullBomItems,
       aluminumRate: aluminumRate,
       sparePercentage: sparePercentage,
-      moduleWp: moduleWp
+      moduleWp: moduleWp,
+      userNotes: bomMetadata.userNotes || []
     };
   }
 
