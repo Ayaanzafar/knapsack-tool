@@ -258,14 +258,35 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
  */
 export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRate = 527.85) {
   // Fetch all profiles from API
-  const response = await fetch(`${API_URL}/api/bom/master-items`);
-  const allProfiles = await response.json();
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  let allProfiles = [];
+  try {
+    const response = await fetch(`${API_URL}/api/bom/master-items`, { headers });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch master items: ${response.status} ${response.statusText}`);
+    }
+    allProfiles = await response.json();
+  } catch (error) {
+    console.error('Error fetching master items:', error);
+    // Fallback: Continue with empty profiles or handle error appropriately
+    // For now, we'll proceed but logging the error is crucial.
+    // Ideally, we might want to throw here if profiles are essential.
+  }
 
   // Create profilesMap: { serialNumber: profileData }
   const profilesMap = {};
-  allProfiles.forEach(profile => {
-    profilesMap[profile.serialNumber] = profile;
-  });
+  if (Array.isArray(allProfiles)) {
+    allProfiles.forEach(profile => {
+      profilesMap[profile.serialNumber] = profile;
+    });
+  }
 
   const bomItems = await generateBOMItems(bomData, activeCutLengths, profilesMap, aluminumRate);
 

@@ -13,10 +13,28 @@ const apiClient = axios.create({
   timeout: 10000, // 10 seconds
 });
 
+// Add request interceptor for JWT token
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Add response interceptor for error handling
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      // Clear token if unauthorized (except for specific logic handled in components)
+       if (error.response.data?.code !== 'PASSWORD_CHANGE_REQUIRED') {
+         // Optionally redirect to login or clear state
+       }
+    }
     console.error('API Error:', error);
     if (error.response) {
       // Server responded with error status
@@ -30,6 +48,27 @@ apiClient.interceptors.response.use(
     }
   }
 );
+
+// ====================
+// AUTH API
+// ====================
+
+export const authAPI = {
+  login: async (username, password) => {
+    const response = await apiClient.post('/auth/login', { username, password });
+    return response.data;
+  },
+  
+  changePassword: async (currentPassword, newPassword) => {
+    const response = await apiClient.post('/auth/change-password', { currentPassword, newPassword });
+    return response.data;
+  },
+
+  getMe: async () => {
+    const response = await apiClient.get('/auth/me');
+    return response.data;
+  }
+};
 
 // ====================
 // PROJECT API

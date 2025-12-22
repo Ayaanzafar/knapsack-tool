@@ -40,23 +40,43 @@ export const DEFAULT_TAB = {
 };
 
 // Store current project ID in memory (will be loaded on app start)
-let currentProjectId = null;
+let currentProjectId = localStorage.getItem('currentProjectId') ? parseInt(localStorage.getItem('currentProjectId')) : null;
+
+export function setCurrentProjectId(id) {
+  currentProjectId = id;
+  if (id) {
+    localStorage.setItem('currentProjectId', id.toString());
+  } else {
+    localStorage.removeItem('currentProjectId');
+  }
+}
 
 // Initialize or get project
 export async function initializeProject(projectName = 'Untitled Project') {
   try {
-    // Get all projects
+    // If we have a selected project, use it
+    if (currentProjectId) {
+        try {
+            return await projectAPI.getById(currentProjectId);
+        } catch (e) {
+            console.warn("Stored project ID not found, falling back...", e);
+            currentProjectId = null;
+            localStorage.removeItem('currentProjectId');
+        }
+    }
+
+    // Fallback: Get all projects (legacy behavior, or for dev)
     const projects = await projectAPI.getAll();
 
     if (projects.length > 0) {
       // Use the first project
-      currentProjectId = projects[0].id;
+      setCurrentProjectId(projects[0].id);
       return projects[0];
     }
 
     // Create new project if none exists
     const newProject = await projectAPI.create({ name: projectName });
-    currentProjectId = newProject.id;
+    setCurrentProjectId(newProject.id);
     return newProject;
   } catch (error) {
     console.error('Failed to initialize project:', error);

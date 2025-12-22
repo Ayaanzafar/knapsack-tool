@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const bomController = require('../controllers/bomController');
 const pdfController = require('../controllers/pdfController');
+const { authenticateToken, checkPasswordChange } = require('../middleware/authMiddleware');
+
+// Protect all routes
+router.use(authenticateToken);
+router.use(checkPasswordChange);
 
 // Master Items Routes
 // GET /api/bom/master-items - Get all master items

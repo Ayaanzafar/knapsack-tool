@@ -1,6 +1,7 @@
 // src/components/Header.jsx
 import { useState, useEffect } from 'react';
 import { exportToFile, DEFAULT_SETTINGS, DEFAULT_LENGTHS } from '../lib/storage';
+import { useAuth } from '../context/AuthContext';
 
 export default function Header({
   userMode,
@@ -14,7 +15,9 @@ export default function Header({
   projectId,
   setProjectId
 }) {
+  const { user, logout } = useAuth();
   const [showSettings, setShowSettings] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [isEditingProjectInfo, setIsEditingProjectInfo] = useState(false);
   const [tempClientName, setTempClientName] = useState(clientName || '');
   const [tempProjectId, setTempProjectId] = useState(projectId || '');
@@ -91,12 +94,47 @@ export default function Header({
 
   return (
     <header className="border-b bg-white">
-      {/* First Row: Title and Settings */}
+      {/* First Row: Title, User, and Settings */}
       <div className="max-w-7xl px-4 py-3 flex ml-50 items-center justify-between border-b border-gray-200">
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-semibold">Preliminary Calculation for Long Rail</h1>
         </div>
         <div className="flex items-center gap-4">
+          
+          {/* User Profile Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors border border-gray-200"
+              title="User Profile"
+            >
+              <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
+                {user?.username?.substring(0, 2).toUpperCase() || 'US'}
+              </div>
+              <span className="text-sm font-medium text-gray-700 pr-2 hidden sm:block">
+                {user?.username || 'User'}
+              </span>
+            </button>
+            
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border p-2 z-50 animate-fadeIn">
+                <div className="px-3 py-2 border-b mb-2">
+                  <p className="text-sm font-bold text-gray-800">{user?.username}</p>
+                  <p className="text-xs text-gray-500 capitalize">{user?.role?.toLowerCase() || 'Basic'} User</p>
+                </div>
+                <button
+                  onClick={logout}
+                  className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="relative">
             <button
               onClick={() => setShowSettings(!showSettings)}

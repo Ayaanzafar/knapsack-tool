@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const tabController = require('../controllers/tabController');
 const rowController = require('../controllers/rowController');
+const { authenticateToken, checkPasswordChange } = require('../middleware/authMiddleware');
+
+// Protect all routes
+router.use(authenticateToken);
+router.use(checkPasswordChange);
 
 // GET /api/tabs/:id - Get single tab
 router.get('/:id', tabController.getTabById.bind(tabController));

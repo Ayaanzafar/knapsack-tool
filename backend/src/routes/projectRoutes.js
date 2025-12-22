@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const projectController = require('../controllers/projectController');
 const tabController = require('../controllers/tabController');
+const { authenticateToken, checkPasswordChange } = require('../middleware/authMiddleware');
+
+// Protect all routes
+router.use(authenticateToken);
+router.use(checkPasswordChange);
 
 // POST /api/projects - Create new project
 router.post('/', projectController.createProject.bind(projectController));

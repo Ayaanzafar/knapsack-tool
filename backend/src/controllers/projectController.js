@@ -4,7 +4,11 @@ class ProjectController {
   // POST /api/projects - Create new project
   async createProject(req, res, next) {
     try {
-      const project = await projectService.createProject(req.body);
+      const projectData = {
+        ...req.body,
+        userId: req.user ? req.user.id : null
+      };
+      const project = await projectService.createProject(projectData);
       res.status(201).json(project);
     } catch (error) {
       next(error);

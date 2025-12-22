@@ -2,8 +2,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { TextField } from './ui';
 import { parseNumList } from '../lib/storage';
+import { useAuth } from '../context/AuthContext';
 
 export default function GlobalInputs({ settings, setSettings, applyToAll }) {
+  const { user } = useAuth();
+  const isBasicUser = user?.role === 'BASIC';
+
   // Local state for lengthsInput to prevent cursor jumping
   const [localLengthsInput, setLocalLengthsInput] = useState(settings.lengthsInput || '');
   const debounceTimerRef = useRef(null);
@@ -183,13 +187,20 @@ export default function GlobalInputs({ settings, setSettings, applyToAll }) {
                 className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
               />
             </div>
-            <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">Buffer after End Clamp(mm)</label>
+            <div className="relative group">
+              <label className={`block text-[14px] mb-0.5 ${isBasicUser ? 'text-gray-400' : 'text-gray-600'}`}>
+                Buffer after End Clamp(mm)
+                {isBasicUser && <span className="ml-1 text-xs text-red-500">(Advanced Only)</span>}
+              </label>
               <input
                 type="number"
                 value={buffer}
+                disabled={isBasicUser}
                 onChange={e => updateSetting('buffer', e.target.value)}
-                className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
+                className={`w-full rounded border px-2 py-1 text-sm text-center font-medium ${
+                  isBasicUser ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''
+                }`}
+                title={isBasicUser ? "Only Advanced users can modify Buffer" : ""}
               />
             </div>
             <div>
@@ -308,7 +319,7 @@ export default function GlobalInputs({ settings, setSettings, applyToAll }) {
       </div>
 
       {/* Advanced: Edit lengths */}
-      {userMode === 'advanced' && (
+      {(userMode === 'advanced' && !isBasicUser) && (
         <div className="mt-4 pt-4 border-t">
           <TextField
             label="Edit Cut Lengths (comma-separated)"
