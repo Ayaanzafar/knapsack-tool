@@ -2284,8 +2284,8 @@ export default function BOMPage() {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading BOM</h2>
           <p className="text-gray-600 mb-6">Could not load BOM data. It might have been deleted or is invalid.</p>
-          <button 
-            onClick={handleBack} 
+          <button
+            onClick={handleBack}
             className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
           >
             Go Back to Home
@@ -2309,11 +2309,10 @@ export default function BOMPage() {
               <button
                 onClick={handleBack}
                 disabled={editMode}
-                className={`group flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 ${
-                  editMode
+                className={`group flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 ${editMode
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-gray-100 to-gray-50 hover:from-gray-200 hover:to-gray-100 text-gray-700 shadow-sm hover:shadow-md transform hover:-translate-x-1'
-                }`}
+                  }`}
                 title={editMode ? "Exit edit mode to go back" : "Back to main page"}
               >
                 <svg
@@ -2330,9 +2329,9 @@ export default function BOMPage() {
                 </svg>
                 <span className="font-semibold">Back</span>
               </button>
-              
+
               <div className="h-10 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent"></div>
-              
+
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                   Bill of Materials (BOM)
@@ -2359,11 +2358,10 @@ export default function BOMPage() {
               <button
                 onClick={handleToggleEditMode}
                 disabled={isSaving}
-                className={`group px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
-                  editMode
+                className={`group px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${editMode
                     ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700'
                     : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-purple-400 hover:text-purple-600'
-                }`}
+                  }`}
               >
                 {isSaving ? (
                   <>
@@ -2388,7 +2386,7 @@ export default function BOMPage() {
                 )}
               </button>
 
-              <button
+              {!editMode && <button
                 className="group px-5 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-semibold shadow-sm hover:shadow-md transform hover:scale-105"
                 onClick={() => setPrintSettingsModalOpen(true)}
               >
@@ -2405,7 +2403,7 @@ export default function BOMPage() {
                   />
                 </svg>
                 <span>Print</span>
-              </button>
+              </button>}
             </div>
           </div>
         </div>
@@ -2468,9 +2466,8 @@ export default function BOMPage() {
                   step="0.01"
                   min="0"
                   disabled={!editMode || isBasicUser}
-                  className={`w-32 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
-                    (!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
-                  }`}
+                  className={`w-32 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${(!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
+                    }`}
                   title={isBasicUser ? "Only Advanced users can modify this" : ""}
                 />
               </div>
@@ -2499,9 +2496,8 @@ export default function BOMPage() {
                   step="0.1"
                   min="0"
                   disabled={!editMode || isBasicUser}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
-                    (!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-green-400'
-                  }`}
+                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${(!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-green-400'
+                    }`}
                   title={isBasicUser ? "Only Advanced users can modify this" : ""}
                 />
               </div>
@@ -2530,9 +2526,8 @@ export default function BOMPage() {
                   step="1"
                   min="0"
                   disabled={!editMode || isBasicUser}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                    (!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
-                  }`}
+                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${(!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
+                    }`}
                   title={isBasicUser ? "Only Advanced users can modify this" : ""}
                 />
               </div>
