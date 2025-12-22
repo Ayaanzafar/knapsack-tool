@@ -42,6 +42,10 @@ export const DEFAULT_TAB = {
 // Store current project ID in memory (will be loaded on app start)
 let currentProjectId = localStorage.getItem('currentProjectId') ? parseInt(localStorage.getItem('currentProjectId')) : null;
 
+// React StrictMode runs some effects twice in development, which can trigger duplicate "default tab" creation.
+// Guard default-tab creation per project so it's idempotent across concurrent callers.
+const defaultTabCreateInFlight = new Map(); // projectId -> Promise<tabsData>
+
 export function setCurrentProjectId(id) {
   currentProjectId = id;
   if (id) {
@@ -101,9 +105,15 @@ export async function loadTabs() {
     const tabs = await tabAPI.getByProjectId(currentProjectId);
 
     if (tabs.length === 0) {
-      // Create a default tab
-      const defaultTab = await createTab({ tabs: [], activeTabId: null }, 'Project 1');
-      return defaultTab;
+      // Create a default tab (once per project)
+      const projectId = currentProjectId;
+      let inFlight = defaultTabCreateInFlight.get(projectId);
+      if (!inFlight) {
+        inFlight = createTab({ tabs: [], activeTabId: null }, 'Project 1')
+          .finally(() => defaultTabCreateInFlight.delete(projectId));
+        defaultTabCreateInFlight.set(projectId, inFlight);
+      }
+      return await inFlight;
     }
 
     // Convert database format to app format
