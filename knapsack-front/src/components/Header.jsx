@@ -1,5 +1,6 @@
 // src/components/Header.jsx
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { exportToFile, DEFAULT_SETTINGS, DEFAULT_LENGTHS } from '../lib/storage';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,6 +16,7 @@ export default function Header({
   projectId,
   setProjectId
 }) {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [showSettings, setShowSettings] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -54,6 +56,12 @@ export default function Header({
     setTempProjectId(projectId || '');
     setTempProjectName(projectName || 'Untitled Project');
     setIsEditingProjectInfo(false);
+  };
+
+  const handleCloseProject = () => {
+    if (window.confirm('Are you sure you want to close this project and return to the Home page?')) {
+      navigate('/');
+    }
   };
 
   const handleExport = () => {
@@ -101,6 +109,20 @@ export default function Header({
         </div>
         <div className="flex items-center gap-4">
           
+          {/* Close Project Button */}
+          <button
+            onClick={handleCloseProject}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-gray-200"
+            title="Close project and return Home"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Close Project
+          </button>
+
+          <div className="h-6 w-px bg-gray-200 mx-1"></div>
+
           {/* User Profile Dropdown */}
           <div className="relative">
             <button
