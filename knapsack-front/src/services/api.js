@@ -71,6 +71,24 @@ export const authAPI = {
 };
 
 // ====================
+// USER API
+// ====================
+
+export const userAPI = {
+  // Get all users
+  getAll: async () => {
+    const response = await apiClient.get('/users');
+    return response.data;
+  },
+
+  // Create new user
+  create: async (userData) => {
+    const response = await apiClient.post('/users', userData);
+    return response.data;
+  }
+};
+
+// ====================
 // PROJECT API
 // ====================
 

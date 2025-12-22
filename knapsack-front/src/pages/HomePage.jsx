@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const handleCreateBOM = () => {
     navigate('/projects/create');
@@ -13,26 +13,38 @@ export default function HomePage() {
     navigate('/projects/create');
   };
 
+  const isManager = user?.role === 'MANAGER';
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Knapsack Tool</h1>
-          {isAuthenticated ? (
-            <button
-              onClick={logout}
-              className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
-            >
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate('/login')}
-              className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-            >
-              Login
-            </button>
-          )}
+          <div className="flex items-center gap-4">
+            {isManager && (
+              <button
+                onClick={() => navigate('/admin')}
+                className="px-4 py-2 border border-purple-600 text-sm font-medium rounded-md text-purple-600 bg-white hover:bg-purple-50"
+              >
+                Admin Panel
+              </button>
+            )}
+            {isAuthenticated ? (
+              <button
+                onClick={logout}
+                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
+              >
+                Logout
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/login')}
+                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Login
+              </button>
+            )}
+          </div>
         </div>
       </header>
 

@@ -5,6 +5,7 @@ const path = require('path');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const tabRoutes = require('./routes/tabRoutes');
 const rowRoutes = require('./routes/rowRoutes');
@@ -34,6 +35,7 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tabs', tabRoutes);
 app.use('/api/rows', rowRoutes);

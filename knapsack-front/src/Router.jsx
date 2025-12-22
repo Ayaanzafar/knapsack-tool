@@ -7,6 +7,7 @@ import LoginPage from './components/Auth/LoginPage';
 import ChangePasswordPage from './components/Auth/ChangePasswordPage';
 import HomePage from './pages/HomePage';
 import CreateProjectPage from './pages/CreateProjectPage';
+import AdminPanel from './pages/AdminPanel';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const PrivateRoute = ({ children }) => {
@@ -26,6 +27,18 @@ const PrivateRoute = ({ children }) => {
   return children;
 };
 
+const RoleRoute = ({ children, roles }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) return <div>Loading...</div>;
+
+  if (!user || !roles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
 export default function Router() {
   return (
     <AuthProvider>
@@ -34,6 +47,17 @@ export default function Router() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
         
+        <Route 
+          path="/admin" 
+          element={
+            <PrivateRoute>
+              <RoleRoute roles={['MANAGER']}>
+                <AdminPanel />
+              </RoleRoute>
+            </PrivateRoute>
+          } 
+        />
+
         <Route 
           path="/projects/create" 
           element={
