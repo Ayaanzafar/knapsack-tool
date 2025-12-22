@@ -4,6 +4,50 @@
 import axios from 'axios';
 import { API_BASE_URL } from './config';
 
+const decodeJwtPayload = (token) => {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+
+  try {
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + (4 - (base64.length % 4 || 4)) % 4, '=');
+    const json = atob(padded);
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+};
+
+const getUserRoleFromToken = () => {
+  const token = localStorage.getItem('token');
+  return decodeJwtPayload(token)?.role || null;
+};
+
+const BASIC_FORBIDDEN_TAB_SETTINGS_FIELDS = new Set([
+  'buffer',
+  'lengthsInput',
+  'costPerMm',
+  'costPerJointSet',
+  'joinerLength',
+  'maxPieces',
+  'maxWastePct',
+  'alphaJoint',
+  'betaSmall',
+  'allowUndershootPct',
+  'gammaShort'
+]);
+
+const sanitizeTabSettingsForRole = (settings, role) => {
+  if (!settings || typeof settings !== 'object') return settings;
+  if (role !== 'BASIC') return settings;
+  const sanitized = { ...settings };
+  for (const field of BASIC_FORBIDDEN_TAB_SETTINGS_FIELDS) {
+    delete sanitized[field];
+  }
+  return sanitized;
+};
+
 // Create axios instance with default config
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -38,7 +82,13 @@ apiClient.interceptors.response.use(
     console.error('API Error:', error);
     if (error.response) {
       // Server responded with error status
-      throw new Error(error.response.data.message || error.response.data.error || 'Server error');
+      const data = error.response.data || {};
+      const err = new Error(data.message || data.error || 'Server error');
+      err.status = error.response.status;
+      err.code = data.code;
+      err.field = data.field;
+      err.data = data;
+      throw err;
     } else if (error.request) {
       // Request made but no response
       throw new Error('Network error: Unable to reach the server');
@@ -149,13 +199,17 @@ export const tabAPI = {
 
   // Create new tab
   create: async (projectId, data) => {
-    const response = await apiClient.post(`/projects/${projectId}/tabs`, data);
+    const role = getUserRoleFromToken();
+    const payload = data?.settings ? { ...data, settings: sanitizeTabSettingsForRole(data.settings, role) } : data;
+    const response = await apiClient.post(`/projects/${projectId}/tabs`, payload);
     return response.data;
   },
 
   // Update tab (name and/or settings)
   update: async (id, data) => {
-    const response = await apiClient.put(`/tabs/${id}`, data);
+    const role = getUserRoleFromToken();
+    const payload = data?.settings ? { ...data, settings: sanitizeTabSettingsForRole(data.settings, role) } : data;
+    const response = await apiClient.put(`/tabs/${id}`, payload);
     return response.data;
   },
 

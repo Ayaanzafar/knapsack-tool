@@ -143,7 +143,7 @@ export async function loadTabs() {
 }
 
 // Convert database tab format to app format
-function convertDBTabToAppTab(dbTab) {
+export function convertDBTabToAppTab(dbTab) {
   return {
     id: dbTab.id,
     name: dbTab.name,
@@ -266,6 +266,22 @@ export async function updateTab(tabsData, tabId, updates) {
     console.error('Failed to update tab:', error);
     throw error;
   }
+}
+
+// Refresh a single tab from server (useful after permission errors to revert UI to last saved values)
+export async function refreshTab(tabsData, tabId) {
+  const dbTab = await tabAPI.getById(tabId);
+  const refreshed = convertDBTabToAppTab(dbTab);
+  const existing = tabsData.tabs.find(t => t.id === tabId);
+
+  return {
+    ...tabsData,
+    tabs: tabsData.tabs.map(t =>
+      t.id === tabId
+        ? { ...refreshed, selectedRowId: existing?.selectedRowId ?? null }
+        : t
+    )
+  };
 }
 
 // Switch active tab

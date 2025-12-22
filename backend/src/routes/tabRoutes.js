@@ -3,6 +3,7 @@ const router = express.Router();
 const tabController = require('../controllers/tabController');
 const rowController = require('../controllers/rowController');
 const { authenticateToken, checkPasswordChange } = require('../middleware/authMiddleware');
+const { enforceTabUpdatePermissions } = require('../middleware/tabPermissions');
 
 // Protect all routes
 router.use(authenticateToken);
@@ -12,7 +13,7 @@ router.use(checkPasswordChange);
 router.get('/:id', tabController.getTabById.bind(tabController));
 
 // PUT /api/tabs/:id - Update tab
-router.put('/:id', tabController.updateTab.bind(tabController));
+router.put('/:id', enforceTabUpdatePermissions, tabController.updateTab.bind(tabController));
 
 // DELETE /api/tabs/:id - Delete tab
 router.delete('/:id', tabController.deleteTab.bind(tabController));

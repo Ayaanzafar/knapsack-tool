@@ -27,7 +27,8 @@ exports.authenticateToken = (req, res, next) => {
 
 // Check for Mandatory Password Change
 exports.checkPasswordChange = (req, res, next) => {
-  if (req.user.mustChangePassword && req.path !== '/change-password' && req.path !== '/logout') {
+  const isReadOnlyMethod = req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS';
+  if (req.user.mustChangePassword && !isReadOnlyMethod && req.path !== '/change-password' && req.path !== '/logout') {
     return res.status(403).json({ 
       error: 'Password change required', 
       code: 'PASSWORD_CHANGE_REQUIRED' 

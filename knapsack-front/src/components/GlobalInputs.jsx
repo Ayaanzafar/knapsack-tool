@@ -200,7 +200,7 @@ export default function GlobalInputs({ settings, setSettings, applyToAll }) {
                 className={`w-full rounded border px-2 py-1 text-sm text-center font-medium ${
                   isBasicUser ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''
                 }`}
-                title={isBasicUser ? "Only Advanced users can modify Buffer" : ""}
+                title={isBasicUser ? "Advanced only" : ""}
               />
             </div>
             <div>

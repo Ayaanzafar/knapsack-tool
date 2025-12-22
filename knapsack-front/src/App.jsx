@@ -9,11 +9,12 @@ import CloseTabConfirmDialog from './components/CloseTabConfirmDialog';
 import RenameTabDialog from './components/RenameTabDialog';
 import CreateBOMButton from './components/BOM/CreateBOMButton';
 import { projectAPI, tabAPI } from './services/api';
+import { useAuth } from './context/AuthContext';
 import {
   loadTabs,
   createTab,
   deleteTab,
-  updateTab,
+  refreshTab,
   switchTab,
   getActiveTab,
   renameTab,
@@ -23,6 +24,9 @@ import {
 } from './lib/tabStorageAPI';
 
 export default function App() {
+  const { user } = useAuth();
+  const isBasicUser = user?.role === 'BASIC';
+
   // State
   const [tabsData, setTabsData] = useState({ tabs: [], activeTabId: null });
   const [projectName, setProjectName] = useState('Untitled Project');
@@ -35,6 +39,21 @@ export default function App() {
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [tabToClose, setTabToClose] = useState(null);
   const [tabToRename, setTabToRename] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message) => {
+    setToast({ id: Date.now(), message });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  const revertTabFromServer = async (tabId) => {
+    try {
+      const refreshed = await refreshTab(tabsData, tabId);
+      setTabsData(refreshed);
+    } catch (e) {
+      console.error('Failed to refresh tab from server:', e);
+    }
+  };
 
   // Get active tab
   const activeTab = getActiveTab(tabsData);
@@ -176,27 +195,71 @@ export default function App() {
     const currentActiveTab = getActiveTab(tabsData);
     if (!currentActiveTab) return;
 
+    const prevSettings = currentActiveTab.settings;
+
     // Handle both object and function updaters
-    const settingsUpdate = typeof newSettings === 'function'
-      ? newSettings(currentActiveTab.settings)
-      : { ...currentActiveTab.settings, ...newSettings };
+    const nextSettings = typeof newSettings === 'function'
+      ? newSettings(prevSettings)
+      : { ...prevSettings, ...newSettings };
+
+    // BASIC defense-in-depth: do not allow client-side state to persist advanced-only changes.
+    const forbiddenFields = [
+      'buffer',
+      'lengthsInput',
+      'costPerMm',
+      'costPerJointSet',
+      'joinerLength',
+      'maxPieces',
+      'maxWastePct',
+      'alphaJoint',
+      'betaSmall',
+      'allowUndershootPct',
+      'gammaShort'
+    ];
+
+    if (isBasicUser) {
+      for (const field of forbiddenFields) {
+        if (Object.prototype.hasOwnProperty.call(nextSettings, field) && nextSettings[field] !== prevSettings[field]) {
+          nextSettings[field] = prevSettings[field];
+          showToast(`${field}: Advanced only`);
+        }
+      }
+    }
+
+    // Optimistic UI update
+    setTabsData(currentTabsData => ({
+      ...currentTabsData,
+      tabs: currentTabsData.tabs.map(tab =>
+        tab.id === currentActiveTab.id
+          ? { ...tab, settings: { ...tab.settings, ...nextSettings } }
+          : tab
+      )
+    }));
+
+    // Send only changed keys
+    const patch = {};
+    for (const key of Object.keys(nextSettings)) {
+      if (nextSettings[key] !== prevSettings[key]) {
+        patch[key] = nextSettings[key];
+      }
+    }
+
+    if (Object.keys(patch).length === 0) return;
 
     try {
-      const newTabsData = await updateTab(tabsData, currentActiveTab.id, {
-        settings: settingsUpdate
-      });
-      setTabsData(newTabsData);
+      await tabAPI.update(currentActiveTab.id, { settings: patch });
     } catch (err) {
       console.error('Failed to update settings:', err);
-      // Update local state even if API call fails (optimistic update)
-      setTabsData(currentTabsData => {
-        const currentActiveTab = getActiveTab(currentTabsData);
-        if (!currentActiveTab) return currentTabsData;
 
-        return updateTab(currentTabsData, currentActiveTab.id, {
-          settings: settingsUpdate
-        });
-      });
+      if (err?.code === 'FORBIDDEN_FIELD') {
+        showToast(`${err.field || 'Field'}: ${err.data?.message || err.message}`);
+      } else if (err?.code === 'PASSWORD_CHANGE_REQUIRED') {
+        showToast('Password change required before continuing.');
+      } else {
+        showToast(err?.message || 'Failed to save changes.');
+      }
+
+      await revertTabFromServer(currentActiveTab.id);
     }
   };
 
@@ -256,17 +319,27 @@ export default function App() {
 
     // Server update
     try {
+      const forbiddenGlobalKeys = new Set(['buffer', 'costPerMm', 'costPerJointSet', 'joinerLength', 'maxPieces']);
+      if (isBasicUser && forbiddenGlobalKeys.has(key)) {
+        showToast(`${key}: Advanced only`);
+        const active = getActiveTab(tabsData);
+        if (active?.id) await revertTabFromServer(active.id);
+        return;
+      }
+
       // Update all tabs in parallel
       await Promise.all(
         tabsData.tabs.map(tab =>
           tabAPI.update(tab.id, {
-            settings: { ...tab.settings, [key]: value }
+            settings: { [key]: value }
           })
         )
       );
     } catch (err) {
       console.error('Failed to apply setting to all tabs:', err);
-      alert('Failed to save changes to server. Please refresh.');
+      showToast(err?.message || 'Failed to save changes to server.');
+      const active = getActiveTab(tabsData);
+      if (active?.id) await revertTabFromServer(active.id);
     }
   };
 
@@ -352,11 +425,19 @@ export default function App() {
         </section>
 
         {/* Create BOM Button */}
-        <CreateBOMButton
+      <CreateBOMButton
           tabsData={tabsData}
           projectName={projectName}
         />
       </main>
+
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg">
+            {toast.message}
+          </div>
+        </div>
+      )}
 
       {/* Dialogs */}
       <CreateTabDialog

@@ -3,6 +3,7 @@ const router = express.Router();
 const projectController = require('../controllers/projectController');
 const tabController = require('../controllers/tabController');
 const { authenticateToken, checkPasswordChange } = require('../middleware/authMiddleware');
+const { sanitizeTabCreateForRole } = require('../middleware/tabPermissions');
 
 // Protect all routes
 router.use(authenticateToken);
@@ -28,7 +29,7 @@ router.delete('/:id', projectController.deleteProject.bind(projectController));
 
 // Nested tab routes
 // POST /api/projects/:projectId/tabs - Create new tab for project
-router.post('/:projectId/tabs', tabController.createTab.bind(tabController));
+router.post('/:projectId/tabs', sanitizeTabCreateForRole, tabController.createTab.bind(tabController));
 
 // GET /api/projects/:projectId/tabs - Get all tabs for project
 router.get('/:projectId/tabs', tabController.getTabsByProjectId.bind(tabController));
