@@ -700,27 +700,36 @@ export default function RailTable({
                 <div className="p-4 max-h-96 overflow-y-auto">
                   {/* Cost & Optimization Settings */}
                   <div className="mb-4">
-                    <h4 className="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-3">Cost & Limits</h4>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-xs font-semibold text-purple-600 uppercase tracking-wide">Cost & Limits</h4>
+                      {user?.role === 'BASIC' && (
+                        <span className="text-[10px] text-red-500 font-medium">Read-only for Basic users</span>
+                      )}
+                    </div>
                     <div className="space-y-3 bg-gray-50 rounded-lg p-3">
                       <TextField
                         label="Cost per mm"
                         value={costPerMm}
                         setValue={(v) => updateSetting('costPerMm', v)}
+                        disabled={user?.role === 'BASIC'}
                       />
                       <TextField
                         label="Cost per Joint Set"
                         value={costPerJointSet}
                         setValue={(v) => updateSetting('costPerJointSet', v)}
+                        disabled={user?.role === 'BASIC'}
                       />
                       <TextField
                         label="Joiner Length (mm)"
                         value={joinerLength}
                         setValue={(v) => updateSetting('joinerLength', v)}
+                        disabled={user?.role === 'BASIC'}
                       />
                       <NumberField
                         label="Max Pieces"
                         value={maxPieces}
                         setValue={(v) => updateSetting('maxPieces', v)}
+                        disabled={user?.role === 'BASIC'}
                       />
                     </div>
                   </div>

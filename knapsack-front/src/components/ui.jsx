@@ -9,30 +9,36 @@ export function Card({ title, children, className = '' }) {
   );
 }
 
-export function TextField({ label, value, setValue, className = '' }) {
+export function TextField({ label, value, setValue, className = '', disabled = false }) {
   return (
     <label className={`block ${className}`}>
-      {label && <div className="mb-1 text-sm text-gray-600">{label}</div>}
+      {label && <div className={`mb-1 text-sm ${disabled ? 'text-gray-400' : 'text-gray-600'}`}>{label}</div>}
       <input
-        className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10"
+        className={`w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 ${
+          disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+        }`}
         value={value}
         onChange={e => setValue(e.target.value)}
         spellCheck={false}
+        disabled={disabled}
       />
     </label>
   );
 }
 
-export function NumberField({ label, value, setValue, step, className = '' }) {
+export function NumberField({ label, value, setValue, step, className = '', disabled = false }) {
   return (
     <label className={`block ${className}`}>
-      {label && <div className="mb-1 text-sm text-gray-600">{label}</div>}
+      {label && <div className={`mb-1 text-sm ${disabled ? 'text-gray-400' : 'text-gray-600'}`}>{label}</div>}
       <input
         type="number"
         step={step}
-        className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10"
+        className={`w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 ${
+          disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+        }`}
         value={value}
         onChange={e => setValue(e.target.value)}
+        disabled={disabled}
       />
     </label>
   );

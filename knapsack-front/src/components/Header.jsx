@@ -195,12 +195,12 @@ export default function Header({
                       className="hidden"
                     />
                   </label>
-                  <button
+                  {/* <button
                     onClick={handleReset}
                     className="w-full py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50"
                   >
                     Reset Defaults
-                  </button>
+                  </button> */}
                 </div>
 
                 <button
