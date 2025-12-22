@@ -2108,7 +2108,14 @@ export default function BOMPage() {
       input.name = 'jsonPayload';
       input.value = JSON.stringify(payload);
 
+      // Add auth token to form for backend middleware
+      const tokenInput = document.createElement('input');
+      tokenInput.type = 'hidden';
+      tokenInput.name = 'token';
+      tokenInput.value = localStorage.getItem('token');
+
       form.appendChild(input);
+      form.appendChild(tokenInput);
       document.body.appendChild(form);
       form.submit();
       document.body.removeChild(form);

@@ -5,7 +5,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-it-in-produ
 // Verify Token Middleware
 exports.authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  let token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  // Fallback: Check body or query (useful for form submissions/downloads)
+  if (!token) {
+    token = req.body.token || req.query.token;
+  }
 
   if (!token) {
     return res.status(401).json({ error: 'Access token required' });

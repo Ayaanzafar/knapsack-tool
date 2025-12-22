@@ -366,6 +366,13 @@ const generateBOMHtml = (data, req) => {
 exports.exportPdf = async (req, res) => {
     let browser;
     try {
+        const authHeader = req.headers?.authorization;
+        const requestToken =
+            (authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : null) ||
+            req.body?.token ||
+            req.query?.token ||
+            null;
+
         let bomData, printSettings, aluminumRate, sparePercentage, moduleWp, changeLog;
 
         // Handle Form POST (from standard HTML form submission for file download)
@@ -426,6 +433,34 @@ exports.exportPdf = async (req, res) => {
 
         const page = await browser.newPage();
 
+        // Ensure the SPA route + API calls can authenticate when rendering in Puppeteer.
+        // The frontend auth flow reads the JWT from localStorage key "token".
+        if (requestToken) {
+            await page.evaluateOnNewDocument((token) => {
+                try {
+                    window.localStorage.setItem('token', token);
+                } catch (e) {
+                    // ignore
+                }
+            }, requestToken);
+
+            // Some codepaths (like fetch calls not using axios) may still need the header.
+            // This only affects requests initiated by the page (not the API response back to the user).
+            await page.setExtraHTTPHeaders({ Authorization: `Bearer ${requestToken}` });
+        }
+
+        // Helpful diagnostics when PDF generation fails (kept lightweight).
+        page.on('console', (msg) => {
+            try {
+                console.log(`PDF Preview Console: ${msg.text()}`);
+            } catch {
+                // ignore
+            }
+        });
+        page.on('pageerror', (err) => {
+            console.error('PDF Preview Page Error:', err);
+        });
+
         // Set viewport for better rendering
         await page.setViewport({
             width: 1920,
@@ -443,9 +478,20 @@ exports.exportPdf = async (req, res) => {
             timeout: 60000
         });
 
+        // Fail fast if the SPA redirects due to auth flow.
+        let currentPath = null;
+        try {
+            currentPath = new URL(page.url()).pathname;
+        } catch {
+            // ignore URL parsing issues; the ready signal wait will still fail with context.
+        }
+        if (currentPath === '/login' || currentPath === '/change-password') {
+            throw new Error(`Print preview redirected to ${currentPath}; check PDF export auth handling.`);
+        }
+
         // Wait for the page to signal it's ready
         console.log('PDF Export: Waiting for page to be ready...');
-        await page.waitForFunction('window.bomPageReady === true', { timeout: 30000 });
+        await page.waitForFunction('window.bomPageReady === true', { timeout: 60000 });
 
         // Give extra time for images and styles to fully load
         await new Promise(resolve => setTimeout(resolve, 2000));

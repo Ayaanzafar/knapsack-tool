@@ -22,8 +22,17 @@ export default function BOMPrintPreview() {
 
     if (tempId) {
       // Load from backend temp storage for PDF generation
-      fetch(`${API_URL}/api/bom/temp-data/${tempId}`)
-        .then(res => res.json())
+      const token = localStorage.getItem('token');
+      fetch(`${API_URL}/api/bom/temp-data/${tempId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined
+      })
+        .then(async (res) => {
+          if (!res.ok) {
+            const text = await res.text().catch(() => '');
+            throw new Error(text || `Failed to load temp data (HTTP ${res.status})`);
+          }
+          return res.json();
+        })
         .then(data => {
           setBomData(data.bomData);
           setPrintSettings(data.printSettings);
