@@ -8,7 +8,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
     includeCosting: true,
     includeDisclaimer: false
   });
-  const [scale, setScale] = useState(50); // Scale for preview in modal - default to landscape optimized
+  const [scale, setScale] = useState(70); // Scale for preview in modal - default to landscape optimized
 
   // Calculate orientation based on selections
   const getOrientation = () => {
@@ -34,7 +34,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
 
       if (count === 3) {
         // Landscape mode - use smaller scale to fit
-        setScale(50);
+        setScale(70);
       } else {
         // Portrait mode - use larger scale
         setScale(70);
@@ -268,7 +268,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0 1 1 0 002 0z" clipRule="evenodd" />
                 </svg>
-                Export HTML PDF
+                Export PDF
               </button>
 
               <button
