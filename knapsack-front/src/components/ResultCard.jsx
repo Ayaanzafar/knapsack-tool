@@ -4,7 +4,12 @@ import { Card, KV } from './ui';
 import { requiredRailLength, generateScenarios } from '../lib/optimizer';
 import { parseNumList, fmt } from '../lib/storage';
 
+import { useAuth } from '../context/AuthContext';
+
 export default function ResultCard({ row, settings }) {
+  const { user } = useAuth();
+  const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
+
   const {
     moduleWidth,
     midClamp,
@@ -12,7 +17,6 @@ export default function ResultCard({ row, settings }) {
     buffer,
     lengthsInput,
     enabledLengths,
-    maxPieces,
     maxWastePct,
     allowUndershootPct,
     alphaJoint,
@@ -21,8 +25,7 @@ export default function ResultCard({ row, settings }) {
     costPerMm,
     costPerJointSet,
     joinerLength,
-    priority,
-    userMode
+    priority
   } = settings;
 
   const parsedLengths = useMemo(

@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 export default function GlobalInputs({ settings, setSettings, applyToAll }) {
   const { user } = useAuth();
   const isBasicUser = user?.role === 'BASIC';
+  const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
 
   // Local state for lengthsInput to prevent cursor jumping
   const [localLengthsInput, setLocalLengthsInput] = useState(settings.lengthsInput || '');
@@ -51,7 +52,6 @@ export default function GlobalInputs({ settings, setSettings, applyToAll }) {
     purlinDistance,
     railsPerSide,
     enabledLengths,
-    userMode,
     priority
   } = settings;
 

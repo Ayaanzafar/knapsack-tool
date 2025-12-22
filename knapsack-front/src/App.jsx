@@ -306,8 +306,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <Header
-        userMode={activeTab?.settings.userMode}
-        setUserMode={(mode) => updateSettings({ userMode: mode })}
         settings={activeTab?.settings}
         setSettings={updateSettings}
         projectName={projectName}

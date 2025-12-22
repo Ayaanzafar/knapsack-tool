@@ -5,8 +5,6 @@ import { exportToFile, DEFAULT_SETTINGS, DEFAULT_LENGTHS } from '../lib/storage'
 import { useAuth } from '../context/AuthContext';
 
 export default function Header({
-  userMode,
-  setUserMode,
   settings,
   setSettings,
   projectName,
@@ -178,35 +176,7 @@ export default function Header({
             </button>
             {showSettings && (
               <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border p-4 z-50">
-                <h3 className="font-semibold mb-3">User Mode</h3>
-                <div className="space-y-2 mb-4">
-                  <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      checked={userMode === 'normal'}
-                      onChange={() => setUserMode('normal')}
-                      className="w-4 h-4 text-purple-600"
-                    />
-                    <div>
-                      <div className="font-medium text-sm">Normal User</div>
-                      <div className="text-xs text-gray-500">Simple interface</div>
-                    </div>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      checked={userMode === 'advanced'}
-                      onChange={() => setUserMode('advanced')}
-                      className="w-4 h-4 text-purple-600"
-                    />
-                    <div>
-                      <div className="font-medium text-sm">Advanced User</div>
-                      <div className="text-xs text-gray-500">All controls</div>
-                    </div>
-                  </label>
-                </div>
-
-                <h3 className="font-semibold mb-3 pt-3 border-t">Data</h3>
+                <h3 className="font-semibold mb-3">Data</h3>
                 <div className="space-y-2">
                   <button
                     onClick={handleExport}

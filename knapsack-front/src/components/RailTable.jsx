@@ -6,6 +6,7 @@ import { TextField, NumberField } from './ui';
 import { usePersistedRows } from '../hooks/usePersistedRows';
 import { rowAPI } from '../services/api';
 import ResultCard from './ResultCard';
+import { useAuth } from '../context/AuthContext';
 import {
   DndContext,
   closestCenter,
@@ -226,6 +227,9 @@ export default function RailTable({
   setSettings,
   selectedRow
 }) {
+  const { user } = useAuth();
+  const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
+
   // Get enableSB2 from settings first (needed by callback below)
   const enableSB2 = settings?.enableSB2 ?? false;
   const setEnableSB2 = (value) => {
@@ -324,7 +328,6 @@ export default function RailTable({
   };
 
   const {
-    userMode,
     moduleWidth,
     midClamp,
     endClampWidth,

@@ -2,9 +2,28 @@
 import { Card, TextField, NumberField } from './ui';
 import { exportToFile, DEFAULT_SETTINGS, DEFAULT_LENGTHS } from '../lib/storage';
 
-export default function SettingsPanel({ settings, setSettings, onImport }) {
+import { useAuth } from '../context/AuthContext';
+
+export default function SettingsPanel({
+  settings,
+  setSettings,
+  onClose,
+  applyToAll
+}) {
+  const { user } = useAuth();
+  const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
+
   const {
-    userMode,
+    moduleLength,
+    moduleWidth,
+    frameThickness,
+    midClamp,
+    endClampWidth,
+    buffer,
+    purlinDistance,
+    railsPerSide,
+    lengthsInput,
+    enabledLengths,
     maxPieces,
     maxWastePct,
     alphaJoint,
