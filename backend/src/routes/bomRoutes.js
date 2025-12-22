@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bomController = require('../controllers/bomController');
 const pdfController = require('../controllers/pdfController');
-const { authenticateToken, checkPasswordChange } = require('../middleware/authMiddleware');
+const { authenticateToken, checkPasswordChange, authorizeRoles } = require('../middleware/authMiddleware');
+const { enforceBomUpdatePermissions, forbidBasicMasterItemMutation } = require('../middleware/bomPermissions');
 
 // Protect all routes
 router.use(authenticateToken);
@@ -19,20 +20,20 @@ router.get('/master-items/sunrack/:code', bomController.getMasterItemBySunrackCo
 router.get('/master-items/:id', bomController.getMasterItemById.bind(bomController));
 
 // POST /api/bom/master-items - Create master item
-router.post('/master-items', bomController.createMasterItem.bind(bomController));
+router.post('/master-items', authorizeRoles('ADVANCED'), bomController.createMasterItem.bind(bomController));
 
 // PUT /api/bom/master-items/:id - Update master item
-router.put('/master-items/:id', bomController.updateMasterItem.bind(bomController));
+router.put('/master-items/:id', forbidBasicMasterItemMutation, bomController.updateMasterItem.bind(bomController));
 
 // DELETE /api/bom/master-items/:id - Delete master item
-router.delete('/master-items/:id', bomController.deleteMasterItem.bind(bomController));
+router.delete('/master-items/:id', authorizeRoles('ADVANCED'), bomController.deleteMasterItem.bind(bomController));
 
 // Formulas Routes
 // GET /api/bom/formulas - Get all formulas
 router.get('/formulas', bomController.getAllFormulas.bind(bomController));
 
 // POST /api/bom/formulas - Create formula
-router.post('/formulas', bomController.createFormula.bind(bomController));
+router.post('/formulas', authorizeRoles('ADVANCED'), bomController.createFormula.bind(bomController));
 
 // BOM Storage Routes
 // POST /api/bom/save - Save a new BOM
@@ -45,7 +46,7 @@ router.get('/project/:projectId', bomController.getBomsByProjectId.bind(bomContr
 router.get('/:bomId', bomController.getBomById.bind(bomController));
 
 // PUT /api/bom/:bomId - Update a BOM
-router.put('/:bomId', bomController.updateBom.bind(bomController));
+router.put('/:bomId', enforceBomUpdatePermissions, bomController.updateBom.bind(bomController));
 
 
 // Export PDF

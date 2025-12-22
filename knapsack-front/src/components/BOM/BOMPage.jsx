@@ -1381,6 +1381,46 @@ export default function BOMPage() {
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message) => {
+    setToast({ id: Date.now(), message });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  const applyFreshBom = (freshData) => {
+    if (!freshData?.bomData) return;
+
+    const nextBomData = {
+      ...freshData.bomData,
+      bomItems: freshData.bomData.bomItems ? ensureStableIds(freshData.bomData.bomItems) : []
+    };
+
+    setBomData(nextBomData);
+    setOriginalBomData(nextBomData);
+    setChangeLog(freshData.changeLog || []);
+
+    if (nextBomData.profilesMap) {
+      setProfiles(Object.values(nextBomData.profilesMap));
+    }
+
+    if (typeof nextBomData.aluminumRate === 'number') setAluminumRate(nextBomData.aluminumRate);
+    if (typeof nextBomData.sparePercentage === 'number') setSparePercentage(nextBomData.sparePercentage);
+    if (typeof nextBomData.moduleWp === 'number') setModuleWp(nextBomData.moduleWp);
+
+    if (nextBomData.bomItems?.length > 0) {
+      setAddAfterRow(nextBomData.bomItems.length);
+    }
+  };
+
+  const revertBomFromServer = async (bomId) => {
+    try {
+      const freshData = await bomAPI.getBOMById(bomId);
+      applyFreshBom(freshData);
+    } catch (e) {
+      console.error('Failed to reload BOM from server:', e);
+    }
+  };
 
   useEffect(() => {
     const loadBOM = async () => {
@@ -1979,6 +2019,7 @@ export default function BOMPage() {
         bomItems: bomData.bomItems,
         aluminumRate: aluminumRate,
         sparePercentage: sparePercentage,
+        moduleWp: moduleWp,
       };
 
       await bomAPI.updateBOM(bomId, dataToSave, changeLog);
@@ -1986,26 +2027,28 @@ export default function BOMPage() {
       const freshData = await bomAPI.getBOMById(bomId);
 
       if (freshData && freshData.bomData) {
-        setBomData(freshData.bomData);
-        setChangeLog(freshData.changeLog || []);
-
-        if (freshData.bomData.profilesMap) {
-          const profilesList = Object.values(freshData.bomData.profilesMap);
-          setProfiles(profilesList);
-        }
-
-        if (freshData.bomData.aluminumRate) {
-          setAluminumRate(freshData.bomData.aluminumRate);
-        }
+        applyFreshBom(freshData);
       }
 
       alert('Changes saved successfully!');
     } catch (error) {
       console.error('Failed to save changes:', error);
-      alert(`Failed to save changes: ${error.message}`);
+
+      if (error?.code === 'FORBIDDEN_FIELD') {
+        showToast(`${error.field || 'Field'}: ${error.data?.message || error.message}`);
+        await revertBomFromServer(bomId);
+        changeTracker.stopTracking();
+        setEditMode(false);
+      } else if (error?.code === 'PASSWORD_CHANGE_REQUIRED') {
+        showToast('Password change required before continuing.');
+        await revertBomFromServer(bomId);
+        changeTracker.stopTracking();
+        setEditMode(false);
+      } else {
+        alert(`Failed to save changes: ${error.message}`);
+      }
     } finally {
       setIsSaving(false);
-      changeTracker.stopTracking();
     }
   };
 
@@ -2051,7 +2094,11 @@ export default function BOMPage() {
         console.log('Updated master items:', masterUpdates.length);
       } catch (error) {
         console.error('Failed to update master items:', error);
-        alert('Warning: Failed to update Master Database. Project-specific changes will still be saved.');
+        if (error?.code === 'FORBIDDEN_FIELD') {
+          showToast(`${error.field || 'Field'}: ${error.data?.message || error.message}`);
+        } else {
+          alert('Warning: Failed to update Master Database. Project-specific changes will still be saved.');
+        }
       }
     }
 
@@ -2076,13 +2123,13 @@ export default function BOMPage() {
     });
 
     const updatedChangeLog = [...changeLog, ...newLogEntries];
-    setChangeLog(updatedChangeLog);
 
-    saveWithExplicitData(bomData, updatedChangeLog);
-
-    setReviewModalOpen(false);
-    setEditMode(false);
-    changeTracker.stopTracking();
+    const result = await saveWithExplicitData(bomData, updatedChangeLog);
+    if (result?.ok) {
+      setReviewModalOpen(false);
+      setEditMode(false);
+      changeTracker.stopTracking();
+    }
   };
 
   const exportToPDF = async (settings) => {
@@ -2164,7 +2211,7 @@ export default function BOMPage() {
 
   const saveWithExplicitData = async (currentBomData, currentChangeLog) => {
     const bomId = location.state?.bomId;
-    if (!bomId) return;
+    if (!bomId) return { ok: false };
 
     setIsSaving(true);
     try {
@@ -2182,25 +2229,32 @@ export default function BOMPage() {
 
       const freshData = await bomAPI.getBOMById(bomId);
       if (freshData && freshData.bomData) {
-        if (freshData.bomData.bomItems) {
-          freshData.bomData.bomItems = ensureStableIds(freshData.bomData.bomItems);
-        }
-        setBomData(freshData.bomData);
-        setChangeLog(freshData.changeLog || []);
-        if (freshData.bomData.profilesMap) {
-          setProfiles(Object.values(freshData.bomData.profilesMap));
-        }
-        if (freshData.bomData.aluminumRate) {
-          setAluminumRate(freshData.bomData.aluminumRate);
-        }
+        applyFreshBom(freshData);
       }
       alert('Changes saved successfully!');
+      return { ok: true };
     } catch (error) {
       console.error('Failed to save changes:', error);
-      alert(`Failed to save changes: ${error.message}`);
+
+      if (error?.code === 'FORBIDDEN_FIELD') {
+        showToast(`${error.field || 'Field'}: ${error.data?.message || error.message}`);
+        await revertBomFromServer(bomId);
+        changeTracker.stopTracking();
+        setReviewModalOpen(false);
+        setEditMode(false);
+      } else if (error?.code === 'PASSWORD_CHANGE_REQUIRED') {
+        showToast('Password change required before continuing.');
+        await revertBomFromServer(bomId);
+        changeTracker.stopTracking();
+        setReviewModalOpen(false);
+        setEditMode(false);
+      } else {
+        alert(`Failed to save changes: ${error.message}`);
+      }
+
+      return { ok: false, code: error?.code, field: error?.field };
     } finally {
       setIsSaving(false);
-      changeTracker.stopTracking();
     }
   };
 
@@ -2662,6 +2716,14 @@ export default function BOMPage() {
         moduleWp={moduleWp}
         changeLog={changeLog}
       />
+
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg">
+            {toast.message}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
