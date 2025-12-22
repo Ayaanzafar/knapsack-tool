@@ -21,6 +21,17 @@ class ProjectService {
     });
   }
 
+  // Get projects by User ID
+  async getProjectsByUser(userId) {
+    return await prisma.project.findMany({
+      where: { 
+        isActive: true,
+        userId: parseInt(userId)
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
   // Get project by ID
   async getProjectById(id) {
     return await prisma.project.findUnique({

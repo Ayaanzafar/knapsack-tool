@@ -15,10 +15,17 @@ class ProjectController {
     }
   }
 
-  // GET /api/projects - Get all projects
+  // GET /api/projects - Get all projects (filtered by user)
   async getAllProjects(req, res, next) {
     try {
-      const projects = await projectService.getAllProjects();
+      let projects;
+      if (req.user) {
+        // If user is authenticated, return only their projects
+        projects = await projectService.getProjectsByUser(req.user.id);
+      } else {
+        // Fallback for unauthenticated access (though route should be protected)
+        projects = await projectService.getAllProjects();
+      }
       res.json(projects);
     } catch (error) {
       next(error);
