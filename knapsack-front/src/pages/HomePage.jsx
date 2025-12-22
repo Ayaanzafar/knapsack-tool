@@ -37,7 +37,7 @@ export default function HomePage() {
       </header>
 
       <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <h2 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
             Solar Rail Optimization
           </h2>
@@ -46,42 +46,39 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2 max-w-4xl mx-auto">
-          {/* Create BOM Card */}
-          <div 
-            onClick={handleCreateBOM}
-            className="relative rounded-lg border border-gray-300 bg-white px-6 py-10 shadow-sm flex items-center space-x-3 hover:border-blue-500 hover:ring-1 hover:ring-blue-500 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 cursor-pointer transition-all"
-          >
-            <div className="flex-shrink-0">
-              <span className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
-                <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="absolute inset-0" aria-hidden="true" />
-              <p className="text-xl font-medium text-gray-900">Create BOM</p>
-              <p className="text-gray-500">Generate a full Bill of Materials for your project.</p>
-            </div>
-          </div>
-
-          {/* Long Rail Card */}
-          <div 
-            onClick={handleLongRail}
-            className="relative rounded-lg border border-gray-300 bg-white px-6 py-10 shadow-sm flex items-center space-x-3 hover:border-green-500 hover:ring-1 hover:ring-green-500 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500 cursor-pointer transition-all"
-          >
-            <div className="flex-shrink-0">
-              <span className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-2xl font-bold text-gray-800 mb-8 border-b pb-2">Create BOM for:</h3>
+          
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Long Rail Card */}
+            <div 
+              onClick={handleLongRail}
+              className="relative rounded-2xl border-2 border-gray-200 bg-white p-8 shadow-sm flex flex-col items-center text-center hover:border-blue-500 hover:ring-1 hover:ring-blue-500 hover:shadow-md cursor-pointer transition-all group"
+            >
+              <div className="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
+                <svg className="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
-              </span>
+              </div>
+              <p className="text-xl font-bold text-gray-900 mb-2">Long Rail</p>
+              <p className="text-sm text-gray-500">Optimization tool for standard long rail cutting.</p>
+              <div className="mt-6 text-blue-600 font-semibold flex items-center gap-1">
+                Get Started
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <span className="absolute inset-0" aria-hidden="true" />
-              <p className="text-xl font-medium text-gray-900">Long Rail</p>
-              <p className="text-gray-500">Access the rail cutting optimization tool.</p>
+
+            {/* Placeholder for future BOM types */}
+            <div className="relative rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 p-8 flex flex-col items-center text-center opacity-60 grayscale">
+              <div className="h-16 w-16 rounded-2xl bg-gray-200 flex items-center justify-center mb-4">
+                <svg className="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-xl font-bold text-gray-400 mb-2">Coming Soon</p>
+              <p className="text-sm text-gray-400">Other BOM types will be added here.</p>
             </div>
           </div>
         </div>
