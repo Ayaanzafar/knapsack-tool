@@ -1482,12 +1482,12 @@ export default function BOMPage() {
           }
         } else {
           console.error('BOM data is missing or invalid.', data);
-          navigate('/');
+          navigate('/app');
         }
       } catch (error) {
         console.error('Failed to load BOM data:', error);
         alert('Failed to load BOM. It may have been deleted or an error occurred.');
-        navigate('/');
+        navigate('/app');
       } finally {
         setLoading(false);
       }
@@ -1540,7 +1540,7 @@ export default function BOMPage() {
   }, [sparePercentage]);
 
   const handleBack = () => {
-    navigate('/');
+    navigate('/app');
   };
 
   const calculateWeightAndCost = (item, profile, aluRate) => {
