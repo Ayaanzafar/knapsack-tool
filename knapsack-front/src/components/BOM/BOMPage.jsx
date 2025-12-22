@@ -1349,6 +1349,7 @@ import { bomAPI } from '../../services/api';
 import axios from 'axios';
 import { arrayMove } from '@dnd-kit/sortable';
 import * as changeTracker from '../../lib/changeTracker';
+import { useAuth } from '../../context/AuthContext';
 
 const ensureStableIds = (items) => {
   return items.map(item => ({
@@ -1358,6 +1359,8 @@ const ensureStableIds = (items) => {
 };
 
 export default function BOMPage() {
+  const { user } = useAuth();
+  const isBasicUser = user?.role === 'BASIC';
   const location = useLocation();
   const navigate = useNavigate();
   const [bomData, setBomData] = useState(null);
@@ -2403,10 +2406,11 @@ export default function BOMPage() {
                   }}
                   step="0.01"
                   min="0"
-                  disabled={!editMode}
+                  disabled={!editMode || isBasicUser}
                   className={`w-32 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
-                    !editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
+                    (!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
                   }`}
+                  title={isBasicUser ? "Only Advanced users can modify this" : ""}
                 />
               </div>
 
@@ -2433,10 +2437,11 @@ export default function BOMPage() {
                   }}
                   step="0.1"
                   min="0"
-                  disabled={!editMode}
+                  disabled={!editMode || isBasicUser}
                   className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
-                    !editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-green-400'
+                    (!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-green-400'
                   }`}
+                  title={isBasicUser ? "Only Advanced users can modify this" : ""}
                 />
               </div>
 
@@ -2463,10 +2468,11 @@ export default function BOMPage() {
                   }}
                   step="1"
                   min="0"
-                  disabled={!editMode}
+                  disabled={!editMode || isBasicUser}
                   className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                    !editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
+                    (!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
                   }`}
+                  title={isBasicUser ? "Only Advanced users can modify this" : ""}
                 />
               </div>
 
