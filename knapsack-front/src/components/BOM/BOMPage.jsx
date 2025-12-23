@@ -1344,6 +1344,7 @@ import ReviewChangesModal from './ReviewChangesModal';
 import ReasonModal from './ReasonModal';
 import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
+import NotesSection from './NotesSection';
 import { API_URL } from '../../services/config';
 import { bomAPI } from '../../services/api';
 import axios from 'axios';
@@ -1383,6 +1384,9 @@ export default function BOMPage() {
   const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
 
+  const [userNotes, setUserNotes] = useState([]);
+  const [originalUserNotes, setOriginalUserNotes] = useState([]);
+
   const showToast = (message) => {
     setToast({ id: Date.now(), message });
     setTimeout(() => setToast(null), 3500);
@@ -1407,6 +1411,12 @@ export default function BOMPage() {
     if (typeof nextBomData.aluminumRate === 'number') setAluminumRate(nextBomData.aluminumRate);
     if (typeof nextBomData.sparePercentage === 'number') setSparePercentage(nextBomData.sparePercentage);
     if (typeof nextBomData.moduleWp === 'number') setModuleWp(nextBomData.moduleWp);
+
+    // Always initialize userNotes - even if empty array
+    const loadedNotes = Array.isArray(nextBomData.userNotes) ? nextBomData.userNotes : [];
+    setUserNotes(loadedNotes);
+    setOriginalUserNotes(loadedNotes);
+    console.log('Loaded notes from backend:', loadedNotes); // Debug log
 
     if (nextBomData.bomItems?.length > 0) {
       setAddAfterRow(nextBomData.bomItems.length);
@@ -1518,6 +1528,17 @@ export default function BOMPage() {
           }
           if (typeof data.bomData.moduleWp === 'number') {
             setModuleWp(data.bomData.moduleWp);
+          }
+
+          // Load userNotes from backend
+          if (data.bomData.userNotes && Array.isArray(data.bomData.userNotes)) {
+            setUserNotes(data.bomData.userNotes);
+            setOriginalUserNotes(data.bomData.userNotes);
+            console.log('Initial load - userNotes from backend:', data.bomData.userNotes);
+          } else {
+            setUserNotes([]);
+            setOriginalUserNotes([]);
+            console.log('Initial load - no userNotes found, initializing empty array');
           }
 
           if (data.bomData.bomItems && data.bomData.bomItems.length > 0) {
@@ -2055,9 +2076,14 @@ export default function BOMPage() {
   const handleDiscardChanges = async () => {
     if (window.confirm('Are you sure you want to discard all unsaved changes? This will reload the BOM data.')) {
       changeTracker.stopTracking();
+      setUserNotes([...originalUserNotes]); // Restore original notes
       setEditMode(false);
       window.location.reload();
     }
+  };
+
+  const handleNotesChange = (updatedNotes) => {
+    setUserNotes(updatedNotes);
   };
 
   const handleToggleEditMode = () => {
@@ -2065,19 +2091,40 @@ export default function BOMPage() {
       handleDoneEditing();
     } else {
       setOriginalBomData(bomData);
+      setOriginalUserNotes([...userNotes]); // Save original notes
       changeTracker.startTracking();
       setEditMode(true);
     }
   };
 
-  const handleDoneEditing = () => {
+  const handleDoneEditing = async () => {
     const changes = changeTracker.getChanges();
     const additions = changeTracker.getAdditions();
     const deletions = changeTracker.getDeletions();
 
-    if (changes.length > 0 || additions.length > 0 || deletions.length > 0) {
+    // Check if notes have changed
+    const notesChanged = JSON.stringify(userNotes) !== JSON.stringify(originalUserNotes);
+
+    const hasBomChanges = changes.length > 0 || additions.length > 0 || deletions.length > 0;
+
+    console.log('Done Editing - Notes changed:', notesChanged); // Debug log
+    console.log('Current notes:', userNotes); // Debug log
+    console.log('Original notes:', originalUserNotes); // Debug log
+    console.log('BOM changes:', hasBomChanges); // Debug log
+
+    if (hasBomChanges) {
+      // BOM changes exist - show review modal
       setReviewModalOpen(true);
+    } else if (notesChanged) {
+      // Only notes changed - save directly without review modal
+      console.log('Saving notes only...'); // Debug log
+      await saveWithExplicitData(bomData, changeLog);
+      setEditMode(false);
+      setOriginalUserNotes([...userNotes]); // Update original notes after save
+      changeTracker.stopTracking();
     } else {
+      // No changes detected, just exit edit mode without saving
+      console.log('No changes detected'); // Debug log
       setEditMode(false);
       changeTracker.stopTracking();
     }
@@ -2128,6 +2175,7 @@ export default function BOMPage() {
     if (result?.ok) {
       setReviewModalOpen(false);
       setEditMode(false);
+      setOriginalUserNotes([...userNotes]); // Update original notes after save
       changeTracker.stopTracking();
     }
   };
@@ -2142,7 +2190,8 @@ export default function BOMPage() {
         aluminumRate,
         sparePercentage,
         moduleWp,
-        changeLog
+        changeLog,
+        userNotes
       };
 
       const form = document.createElement('form');
@@ -2188,7 +2237,8 @@ export default function BOMPage() {
           aluminumRate,
           sparePercentage,
           moduleWp,
-          changeLog
+          changeLog,
+          userNotes
         }
       });
     } else if (action === 'direct') {
@@ -2200,6 +2250,7 @@ export default function BOMPage() {
           sparePercentage,
           moduleWp,
           changeLog,
+          userNotes,
           autoPrint: true
         }
       });
@@ -2223,8 +2274,10 @@ export default function BOMPage() {
         aluminumRate: aluminumRate,
         sparePercentage: sparePercentage,
         moduleWp: moduleWp,
+        userNotes: userNotes,
       };
 
+      console.log('Saving userNotes to backend:', userNotes); // Debug log
       await bomAPI.updateBOM(bomId, dataToSave, currentChangeLog);
 
       const freshData = await bomAPI.getBOMById(bomId);
@@ -2631,43 +2684,17 @@ export default function BOMPage() {
                 </div>
               </div>
             </div>
-
-            <div className="mt-6 p-6 bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 rounded-xl shadow-md">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-black text-gray-900 mb-4 flex items-center gap-2">
-                    Important Notes
-                    <span className="text-xs font-normal text-yellow-700 bg-yellow-200 px-2 py-1 rounded-full">Please Read</span>
-                  </h3>
-                  <ol className="list-decimal list-inside space-y-3 text-sm text-gray-700">
-                    <li className="leading-relaxed pl-2">
-                      <span className="font-semibold">Cut Length of Long Rails</span> subject to change during detailing based on availability.
-                    </li>
-                    <li className="leading-relaxed pl-2">
-                      For all Roofs <span className="font-semibold">purlins are assumed to be at 1300mm</span> where details of existing purlins are not shown in layout shared by client.
-                    </li>
-                    <li className="leading-relaxed pl-2">
-                      <span className="font-semibold">Length of Long Rails subject to change</span> based on actual purlin locations at site to fix the Long rail only on purlin. If any extra length of rails are required, they shall be charged extra.
-                    </li>
-                    <li className="leading-relaxed pl-2">
-                      For Roofs with <span className="font-semibold">purlin span more than 1.7m</span>, 2 Long Rails + 1 Mini Rail per each side of panel are considered.
-                    </li>
-                    <li className="leading-relaxed pl-2">
-                      <span className="font-semibold">Purlin Details of sheds T10, T11, T14, T15</span> are not mentioned in report. They are assumed to be 1.5m. If the actual span is more than 1.7m, an extra Mini rail must be considered additionally (at extra cost).
-                    </li>
-                  </ol>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="px-6 pb-6 bg-gray-50">
             <ChangeLogDisplay changeLog={changeLog} />
+
+            {/* Notes Section */}
+            <NotesSection
+              userNotes={userNotes}
+              onNotesChange={handleNotesChange}
+              editMode={editMode}
+            />
           </div>
         </div>
       </main>
