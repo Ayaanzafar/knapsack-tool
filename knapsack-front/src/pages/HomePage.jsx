@@ -233,10 +233,10 @@ export default function HomePage() {
       <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
-            Solar Rail Optimization
+            Bill Of Material
           </h2>
           <p className="mt-5 max-w-xl mx-auto text-xl text-gray-500">
-            Internal tool for optimizing solar rail cuts and generating Bills of Materials.
+            Internal tool for making and generating Bills of Materials for Solar Rails.
           </p>
         </div>
 
@@ -278,9 +278,9 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="py-8 text-center text-xs text-gray-500">
+      {/* <footer className="py-8 text-center text-xs text-gray-500">
         Rail Cut Optimizer - Built for solar rail standardization
-      </footer>
+      </footer> */}
     </div>
   );
 }
