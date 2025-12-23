@@ -15,18 +15,26 @@ class ProjectController {
     }
   }
 
-  // GET /api/projects - Get all projects (filtered by user)
+  // GET /api/projects - Get all projects (filtered by user) with pagination
   async getAllProjects(req, res, next) {
     try {
-      let projects;
+      const { page, limit, sortBy, search } = req.query;
+      const options = {
+        page: parseInt(page) || 1,
+        limit: parseInt(limit) || 10,
+        sortBy: sortBy || 'latest',
+        search: search || undefined
+      };
+
+      let result;
       if (req.user) {
         // If user is authenticated, return only their projects
-        projects = await projectService.getProjectsByUser(req.user.id);
+        result = await projectService.getProjectsByUserPaginated(req.user.id, options);
       } else {
         // Fallback for unauthenticated access (though route should be protected)
-        projects = await projectService.getAllProjects();
+        result = await projectService.getAllProjectsPaginated(options);
       }
-      res.json(projects);
+      res.json(result);
     } catch (error) {
       next(error);
     }

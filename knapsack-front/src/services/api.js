@@ -143,9 +143,9 @@ export const userAPI = {
 // ====================
 
 export const projectAPI = {
-  // Get all projects
-  getAll: async () => {
-    const response = await apiClient.get('/projects');
+  // Get all projects with optional pagination and sorting
+  getAll: async (params = {}) => {
+    const response = await apiClient.get('/projects', { params });
     return response.data;
   },
 

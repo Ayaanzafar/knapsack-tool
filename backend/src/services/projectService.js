@@ -88,6 +88,108 @@ class ProjectService {
       where: { id: parseInt(id) }
     });
   }
+
+  // Get all projects with pagination
+  async getAllProjectsPaginated(options) {
+    const { page, limit, sortBy, search } = options;
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where = { isActive: true };
+    if (search) {
+      where.OR = [
+        { name: { contains: search } },
+        { clientName: { contains: search } },
+        { projectId: { contains: search } }
+      ];
+    }
+
+    // Build orderBy clause
+    let orderBy;
+    switch (sortBy) {
+      case 'oldest':
+        orderBy = { createdAt: 'asc' };
+        break;
+      case 'name':
+        orderBy = { name: 'asc' };
+        break;
+      case 'latest':
+      default:
+        orderBy = { createdAt: 'desc' };
+        break;
+    }
+
+    // Get total count
+    const total = await prisma.project.count({ where });
+
+    // Get paginated projects
+    const projects = await prisma.project.findMany({
+      where,
+      orderBy,
+      skip,
+      take: limit
+    });
+
+    return {
+      projects,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    };
+  }
+
+  // Get projects by User ID with pagination
+  async getProjectsByUserPaginated(userId, options) {
+    const { page, limit, sortBy, search } = options;
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where = {
+      isActive: true,
+      userId: parseInt(userId)
+    };
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search } },
+        { clientName: { contains: search } },
+        { projectId: { contains: search } }
+      ];
+    }
+
+    // Build orderBy clause
+    let orderBy;
+    switch (sortBy) {
+      case 'oldest':
+        orderBy = { createdAt: 'asc' };
+        break;
+      case 'name':
+        orderBy = { name: 'asc' };
+        break;
+      case 'latest':
+      default:
+        orderBy = { createdAt: 'desc' };
+        break;
+    }
+
+    // Get total count
+    const total = await prisma.project.count({ where });
+
+    // Get paginated projects
+    const projects = await prisma.project.findMany({
+      where,
+      orderBy,
+      skip,
+      take: limit
+    });
+
+    return {
+      projects,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    };
+  }
 }
 
 module.exports = new ProjectService();
