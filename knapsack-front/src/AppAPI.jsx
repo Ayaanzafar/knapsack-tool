@@ -26,6 +26,7 @@ export default function App() {
   // State
   const [tabsData, setTabsData] = useState({ tabs: [], activeTabId: null });
   const [projectName, setProjectName] = useState('Untitled Project');
+  const [longRailVariation, setLongRailVariation] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -47,6 +48,7 @@ export default function App() {
         // Initialize project (create or get existing)
         const project = await initializeProject();
         setProjectName(project.name);
+        setLongRailVariation(project.longRailVariation || '');
 
         // Load tabs
         const loadedTabsData = await loadTabs();
@@ -322,6 +324,7 @@ export default function App() {
         <CreateBOMButton
           tabsData={tabsData}
           projectName={projectName}
+          longRailVariation={longRailVariation}
         />
       </main>
 

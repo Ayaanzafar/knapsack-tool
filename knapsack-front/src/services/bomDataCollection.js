@@ -152,12 +152,13 @@ function calculateTabTotals(tab) {
  * @param {string} projectName - The project name
  * @returns {Object} - Structured data for BOM generation
  */
-export function collectBOMData(tabsData, projectName) {
+export function collectBOMData(tabsData, projectName, longRailVariation) {
   const { tabs } = tabsData;
 
   const bomData = {
     projectInfo: {
       projectName: projectName || 'Untitled Project',
+      longRailVariation: longRailVariation || 'BOM for U Cleat Long Rail',
       buildingCodes: [],
       totalTabs: tabs.length,
       generatedAt: new Date().toISOString()

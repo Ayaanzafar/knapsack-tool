@@ -2465,7 +2465,7 @@ export default function BOMPage() {
       <main className="container mx-auto px-6 py-6">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
           <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white px-6 py-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-6">
               <div>
                 <h2 className="text-2xl font-bold mb-1">{bomData.projectInfo.projectName}</h2>
                 <div className="flex items-center gap-4 text-sm text-purple-100">
@@ -2484,6 +2484,16 @@ export default function BOMPage() {
                   </div>
                 </div>
               </div>
+
+              <div className="flex-1 flex justify-center">
+                <div className="inline-flex items-center gap-2 bg-white/25 backdrop-blur-md text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-white/40 shadow-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
+                  </svg>
+                  <span>{bomData.projectInfo.longRailVariation || 'BOM for U Cleat Long Rail'}</span>
+                </div>
+              </div>
+
               <div className="text-right bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20">
                 <p className="text-xs text-purple-200 uppercase tracking-wide font-semibold mb-1">Generated</p>
                 <p className="text-sm font-bold">

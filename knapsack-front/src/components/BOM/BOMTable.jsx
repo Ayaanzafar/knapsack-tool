@@ -144,10 +144,10 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
 
             <th
               colSpan={5}
-              
+
               className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
-              BOM for U Cleat Long Rail
+              {projectInfo.longRailVariation || 'BOM for U Cleat Long Rail'}
             </th>
 
 
