@@ -11,6 +11,7 @@ export default function CreateProjectPage() {
   const [clientName, setClientName] = useState('');
   const [projectId, setProjectId] = useState('');
   const [projectName, setProjectName] = useState('');
+  const [longRailVariation, setLongRailVariation] = useState('');
 
   // Open Existing State with Pagination
   const [existingProjects, setExistingProjects] = useState([]);
@@ -88,6 +89,7 @@ export default function CreateProjectPage() {
         name: projectName || `${clientName} - ${projectId}`,
         clientName,
         projectId,
+        longRailVariation,
         userId: user.id
       });
 
@@ -209,6 +211,26 @@ export default function CreateProjectPage() {
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Defaults to 'Client Name - Project ID'"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="longRailVariation" className="block text-sm font-medium text-gray-700">
+                  Long Rail Variation <span className="text-red-500">*</span>
+                </label>
+                <div className="mt-1">
+                  <select
+                    id="longRailVariation"
+                    required
+                    value={longRailVariation}
+                    onChange={(e) => setLongRailVariation(e.target.value)}
+                    className={`appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+                      !longRailVariation ? 'text-gray-400' : 'text-gray-900'
+                    }`}
+                  >
+                    <option value="" disabled className="text-gray-400">-SELECT-</option>
+                    <option value="BOM for U Cleat Long Rail" className="text-gray-900">BOM for U Cleat Long Rail</option>
+                  </select>
                 </div>
               </div>
 

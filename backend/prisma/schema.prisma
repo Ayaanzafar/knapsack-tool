@@ -12,14 +12,15 @@ datasource db {
 
 // Projects Table - Stores project-level information
 model Project {
-  id          Int      @id @default(autoincrement())
-  name        String   @default("Untitled Project") @db.VarChar(255)
-  clientName  String?  @map("client_name") @db.VarChar(255)
-  projectId   String?  @map("project_id") @db.VarChar(100)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  userId      Int?     @map("user_id")
-  isActive    Boolean  @default(true) @map("is_active")
+  id                 Int      @id @default(autoincrement())
+  name               String   @default("Untitled Project") @db.VarChar(255)
+  clientName         String?  @map("client_name") @db.VarChar(255)
+  projectId          String?  @map("project_id") @db.VarChar(100)
+  longRailVariation  String?  @map("long_rail_variation") @db.VarChar(100)
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  userId             Int?     @map("user_id")
+  isActive           Boolean  @default(true) @map("is_active")
 
   createdBy     User?   @relation(fields: [userId], references: [id])
   tabs          Tab[]
