@@ -346,4 +346,35 @@ export const bomAPI = {
   },
 };
 
+// Saved BOM API
+export const savedBomAPI = {
+  // Save BOM snapshot
+  saveBomSnapshot: async (projectId, bomData, userNotes, changeLog) => {
+    const response = await apiClient.post(`/saved-boms/project/${projectId}`, {
+      bomData,
+      userNotes,
+      changeLog
+    });
+    return response.data;
+  },
+
+  // Get saved BOM for a project
+  getSavedBom: async (projectId) => {
+    const response = await apiClient.get(`/saved-boms/project/${projectId}`);
+    return response.data;
+  },
+
+  // Check if saved BOM exists
+  checkSavedBomExists: async (projectId) => {
+    const response = await apiClient.get(`/saved-boms/project/${projectId}/exists`);
+    return response.data;
+  },
+
+  // Delete saved BOM
+  deleteSavedBom: async (projectId) => {
+    const response = await apiClient.delete(`/saved-boms/project/${projectId}`);
+    return response.data;
+  },
+};
+
 export default apiClient;

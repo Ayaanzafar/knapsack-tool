@@ -10,6 +10,7 @@ const projectRoutes = require('./routes/projectRoutes');
 const tabRoutes = require('./routes/tabRoutes');
 const rowRoutes = require('./routes/rowRoutes');
 const bomRoutes = require('./routes/bomRoutes');
+const savedBomRoutes = require('./routes/savedBomRoutes');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -40,6 +41,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/tabs', tabRoutes);
 app.use('/api/rows', rowRoutes);
 app.use('/api/bom', bomRoutes);
+app.use('/api/saved-boms', savedBomRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

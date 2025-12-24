@@ -25,6 +25,7 @@ model Project {
   createdBy     User?   @relation(fields: [userId], references: [id])
   tabs          Tab[]
   generatedBoms GeneratedBom[]
+  savedBom      SavedBom?
 
   @@map("projects")
 }
@@ -42,6 +43,7 @@ model User {
 
   projects           Project[]
   generatedBoms      GeneratedBom[]
+  savedBoms          SavedBom[]
 
   @@map("users")
 }
@@ -183,4 +185,22 @@ model GeneratedBom {
   @@index([projectId])
   @@index([isLatest])
   @@map("generated_boms")
+}
+
+// Saved BOMs Table - Stores user-saved BOM snapshots (one per project)
+model SavedBom {
+  id          Int      @id @default(autoincrement())
+  projectId   Int      @unique @map("project_id")
+  bomData     Json     @map("bom_data")           // Complete BOM snapshot
+  userNotes   Json?    @map("user_notes")         // User notes at save time
+  changeLog   Json?    @map("change_log")         // Change log at save time
+  createdBy   Int      @map("created_by")         // User who saved
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [createdBy], references: [id])
+
+  @@index([projectId])
+  @@map("saved_boms")
 }

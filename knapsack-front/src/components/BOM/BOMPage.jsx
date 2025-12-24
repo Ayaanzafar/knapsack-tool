@@ -1346,7 +1346,7 @@ import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
 import NotesSection from './NotesSection';
 import { API_URL } from '../../services/config';
-import { bomAPI } from '../../services/api';
+import { bomAPI, savedBomAPI } from '../../services/api';
 import axios from 'axios';
 import { arrayMove } from '@dnd-kit/sortable';
 import * as changeTracker from '../../lib/changeTracker';
@@ -1367,6 +1367,7 @@ export default function BOMPage() {
   const [bomData, setBomData] = useState(null);
   const [originalBomData, setOriginalBomData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [projectId, setProjectId] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [profiles, setProfiles] = useState([]);
   const [sparePercentage, setSparePercentage] = useState(1);
@@ -1386,6 +1387,10 @@ export default function BOMPage() {
 
   const [userNotes, setUserNotes] = useState([]);
   const [originalUserNotes, setOriginalUserNotes] = useState([]);
+
+  // Saved BOM states
+  const [hasSavedBom, setHasSavedBom] = useState(false);
+  const [isSavingSnapshot, setIsSavingSnapshot] = useState(false);
 
   const showToast = (message) => {
     setToast({ id: Date.now(), message });
@@ -1442,6 +1447,7 @@ export default function BOMPage() {
         if (bomId) {
           data = await bomAPI.getBOMById(bomId);
           setChangeLog(data.changeLog || []);
+          setProjectId(data.projectId); // Store projectId
         } else if (location.state?.bomData) {
           data = { bomData: location.state.bomData };
         } else {
@@ -1559,6 +1565,23 @@ export default function BOMPage() {
 
     loadBOM();
   }, [location.state, navigate]);
+
+  // Check if saved BOM exists for this project
+  useEffect(() => {
+    const checkSavedBom = async () => {
+      if (!projectId) return;
+
+      try {
+        const result = await savedBomAPI.checkSavedBomExists(projectId);
+        setHasSavedBom(result.exists);
+      } catch (error) {
+        console.error('Error checking saved BOM:', error);
+        setHasSavedBom(false);
+      }
+    };
+
+    checkSavedBom();
+  }, [projectId]);
 
   useEffect(() => {
     if (!bomData || loading) return;
@@ -2097,6 +2120,26 @@ export default function BOMPage() {
     }
   };
 
+  // Save BOM Snapshot
+  const handleSaveBomSnapshot = async () => {
+    if (!projectId) {
+      showToast('Error: Project ID not found');
+      return;
+    }
+
+    setIsSavingSnapshot(true);
+    try {
+      await savedBomAPI.saveBomSnapshot(projectId, bomData, userNotes, changeLog);
+      setHasSavedBom(true);
+      showToast('✅ BOM snapshot saved successfully!');
+    } catch (error) {
+      console.error('Error saving BOM snapshot:', error);
+      showToast('❌ Failed to save BOM snapshot');
+    } finally {
+      setIsSavingSnapshot(false);
+    }
+  };
+
   const handleDoneEditing = async () => {
     const changes = changeTracker.getChanges();
     const additions = changeTracker.getAdditions();
@@ -2439,9 +2482,37 @@ export default function BOMPage() {
                 )}
               </button>
 
+              {!editMode && (
+                <button
+                  onClick={handleSaveBomSnapshot}
+                  disabled={isSavingSnapshot}
+                  className="group px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 flex items-center gap-2 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  title="Save current BOM as snapshot"
+                >
+                  {isSavingSnapshot ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
+                      </svg>
+                      <span>Save BOM</span>
+                    </>
+                  )}
+                </button>
+              )}
+
               {!editMode && <button
-                className="group px-5 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-semibold shadow-sm hover:shadow-md transform hover:scale-105"
+                disabled={!hasSavedBom}
+                className={`group px-5 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-semibold shadow-sm hover:shadow-md transform hover:scale-105 ${!hasSavedBom ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={() => setPrintSettingsModalOpen(true)}
+                title={!hasSavedBom ? 'Please save BOM before printing' : 'Print BOM'}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
