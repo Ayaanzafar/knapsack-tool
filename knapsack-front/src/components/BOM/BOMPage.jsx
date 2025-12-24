@@ -1444,10 +1444,20 @@ export default function BOMPage() {
         let data;
         let bomId = location.state?.bomId;
 
+        // If no bomId in state, check localStorage (for page refresh case)
+        if (!bomId && !location.state?.bomData) {
+          const lastBomId = localStorage.getItem('lastBomId');
+          if (lastBomId) {
+            bomId = parseInt(lastBomId);
+          }
+        }
+
         if (bomId) {
           data = await bomAPI.getBOMById(bomId);
           setChangeLog(data.changeLog || []);
           setProjectId(data.projectId); // Store projectId
+          // Store in localStorage for refresh support
+          localStorage.setItem('lastBomId', bomId);
         } else if (location.state?.bomData) {
           data = { bomData: location.state.bomData };
           // Store projectId from saved BOM
@@ -2320,15 +2330,12 @@ export default function BOMPage() {
     let bomId = location.state?.bomId;
 
     // If no bomId (loaded from saved BOM), create a new BOM entry
+    let isNewBomCreated = false;
     if (!bomId && projectId) {
       try {
         const newBom = await bomAPI.saveBOM(projectId, currentBomData);
         bomId = newBom.bomId;
-        // Update location state with new bomId
-        window.history.replaceState(
-          { ...location.state, bomId: bomId },
-          ''
-        );
+        isNewBomCreated = true;
       } catch (error) {
         console.error('Failed to create BOM entry:', error);
         alert('Failed to create BOM entry for saving changes.');
@@ -2358,8 +2365,19 @@ export default function BOMPage() {
       if (freshData && freshData.bomData) {
         applyFreshBom(freshData);
       }
+
+      // If we created a new BOM entry, navigate with bomId so refresh works
+      if (isNewBomCreated) {
+        // Store bomId in localStorage as backup for page refresh
+        localStorage.setItem('lastBomId', bomId);
+        navigate('/bom', {
+          state: { bomId: bomId },
+          replace: true
+        });
+      }
+
       alert('Changes saved successfully!');
-      return { ok: true };
+      return { ok: true, bomId: bomId };
     } catch (error) {
       console.error('Failed to save changes:', error);
 
