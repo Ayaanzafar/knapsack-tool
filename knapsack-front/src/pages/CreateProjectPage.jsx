@@ -324,13 +324,15 @@ export default function CreateProjectPage() {
                       >
                         <div>
                           <h3 className="font-semibold text-gray-900 group-hover:text-blue-700">
-                            {project.name}
+                            {project.name}  ({project.longRailVariation || 'N/A'})
                           </h3>
                           <div className="text-xs text-gray-500 mt-1 flex gap-3">
                             <span>Client: {project.clientName || 'N/A'}</span>
                             <span>•</span>
-                            <span>ID: {project.projectId || 'N/A'}</span>
+                            <span>Project ID: {project.projectId || 'N/A'}</span>
                             <span>•</span>
+                            {/* <span>Variation: {project.longRailVariation || 'N/A'}</span>
+                            <span>•</span> */}
                             <span>{new Date(project.createdAt).toLocaleDateString()}</span>
                           </div>
                         </div>
