@@ -342,7 +342,7 @@ export default function BOMPrintPreview() {
         <div className="p-6 bg-white">
           {/* Header */}
           <div className="mb-6 border-b-2 border-purple-600 pb-4">
-            <h1 className="text-2xl font-bold text-gray-900">Bill of Materials (BOM)</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Bill of Materials (BOM) for {bomData.projectInfo.longRailVariation || ''}</h1>
             <p className="text-lg text-gray-700 mt-1">{bomData.projectInfo.projectName}</p>
             <p className="text-sm text-gray-500 mt-1">
               Generated: {new Date(bomData.projectInfo.generatedAt).toLocaleString()}
