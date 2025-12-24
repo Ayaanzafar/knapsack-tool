@@ -188,31 +188,41 @@ class BomService {
   async getBomById(bomId) {
     const bom = await prisma.generatedBom.findUnique({
       where: { id: parseInt(bomId) },
+      include: { project: true }, // Include project to get longRailVariation
     });
 
     if (!bom) {
       return null;
     }
 
+    let bomDataToReturn;
+
     // Handle backward compatibility: check if old bomData format exists
     if (bom.bomData) {
       // Old format: return as-is
-      return {
-        ...bom,
-        bomData: bom.bomData
-      };
+      bomDataToReturn = bom.bomData;
     }
-
     // New optimized format: reconstruct full BOM from minimal data
-    if (bom.bomMetadata && bom.bomItems) {
-      const reconstructedBomData = await bomReconstructionService.reconstructFullBOM(
+    else if (bom.bomMetadata && bom.bomItems) {
+      bomDataToReturn = await bomReconstructionService.reconstructFullBOM(
         bom.bomMetadata,
         bom.bomItems
       );
+    }
+
+    if (bomDataToReturn) {
+      // Ensure projectInfo exists and backfill longRailVariation if missing
+      if (!bomDataToReturn.projectInfo) {
+        bomDataToReturn.projectInfo = {};
+      }
+
+      if (!bomDataToReturn.projectInfo.longRailVariation && bom.project?.longRailVariation) {
+        bomDataToReturn.projectInfo.longRailVariation = bom.project.longRailVariation;
+      }
 
       return {
         ...bom,
-        bomData: reconstructedBomData
+        bomData: bomDataToReturn
       };
     }
 

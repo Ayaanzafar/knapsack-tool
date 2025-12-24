@@ -131,21 +131,19 @@ export default function CreateProjectPage() {
         <div className="flex border-b border-gray-200">
           <button
             onClick={() => setActiveTab('new')}
-            className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${
-              activeTab === 'new'
+            className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${activeTab === 'new'
                 ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-            }`}
+              }`}
           >
             Create New Project
           </button>
           <button
             onClick={() => setActiveTab('existing')}
-            className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${
-              activeTab === 'existing'
+            className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${activeTab === 'existing'
                 ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-            }`}
+              }`}
           >
             Open Existing Project
           </button>
@@ -224,12 +222,14 @@ export default function CreateProjectPage() {
                     required
                     value={longRailVariation}
                     onChange={(e) => setLongRailVariation(e.target.value)}
-                    className={`appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                      !longRailVariation ? 'text-gray-400' : 'text-gray-900'
-                    }`}
+                    className={`appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${!longRailVariation ? 'text-gray-400' : 'text-gray-900'
+                      }`}
                   >
                     <option value="" disabled className="text-gray-400">-SELECT-</option>
-                    <option value="BOM for U Cleat Long Rail" className="text-gray-900">BOM for U Cleat Long Rail</option>
+                    <option value="U Cleat Long Rail" className="text-gray-900">U Cleat Long Rail</option>
+                    <option value="L Cleat Long Rail" className="text-gray-900">L Cleat Long Rail</option>
+                    <option value="Mini Rail" className="text-gray-900">Mini Rail</option>
+                    <option value="Short Rail" className="text-gray-900">Short Rail</option>
                   </select>
                 </div>
               </div>
@@ -351,11 +351,10 @@ export default function CreateProjectPage() {
                       <button
                         onClick={handlePreviousPage}
                         disabled={currentPage === 1}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          currentPage === 1
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${currentPage === 1
                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                             : 'bg-blue-600 text-white hover:bg-blue-700'
-                        }`}
+                          }`}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -370,11 +369,10 @@ export default function CreateProjectPage() {
                       <button
                         onClick={handleNextPage}
                         disabled={currentPage === totalPages}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          currentPage === totalPages
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${currentPage === totalPages
                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                             : 'bg-blue-600 text-white hover:bg-blue-700'
-                        }`}
+                          }`}
                       >
                         Next
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
