@@ -2530,10 +2530,9 @@ export default function BOMPage() {
                   }}
                   step="0.01"
                   min="0"
-                  disabled={!editMode || isBasicUser}
-                  className={`w-32 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${(!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
+                  disabled={!editMode}
+                  className={`w-32 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
                     }`}
-                  title={isBasicUser ? "Only Advanced users can modify this" : ""}
                 />
               </div>
 
@@ -2560,10 +2559,9 @@ export default function BOMPage() {
                   }}
                   step="0.1"
                   min="0"
-                  disabled={!editMode || isBasicUser}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${(!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-green-400'
+                  disabled={!editMode}
+                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-green-400'
                     }`}
-                  title={isBasicUser ? "Only Advanced users can modify this" : ""}
                 />
               </div>
 
@@ -2590,10 +2588,9 @@ export default function BOMPage() {
                   }}
                   step="1"
                   min="0"
-                  disabled={!editMode || isBasicUser}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${(!editMode || isBasicUser) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
+                  disabled={!editMode}
+                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
                     }`}
-                  title={isBasicUser ? "Only Advanced users can modify this" : ""}
                 />
               </div>
 

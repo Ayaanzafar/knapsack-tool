@@ -23,7 +23,8 @@ router.get('/master-items/:id', bomController.getMasterItemById.bind(bomControll
 router.post('/master-items', authorizeRoles('ADVANCED'), bomController.createMasterItem.bind(bomController));
 
 // PUT /api/bom/master-items/:id - Update master item
-router.put('/master-items/:id', forbidBasicMasterItemMutation, bomController.updateMasterItem.bind(bomController));
+// COMMENTED OUT: Removed BASIC user restriction
+router.put('/master-items/:id', /* forbidBasicMasterItemMutation, */ bomController.updateMasterItem.bind(bomController));
 
 // DELETE /api/bom/master-items/:id - Delete master item
 router.delete('/master-items/:id', authorizeRoles('ADVANCED'), bomController.deleteMasterItem.bind(bomController));
@@ -46,7 +47,8 @@ router.get('/project/:projectId', bomController.getBomsByProjectId.bind(bomContr
 router.get('/:bomId', bomController.getBomById.bind(bomController));
 
 // PUT /api/bom/:bomId - Update a BOM
-router.put('/:bomId', enforceBomUpdatePermissions, bomController.updateBom.bind(bomController));
+// COMMENTED OUT: Removed BASIC user restriction for aluminumRate, sparePercentage, moduleWp
+router.put('/:bomId', /* enforceBomUpdatePermissions, */ bomController.updateBom.bind(bomController));
 
 
 // Export PDF

@@ -276,15 +276,14 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
                 type="number"
                 value={hasManualAlRate ? userEdits.manualAluminumRate : aluminumRate}
                 onChange={(e) => handleInputChange('manualAluminumRate', e.target.value)}
-                disabled={isBasicUser}
                 className={`w-20 p-1 text-center border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                   hasManualAlRate ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
-                } ${isBasicUser ? 'cursor-not-allowed opacity-75' : ''}`}
+                }`}
                 step="0.01"
                 min="0"
-                title={isBasicUser ? 'Only Advanced users can modify this' : (hasManualAlRate ? 'Manual override active' : 'Using global aluminum rate')}
+                title={hasManualAlRate ? 'Manual override active' : 'Using global aluminum rate'}
               />
-              {hasManualAlRate && !isBasicUser && (
+              {hasManualAlRate && (
                 <button
                   onClick={handleResetAlRate}
                   className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-200 rounded transition-colors"
@@ -312,12 +311,8 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
               type="number"
               value={costPerPiece || 0}
               onChange={(e) => handleInputChange('costPerPiece', e.target.value)}
-              disabled={isBasicUser}
-              className={`w-20 p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                isBasicUser ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''
-              }`}
+              className="w-20 p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               step="0.01"
-              title={isBasicUser ? 'Only Advanced users can modify this' : ''}
             />
           ) : (
             formatNumber(costPerPiece, 2)
