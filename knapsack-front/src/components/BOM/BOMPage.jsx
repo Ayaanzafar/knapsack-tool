@@ -1450,6 +1450,18 @@ export default function BOMPage() {
           setProjectId(data.projectId); // Store projectId
         } else if (location.state?.bomData) {
           data = { bomData: location.state.bomData };
+          // Store projectId from saved BOM
+          if (location.state?.projectId) {
+            setProjectId(location.state.projectId);
+          }
+          // Load saved changeLog and userNotes
+          if (location.state?.changeLog) {
+            setChangeLog(location.state.changeLog);
+          }
+          if (location.state?.userNotes) {
+            setUserNotes(location.state.userNotes);
+            setOriginalUserNotes(location.state.userNotes);
+          }
         } else {
           console.warn('No BOM data or ID provided, redirecting to home');
           navigate('/');
@@ -2213,6 +2225,7 @@ export default function BOMPage() {
     });
 
     const updatedChangeLog = [...changeLog, ...newLogEntries];
+    setChangeLog(updatedChangeLog);
 
     const result = await saveWithExplicitData(bomData, updatedChangeLog);
     if (result?.ok) {
@@ -2304,7 +2317,25 @@ export default function BOMPage() {
   };
 
   const saveWithExplicitData = async (currentBomData, currentChangeLog) => {
-    const bomId = location.state?.bomId;
+    let bomId = location.state?.bomId;
+
+    // If no bomId (loaded from saved BOM), create a new BOM entry
+    if (!bomId && projectId) {
+      try {
+        const newBom = await bomAPI.saveBOM(projectId, currentBomData);
+        bomId = newBom.bomId;
+        // Update location state with new bomId
+        window.history.replaceState(
+          { ...location.state, bomId: bomId },
+          ''
+        );
+      } catch (error) {
+        console.error('Failed to create BOM entry:', error);
+        alert('Failed to create BOM entry for saving changes.');
+        return { ok: false };
+      }
+    }
+
     if (!bomId) return { ok: false };
 
     setIsSaving(true);

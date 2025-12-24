@@ -87,8 +87,16 @@ export default function CreateBOMButton({ tabsData, projectName, longRailVariati
 
       const savedBom = await savedBomAPI.getSavedBom(projectId);
 
-      // Navigate to BOM page with saved BOM data
-      navigate('/bom', { state: { bomData: savedBom.bomData } });
+      // Navigate to BOM page with saved BOM data AND projectId
+      navigate('/bom', {
+        state: {
+          bomData: savedBom.bomData,
+          projectId: projectId,
+          savedBomId: savedBom.id,
+          changeLog: savedBom.changeLog || [],
+          userNotes: savedBom.userNotes || []
+        }
+      });
     } catch (error) {
       console.error('Error loading saved BOM:', error);
       alert('Failed to load saved BOM.');
