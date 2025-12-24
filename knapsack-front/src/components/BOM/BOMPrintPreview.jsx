@@ -394,7 +394,7 @@ export default function BOMPrintPreview() {
                   {includeQuantity && (
                     <>
                       <th colSpan={5} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
-                        BOM for U Cleat Long Rail
+                        {bomData.projectInfo.longRailVariation || 'BOM for U Cleat Long Rail'}
                       </th>
                       <th colSpan={2} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
                         No. of Panels
