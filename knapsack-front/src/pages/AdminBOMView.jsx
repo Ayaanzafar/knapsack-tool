@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { savedBomAPI, projectAPI } from '../services/api';
 import BOMTable from '../components/BOM/BOMTable';
 import ChangeLogDisplay from '../components/BOM/ChangeLogDisplay';
+import NotesSection from '../components/BOM/NotesSection';
 
 export default function AdminBOMView() {
   const { projectId } = useParams();
@@ -31,6 +32,10 @@ export default function AdminBOMView() {
       ]);
 
       if (savedBom && savedBom.bomData) {
+        console.log('AdminBOMView - Loaded savedBom:', savedBom);
+        console.log('AdminBOMView - savedBom.userNotes:', savedBom.userNotes);
+        console.log('AdminBOMView - savedBom.changeLog:', savedBom.changeLog);
+
         setBomData(savedBom.bomData);
         setChangeLog(savedBom.changeLog || []);
         setUserNotes(savedBom.userNotes || []);
@@ -108,6 +113,9 @@ export default function AdminBOMView() {
   const handleItemUpdate = () => {};
   const handleDeleteRow = () => {};
   const handleDragEnd = () => {};
+
+  console.log("AdminBOMView - userNotes:", userNotes);
+  console.log("AdminBOMView - userNotes length:", userNotes?.length);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -204,24 +212,7 @@ export default function AdminBOMView() {
           </div>
         )}
 
-        {/* User Notes */}
-        {userNotes && userNotes.length > 0 && (
-          <div className="bg-white shadow rounded-lg mb-6 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">User Notes</h2>
-            <div className="space-y-3">
-              {userNotes.map((note, index) => (
-                <div key={index} className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
-                  <p className="text-sm text-gray-700">{note.text}</p>
-                  {note.timestamp && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(note.timestamp).toLocaleString()}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+
 
         {/* Summary Card */}
         <div className="bg-blue-50 shadow rounded-lg p-6 border border-blue-200">
@@ -240,6 +231,15 @@ export default function AdminBOMView() {
               <p className="text-2xl font-bold text-gray-900">₹ {formatNumber(totals.totalCost)}</p>
             </div>
           </div>
+        </div>
+
+        {/* Notes Section (always show - includes default notes) */}
+        <div className="bg-white shadow rounded-lg mb-6 p-6">
+          <NotesSection
+            userNotes={userNotes || []}
+            onNotesChange={() => {}}
+            editMode={false}
+          />
         </div>
 
         {/* Back Button at Bottom */}

@@ -8,6 +8,10 @@ class SavedBomController {
       const { bomData, userNotes, changeLog } = req.body;
       const userId = req.user.id;
 
+      console.log('saveBomSnapshot - Received userNotes:', userNotes);
+      console.log('saveBomSnapshot - userNotes type:', typeof userNotes);
+      console.log('saveBomSnapshot - userNotes length:', Array.isArray(userNotes) ? userNotes.length : 'N/A');
+
       if (!bomData) {
         return res.status(400).json({ error: 'bomData is required' });
       }
@@ -39,6 +43,10 @@ class SavedBomController {
       if (!savedBom) {
         return res.status(404).json({ error: 'No saved BOM found for this project' });
       }
+
+      console.log('getSavedBom - Returning savedBom with userNotes:', savedBom.userNotes);
+      console.log('getSavedBom - userNotes type:', typeof savedBom.userNotes);
+      console.log('getSavedBom - userNotes is null?:', savedBom.userNotes === null);
 
       res.json(savedBom);
     } catch (error) {
