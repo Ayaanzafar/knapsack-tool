@@ -227,9 +227,9 @@ export default function CreateProjectPage() {
                   >
                     <option value="" disabled className="text-gray-400">-SELECT-</option>
                     <option value="U Cleat Long Rail" className="text-gray-900">U Cleat Long Rail</option>
-                    <option value="L Cleat Long Rail" className="text-gray-900">L Cleat Long Rail</option>
-                    <option value="Mini Rail" className="text-gray-900">Mini Rail</option>
-                    <option value="Short Rail" className="text-gray-900">Short Rail</option>
+                    <option value="L Cleat Long Rail" disabled className="text-gray-900">L Cleat Long Rail</option>
+                    <option value="Mini Rail" disabled className="text-gray-900">Mini Rail</option>
+                    <option value="Short Rail" disabled className="text-gray-900">Short Rail</option>
                   </select>
                 </div>
               </div>
