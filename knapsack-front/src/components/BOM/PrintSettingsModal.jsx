@@ -261,7 +261,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
 
             {/* Action Buttons */}
             <div className="mt-auto space-y-3">
-              <button
+              {/* <button
                 onClick={() => onPrint(settings, 'pdf')}
                 className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center justify-center gap-2"
               >
@@ -269,7 +269,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                   <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0 1 1 0 002 0z" clipRule="evenodd" />
                 </svg>
                 Export PDF
-              </button>
+              </button> */}
 
               <button
                 onClick={handleDirectPrint}
