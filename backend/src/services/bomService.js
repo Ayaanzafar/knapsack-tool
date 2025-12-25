@@ -164,15 +164,15 @@ class BomService {
       select: {
         id: true,
         generatedAt: true,
+        updatedAt: true,
         version: true,
         isLatest: true,
-        // Check if changeLog is not null and not an empty array
-        hasChanges: {
-          // This is a simplified check. A more robust way might be needed
-          // depending on how Prisma handles JSON field queries.
-          // For now, we assume any non-null changelog means changes.
-          not: {
-            changeLog: null,
+        generatedBy: true,
+        changeLog: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
           },
         },
       },

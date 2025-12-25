@@ -79,7 +79,14 @@ apiClient.interceptors.response.use(
          // Optionally redirect to login or clear state
        }
     }
-    console.error('API Error:', error);
+
+    // Don't log 404 errors for saved-boms endpoints (expected when no saved BOM exists)
+    const isSavedBom404 = error.response?.status === 404 && error.config?.url?.includes('/saved-boms/');
+
+    if (!isSavedBom404) {
+      console.error('API Error:', error);
+    }
+
     if (error.response) {
       // Server responded with error status
       const data = error.response.data || {};
@@ -88,6 +95,7 @@ apiClient.interceptors.response.use(
       err.code = data.code;
       err.field = data.field;
       err.data = data;
+      err.response = error.response;
       throw err;
     } else if (error.request) {
       // Request made but no response
@@ -367,6 +375,12 @@ export const savedBomAPI = {
   // Check if saved BOM exists
   checkSavedBomExists: async (projectId) => {
     const response = await apiClient.get(`/saved-boms/project/${projectId}/exists`);
+    return response.data;
+  },
+
+  // Get all saved BOMs (for admin)
+  getAllSavedBoms: async () => {
+    const response = await apiClient.get('/saved-boms/all');
     return response.data;
   },
 

@@ -9,7 +9,7 @@ exports.authenticateToken = (req, res, next) => {
 
   // Fallback: Check body or query (useful for form submissions/downloads)
   if (!token) {
-    token = req.body.token || req.query.token;
+    token = req.body?.token || req.query?.token;
   }
 
   if (!token) {

@@ -75,6 +75,35 @@ class SavedBomService {
       where: { projectId: parseInt(projectId) }
     });
   }
+
+  // Get all saved BOMs with project information (for admin)
+  async getAllSavedBoms() {
+    const savedBoms = await prisma.savedBom.findMany({
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+            clientName: true,
+            projectId: true,
+            longRailVariation: true,
+            createdAt: true,
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            username: true,
+          }
+        }
+      },
+      orderBy: {
+        updatedAt: 'desc'
+      }
+    });
+
+    return savedBoms;
+  }
 }
 
 module.exports = new SavedBomService();

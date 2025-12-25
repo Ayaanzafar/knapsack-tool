@@ -78,6 +78,17 @@ class SavedBomController {
       res.status(500).json({ error: 'Failed to delete saved BOM' });
     }
   }
+
+  // GET /api/saved-boms/all - Get all saved BOMs (for admin)
+  async getAllSavedBoms(req, res) {
+    try {
+      const savedBoms = await savedBomService.getAllSavedBoms();
+      res.json(savedBoms);
+    } catch (error) {
+      console.error('Error fetching all saved BOMs:', error);
+      res.status(500).json({ error: 'Failed to fetch saved BOMs' });
+    }
+  }
 }
 
 module.exports = new SavedBomController();

@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const savedBomController = require('../controllers/savedBomController');
-const { authenticateToken, checkPasswordChange } = require('../middleware/authMiddleware');
+const { authenticateToken, checkPasswordChange, authorizeRoles } = require('../middleware/authMiddleware');
 
 // Protect all routes
 router.use(authenticateToken);
 router.use(checkPasswordChange);
+
+// GET /api/saved-boms/all - Get all saved BOMs (MANAGER only)
+router.get('/all', authorizeRoles('MANAGER'), savedBomController.getAllSavedBoms.bind(savedBomController));
 
 // POST /api/saved-boms/project/:projectId - Save BOM snapshot
 router.post('/project/:projectId', savedBomController.saveBomSnapshot.bind(savedBomController));

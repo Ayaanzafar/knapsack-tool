@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react';
 import { userAPI } from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import BOMManagementTab from './BOMManagementTab';
 
 export default function AdminPanel() {
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('users'); // 'users' or 'boms'
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Check if returning from AdminBOMView with a specific tab
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+      // Clear the state after using it
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // Form State
   const [username, setUsername] = useState('');
@@ -67,9 +79,38 @@ export default function AdminPanel() {
       </header>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        
-        {/* Add User Section */}
-        <div className="bg-white shadow sm:rounded-lg mb-8">
+
+        {/* Tab Navigation */}
+        <div className="bg-white shadow sm:rounded-lg mb-6">
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${
+                activeTab === 'users'
+                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              User Management
+            </button>
+            <button
+              onClick={() => setActiveTab('boms')}
+              className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${
+                activeTab === 'boms'
+                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              BOM Management
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'users' ? (
+          <>
+            {/* Add User Section */}
+            <div className="bg-white shadow sm:rounded-lg mb-8">
           <div className="px-4 py-5 sm:p-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">Add New User</h3>
             <div className="mt-2 max-w-xl text-sm text-gray-500">
@@ -179,6 +220,19 @@ export default function AdminPanel() {
             )}
           </div>
         </div>
+          </>
+        ) : (
+          /* BOM Management Tab */
+          <div className="bg-white shadow sm:rounded-lg">
+            <div className="px-4 py-5 sm:p-6">
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">BOM Management</h3>
+              <div className="mt-2 text-sm text-gray-500 mb-6">
+                <p>View and manage all BOMs across all projects. Click "View" to open any BOM.</p>
+              </div>
+              <BOMManagementTab />
+            </div>
+          </div>
+        )}
 
       </main>
     </div>

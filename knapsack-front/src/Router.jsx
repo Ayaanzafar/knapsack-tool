@@ -8,6 +8,7 @@ import ChangePasswordPage from './components/Auth/ChangePasswordPage';
 import HomePage from './pages/HomePage';
 import CreateProjectPage from './pages/CreateProjectPage';
 import AdminPanel from './pages/AdminPanel';
+import AdminBOMView from './pages/AdminBOMView';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const PrivateRoute = ({ children }) => {
@@ -47,18 +48,29 @@ export default function Router() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
         
-        <Route 
-          path="/admin" 
+        <Route
+          path="/admin"
           element={
             <PrivateRoute>
               <RoleRoute roles={['MANAGER']}>
                 <AdminPanel />
               </RoleRoute>
             </PrivateRoute>
-          } 
+          }
         />
 
-        <Route 
+        <Route
+          path="/admin/bom/project/:projectId"
+          element={
+            <PrivateRoute>
+              <RoleRoute roles={['MANAGER']}>
+                <AdminBOMView />
+              </RoleRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
           path="/projects/create" 
           element={
             <PrivateRoute>
