@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { savedBomAPI, projectAPI } from '../services/api';
+import BOMTable from '../components/BOM/BOMTable';
 import ChangeLogDisplay from '../components/BOM/ChangeLogDisplay';
 
 export default function AdminBOMView() {
@@ -86,7 +87,11 @@ export default function AdminBOMView() {
     );
   }
 
-  const { tabs, panelCounts, bomItems = [] } = bomData;
+  const { tabs = [], panelCounts = {}, bomItems = [] } = bomData;
+
+  // Get aluminum rate and spare percentage from bomData
+  const aluminumRate = bomData.aluminumRate || 527.85;
+  const sparePercentage = bomData.sparePercentage || 1;
 
   // Calculate totals
   const totals = bomItems.reduce(
@@ -97,6 +102,12 @@ export default function AdminBOMView() {
     },
     { totalWeight: 0, totalCost: 0 }
   );
+
+  // Dummy handlers for BOMTable (read-only mode)
+  const handleProfileChange = () => {};
+  const handleItemUpdate = () => {};
+  const handleDeleteRow = () => {};
+  const handleDragEnd = () => {};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -165,58 +176,24 @@ export default function AdminBOMView() {
           )}
         </div>
 
-        {/* BOM Items Table */}
+        {/* BOM Items Table - Using BOMTable Component */}
         <div className="bg-white shadow rounded-lg mb-6 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">BOM Items</h2>
-            <p className="text-sm text-gray-600 mt-1">Total Items: {bomItems.length}</p>
+            <h2 className="text-lg font-semibold text-gray-900">BOM Items (Read-Only View)</h2>
+            <p className="text-sm text-gray-600 mt-1">Same table format as BOMPage - Total Items: {bomItems.length}</p>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">S.No</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Description</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Spare Qty</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Qty</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">RM (m)</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Weight (kg)</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cost (₹)</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {bomItems.map((item, index) => (
-                  <tr key={item._id || index} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.sn || index + 1}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.profileSerialNumber || 'N/A'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{item.itemDescription || 'N/A'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-right">{formatNumber(item.quantity)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-right">{formatNumber(item.spareQuantity)}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 text-right">{formatNumber(item.finalTotal)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-right">{formatNumber(item.rm)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-right">{formatNumber(item.wt)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-right">{formatNumber(item.cost)}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot className="bg-gray-50">
-                <tr>
-                  <td colSpan="7" className="px-4 py-3 text-sm font-bold text-gray-900 text-right">
-                    Grand Total:
-                  </td>
-                  <td className="px-4 py-3 text-sm font-bold text-gray-900 text-right">
-                    {formatNumber(totals.totalWeight)} kg
-                  </td>
-                  <td className="px-4 py-3 text-sm font-bold text-gray-900 text-right">
-                    ₹ {formatNumber(totals.totalCost)}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+          <BOMTable
+            bomData={bomData}
+            editMode={false}
+            onProfileChange={handleProfileChange}
+            profileOptions={[]}
+            onItemUpdate={handleItemUpdate}
+            aluminumRate={aluminumRate}
+            sparePercentage={sparePercentage}
+            onDeleteRow={handleDeleteRow}
+            onDragEnd={handleDragEnd}
+          />
         </div>
 
         {/* Change Log */}

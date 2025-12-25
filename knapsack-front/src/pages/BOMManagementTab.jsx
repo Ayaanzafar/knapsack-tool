@@ -145,17 +145,17 @@ export default function BOMManagementTab() {
                   Project ID
                 </th>
                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Saved By
+                  Created By
                 </th>
                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Saved At
+                  Created At
                 </th>
                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                   Last Updated
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                {/* <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                   Changes
-                </th>
+                </th> */}
                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                   Actions
                 </th>
@@ -189,7 +189,7 @@ export default function BOMManagementTab() {
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {formatDate(bom.updatedAt)}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
+                  {/* <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
                     {bom.changeLogCount > 0 ? (
                       <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
                         {bom.changeLogCount} changes
@@ -197,7 +197,7 @@ export default function BOMManagementTab() {
                     ) : (
                       <span className="text-gray-400">No changes</span>
                     )}
-                  </td>
+                  </td> */}
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <button
                       onClick={() => handleViewBOM(bom.projectDbId)}
