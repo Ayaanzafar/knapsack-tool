@@ -1,7 +1,8 @@
 // src/components/BOM/PrintSettingsModal.jsx
 import { useState, useEffect } from 'react';
+import NotesSection from './NotesSection';
 
-export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, aluminumRate, sparePercentage, moduleWp, changeLog }) {
+export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, aluminumRate, sparePercentage, moduleWp, changeLog, userNotes }) {
   const [settings, setSettings] = useState({
     includeQuantity: true,
     includeSpare: true,
@@ -537,7 +538,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                     </div>
 
                     {/* Notes Section */}
-                    <div className="p-2 bg-yellow-50 border-l-4 border-yellow-400 rounded mb-3">
+                    {/* <div className="p-2 bg-yellow-50 border-l-4 border-yellow-400 rounded mb-3">
                       <h3 className="text-xs font-bold text-gray-800 mb-1">Note:</h3>
                       <ol className="list-decimal list-inside space-y-0.5 text-xs text-gray-700">
                         <li>Cut Length of Long Rails subject to change during detailing based on availability.</li>
@@ -546,7 +547,18 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                         <li>For Roofs with purlin span more than 1.7m, 2 Long Rails + 1 Mini Rail per each side of panel are considered.</li>
                         <li>Purlin Details of sheds T10, T11, T14, T15 are not mentioned in report. They are assumed to be 1.5m. If the actual span is more than 1.7m, an extra Mini rail must be considered additionally (at extra cost).</li>
                       </ol>
-                    </div>
+                    </div> */}
+
+                    {/* User Notes Section */}
+                    {userNotes && userNotes.length > 0 && (
+                      <div className="mb-3" style={{ transform: `scale(${scale / 100})`, transformOrigin: 'top left' }}>
+                        <NotesSection
+                          userNotes={userNotes}
+                          onNotesChange={() => {}}
+                          editMode={false}
+                        />
+                      </div>
+                    )}
 
                     {/* Disclaimer/Changelog Section */}
                     {settings.includeDisclaimer && changeLog && changeLog.length > 0 && (

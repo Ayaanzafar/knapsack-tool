@@ -2866,6 +2866,7 @@ export default function BOMPage() {
         sparePercentage={sparePercentage}
         moduleWp={moduleWp}
         changeLog={changeLog}
+        userNotes={userNotes}
       />
 
       {toast && (

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import '../../styles/print.css';
 import { API_URL } from '../../services/config';
+import NotesSection from './NotesSection';
 
 export default function BOMPrintPreview() {
   const location = useLocation();
@@ -14,6 +15,7 @@ export default function BOMPrintPreview() {
   const [moduleWp, setModuleWp] = useState(710);
   const [scale, setScale] = useState(100); // Scale percentage for zoom
   const [changeLog, setChangeLog] = useState([]);
+  const [userNotes, setUserNotes] = useState([]);
 
   useEffect(() => {
     // Check if loading from temp data (for PDF export)
@@ -40,6 +42,7 @@ export default function BOMPrintPreview() {
           setSparePercentage(data.sparePercentage || 1);
           setModuleWp(data.moduleWp || 710);
           setChangeLog(data.changeLog || []);
+          setUserNotes(data.userNotes || []);
 
           const { includeQuantity, includeSpare, includeCosting } = data.printSettings;
           const allThree = includeQuantity && includeSpare && includeCosting;
@@ -76,6 +79,7 @@ export default function BOMPrintPreview() {
       setSparePercentage(location.state.sparePercentage || 1);
       setModuleWp(location.state.moduleWp || 710);
       setChangeLog(location.state.changeLog || []);
+      setUserNotes(location.state.userNotes || []);
 
       // Set smart default scale based on sections selected
       const { includeQuantity, includeSpare, includeCosting } = location.state.printSettings;
@@ -556,7 +560,7 @@ export default function BOMPrintPreview() {
           </div>
 
           {/* Notes */}
-          <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded notes-section">
+          {/* <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded notes-section">
             <h3 className="text-sm font-bold text-gray-800 mb-2">Note:</h3>
             <ol className="list-decimal list-inside space-y-1 text-xs text-gray-700">
               <li>Cut Length of Long Rails subject to change during detailing based on availability.</li>
@@ -565,7 +569,18 @@ export default function BOMPrintPreview() {
               <li>For Roofs with purlin span more than 1.7m, 2 Long Rails + 1 Mini Rail per each side of panel are considered.</li>
               <li>Purlin Details of sheds T10, T11, T14, T15 are not mentioned in report. They are assumed to be 1.5m. If the actual span is more than 1.7m, an extra Mini rail must be considered additionally (at extra cost).</li>
             </ol>
-          </div>
+          </div> */}
+
+          {/* User Notes Section */}
+          {userNotes && userNotes.length > 0 && (
+            <div className="mt-4">
+              <NotesSection
+                userNotes={userNotes}
+                onNotesChange={() => {}}
+                editMode={false}
+              />
+            </div>
+          )}
 
           {/* Disclaimer/Changelog Section */}
           {printSettings?.includeDisclaimer && changeLog && changeLog.length > 0 && (
