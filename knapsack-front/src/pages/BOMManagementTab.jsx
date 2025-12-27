@@ -201,7 +201,7 @@ export default function BOMManagementTab() {
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <button
                       onClick={() => handleViewBOM(bom.projectDbId)}
-                      className="text-blue-600 hover:text-blue-900 font-medium"
+                      className="text-blue-600 hover:text-blue-900 font-medium cursor-pointer"
                     >
                       View
                     </button>

@@ -341,12 +341,12 @@ export default function HomePage() {
   // Landing Page for Unauthenticated Users
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-300 via-yellow-100 to-white transition-colors duration-500">
+      <div className="min-h-screen bg-linear-to-br from-yellow-300 via-yellow-100 to-white transition-colors duration-500">
         {/* Header with stronger emphasis */}
         <header className="bg-gray-900 shadow-lg border-b border-yellow-400">
           <div className="max-w-7xl mx-auto h-20 px-4 sm:px-6 lg:px-8 flex items-center">
             <img
-              src="/white_back_photo.svg"
+              src="/black_back_photo.svg"
               alt="Knapsack Tool"
               className="h-9 transition-transform hover:scale-105"
             />
@@ -398,7 +398,7 @@ export default function HomePage() {
                 <h2 className="text-2xl font-bold text-gray-900">Key Features</h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-900 border-2 border-yellow-400 shadow-lg hover:shadow-yellow-400/50 hover:shadow-2xl hover:border-yellow-300 transition-all duration-300 cursor-pointer group">
-                    <div className="shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-sm group-hover:shadow-yellow-400/50 group-hover:shadow-lg transition-all duration-300">
+                    <div className="shrink-0 h-10 w-10 rounded-lg bg-linear-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-sm group-hover:shadow-yellow-400/50 group-hover:shadow-lg transition-all duration-300">
                       <svg className="h-5 w-5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
@@ -410,7 +410,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-900 border-2 border-yellow-400 shadow-lg hover:shadow-yellow-400/50 hover:shadow-2xl hover:border-yellow-300 transition-all duration-300 cursor-pointer group">
-                    <div className="shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-sm group-hover:shadow-yellow-400/50 group-hover:shadow-lg transition-all duration-300">
+                    <div className="shrink-0 h-10 w-10 rounded-lg bg-linear-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-sm group-hover:shadow-yellow-400/50 group-hover:shadow-lg transition-all duration-300">
                       <svg className="h-5 w-5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
@@ -422,7 +422,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-900 border-2 border-yellow-400 shadow-lg hover:shadow-yellow-400/50 hover:shadow-2xl hover:border-yellow-300 transition-all duration-300 cursor-pointer group">
-                    <div className="shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-sm group-hover:shadow-yellow-400/50 group-hover:shadow-lg transition-all duration-300">
+                    <div className="shrink-0 h-10 w-10 rounded-lg bg-linear-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-sm group-hover:shadow-yellow-400/50 group-hover:shadow-lg transition-all duration-300">
                       <svg className="h-5 w-5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
@@ -434,7 +434,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-900 border-2 border-yellow-400 shadow-lg hover:shadow-yellow-400/50 hover:shadow-2xl hover:border-yellow-300 transition-all duration-300 cursor-pointer group">
-                    <div className="shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-sm group-hover:shadow-yellow-400/50 group-hover:shadow-lg transition-all duration-300">
+                    <div className="shrink-0 h-10 w-10 rounded-lg bg-linear-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-sm group-hover:shadow-yellow-400/50 group-hover:shadow-lg transition-all duration-300">
                       <svg className="h-5 w-5 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
@@ -459,11 +459,11 @@ export default function HomePage() {
               >
                 <div className="bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 p-10 lg:p-12 relative overflow-hidden">
                   {/* Subtle background decoration */}
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-yellow-900 to-transparent rounded-full -mr-20 -mt-20 opacity-20"></div>
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-yellow-900 to-transparent rounded-full -mr-20 -mt-20 opacity-20"></div>
                   
                   <div className="relative z-10">
                     <div className="mb-10">
-                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-500 shadow-lg mb-4">
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-linear-to-br from-yellow-400 to-yellow-500 shadow-lg mb-4">
                         <svg className="w-8 h-8 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                         </svg>
@@ -529,7 +529,7 @@ export default function HomePage() {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className={`w-full flex justify-center items-center gap-2 py-4 px-6 border border-transparent rounded-xl shadow-lg text-base font-semibold text-gray-900 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 transform transition-all duration-200 ${
+                        className={`w-full flex justify-center items-center gap-2 py-4 px-6 border border-transparent rounded-xl shadow-lg text-base font-semibold text-gray-900 bg-linear-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 transform transition-all duration-200 ${
                           isLoading ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-0.5'
                         }`}
                       >
@@ -572,7 +572,7 @@ export default function HomePage() {
 
   // Authenticated HomePage - BOM Creation Interface
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-gray-100">
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto h-20 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <img
@@ -620,7 +620,7 @@ export default function HomePage() {
               onClick={handleLongRail}
               className="relative rounded-2xl border-2 border-gray-200 bg-white p-8 shadow-md flex flex-col items-center text-center hover:border-blue-500 hover:shadow-xl cursor-pointer transition-all duration-300 group transform hover:-translate-y-1"
             >
-              <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
+              <div className="h-20 w-20 rounded-2xl bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
                 <svg className="h-11 w-11 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
