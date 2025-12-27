@@ -2,6 +2,11 @@
 // Formula-based calculations for BOM hardware items
 
 import { API_URL } from './config';
+import {
+  DEFAULT_ALUMINIUM_RATE_PER_KG,
+  SPARE_CALCULATION_MULTIPLIER,
+  MM_TO_METERS_DIVISOR
+} from '../constants/bomDefaults';
 
 /**
  * Formula map for calculating hardware quantities
@@ -78,7 +83,7 @@ export function calculateTabQuantities(tabCalculation) {
  * @param {Number} aluminumRate - Rate per kg for aluminum
  * @returns {Object} - Weight and cost calculations
  */
-function calculateWeightAndCost(item, profilesMap, aluminumRate = 527.85) {
+function calculateWeightAndCost(item, profilesMap, aluminumRate = DEFAULT_ALUMINIUM_RATE_PER_KG) {
   const result = {
     wtPerRm: null,  // Weight per running meter (kg/m)
     rm: null,       // Running meters
@@ -105,7 +110,7 @@ function calculateWeightAndCost(item, profilesMap, aluminumRate = 527.85) {
     // Check if it has design weight (weight-based calculation)
     if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
       result.wtPerRm = parseFloat(profile.designWeight);
-      result.rm = (lengthToUse / 1000) * item.finalTotal;  // Convert mm to meters
+      result.rm = (lengthToUse / MM_TO_METERS_DIVISOR) * item.finalTotal;  // Convert mm to meters
       result.wt = result.rm * result.wtPerRm;
       result.cost = result.wt * aluminumRate;
     }
@@ -123,10 +128,10 @@ function calculateWeightAndCost(item, profilesMap, aluminumRate = 527.85) {
  * @param {Object} bomData - Collected BOM data from bomDataCollection
  * @param {Array} activeCutLengths - Active cut lengths (non-zero)
  * @param {Object} profilesMap - Map of profile serial numbers to profile data
- * @param {Number} aluminumRate - Rate per kg for aluminum (default: 527.85)
+ * @param {Number} aluminumRate - Rate per kg for aluminum (default: DEFAULT_ALUMINIUM_RATE_PER_KG)
  * @returns {Array} - Array of BOM items with quantities per tab
  */
-export async function generateBOMItems(bomData, activeCutLengths, profilesMap, aluminumRate = 527.85) {
+export async function generateBOMItems(bomData, activeCutLengths, profilesMap, aluminumRate = DEFAULT_ALUMINIUM_RATE_PER_KG) {
   const bomItems = [];
   let serialNumber = 1;
 
@@ -167,8 +172,8 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
         profileSerialNumber: primaryProfileSerialNumber,  // NEW: Store for edit mode
         quantities: quantities,
         totalQuantity: totalQty,
-        spareQuantity: Math.ceil(totalQty * 0.01),
-        finalTotal: totalQty + Math.ceil(totalQty * 0.01)
+        spareQuantity: Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER),
+        finalTotal: totalQty + Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER)
       };
 
       // Calculate weight and cost
@@ -231,8 +236,8 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
         costPerPiece: item.costPerPiece,  // NEW: Pass cost per piece for fasteners
         quantities: quantities,
         totalQuantity: totalQty,
-        spareQuantity: Math.ceil(totalQty * 0.01),
-        finalTotal: totalQty + Math.ceil(totalQty * 0.01)
+        spareQuantity: Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER),
+        finalTotal: totalQty + Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER)
       };
 
       // Calculate weight and cost
@@ -253,10 +258,10 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
  * Complete BOM generation pipeline
  * @param {Object} bomData - Collected BOM data
  * @param {Array} activeCutLengths - Active cut lengths
- * @param {Number} aluminumRate - Rate per kg for aluminum (default: 527.85)
+ * @param {Number} aluminumRate - Rate per kg for aluminum (default: DEFAULT_ALUMINIUM_RATE_PER_KG)
  * @returns {Object} - Complete BOM structure
  */
-export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRate = 527.85) {
+export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRate = DEFAULT_ALUMINIUM_RATE_PER_KG) {
   // Fetch all profiles from API
   const token = localStorage.getItem('token');
   const headers = {
@@ -296,6 +301,7 @@ export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRat
     panelCounts: bomData.panelCounts,
     profilesMap: profilesMap,  // NEW: Pass profiles to BOM page
     bomItems: bomItems,
-    aluminumRate: aluminumRate  // NEW: Pass aluminum rate to BOM page
+    aluminumRate: aluminumRate,  // NEW: Pass aluminum rate to BOM page
+    moduleWp: bomData.moduleWp  // Pass module Wp to BOM page
   };
 }

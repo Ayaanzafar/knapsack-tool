@@ -1351,6 +1351,11 @@ import axios from 'axios';
 import { arrayMove } from '@dnd-kit/sortable';
 import * as changeTracker from '../../lib/changeTracker';
 import { useAuth } from '../../context/AuthContext';
+import {
+  DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_MODULE_WP,
+  DEFAULT_SPARE_PERCENTAGE
+} from '../../constants/bomDefaults';
 
 const ensureStableIds = (items) => {
   return items.map(item => ({
@@ -1370,9 +1375,9 @@ export default function BOMPage() {
   const [projectId, setProjectId] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [profiles, setProfiles] = useState([]);
-  const [sparePercentage, setSparePercentage] = useState(1);
-  const [moduleWp, setModuleWp] = useState(710);
-  const [aluminumRate, setAluminumRate] = useState(527.85);
+  const [sparePercentage, setSparePercentage] = useState(DEFAULT_SPARE_PERCENTAGE);
+  const [moduleWp, setModuleWp] = useState(DEFAULT_MODULE_WP);
+  const [aluminumRate, setAluminumRate] = useState(DEFAULT_ALUMINIUM_RATE_PER_KG);
   const [changeLog, setChangeLog] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);

@@ -1,4 +1,10 @@
 const prisma = require('../prismaClient');
+const {
+  DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_MODULE_WP,
+  DEFAULT_SPARE_PERCENTAGE,
+  FLOAT_COMPARISON_TOLERANCE
+} = require('../constants/bomDefaults');
 
 const ADVANCED_ROLES = new Set(['DESIGN', 'MANAGER']);
 
@@ -53,28 +59,28 @@ exports.enforceBomUpdatePermissions = async (req, res, next) => {
     if (!bomRecord) return res.status(404).json({ error: 'BOM not found' });
 
     const currentMeta = getBomMetadata(bomRecord);
-    const currentAluminumRate = toNullableNumber(currentMeta.aluminumRate) ?? 527.85;
-    const currentSparePercentage = toNullableNumber(currentMeta.sparePercentage) ?? 1.0;
-    const currentModuleWp = toNullableNumber(currentMeta.moduleWp) ?? 710;
+    const currentAluminumRate = toNullableNumber(currentMeta.aluminumRate) ?? DEFAULT_ALUMINIUM_RATE_PER_KG;
+    const currentSparePercentage = toNullableNumber(currentMeta.sparePercentage) ?? DEFAULT_SPARE_PERCENTAGE;
+    const currentModuleWp = toNullableNumber(currentMeta.moduleWp) ?? DEFAULT_MODULE_WP;
 
     // Disallow changing BOM-level globals (compare against stored values).
     const nextAluminumRate = toNullableNumber(incomingBomData.aluminumRate);
     const nextSparePercentage = toNullableNumber(incomingBomData.sparePercentage);
     const nextModuleWp = toNullableNumber(incomingBomData.moduleWp);
 
-    if (nextAluminumRate === null || Math.abs(nextAluminumRate - currentAluminumRate) > 1e-9) {
+    if (nextAluminumRate === null || Math.abs(nextAluminumRate - currentAluminumRate) > FLOAT_COMPARISON_TOLERANCE) {
       return forbiddenField(res, 'aluminumRate');
     }
-    if (nextSparePercentage === null || Math.abs(nextSparePercentage - currentSparePercentage) > 1e-9) {
+    if (nextSparePercentage === null || Math.abs(nextSparePercentage - currentSparePercentage) > FLOAT_COMPARISON_TOLERANCE) {
       return forbiddenField(res, 'sparePercentage');
     }
 
     // Some older clients may omit moduleWp; only allow omission when it would not change persisted value.
     if (incomingBomData.moduleWp === undefined) {
-      if (Math.abs(currentModuleWp - 710) > 1e-9) {
+      if (Math.abs(currentModuleWp - DEFAULT_MODULE_WP) > FLOAT_COMPARISON_TOLERANCE) {
         return forbiddenField(res, 'moduleWp');
       }
-    } else if (nextModuleWp === null || Math.abs(nextModuleWp - currentModuleWp) > 1e-9) {
+    } else if (nextModuleWp === null || Math.abs(nextModuleWp - currentModuleWp) > FLOAT_COMPARISON_TOLERANCE) {
       return forbiddenField(res, 'moduleWp');
     }
 

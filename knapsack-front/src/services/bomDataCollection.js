@@ -4,6 +4,7 @@
 import { calculateSB1 } from '../lib/calculations';
 import { requiredRailLength, generateScenarios } from '../lib/optimizer';
 import { parseNumList } from '../lib/storage';
+import { DEFAULT_MODULE_WP } from '../constants/bomDefaults';
 
 /**
  * Calculate totals for a single tab
@@ -163,7 +164,7 @@ export function collectBOMData(tabsData, projectName, longRailVariation) {
       totalTabs: tabs.length,
       generatedAt: new Date().toISOString()
     },
-    moduleWp: 710,
+    moduleWp: DEFAULT_MODULE_WP,
     tabs: [],
     panelCounts: {},
     tabCalculations: {},

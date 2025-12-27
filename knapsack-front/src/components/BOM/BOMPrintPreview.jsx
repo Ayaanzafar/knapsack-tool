@@ -4,15 +4,20 @@ import { useEffect, useState } from 'react';
 import '../../styles/print.css';
 import { API_URL } from '../../services/config';
 import NotesSection from './NotesSection';
+import {
+  DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_MODULE_WP,
+  DEFAULT_SPARE_PERCENTAGE
+} from '../../constants/bomDefaults';
 
 export default function BOMPrintPreview() {
   const location = useLocation();
   const navigate = useNavigate();
   const [bomData, setBomData] = useState(null);
   const [printSettings, setPrintSettings] = useState(null);
-  const [aluminumRate, setAluminumRate] = useState(527.85);
-  const [sparePercentage, setSparePercentage] = useState(1);
-  const [moduleWp, setModuleWp] = useState(710);
+  const [aluminumRate, setAluminumRate] = useState(DEFAULT_ALUMINIUM_RATE_PER_KG);
+  const [sparePercentage, setSparePercentage] = useState(DEFAULT_SPARE_PERCENTAGE);
+  const [moduleWp, setModuleWp] = useState(DEFAULT_MODULE_WP);
   const [scale, setScale] = useState(100); // Scale percentage for zoom
   const [changeLog, setChangeLog] = useState([]);
   const [userNotes, setUserNotes] = useState([]);
@@ -38,9 +43,9 @@ export default function BOMPrintPreview() {
         .then(data => {
           setBomData(data.bomData);
           setPrintSettings(data.printSettings);
-          setAluminumRate(data.aluminumRate || 527.85);
-          setSparePercentage(data.sparePercentage || 1);
-          setModuleWp(data.moduleWp || 710);
+          setAluminumRate(data.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG);
+          setSparePercentage(data.sparePercentage || DEFAULT_SPARE_PERCENTAGE);
+          setModuleWp(data.moduleWp || DEFAULT_MODULE_WP);
           setChangeLog(data.changeLog || []);
           setUserNotes(data.userNotes || []);
 
@@ -75,9 +80,9 @@ export default function BOMPrintPreview() {
     if (location.state?.bomData && location.state?.printSettings) {
       setBomData(location.state.bomData);
       setPrintSettings(location.state.printSettings);
-      setAluminumRate(location.state.aluminumRate || 527.85);
-      setSparePercentage(location.state.sparePercentage || 1);
-      setModuleWp(location.state.moduleWp || 710);
+      setAluminumRate(location.state.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG);
+      setSparePercentage(location.state.sparePercentage || DEFAULT_SPARE_PERCENTAGE);
+      setModuleWp(location.state.moduleWp || DEFAULT_MODULE_WP);
       setChangeLog(location.state.changeLog || []);
       setUserNotes(location.state.userNotes || []);
 

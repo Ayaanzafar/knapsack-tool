@@ -1,6 +1,11 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
+const {
+  DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_MODULE_WP,
+  DEFAULT_SPARE_PERCENTAGE
+} = require('../constants/bomDefaults');
 
 // Temporary storage for BOM data (in production, use Redis or database)
 const tempStorage = new Map();
@@ -411,9 +416,9 @@ exports.exportPdf = async (req, res) => {
         const tempId = storeTempData({
             bomData,
             printSettings,
-            aluminumRate: aluminumRate || 527.85,
-            sparePercentage: sparePercentage || 1,
-            moduleWp: moduleWp || 710,
+            aluminumRate: aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG,
+            sparePercentage: sparePercentage || DEFAULT_SPARE_PERCENTAGE,
+            moduleWp: moduleWp || DEFAULT_MODULE_WP,
             changeLog: changeLog || []
         });
 

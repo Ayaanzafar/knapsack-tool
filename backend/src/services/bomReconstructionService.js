@@ -1,4 +1,10 @@
 const prisma = require('../prismaClient');
+const {
+  DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_MODULE_WP,
+  DEFAULT_SPARE_PERCENTAGE,
+  MM_TO_METERS_DIVISOR
+} = require('../constants/bomDefaults');
 
 /**
  * BOM Reconstruction Service
@@ -18,9 +24,9 @@ class BomReconstructionService {
   async convertToMinimalBOM(fullBomData) {
     // Extract metadata (non-redundant data)
     const bomMetadata = {
-      aluminumRate: fullBomData.aluminumRate || 527.85,
-      sparePercentage: fullBomData.sparePercentage || 1.0,
-      moduleWp: fullBomData.moduleWp || 710,
+      aluminumRate: fullBomData.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG,
+      sparePercentage: fullBomData.sparePercentage || DEFAULT_SPARE_PERCENTAGE,
+      moduleWp: fullBomData.moduleWp || DEFAULT_MODULE_WP,
       tabs: fullBomData.tabs || [],
       panelCounts: fullBomData.panelCounts || {},
       projectInfo: fullBomData.projectInfo || {},
@@ -138,9 +144,9 @@ class BomReconstructionService {
     });
 
     // 3. Rebuild full BOM items with profile data
-    const aluminumRate = bomMetadata.aluminumRate || 527.85;
-    const sparePercentage = bomMetadata.sparePercentage || 1.0;
-    const moduleWp = bomMetadata.moduleWp || 710;
+    const aluminumRate = bomMetadata.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG;
+    const sparePercentage = bomMetadata.sparePercentage || DEFAULT_SPARE_PERCENTAGE;
+    const moduleWp = bomMetadata.moduleWp || DEFAULT_MODULE_WP;
 
     const fullBomItems = bomItems.map((item, index) => {
       // Try to find profile by serial number first, then fallback to formula key
@@ -218,7 +224,7 @@ class BomReconstructionService {
    * @param {number} aluminumRate - Rate per kg for aluminum
    * @returns {object} - { wtPerRm, rm, wt, cost, costPerPiece }
    */
-  calculateWeightAndCost(item, profile, aluminumRate = 527.85) {
+  calculateWeightAndCost(item, profile, aluminumRate = DEFAULT_ALUMINIUM_RATE_PER_KG) {
     const result = {
       wtPerRm: null,
       rm: null,
@@ -253,7 +259,7 @@ class BomReconstructionService {
 
     if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
       result.wtPerRm = parseFloat(profile.designWeight);
-      result.rm = (lengthToUse / 1000) * item.finalTotal;  // Convert mm to meters
+      result.rm = (lengthToUse / MM_TO_METERS_DIVISOR) * item.finalTotal;  // Convert mm to meters
       result.wt = result.rm * result.wtPerRm;
       result.cost = result.wt * effectiveAluminumRate;
     }

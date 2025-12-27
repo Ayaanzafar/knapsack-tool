@@ -4,6 +4,10 @@ import { savedBomAPI, projectAPI } from '../services/api';
 import BOMTable from '../components/BOM/BOMTable';
 import ChangeLogDisplay from '../components/BOM/ChangeLogDisplay';
 import NotesSection from '../components/BOM/NotesSection';
+import {
+  DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_SPARE_PERCENTAGE
+} from '../constants/bomDefaults';
 
 export default function AdminBOMView() {
   const { projectId } = useParams();
@@ -95,8 +99,8 @@ export default function AdminBOMView() {
   const { tabs = [], panelCounts = {}, bomItems = [] } = bomData;
 
   // Get aluminum rate and spare percentage from bomData
-  const aluminumRate = bomData.aluminumRate || 527.85;
-  const sparePercentage = bomData.sparePercentage || 1;
+  const aluminumRate = bomData.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG;
+  const sparePercentage = bomData.sparePercentage || DEFAULT_SPARE_PERCENTAGE;
 
   // Calculate totals
   const totals = bomItems.reduce(

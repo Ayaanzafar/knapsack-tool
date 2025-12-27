@@ -1,5 +1,9 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const {
+  DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_SPARE_PERCENTAGE
+} = require('../src/constants/bomDefaults');
 
 /**
  * Convert old full BOM format to new optimized format
@@ -7,8 +11,8 @@ const prisma = new PrismaClient();
 function convertToMinimalBOM(oldBomData) {
   // Extract metadata
   const bomMetadata = {
-    aluminumRate: oldBomData.aluminumRate || 527.85,
-    sparePercentage: oldBomData.sparePercentage || 1.0,
+    aluminumRate: oldBomData.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG,
+    sparePercentage: oldBomData.sparePercentage || DEFAULT_SPARE_PERCENTAGE,
     tabs: oldBomData.tabs || [],
     panelCounts: oldBomData.panelCounts || {},
     projectInfo: oldBomData.projectInfo || {}
