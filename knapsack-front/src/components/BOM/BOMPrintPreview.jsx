@@ -576,16 +576,14 @@ export default function BOMPrintPreview() {
             </ol>
           </div> */}
 
-          {/* User Notes Section */}
-          {userNotes && userNotes.length > 0 && (
-            <div className="mt-4">
-              <NotesSection
-                userNotes={userNotes}
-                onNotesChange={() => {}}
-                editMode={false}
-              />
-            </div>
-          )}
+          {/* Notes Section (includes default notes + user notes) */}
+          <div className="mt-4">
+            <NotesSection
+              userNotes={userNotes || []}
+              onNotesChange={() => {}}
+              editMode={false}
+            />
+          </div>
 
           {/* Disclaimer/Changelog Section */}
           {printSettings?.includeDisclaimer && changeLog && changeLog.length > 0 && (

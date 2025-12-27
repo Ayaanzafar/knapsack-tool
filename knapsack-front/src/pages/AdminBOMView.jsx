@@ -4,9 +4,11 @@ import { savedBomAPI, projectAPI } from '../services/api';
 import BOMTable from '../components/BOM/BOMTable';
 import ChangeLogDisplay from '../components/BOM/ChangeLogDisplay';
 import NotesSection from '../components/BOM/NotesSection';
+import PrintSettingsModal from '../components/BOM/PrintSettingsModal';
 import {
   DEFAULT_ALUMINIUM_RATE_PER_KG,
-  DEFAULT_SPARE_PERCENTAGE
+  DEFAULT_SPARE_PERCENTAGE,
+  DEFAULT_MODULE_WP
 } from '../constants/bomDefaults';
 
 export default function AdminBOMView() {
@@ -19,6 +21,7 @@ export default function AdminBOMView() {
   const [changeLog, setChangeLog] = useState([]);
   const [userNotes, setUserNotes] = useState([]);
   const [savedBy, setSavedBy] = useState(null);
+  const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
 
   useEffect(() => {
     loadBOM();
@@ -64,6 +67,39 @@ export default function AdminBOMView() {
     navigate('/admin', { state: { activeTab: 'boms' } });
   };
 
+  const handlePrintSettings = (settings, action) => {
+    if (action === 'preview') {
+      navigate('/bom/print-preview', {
+        state: {
+          bomData,
+          printSettings: settings,
+          aluminumRate,
+          sparePercentage,
+          moduleWp,
+          changeLog,
+          userNotes
+        }
+      });
+    } else if (action === 'direct') {
+      navigate('/bom/print-preview', {
+        state: {
+          bomData,
+          printSettings: settings,
+          aluminumRate,
+          sparePercentage,
+          moduleWp,
+          changeLog,
+          userNotes,
+          autoPrint: true
+        }
+      });
+    } else if (action === 'pdf') {
+      // PDF export functionality can be added here if needed
+      console.log('PDF export not implemented yet');
+    }
+    setPrintSettingsModalOpen(false);
+  };
+
   const formatNumber = (num) => {
     if (num === null || num === undefined) return '0';
     return Number(num).toLocaleString('en-IN', { maximumFractionDigits: 2 });
@@ -98,9 +134,10 @@ export default function AdminBOMView() {
 
   const { tabs = [], panelCounts = {}, bomItems = [] } = bomData;
 
-  // Get aluminum rate and spare percentage from bomData
+  // Get aluminum rate, spare percentage, and module Wp from bomData
   const aluminumRate = bomData.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG;
   const sparePercentage = bomData.sparePercentage || DEFAULT_SPARE_PERCENTAGE;
+  const moduleWp = bomData.moduleWp || DEFAULT_MODULE_WP;
 
   // Calculate totals
   const totals = bomItems.reduce(
@@ -246,16 +283,42 @@ export default function AdminBOMView() {
           />
         </div>
 
-        {/* Back Button at Bottom */}
-        <div className="mt-6 text-center">
+        {/* Back and Print Buttons at Bottom */}
+        <div className="mt-6 flex justify-between items-center">
           <button
             onClick={handleBack}
-            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium flex items-center gap-2"
           >
-            ← Back to Admin Panel
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+            </svg>
+            Back to Admin Panel
+          </button>
+
+          <button
+            onClick={() => setPrintSettingsModalOpen(true)}
+            className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
+            </svg>
+            Print BOM
           </button>
         </div>
       </main>
+
+      {/* Print Settings Modal */}
+      <PrintSettingsModal
+        isOpen={printSettingsModalOpen}
+        onClose={() => setPrintSettingsModalOpen(false)}
+        onPrint={handlePrintSettings}
+        bomData={bomData}
+        aluminumRate={aluminumRate}
+        sparePercentage={sparePercentage}
+        moduleWp={moduleWp}
+        changeLog={changeLog}
+        userNotes={userNotes}
+      />
     </div>
   );
 }

@@ -550,7 +550,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                     </div> */}
 
                     {/* User Notes Section */}
-                    {userNotes && userNotes.length > 0 && (
+                    {/* {userNotes && userNotes.length > 0 && ( */}
                       <div className="mb-3" style={{ transform: `scale(${scale / 100})`, transformOrigin: 'top left' }}>
                         <NotesSection
                           userNotes={userNotes}
@@ -558,7 +558,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                           editMode={false}
                         />
                       </div>
-                    )}
+                    {/* )} */}
 
                     {/* Disclaimer/Changelog Section */}
                     {settings.includeDisclaimer && changeLog && changeLog.length > 0 && (
