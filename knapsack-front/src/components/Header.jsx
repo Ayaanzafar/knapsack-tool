@@ -1,5 +1,5 @@
 // src/components/Header.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { exportToFile, DEFAULT_SETTINGS, DEFAULT_LENGTHS } from '../lib/storage';
 import { useAuth } from '../context/AuthContext';
@@ -23,12 +23,34 @@ export default function Header({
   const [tempProjectId, setTempProjectId] = useState(projectId || '');
   const [tempProjectName, setTempProjectName] = useState(projectName || 'Untitled Project');
 
+  const settingsRef = useRef(null);
+  const userMenuRef = useRef(null);
+
   // Sync temp values with props
   useEffect(() => {
     setTempClientName(clientName || '');
     setTempProjectId(projectId || '');
     setTempProjectName(projectName || 'Untitled Project');
   }, [clientName, projectId, projectName]);
+
+  // Handle click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+        setShowSettings(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    if (showSettings || showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showSettings, showUserMenu]);
 
   const handleSaveProjectInfo = () => {
     const trimmedProjectName = tempProjectName.trim();
@@ -122,7 +144,7 @@ export default function Header({
           <div className="h-6 w-px bg-gray-200 mx-1"></div>
 
           {/* User Profile Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={userMenuRef}>
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors border border-gray-200"
@@ -135,7 +157,7 @@ export default function Header({
                 {user?.username || 'User'}
               </span>
             </button>
-            
+
             {showUserMenu && (
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border p-2 z-50 animate-fadeIn">
                 <div className="px-3 py-2 border-b mb-2">
@@ -155,7 +177,7 @@ export default function Header({
             )}
           </div>
 
-          <div className="relative">
+          <div className="relative" ref={settingsRef}>
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
