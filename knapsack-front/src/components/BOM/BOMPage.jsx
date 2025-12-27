@@ -1398,8 +1398,8 @@ export default function BOMPage() {
   const [hasSavedBom, setHasSavedBom] = useState(false);
   const [isSavingSnapshot, setIsSavingSnapshot] = useState(false);
 
-  const showToast = (message) => {
-    setToast({ id: Date.now(), message });
+  const showToast = (message, type = 'info') => {
+    setToast({ id: Date.now(), message, type });
     setTimeout(() => setToast(null), 3500);
   };
 
@@ -1584,7 +1584,7 @@ export default function BOMPage() {
         }
       } catch (error) {
         console.error('Failed to load BOM data:', error);
-        alert('Failed to load BOM. It may have been deleted or an error occurred.');
+        showToast('Failed to load BOM. It may have been deleted or an error occurred.', 'error');
         navigate('/app');
       } finally {
         setLoading(false);
@@ -1953,7 +1953,7 @@ export default function BOMPage() {
   const handleAddRowConfirm = (newItemData) => {
     const profile = profiles.find(p => p.serialNumber === newItemData.profileSerialNumber);
     if (!profile) {
-      alert('Profile not found');
+      showToast('Profile not found', 'error');
       return;
     }
 
@@ -2078,7 +2078,7 @@ export default function BOMPage() {
   const handleSaveChanges = async () => {
     const bomId = location.state?.bomId;
     if (!bomId) {
-      alert('Cannot save changes: BOM ID is missing.');
+      showToast('Cannot save changes: BOM ID is missing.', 'error');
       return;
     }
 
@@ -2102,7 +2102,7 @@ export default function BOMPage() {
         applyFreshBom(freshData);
       }
 
-      alert('Changes saved successfully!');
+      showToast('Changes saved successfully!', 'success');
     } catch (error) {
       console.error('Failed to save changes:', error);
 
@@ -2117,7 +2117,7 @@ export default function BOMPage() {
         changeTracker.stopTracking();
         setEditMode(false);
       } else {
-        alert(`Failed to save changes: ${error.message}`);
+        showToast(`Failed to save changes: ${error.message}`, 'error');
       }
     } finally {
       setIsSaving(false);
@@ -2220,7 +2220,7 @@ export default function BOMPage() {
         if (error?.code === 'FORBIDDEN_FIELD') {
           showToast(`${error.field || 'Field'}: ${error.data?.message || error.message}`);
         } else {
-          alert('Warning: Failed to update Master Database. Project-specific changes will still be saved.');
+          showToast('Warning: Failed to update Master Database. Project-specific changes will still be saved.', 'warning');
         }
       }
     }
@@ -2271,7 +2271,7 @@ export default function BOMPage() {
           setDefaultNotesChanges([]);
         } catch (error) {
           console.error('Failed to update global default notes:', error);
-          alert('Warning: Failed to update global default notes. BOM-specific changes will still be saved.');
+          showToast('Warning: Failed to update global default notes. BOM-specific changes will still be saved.', 'warning');
         }
       }
       // If 'bom-only', custom default notes will be saved with the BOM snapshot (handled in saveBomSnapshot)
@@ -2363,12 +2363,12 @@ export default function BOMPage() {
       document.body.removeChild(form);
 
       setTimeout(() => {
-        alert('PDF export initiated! Check your browser downloads or new tab.');
+        showToast('PDF export initiated! Check your browser downloads or new tab.', 'success');
       }, 500);
 
     } catch (error) {
       console.error('Export PDF Failed:', error);
-      alert('Failed to generate PDF. Please try again.');
+      showToast('Failed to generate PDF. Please try again.', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -2418,7 +2418,7 @@ export default function BOMPage() {
         isNewBomCreated = true;
       } catch (error) {
         console.error('Failed to create BOM entry:', error);
-        alert('Failed to create BOM entry for saving changes.');
+        showToast('Failed to create BOM entry for saving changes.', 'error');
         return { ok: false };
       }
     }
@@ -2456,7 +2456,7 @@ export default function BOMPage() {
         });
       }
 
-      alert('Changes saved successfully!');
+      showToast('Changes saved successfully!', 'success');
       return { ok: true, bomId: bomId };
     } catch (error) {
       console.error('Failed to save changes:', error);
@@ -2474,7 +2474,7 @@ export default function BOMPage() {
         setReviewModalOpen(false);
         setEditMode(false);
       } else {
-        alert(`Failed to save changes: ${error.message}`);
+        showToast(`Failed to save changes: ${error.message}`, 'error');
       }
 
       return { ok: false, code: error?.code, field: error?.field };
@@ -2934,6 +2934,7 @@ export default function BOMPage() {
         originalBomData={originalBomData}
         onCancel={() => setReviewModalOpen(false)}
         onConfirm={handleReviewConfirm}
+        showToast={showToast}
       />
 
       <PrintSettingsModal
@@ -2950,7 +2951,12 @@ export default function BOMPage() {
 
       {toast && (
         <div className="fixed bottom-4 right-4 z-50">
-          <div className="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg">
+          <div className={`text-white text-sm px-4 py-2 rounded-lg shadow-lg ${
+            toast.type === 'success' ? 'bg-green-600' :
+            toast.type === 'error' ? 'bg-red-600' :
+            toast.type === 'warning' ? 'bg-yellow-600' :
+            'bg-gray-900'
+          }`}>
             {toast.message}
           </div>
         </div>

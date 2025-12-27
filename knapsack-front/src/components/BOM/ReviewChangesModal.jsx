@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
-export default function ReviewChangesModal({ isOpen, changes, defaultNotesChanges = [], bomData, originalBomData, onCancel, onConfirm }) {
+export default function ReviewChangesModal({ isOpen, changes, defaultNotesChanges = [], bomData, originalBomData, onCancel, onConfirm, showToast }) {
   const { user } = useAuth();
   const [reasons, setReasons] = useState({});
   const [updateMasterMap, setUpdateMasterMap] = useState({});
@@ -82,7 +82,7 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
 
   const handleConfirm = () => {
     if (!isFormValid()) {
-      alert('Please provide a reason for every change.');
+      showToast?.('Please provide a reason for every change.', 'warning');
       return;
     }
 

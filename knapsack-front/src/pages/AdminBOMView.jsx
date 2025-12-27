@@ -26,10 +26,16 @@ export default function AdminBOMView() {
   const [savedBy, setSavedBy] = useState(null);
   const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
   const [copying, setCopying] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     loadBOM();
   }, [projectId]);
+
+  const showToast = (message, type = 'info') => {
+    setToast({ id: Date.now(), message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   const loadBOM = async () => {
     try {
@@ -106,7 +112,7 @@ export default function AdminBOMView() {
 
   const handleCopyBOM = async () => {
     if (!user) {
-      alert('You must be logged in to copy this BOM');
+      showToast('You must be logged in to copy this BOM', 'error');
       return;
     }
 
@@ -225,7 +231,7 @@ export default function AdminBOMView() {
 
     } catch (error) {
       console.error('Failed to copy BOM:', error);
-      alert(`Failed to copy BOM: ${error.message || 'Please try again.'}`);
+      showToast(`Failed to copy BOM: ${error.message || 'Please try again.'}`, 'error');
     } finally {
       setCopying(false);
     }
@@ -462,6 +468,20 @@ export default function AdminBOMView() {
         changeLog={changeLog}
         userNotes={userNotes}
       />
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className={`text-white text-sm px-4 py-2 rounded-lg shadow-lg ${
+            toast.type === 'success' ? 'bg-green-600' :
+            toast.type === 'error' ? 'bg-red-600' :
+            toast.type === 'warning' ? 'bg-yellow-600' :
+            'bg-gray-900'
+          }`}>
+            {toast.message}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
