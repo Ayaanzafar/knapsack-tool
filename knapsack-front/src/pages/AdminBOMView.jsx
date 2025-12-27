@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { savedBomAPI, projectAPI } from '../services/api';
+import { savedBomAPI, projectAPI, bomAPI, tabAPI, rowAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { setCurrentProjectId } from '../lib/tabStorageAPI';
 import BOMTable from '../components/BOM/BOMTable';
 import ChangeLogDisplay from '../components/BOM/ChangeLogDisplay';
 import NotesSection from '../components/BOM/NotesSection';
@@ -14,6 +16,7 @@ import {
 export default function AdminBOMView() {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth(); // Get currently logged-in admin
   const [bomData, setBomData] = useState(null);
   const [projectInfo, setProjectInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,6 +25,7 @@ export default function AdminBOMView() {
   const [userNotes, setUserNotes] = useState([]);
   const [savedBy, setSavedBy] = useState(null);
   const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
+  const [copying, setCopying] = useState(false);
 
   useEffect(() => {
     loadBOM();
@@ -98,6 +102,133 @@ export default function AdminBOMView() {
       console.log('PDF export not implemented yet');
     }
     setPrintSettingsModalOpen(false);
+  };
+
+  const handleCopyBOM = async () => {
+    if (!user) {
+      alert('You must be logged in to copy this BOM');
+      return;
+    }
+
+    if (!confirm('This will create a copy of this BOM under your account. Do you want to continue?')) {
+      return;
+    }
+
+    try {
+      setCopying(true);
+
+      // Step 1: Get the full original project with all tabs and rows
+      const originalProjectFull = await projectAPI.getWithDetails(projectId);
+      console.log('Original project with tabs and rows:', originalProjectFull);
+
+      // Step 2: Create a new project under current admin's account
+      const newProject = await projectAPI.create({
+        name: `${projectInfo?.name || 'Copied Project'} (Copy)`,
+        clientName: projectInfo?.clientName || bomData?.projectInfo?.clientName || '',
+        projectId: projectInfo?.projectId || bomData?.projectInfo?.projectId || '',
+        longRailVariation: projectInfo?.longRailVariation || bomData?.projectInfo?.longRailVariation || 'U Cleat Long Rail',
+        userId: user.id // Current admin's ID
+      });
+
+      console.log('Created new project:', newProject);
+
+      // Step 3: Copy all tabs and their rows
+      if (originalProjectFull.tabs && originalProjectFull.tabs.length > 0) {
+        for (const originalTab of originalProjectFull.tabs) {
+          // Create new tab with all settings
+          const newTab = await tabAPI.create(newProject.id, {
+            name: originalTab.name,
+            settings: {
+              moduleLength: originalTab.moduleLength,
+              moduleWidth: originalTab.moduleWidth,
+              frameThickness: originalTab.frameThickness,
+              midClamp: originalTab.midClamp,
+              endClampWidth: originalTab.endClampWidth,
+              buffer: originalTab.buffer,
+              purlinDistance: originalTab.purlinDistance,
+              railsPerSide: originalTab.railsPerSide,
+              lengthsInput: originalTab.lengthsInput,
+              enabledLengths: originalTab.enabledLengths,
+              maxPieces: originalTab.maxPieces,
+              maxWastePct: originalTab.maxWastePct,
+              alphaJoint: originalTab.alphaJoint,
+              betaSmall: originalTab.betaSmall,
+              allowUndershootPct: originalTab.allowUndershootPct,
+              gammaShort: originalTab.gammaShort,
+              costPerMm: originalTab.costPerMm,
+              costPerJointSet: originalTab.costPerJointSet,
+              joinerLength: originalTab.joinerLength,
+              priority: originalTab.priority,
+              userMode: originalTab.userMode,
+              enableSB2: originalTab.enableSb2
+            }
+          });
+
+          console.log('Created new tab:', newTab);
+
+          // Copy all rows for this tab
+          if (originalTab.rows && originalTab.rows.length > 0) {
+            for (const originalRow of originalTab.rows) {
+              await rowAPI.create(newTab.id, {
+                rowNumber: originalRow.rowNumber,
+                modules: originalRow.modules,
+                quantity: originalRow.quantity,
+                supportBase1: originalRow.supportBase1,
+                supportBase2: originalRow.supportBase2
+              });
+            }
+            console.log(`Copied ${originalTab.rows.length} rows to new tab`);
+          }
+        }
+      }
+
+      // Step 4: Copy the BOM data with all settings
+      const copiedBomData = {
+        ...bomData,
+        projectInfo: {
+          ...bomData.projectInfo,
+          projectName: `${projectInfo?.name || 'Copied Project'} (Copy)`,
+          generatedAt: new Date().toISOString()
+        },
+        aluminumRate: aluminumRate,
+        sparePercentage: sparePercentage,
+        moduleWp: moduleWp
+      };
+
+      // Step 5: Save the copied BOM to the new project
+      const savedBOM = await bomAPI.saveBOM(newProject.id, copiedBomData);
+      console.log('Saved BOM to new project:', savedBOM);
+
+      // Step 6: Save the BOM snapshot with changeLog and userNotes
+      await savedBomAPI.saveBomSnapshot(
+        newProject.id,
+        copiedBomData,
+        userNotes || [],
+        changeLog || []
+      );
+
+      console.log('Saved BOM snapshot with notes and changelog');
+
+      // Step 7: Set the current project ID in storage (so "back" button works correctly)
+      setCurrentProjectId(newProject.id);
+
+      // Step 8: Navigate to BOM page with the copied BOM - load from savedBomAPI
+      navigate('/bom', {
+        state: {
+          bomData: copiedBomData,
+          projectId: newProject.id,
+          savedBomId: null,
+          changeLog: changeLog || [],
+          userNotes: userNotes || []
+        }
+      });
+
+    } catch (error) {
+      console.error('Failed to copy BOM:', error);
+      alert(`Failed to copy BOM: ${error.message || 'Please try again.'}`);
+    } finally {
+      setCopying(false);
+    }
   };
 
   const formatNumber = (num) => {
@@ -283,7 +414,7 @@ export default function AdminBOMView() {
           />
         </div>
 
-        {/* Back and Print Buttons at Bottom */}
+        {/* Back, Copy, and Print Buttons at Bottom */}
         <div className="mt-6 flex justify-between items-center">
           <button
             onClick={handleBack}
@@ -293,6 +424,18 @@ export default function AdminBOMView() {
               <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
             </svg>
             Back to Admin Panel
+          </button>
+
+          <button
+            onClick={handleCopyBOM}
+            disabled={copying}
+            className={`px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium flex items-center gap-2 ${copying ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+              <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+            </svg>
+            {copying ? 'Copying...' : 'Copy this BOM'}
           </button>
 
           <button
