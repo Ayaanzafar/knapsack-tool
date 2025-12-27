@@ -196,18 +196,42 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
 
               {defaultNotesChanges.map((change, index) => (
                 <div key={index} className="mb-3 pb-3 border-b border-yellow-200 last:border-0">
-                  <div className="text-xs text-gray-500 mb-1">Note {change.noteOrder}</div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs flex-1">
-                      {change.oldText}
-                    </span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                    <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs flex-1">
-                      {change.newText}
-                    </span>
+                  <div className="text-xs text-gray-500 mb-1 flex items-center gap-2">
+                    <span>Note {change.noteOrder}</span>
+                    {change.type === 'ADD' && <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-semibold">NEW</span>}
+                    {change.type === 'DELETE' && <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-semibold">DELETED</span>}
+                    {change.type === 'EDIT' && <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-semibold">EDITED</span>}
                   </div>
+
+                  {change.type === 'ADD' && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs flex-1">
+                        {change.newText}
+                      </span>
+                    </div>
+                  )}
+
+                  {change.type === 'DELETE' && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs flex-1 line-through">
+                        {change.oldText}
+                      </span>
+                    </div>
+                  )}
+
+                  {change.type === 'EDIT' && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs flex-1">
+                        {change.oldText}
+                      </span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                      <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs flex-1">
+                        {change.newText}
+                      </span>
+                    </div>
+                  )}
                 </div>
               ))}
 

@@ -2231,17 +2231,42 @@ export default function BOMPage() {
       if (defaultNotesUpdateChoice === 'global') {
         // Update global default notes
         try {
-          const notesToUpdate = defaultNotesChanges.map(change => ({
-            noteOrder: change.noteOrder,
-            noteText: change.newText
-          }));
-          await defaultNotesAPI.updateNotes(notesToUpdate);
-          console.log('Updated global default notes:', notesToUpdate.length);
-          showToast('Default notes updated globally for all future BOMs');
+          // Separate changes by type
+          const additions = defaultNotesChanges.filter(c => c.type === 'ADD');
+          const edits = defaultNotesChanges.filter(c => c.type === 'EDIT');
+          const deletions = defaultNotesChanges.filter(c => c.type === 'DELETE');
 
-          // Reset baseline immediately after global update
-          if (window.resetDefaultNotesBaseline) {
-            window.resetDefaultNotesBaseline();
+          // Sort deletions in descending order (highest noteOrder first)
+          // This prevents renumbering issues when deleting multiple notes
+          deletions.sort((a, b) => b.noteOrder - a.noteOrder);
+
+          // Process deletions first (to avoid conflicts)
+          for (const deletion of deletions) {
+            await defaultNotesAPI.deleteNote(deletion.noteOrder);
+            console.log('Deleted default note:', deletion.noteOrder);
+          }
+
+          // Process edits
+          if (edits.length > 0) {
+            const notesToUpdate = edits.map(change => ({
+              noteOrder: change.noteOrder,
+              noteText: change.newText
+            }));
+            await defaultNotesAPI.updateNotes(notesToUpdate);
+            console.log('Updated global default notes:', notesToUpdate.length);
+          }
+
+          // Process additions
+          for (const addition of additions) {
+            await defaultNotesAPI.addNote(addition.newText);
+            console.log('Added default note:', addition.newText);
+          }
+
+          showToast(`Default notes updated globally: ${additions.length} added, ${edits.length} edited, ${deletions.length} deleted`);
+
+          // Reload notes from database to get correct noteOrders after add/delete
+          if (window.reloadDefaultNotesFromDB) {
+            await window.reloadDefaultNotesFromDB();
           }
           setDefaultNotesChanges([]);
         } catch (error) {
@@ -2277,11 +2302,10 @@ export default function BOMPage() {
 
     // Store custom default notes if choice is 'bom-only'
     if (defaultNotesChanges && defaultNotesChanges.length > 0 && defaultNotesUpdateChoice === 'bom-only') {
-      // This will be passed to saveBomSnapshot
-      bomData.customDefaultNotes = defaultNotesChanges.map(change => ({
-        noteOrder: change.noteOrder,
-        noteText: change.newText
-      }));
+      // Store the COMPLETE FINAL STATE of default notes for this BOM
+      if (window.currentDefaultNotes) {
+        bomData.customDefaultNotes = window.currentDefaultNotes;
+      }
     }
 
     const result = await saveWithExplicitData(bomData, updatedChangeLog);

@@ -51,19 +51,48 @@ export default function NotesSection({ userNotes, onNotesChange, editMode, onDef
     if (onDefaultNotesChange && !loadingDefaults) {
       const changes = getDefaultNotesChanges();
       onDefaultNotesChange(changes);
+
+      // Also expose current notes for BOM-only save
+      window.currentDefaultNotes = defaultNotes;
     }
   }, [defaultNotes, loadingDefaults]);
 
   const getDefaultNotesChanges = () => {
     const changes = [];
 
+    // Check for EDITED notes
     defaultNotes.forEach(note => {
       const original = originalDefaultNotes.find(n => n.noteOrder === note.noteOrder);
       if (original && original.noteText !== note.noteText) {
         changes.push({
+          type: 'EDIT',
           noteOrder: note.noteOrder,
           oldText: original.noteText,
           newText: note.noteText
+        });
+      }
+    });
+
+    // Check for ADDED notes (exist in current but not in original)
+    defaultNotes.forEach(note => {
+      const original = originalDefaultNotes.find(n => n.noteOrder === note.noteOrder);
+      if (!original) {
+        changes.push({
+          type: 'ADD',
+          noteOrder: note.noteOrder,
+          newText: note.noteText
+        });
+      }
+    });
+
+    // Check for DELETED notes (exist in original but not in current)
+    originalDefaultNotes.forEach(original => {
+      const current = defaultNotes.find(n => n.noteOrder === original.noteOrder);
+      if (!current) {
+        changes.push({
+          type: 'DELETE',
+          noteOrder: original.noteOrder,
+          oldText: original.noteText
         });
       }
     });
@@ -184,11 +213,18 @@ export default function NotesSection({ userNotes, onNotesChange, editMode, onDef
     console.log('Default notes baseline reset after save');
   };
 
-  // Expose reset function to parent via callback
+  // Function to reload notes from database (exposed to parent)
+  const reloadDefaultNotesFromDB = async () => {
+    console.log('Reloading default notes from database...');
+    await loadDefaultNotes();
+  };
+
+  // Expose functions to parent via callback
   useEffect(() => {
     if (onDefaultNotesChange && typeof onDefaultNotesChange === 'function') {
-      // Store reset function in window for parent to call (temporary approach)
+      // Store functions in window for parent to call
       window.resetDefaultNotesBaseline = resetDefaultNotesBaseline;
+      window.reloadDefaultNotesFromDB = reloadDefaultNotesFromDB;
     }
   }, [defaultNotes]);
 
