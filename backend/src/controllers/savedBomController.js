@@ -5,12 +5,13 @@ class SavedBomController {
   async saveBomSnapshot(req, res) {
     try {
       const { projectId } = req.params;
-      const { bomData, userNotes, changeLog } = req.body;
+      const { bomData, userNotes, changeLog, customDefaultNotes } = req.body;
       const userId = req.user.id;
 
       console.log('saveBomSnapshot - Received userNotes:', userNotes);
       console.log('saveBomSnapshot - userNotes type:', typeof userNotes);
       console.log('saveBomSnapshot - userNotes length:', Array.isArray(userNotes) ? userNotes.length : 'N/A');
+      console.log('saveBomSnapshot - customDefaultNotes:', customDefaultNotes);
 
       if (!bomData) {
         return res.status(400).json({ error: 'bomData is required' });
@@ -20,6 +21,7 @@ class SavedBomController {
         bomData,
         userNotes,
         changeLog,
+        customDefaultNotes,
         userId
       });
 

@@ -189,18 +189,30 @@ model GeneratedBom {
 
 // Saved BOMs Table - Stores user-saved BOM snapshots (one per project)
 model SavedBom {
-  id          Int      @id @default(autoincrement())
-  projectId   Int      @unique @map("project_id")
-  bomData     Json     @map("bom_data")           // Complete BOM snapshot
-  userNotes   Json?    @map("user_notes")         // User notes at save time
-  changeLog   Json?    @map("change_log")         // Change log at save time
-  createdBy   Int      @map("created_by")         // User who saved
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id                 Int      @id @default(autoincrement())
+  projectId          Int      @unique @map("project_id")
+  bomData            Json     @map("bom_data")                  // Complete BOM snapshot
+  userNotes          Json?    @map("user_notes")                // User notes at save time
+  changeLog          Json?    @map("change_log")                // Change log at save time
+  customDefaultNotes Json?    @map("custom_default_notes")      // Custom default notes for this BOM (if different from global)
+  createdBy          Int      @map("created_by")                // User who saved
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [createdBy], references: [id])
 
   @@index([projectId])
   @@map("saved_boms")
+}
+
+// Default Notes Table - Stores global default notes for all BOMs
+model DefaultNote {
+  id        Int      @id @default(autoincrement())
+  noteOrder Int      @unique @map("note_order")  // Order of note (1, 2, 3)
+  noteText  String   @map("note_text") @db.Text  // The actual note text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("default_notes")
 }

@@ -11,6 +11,7 @@ const tabRoutes = require('./routes/tabRoutes');
 const rowRoutes = require('./routes/rowRoutes');
 const bomRoutes = require('./routes/bomRoutes');
 const savedBomRoutes = require('./routes/savedBomRoutes');
+const defaultNotesRoutes = require('./routes/defaultNotesRoutes');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -52,6 +53,7 @@ app.use('/api/tabs', tabRoutes);
 app.use('/api/rows', rowRoutes);
 app.use('/api/bom', bomRoutes);
 app.use('/api/saved-boms', savedBomRoutes);
+app.use('/api/default-notes', defaultNotesRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

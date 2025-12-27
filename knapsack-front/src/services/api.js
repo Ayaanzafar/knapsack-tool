@@ -357,11 +357,12 @@ export const bomAPI = {
 // Saved BOM API
 export const savedBomAPI = {
   // Save BOM snapshot
-  saveBomSnapshot: async (projectId, bomData, userNotes, changeLog) => {
+  saveBomSnapshot: async (projectId, bomData, userNotes, changeLog, customDefaultNotes = null) => {
     const response = await apiClient.post(`/saved-boms/project/${projectId}`, {
       bomData,
       userNotes,
-      changeLog
+      changeLog,
+      customDefaultNotes
     });
     return response.data;
   },
@@ -387,6 +388,42 @@ export const savedBomAPI = {
   // Delete saved BOM
   deleteSavedBom: async (projectId) => {
     const response = await apiClient.delete(`/saved-boms/project/${projectId}`);
+    return response.data;
+  },
+};
+
+// ====================
+// Default Notes API
+// ====================
+
+export const defaultNotesAPI = {
+  // Get all default notes
+  getAll: async () => {
+    const response = await apiClient.get('/default-notes');
+    return response.data;
+  },
+
+  // Add a new default note
+  addNote: async (noteText) => {
+    const response = await apiClient.post('/default-notes', { noteText });
+    return response.data;
+  },
+
+  // Update a specific default note
+  updateNote: async (noteOrder, noteText) => {
+    const response = await apiClient.put(`/default-notes/${noteOrder}`, { noteText });
+    return response.data;
+  },
+
+  // Update multiple default notes
+  updateNotes: async (notes) => {
+    const response = await apiClient.put('/default-notes', { notes });
+    return response.data;
+  },
+
+  // Delete a default note
+  deleteNote: async (noteOrder) => {
+    const response = await apiClient.delete(`/default-notes/${noteOrder}`);
     return response.data;
   },
 };

@@ -1346,7 +1346,7 @@ import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
 import NotesSection from './NotesSection';
 import { API_URL } from '../../services/config';
-import { bomAPI, savedBomAPI } from '../../services/api';
+import { bomAPI, savedBomAPI, defaultNotesAPI } from '../../services/api';
 import axios from 'axios';
 import { arrayMove } from '@dnd-kit/sortable';
 import * as changeTracker from '../../lib/changeTracker';
@@ -1392,6 +1392,7 @@ export default function BOMPage() {
 
   const [userNotes, setUserNotes] = useState([]);
   const [originalUserNotes, setOriginalUserNotes] = useState([]);
+  const [defaultNotesChanges, setDefaultNotesChanges] = useState([]);
 
   // Saved BOM states
   const [hasSavedBom, setHasSavedBom] = useState(false);
@@ -2156,7 +2157,8 @@ export default function BOMPage() {
 
     setIsSavingSnapshot(true);
     try {
-      await savedBomAPI.saveBomSnapshot(projectId, bomData, userNotes, changeLog);
+      const customDefaultNotes = bomData.customDefaultNotes || null;
+      await savedBomAPI.saveBomSnapshot(projectId, bomData, userNotes, changeLog, customDefaultNotes);
       setHasSavedBom(true);
       showToast('✅ BOM snapshot saved successfully!');
     } catch (error) {
@@ -2175,19 +2177,23 @@ export default function BOMPage() {
     // Check if notes have changed
     const notesChanged = JSON.stringify(userNotes) !== JSON.stringify(originalUserNotes);
 
+    // Check if default notes have changed
+    const hasDefaultNotesChanges = defaultNotesChanges && defaultNotesChanges.length > 0;
+
     const hasBomChanges = changes.length > 0 || additions.length > 0 || deletions.length > 0;
 
     console.log('Done Editing - Notes changed:', notesChanged); // Debug log
     console.log('Current notes:', userNotes); // Debug log
     console.log('Original notes:', originalUserNotes); // Debug log
     console.log('BOM changes:', hasBomChanges); // Debug log
+    console.log('Default notes changes:', hasDefaultNotesChanges, defaultNotesChanges); // Debug log
 
-    if (hasBomChanges) {
-      // BOM changes exist - show review modal
+    if (hasBomChanges || hasDefaultNotesChanges) {
+      // BOM changes OR default notes changes exist - show review modal
       setReviewModalOpen(true);
     } else if (notesChanged) {
-      // Only notes changed - save directly without review modal
-      console.log('Saving notes only...'); // Debug log
+      // Only user notes changed - save directly without review modal
+      console.log('Saving user notes only...'); // Debug log
       await saveWithExplicitData(bomData, changeLog);
       setEditMode(false);
       setOriginalUserNotes([...userNotes]); // Update original notes after save
@@ -2200,7 +2206,7 @@ export default function BOMPage() {
     }
   };
 
-  const handleReviewConfirm = async (changesWithReasons) => {
+  const handleReviewConfirm = async (changesWithReasons, defaultNotesData = {}) => {
     const masterUpdates = changesWithReasons.filter(c => c.updateMaster && c.profileSerialNumber);
 
     if (masterUpdates.length > 0) {
@@ -2217,6 +2223,33 @@ export default function BOMPage() {
           alert('Warning: Failed to update Master Database. Project-specific changes will still be saved.');
         }
       }
+    }
+
+    // Handle default notes changes
+    const { defaultNotesChanges, defaultNotesUpdateChoice } = defaultNotesData;
+    if (defaultNotesChanges && defaultNotesChanges.length > 0 && defaultNotesUpdateChoice) {
+      if (defaultNotesUpdateChoice === 'global') {
+        // Update global default notes
+        try {
+          const notesToUpdate = defaultNotesChanges.map(change => ({
+            noteOrder: change.noteOrder,
+            noteText: change.newText
+          }));
+          await defaultNotesAPI.updateNotes(notesToUpdate);
+          console.log('Updated global default notes:', notesToUpdate.length);
+          showToast('Default notes updated globally for all future BOMs');
+
+          // Reset baseline immediately after global update
+          if (window.resetDefaultNotesBaseline) {
+            window.resetDefaultNotesBaseline();
+          }
+          setDefaultNotesChanges([]);
+        } catch (error) {
+          console.error('Failed to update global default notes:', error);
+          alert('Warning: Failed to update global default notes. BOM-specific changes will still be saved.');
+        }
+      }
+      // If 'bom-only', custom default notes will be saved with the BOM snapshot (handled in saveBomSnapshot)
     }
 
     const newLogEntries = changesWithReasons.map(change => {
@@ -2242,11 +2275,29 @@ export default function BOMPage() {
     const updatedChangeLog = [...changeLog, ...newLogEntries];
     setChangeLog(updatedChangeLog);
 
+    // Store custom default notes if choice is 'bom-only'
+    if (defaultNotesChanges && defaultNotesChanges.length > 0 && defaultNotesUpdateChoice === 'bom-only') {
+      // This will be passed to saveBomSnapshot
+      bomData.customDefaultNotes = defaultNotesChanges.map(change => ({
+        noteOrder: change.noteOrder,
+        noteText: change.newText
+      }));
+    }
+
     const result = await saveWithExplicitData(bomData, updatedChangeLog);
     if (result?.ok) {
       setReviewModalOpen(false);
       setEditMode(false);
       setOriginalUserNotes([...userNotes]); // Update original notes after save
+
+      // Reset default notes baseline after save (only if bom-only, global already reset above)
+      if (defaultNotesUpdateChoice !== 'global') {
+        if (window.resetDefaultNotesBaseline) {
+          window.resetDefaultNotesBaseline();
+        }
+        setDefaultNotesChanges([]);
+      }
+
       changeTracker.stopTracking();
     }
   };
@@ -2825,6 +2876,7 @@ export default function BOMPage() {
               userNotes={userNotes}
               onNotesChange={handleNotesChange}
               editMode={editMode}
+              onDefaultNotesChange={setDefaultNotesChanges}
             />
           </div>
         </div>
@@ -2853,6 +2905,7 @@ export default function BOMPage() {
           additions: changeTracker.getAdditions(),
           deletions: changeTracker.getDeletions(),
         }}
+        defaultNotesChanges={defaultNotesChanges}
         bomData={bomData}
         originalBomData={originalBomData}
         onCancel={() => setReviewModalOpen(false)}

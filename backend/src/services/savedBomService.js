@@ -3,7 +3,7 @@ const prisma = require('../prismaClient');
 class SavedBomService {
   // Save or update BOM snapshot for a project
   async saveBomSnapshot(projectId, data) {
-    const { bomData, userNotes, changeLog, userId } = data;
+    const { bomData, userNotes, changeLog, customDefaultNotes, userId } = data;
 
     // Check if saved BOM already exists for this project
     const existing = await prisma.savedBom.findUnique({
@@ -18,6 +18,7 @@ class SavedBomService {
           bomData,
           userNotes: userNotes || null,
           changeLog: changeLog || null,
+          customDefaultNotes: customDefaultNotes || null,
           createdBy: userId,
           updatedAt: new Date()
         }
@@ -30,6 +31,7 @@ class SavedBomService {
           bomData,
           userNotes: userNotes || null,
           changeLog: changeLog || null,
+          customDefaultNotes: customDefaultNotes || null,
           createdBy: userId
         }
       });

@@ -1,18 +1,75 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { defaultNotesAPI } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
-export default function NotesSection({ userNotes, onNotesChange, editMode }) {
+export default function NotesSection({ userNotes, onNotesChange, editMode, onDefaultNotesChange }) {
+  const { user } = useAuth();
+  const [defaultNotes, setDefaultNotes] = useState([]);
+  const [originalDefaultNotes, setOriginalDefaultNotes] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newNoteText, setNewNoteText] = useState('');
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [editText, setEditText] = useState('');
+  const [editingDefaultId, setEditingDefaultId] = useState(null);
+  const [editDefaultText, setEditDefaultText] = useState('');
+  const [isAddingDefault, setIsAddingDefault] = useState(false);
+  const [newDefaultText, setNewDefaultText] = useState('');
+  const [loadingDefaults, setLoadingDefaults] = useState(true);
 
-  const defaultNotes = [
-    'Cut Length of Long Rails subject to change during detailing based on availability.',
-    'For all Roofs purlins are assumed to be at 1300mm where details of existing purlins are not shown in layout shared by client.',
-    'Length of Long Rails subject to change based on actual purlin locations at site to fix the Long rail only on purlin. If any extra length of rails are required, they shall be charged extra.',
-    'For Roofs with purlin span more than 1.7m, 2 Long Rails + 1 Mini Rail per each side of panel are considered.',
-    'Purlin Details of sheds T10, T11, T14, T15 are not mentioned in report. They are assumed to be 1.5m. If the actual span is more than 1.7m, an extra Mini rail must be considered additionally (at extra cost).',
-  ];
+  const isManager = user?.role === 'MANAGER';
+
+  // Load default notes from database
+  useEffect(() => {
+    loadDefaultNotes();
+  }, []);
+
+  const loadDefaultNotes = async () => {
+    try {
+      setLoadingDefaults(true);
+      const notes = await defaultNotesAPI.getAll();
+      setDefaultNotes(notes);
+      setOriginalDefaultNotes(JSON.parse(JSON.stringify(notes)));
+    } catch (error) {
+      console.error('Failed to load default notes:', error);
+      // Fallback to hardcoded if API fails
+      const fallbackNotes = [
+        { noteOrder: 1, noteText: 'Cut Length of Long Rails subject to change during detailing based on availability.' },
+        { noteOrder: 2, noteText: 'For all Roofs purlins are assumed to be at 1300mm where details of existing purlins are not shown in layout shared by client.' },
+        { noteOrder: 3, noteText: 'Length of Long Rails subject to change based on actual purlin locations at site to fix the Long rail only on purlin. If any extra length of rails are required, they shall be charged extra.' },
+        { noteOrder: 4, noteText: 'For Roofs with purlin span more than 1.7m, 2 Long Rails + 1 Mini Rail per each side of panel are considered.' },
+        { noteOrder: 5, noteText: 'Purlin Details of sheds T10, T11, T14, T15 are not mentioned in report. They are assumed to be 1.5m. If the actual span is more than 1.7m, an extra Mini rail must be considered additionally (at extra cost).' },
+      ];
+      setDefaultNotes(fallbackNotes);
+      setOriginalDefaultNotes(JSON.parse(JSON.stringify(fallbackNotes)));
+    } finally {
+      setLoadingDefaults(false);
+    }
+  };
+
+  // Track changes to default notes
+  useEffect(() => {
+    if (onDefaultNotesChange && !loadingDefaults) {
+      const changes = getDefaultNotesChanges();
+      onDefaultNotesChange(changes);
+    }
+  }, [defaultNotes, loadingDefaults]);
+
+  const getDefaultNotesChanges = () => {
+    const changes = [];
+
+    defaultNotes.forEach(note => {
+      const original = originalDefaultNotes.find(n => n.noteOrder === note.noteOrder);
+      if (original && original.noteText !== note.noteText) {
+        changes.push({
+          noteOrder: note.noteOrder,
+          oldText: original.noteText,
+          newText: note.noteText
+        });
+      }
+    });
+
+    return changes;
+  };
 
   const handleAddNote = () => {
     if (newNoteText.trim()) {
@@ -66,16 +123,207 @@ export default function NotesSection({ userNotes, onNotesChange, editMode }) {
     setNewNoteText('');
   };
 
+  // Default notes handlers
+  const handleEditDefaultNote = (noteOrder) => {
+    const note = defaultNotes.find(n => n.noteOrder === noteOrder);
+    if (note) {
+      setEditingDefaultId(noteOrder);
+      setEditDefaultText(note.noteText);
+    }
+  };
+
+  const handleSaveDefaultEdit = () => {
+    if (editDefaultText.trim()) {
+      const updatedNotes = defaultNotes.map(note =>
+        note.noteOrder === editingDefaultId
+          ? { ...note, noteText: editDefaultText.trim() }
+          : note
+      );
+      setDefaultNotes(updatedNotes);
+      setEditingDefaultId(null);
+      setEditDefaultText('');
+    }
+  };
+
+  const handleCancelDefaultEdit = () => {
+    setEditingDefaultId(null);
+    setEditDefaultText('');
+  };
+
+  const handleDeleteDefaultNote = (noteOrder) => {
+    if (window.confirm('Are you sure you want to delete this default note? This will be saved when you save the BOM.')) {
+      const updatedNotes = defaultNotes
+        .filter(note => note.noteOrder !== noteOrder)
+        .map((note, index) => ({ ...note, noteOrder: index + 1 })); // Renumber
+      setDefaultNotes(updatedNotes);
+    }
+  };
+
+  const handleAddDefaultNote = () => {
+    if (newDefaultText.trim()) {
+      const maxOrder = defaultNotes.length > 0 ? Math.max(...defaultNotes.map(n => n.noteOrder)) : 0;
+      const newNote = {
+        noteOrder: maxOrder + 1,
+        noteText: newDefaultText.trim(),
+        isNew: true
+      };
+      setDefaultNotes([...defaultNotes, newNote]);
+      setNewDefaultText('');
+      setIsAddingDefault(false);
+    }
+  };
+
+  const handleCancelAddDefault = () => {
+    setIsAddingDefault(false);
+    setNewDefaultText('');
+  };
+
+  // Function to reset baseline after save (exposed to parent)
+  const resetDefaultNotesBaseline = () => {
+    setOriginalDefaultNotes(JSON.parse(JSON.stringify(defaultNotes)));
+    console.log('Default notes baseline reset after save');
+  };
+
+  // Expose reset function to parent via callback
+  useEffect(() => {
+    if (onDefaultNotesChange && typeof onDefaultNotesChange === 'function') {
+      // Store reset function in window for parent to call (temporary approach)
+      window.resetDefaultNotesBaseline = resetDefaultNotesBaseline;
+    }
+  }, [defaultNotes]);
+
   return (
     <div className="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
       <h3 className="text-lg font-bold text-gray-800 mb-3">Note:</h3>
 
-      {/* Default Notes (Read-only) */}
-      <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 mb-4">
-        {defaultNotes.map((note, index) => (
-          <li key={`default-${index}`}>{note}</li>
-        ))}
-      </ol>
+      {/* Default Notes */}
+      {loadingDefaults ? (
+        <p className="text-sm text-gray-500">Loading default notes...</p>
+      ) : (
+        <>
+          <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 mb-4">
+            {defaultNotes.map((note) => (
+              <li key={`default-${note.noteOrder}`} className="flex items-start gap-2 group">
+                {editingDefaultId === note.noteOrder ? (
+                  <div className="flex-1 flex items-start gap-2">
+                    <textarea
+                      value={editDefaultText}
+                      onChange={(e) => setEditDefaultText(e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                      rows={3}
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleSaveDefaultEdit}
+                        className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={handleCancelDefaultEdit}
+                        className="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500 text-xs"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <span className="flex-1">{note.noteText}</span>
+                    {editMode && isManager && (
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleEditDefaultNote(note.noteOrder)}
+                          className="p-1 text-blue-600 hover:text-blue-800"
+                          title="Edit default note"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteDefaultNote(note.noteOrder)}
+                          className="p-1 text-red-600 hover:text-red-800"
+                          title="Delete default note"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </li>
+            ))}
+          </ol>
+
+          {/* Add Default Note Button (MANAGER only in edit mode) */}
+          {editMode && isManager && !isAddingDefault && editingDefaultId === null && (
+            <button
+              onClick={() => setIsAddingDefault(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm font-semibold mb-4"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Add Default Note
+            </button>
+          )}
+
+          {/* Add Default Note Form */}
+          {isAddingDefault && (
+            <div className="flex items-start gap-2 mb-4">
+              <textarea
+                value={newDefaultText}
+                onChange={(e) => setNewDefaultText(e.target.value)}
+                placeholder="Enter new default note..."
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows={3}
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleAddDefaultNote}
+                  className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs"
+                >
+                  Add
+                </button>
+                <button
+                  onClick={handleCancelAddDefault}
+                  className="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500 text-xs"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* User Notes Section */}
       {(userNotes.length > 0 || editMode) && (

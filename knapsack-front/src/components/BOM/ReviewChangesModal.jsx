@@ -2,13 +2,15 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
-export default function ReviewChangesModal({ isOpen, changes, bomData, originalBomData, onCancel, onConfirm }) {
+export default function ReviewChangesModal({ isOpen, changes, defaultNotesChanges = [], bomData, originalBomData, onCancel, onConfirm }) {
   const { user } = useAuth();
   const [reasons, setReasons] = useState({});
   const [updateMasterMap, setUpdateMasterMap] = useState({});
+  const [defaultNotesUpdateChoice, setDefaultNotesUpdateChoice] = useState('bom-only'); // 'global' or 'bom-only'
 
   // Check if user is ADMIN or MANAGER
   const canUpdateMaster = user?.role === 'ADMIN' || user?.role === 'MANAGER';
+  const hasDefaultNotesChanges = defaultNotesChanges && defaultNotesChanges.length > 0;
 
   const allChanges = useMemo(() => {
     if (!isOpen) return [];
@@ -90,9 +92,13 @@ export default function ReviewChangesModal({ isOpen, changes, bomData, originalB
       updateMaster: updateMasterMap[change.id] || false
     }));
 
-    onConfirm(changesWithReasons);
+    onConfirm(changesWithReasons, {
+      defaultNotesChanges,
+      defaultNotesUpdateChoice: hasDefaultNotesChanges ? defaultNotesUpdateChoice : null
+    });
     setReasons({});
     setUpdateMasterMap({});
+    setDefaultNotesUpdateChoice('bom-only');
   };
 
   return (
@@ -177,6 +183,69 @@ export default function ReviewChangesModal({ isOpen, changes, bomData, originalB
               ))}
             </tbody>
           </table>
+
+          {/* Default Notes Changes Section */}
+          {hasDefaultNotesChanges && (
+            <div className="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+              <h3 className="text-md font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                Default Notes Changes
+              </h3>
+
+              {defaultNotesChanges.map((change, index) => (
+                <div key={index} className="mb-3 pb-3 border-b border-yellow-200 last:border-0">
+                  <div className="text-xs text-gray-500 mb-1">Note {change.noteOrder}</div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs flex-1">
+                      {change.oldText}
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs flex-1">
+                      {change.newText}
+                    </span>
+                  </div>
+                </div>
+              ))}
+
+              <div className="mt-4 p-3 bg-white rounded-md border border-yellow-300">
+                <p className="text-sm font-semibold text-gray-800 mb-3">⚠️ How do you want to save these default note changes?</p>
+                <div className="space-y-2">
+                  <label className="flex items-start gap-3 cursor-pointer p-2 rounded hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="defaultNotesChoice"
+                      value="global"
+                      checked={defaultNotesUpdateChoice === 'global'}
+                      onChange={(e) => setDefaultNotesUpdateChoice(e.target.value)}
+                      className="mt-1 w-4 h-4 text-purple-600"
+                    />
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm text-gray-900">Update Globally (All Future BOMs)</div>
+                      <div className="text-xs text-gray-600">Changes will be saved to the master default notes. All future BOMs will use these updated notes.</div>
+                    </div>
+                  </label>
+                  <label className="flex items-start gap-3 cursor-pointer p-2 rounded hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="defaultNotesChoice"
+                      value="bom-only"
+                      checked={defaultNotesUpdateChoice === 'bom-only'}
+                      onChange={(e) => setDefaultNotesUpdateChoice(e.target.value)}
+                      className="mt-1 w-4 h-4 text-purple-600"
+                    />
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm text-gray-900">Use for This BOM Only</div>
+                      <div className="text-xs text-gray-600">Changes will be saved only for this specific BOM. Other BOMs will still use the global default notes.</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
