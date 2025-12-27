@@ -19,7 +19,7 @@ export default function CreateProjectPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('latest'); // 'latest', 'oldest', 'name'
+  const [sortBy, setSortBy] = useState('latestUpdated'); // 'latestUpdated', 'latest', 'oldest', 'name'
   const pageSize = 10;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -289,8 +289,9 @@ export default function CreateProjectPage() {
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
                 >
-                  <option value="latest">Latest First</option>
-                  <option value="oldest">Oldest First</option>
+                  <option value="latestUpdated">Latest Updated</option>
+                  <option value="latest">Latest Created</option>
+                  <option value="oldest">Oldest Created</option>
                   <option value="name">Name (A-Z)</option>
                 </select>
               </div>
@@ -331,9 +332,9 @@ export default function CreateProjectPage() {
                             <span>•</span>
                             <span>Project ID: {project.projectId || 'N/A'}</span>
                             <span>•</span>
-                            {/* <span>Variation: {project.longRailVariation || 'N/A'}</span>
-                            <span>•</span> */}
-                            <span>{new Date(project.createdAt).toLocaleDateString()}</span>
+                            <span>Created: {new Date(project.createdAt).toLocaleDateString()}</span>
+                            <span>•</span>
+                            <span>Updated: {new Date(project.updatedAt).toLocaleDateString()}</span>
                           </div>
                         </div>
                         <div className="text-gray-400 group-hover:text-blue-600">

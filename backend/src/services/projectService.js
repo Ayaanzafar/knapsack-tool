@@ -115,6 +115,9 @@ class ProjectService {
       case 'name':
         orderBy = { name: 'asc' };
         break;
+      case 'latestUpdated':
+        orderBy = { updatedAt: 'desc' };
+        break;
       case 'latest':
       default:
         orderBy = { createdAt: 'desc' };
@@ -167,6 +170,9 @@ class ProjectService {
         break;
       case 'name':
         orderBy = { name: 'asc' };
+        break;
+      case 'latestUpdated':
+        orderBy = { updatedAt: 'desc' };
         break;
       case 'latest':
       default:

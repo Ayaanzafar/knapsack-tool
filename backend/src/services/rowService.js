@@ -3,7 +3,7 @@ const prisma = require('../prismaClient');
 class RowService {
   // Create a new row
   async createRow(tabId, data) {
-    return await prisma.tabRow.create({
+    const row = await prisma.tabRow.create({
       data: {
         tabId: parseInt(tabId),
         rowNumber: data.rowNumber,
@@ -13,6 +13,19 @@ class RowService {
         supportBase2: data.supportBase2 || null
       }
     });
+
+    // Update parent project's updatedAt
+    const tab = await prisma.tab.findUnique({
+      where: { id: parseInt(tabId) }
+    });
+    if (tab) {
+      await prisma.project.update({
+        where: { id: tab.projectId },
+        data: { updatedAt: new Date() }
+      });
+    }
+
+    return row;
   }
 
   // Get all rows for a tab
@@ -44,15 +57,46 @@ class RowService {
       }
     });
 
+    // Update parent project's updatedAt
+    const tab = await prisma.tab.findUnique({
+      where: { id: result.tabId }
+    });
+    if (tab) {
+      await prisma.project.update({
+        where: { id: tab.projectId },
+        data: { updatedAt: new Date() }
+      });
+    }
+
     console.log(`✅ Backend: Row ${id} updated successfully:`, result);
     return result;
   }
 
   // Delete row
   async deleteRow(id) {
-    return await prisma.tabRow.delete({
+    // Get row to find tabId before deleting
+    const row = await prisma.tabRow.findUnique({
       where: { id: parseInt(id) }
     });
+
+    const deletedRow = await prisma.tabRow.delete({
+      where: { id: parseInt(id) }
+    });
+
+    // Update parent project's updatedAt
+    if (row) {
+      const tab = await prisma.tab.findUnique({
+        where: { id: row.tabId }
+      });
+      if (tab) {
+        await prisma.project.update({
+          where: { id: tab.projectId },
+          data: { updatedAt: new Date() }
+        });
+      }
+    }
+
+    return deletedRow;
   }
 
   // Reorder rows
@@ -65,7 +109,20 @@ class RowService {
       })
     );
 
-    return await Promise.all(updatePromises);
+    const result = await Promise.all(updatePromises);
+
+    // Update parent project's updatedAt
+    const tab = await prisma.tab.findUnique({
+      where: { id: parseInt(tabId) }
+    });
+    if (tab) {
+      await prisma.project.update({
+        where: { id: tab.projectId },
+        data: { updatedAt: new Date() }
+      });
+    }
+
+    return result;
   }
 }
 

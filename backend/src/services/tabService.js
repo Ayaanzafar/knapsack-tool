@@ -10,7 +10,7 @@ class TabService {
       where: { genericName: '40mm Long Rail' }
     });
 
-    return await prisma.tab.create({
+    const tab = await prisma.tab.create({
       data: {
         projectId: parseInt(projectId),
         name: name || 'Untitled Tab',
@@ -42,6 +42,14 @@ class TabService {
         enableSb2: settings?.enableSB2 !== undefined ? settings.enableSB2 : (settings?.enableSb2 || false)
       }
     });
+
+    // Update parent project's updatedAt
+    await prisma.project.update({
+      where: { id: parseInt(projectId) },
+      data: { updatedAt: new Date() }
+    });
+
+    return tab;
   }
 
   // Get all tabs for a project
@@ -111,15 +119,23 @@ class TabService {
       });
     }
 
-    return await prisma.tab.update({
+    const updatedTab = await prisma.tab.update({
       where: { id: parseInt(id) },
       data: updateData
     });
+
+    // Update parent project's updatedAt
+    await prisma.project.update({
+      where: { id: updatedTab.projectId },
+      data: { updatedAt: new Date() }
+    });
+
+    return updatedTab;
   }
 
   // Update tab's long rail profile
   async updateTabProfile(id, profileSerialNumber) {
-    return await prisma.tab.update({
+    const updatedTab = await prisma.tab.update({
       where: { id: parseInt(id) },
       data: {
         longRailProfileSerialNumber: profileSerialNumber
@@ -130,13 +146,36 @@ class TabService {
         }
       }
     });
+
+    // Update parent project's updatedAt
+    await prisma.project.update({
+      where: { id: updatedTab.projectId },
+      data: { updatedAt: new Date() }
+    });
+
+    return updatedTab;
   }
 
   // Delete tab (hard delete - also deletes all associated rows via cascade)
   async deleteTab(id) {
-    return await prisma.tab.delete({
+    // Get tab to find projectId before deleting
+    const tab = await prisma.tab.findUnique({
       where: { id: parseInt(id) }
     });
+
+    const deletedTab = await prisma.tab.delete({
+      where: { id: parseInt(id) }
+    });
+
+    // Update parent project's updatedAt
+    if (tab) {
+      await prisma.project.update({
+        where: { id: tab.projectId },
+        data: { updatedAt: new Date() }
+      });
+    }
+
+    return deletedTab;
   }
 
   // Duplicate tab
@@ -174,6 +213,12 @@ class TabService {
         )
       );
     }
+
+    // Update parent project's updatedAt
+    await prisma.project.update({
+      where: { id: newTab.projectId },
+      data: { updatedAt: new Date() }
+    });
 
     return await this.getTabById(newTab.id);
   }
