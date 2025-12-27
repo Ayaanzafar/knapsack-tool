@@ -360,7 +360,7 @@ export default function HomePage() {
               <div className="space-y-6">
                 <h1 className="text-5xl font-bold sm:text-6xl leading-tight tracking-tight text-black">
                   <Shuffle
-                    text="Solar Rail BOM"
+                    text="Bill Of Material"
                     shuffleDirection="right"
                     duration={0.35}
                     animationMode="evenodd"
@@ -389,7 +389,7 @@ export default function HomePage() {
                   </span>
                 </h1>
                 <p className="text-lg text-gray-800 leading-relaxed max-w-xl font-medium">
-                  Internal tool for creating and optimizing Bills of Materials for solar panel installations.
+                  Internal tool for creating and optimizing Bills of Materials for solar panel mounting structures.
                 </p>
               </div>
 
@@ -404,8 +404,8 @@ export default function HomePage() {
                       </svg>
                     </div>
                     <div className="space-y-1 flex-1">
-                      <p className="font-semibold text-yellow-400 text-base">Long Rail Profile BOM Creation</p>
-                      <p className="text-sm text-gray-300 leading-relaxed">Create detailed BOMs for U Cleat Long Rail profiles with automated calculations</p>
+                      <p className="font-semibold text-yellow-400 text-base">Multiple MMS Support</p>
+                      <p className="text-sm text-gray-300 leading-relaxed">Create detailed BOMs for Multiple MMS Types with automated calculations</p>
                     </div>
                   </div>
 
@@ -600,14 +600,14 @@ export default function HomePage() {
       </header>
 
       <main className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-20">
+        {/* <div className="text-center mb-20">
           <h1 className="text-5xl font-bold text-gray-900 sm:text-6xl sm:tracking-tight lg:text-7xl mb-6">
             Bill Of Material
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-xl text-gray-600 leading-relaxed">
             Internal tool for making and generating Bills of Materials for Solar Rails.
           </p>
-        </div>
+        </div> */}
 
         <div className="max-w-5xl mx-auto">
           <div className="mb-12 pb-6 border-b-2 border-gray-300">
