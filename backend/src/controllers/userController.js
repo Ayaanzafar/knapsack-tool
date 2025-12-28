@@ -165,6 +165,77 @@ class UserController {
       next(error);
     }
   }
+
+  // POST /api/users/:id/reset-password - Reset user password
+  async resetPassword(req, res, next) {
+    try {
+      const userId = parseInt(req.params.id);
+
+      // Check if user exists
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      if (user.status === 'DELETED') {
+        return res.status(400).json({ error: 'Cannot reset password for deleted user' });
+      }
+
+      // Generate new temporary password (same logic as user creation)
+      const generateTempPassword = () => {
+        const length = 12;
+        const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        const symbols = '!@#$%^&*';
+        const allChars = lowercase + uppercase + numbers + symbols;
+
+        let password = '';
+        password += lowercase[Math.floor(Math.random() * lowercase.length)];
+        password += uppercase[Math.floor(Math.random() * uppercase.length)];
+        password += numbers[Math.floor(Math.random() * numbers.length)];
+        password += symbols[Math.floor(Math.random() * symbols.length)];
+
+        for (let i = password.length; i < length; i++) {
+          password += allChars[Math.floor(Math.random() * allChars.length)];
+        }
+
+        return password.split('').sort(() => Math.random() - 0.5).join('');
+      };
+
+      const newPassword = generateTempPassword();
+      const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+      // Update user: new password, force change, set to INACTIVE
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          passwordHash,
+          mustChangePassword: true,
+          status: 'INACTIVE', // Reset to INACTIVE for security
+          isActive: true
+        },
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          status: true,
+          mustChangePassword: true
+        }
+      });
+
+      res.json({
+        message: 'Password reset successfully',
+        user: updatedUser,
+        temporaryPassword: newPassword // Send back to show in modal
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new UserController();

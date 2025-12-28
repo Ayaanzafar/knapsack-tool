@@ -158,13 +158,40 @@ export default function AdminPanel() {
     }
   };
 
-  const handleUpdateUserStatus = async (userId, newStatus) => {
+  const handleUpdateUserStatus = async (userId, newStatus, username) => {
+    // Add confirmation for HOLD action
+    if (newStatus === 'HOLD') {
+      if (!window.confirm(`Are you sure you want to put user "${username}" on hold? They won't be able to login until reactivated.`)) {
+        return;
+      }
+    }
+
     try {
       await userAPI.updateStatus(userId, newStatus);
       loadUsers(); // Refresh list
     } catch (err) {
       console.error('Failed to update user status:', err);
       setError('Failed to update user status.');
+    }
+  };
+
+  const handleResetPassword = async (userId, username) => {
+    if (window.confirm(`Are you sure you want to reset password for user "${username}"? This will generate a new temporary password and the user will be set to INACTIVE status.`)) {
+      try {
+        const result = await userAPI.resetPassword(userId);
+
+        // Show credentials modal with new password
+        setCreatedCredentials({
+          username: username,
+          password: result.temporaryPassword
+        });
+        setShowCredentialsModal(true);
+
+        loadUsers(); // Refresh list
+      } catch (err) {
+        console.error('Failed to reset password:', err);
+        setError('Failed to reset password.');
+      }
     }
   };
 
@@ -370,7 +397,7 @@ export default function AdminPanel() {
                         <div className="flex gap-3">
                           {user.status === 'ACTIVE' && (
                             <button
-                              onClick={() => handleUpdateUserStatus(user.id, 'HOLD')}
+                              onClick={() => handleUpdateUserStatus(user.id, 'HOLD', user.username)}
                               className="text-orange-600 hover:text-orange-800 transition-colors"
                               title="Put on hold"
                             >
@@ -381,7 +408,7 @@ export default function AdminPanel() {
                           )}
                           {user.status === 'HOLD' && (
                             <button
-                              onClick={() => handleUpdateUserStatus(user.id, 'ACTIVE')}
+                              onClick={() => handleUpdateUserStatus(user.id, 'ACTIVE', user.username)}
                               className="text-green-600 hover:text-green-800 transition-colors"
                               title="Activate user"
                             >
@@ -390,6 +417,15 @@ export default function AdminPanel() {
                               </svg>
                             </button>
                           )}
+                          <button
+                            onClick={() => handleResetPassword(user.id, user.username)}
+                            className="text-blue-600 hover:text-blue-800 transition-colors"
+                            title="Reset password"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                            </svg>
+                          </button>
                           <button
                             onClick={() => handleDeleteUser(user.id, user.username)}
                             className="text-red-600 hover:text-red-800 transition-colors"
