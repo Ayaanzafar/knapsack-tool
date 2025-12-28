@@ -618,7 +618,7 @@ export default function HomePage() {
             {/* Long Rail Card with enhanced design */}
             <div
               onClick={handleLongRail}
-              className="relative rounded-2xl border-2 border-gray-200 bg-white p-8 shadow-md flex flex-col items-center text-center hover:border-blue-500 hover:shadow-xl cursor-pointer transition-all duration-300 group transform hover:-translate-y-1"
+              className="relative rounded-2xl border-2 border-gray-200 bg-white p-8 shadow-md flex flex-col items-center text-center hover:border-blue-500 hover:shadow-xl cursor-pointer transition-all duration-300 group transform hover:-translate-y-1 min-h-[200px]"
             >
               <div className="h-20 w-20 rounded-2xl bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
                 <svg className="h-11 w-11 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -626,7 +626,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <p className="text-2xl font-bold text-gray-900 mb-3">Long Rail</p>
-              <p className="text-sm text-gray-600 leading-relaxed mb-6">Optimization tool for standard long rail cutting.</p>
+              {/* <p className="text-sm text-gray-600 leading-relaxed mb-6">Optimization tool for standard long rail cutting.</p> */}
               <div className="mt-auto pt-4 text-blue-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
                 Get Started
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
@@ -636,37 +636,46 @@ export default function HomePage() {
             </div>
 
             {/* Placeholder cards with consistent styling */}
-            <div className="relative rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 flex flex-col items-center text-center shadow-sm">
+            <div className="relative rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 flex flex-col items-center text-center shadow-sm min-h-[200px]">
               <div className="h-20 w-20 rounded-2xl bg-gray-200 flex items-center justify-center mb-6">
                 <svg className="h-11 w-11 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-2xl font-bold text-gray-400 mb-3">Coming Soon</p>
-              <p className="text-sm text-gray-500 leading-relaxed">Other BOM types will be added here.</p>
+              <p className="text-2xl font-bold text-gray-400 mb-3">Hand Rail</p>
+              {/* <p className="text-sm text-gray-500 leading-relaxed">Other BOM types will be added here.</p> */}
             </div>
 
-            <div className="relative rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 flex flex-col items-center text-center shadow-sm">
+            <div className="relative rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 flex flex-col items-center text-center shadow-sm min-h-[200px]">
+              <div className="h-20 w-20 rounded-2xl bg-gray-200 flex items-center justify-center mb-6">
+                <svg className="h-11 w-11 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-2xl font-bold text-gray-400 mb-3">Walk Way</p>
+              {/* <p className="text-sm text-gray-500 leading-relaxed">Other BOM types will be added here.</p> */}
+            </div>
+            <div className="relative rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 flex flex-col items-center text-center shadow-sm min-h-[200px]">
               <div className="h-20 w-20 rounded-2xl bg-gray-200 flex items-center justify-center mb-6">
                 <svg className="h-11 w-11 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <p className="text-2xl font-bold text-gray-400 mb-3">Coming Soon</p>
-              <p className="text-sm text-gray-500 leading-relaxed">Other BOM types will be added here.</p>
+              {/* <p className="text-sm text-gray-500 leading-relaxed">Other BOM types will be added here.</p> */}
             </div>
           </div>
         </div>
       </main>
 
       {/* Footer for visual closure */}
-      <footer className="mt-20 py-8 border-t border-gray-300">
+      {/* <footer className="mt-20 py-8 border-t border-gray-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm text-gray-500">
             Solar Rail BOM Management System — Internal Tool
           </p>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }
