@@ -23,9 +23,16 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    if (!user.isActive) {
-      return res.status(403).json({ error: 'User account is deactivated' });
+    // Check user status
+    if (user.status === 'DELETED') {
+      return res.status(403).json({ error: 'User account has been deleted' });
     }
+
+    if (user.status === 'HOLD') {
+      return res.status(403).json({ error: 'User account is on hold. Please contact administrator.' });
+    }
+
+    // INACTIVE users can still login but must change password
 
     // Verify password
     const validPassword = await bcrypt.compare(password, user.passwordHash);
@@ -35,11 +42,12 @@ exports.login = async (req, res) => {
 
     // Generate token
     const token = jwt.sign(
-      { 
-        id: user.id, 
-        username: user.username, 
+      {
+        id: user.id,
+        username: user.username,
         role: user.role,
-        mustChangePassword: user.mustChangePassword 
+        status: user.status,
+        mustChangePassword: user.mustChangePassword
       },
       JWT_SECRET,
       { expiresIn: '24h' }
@@ -51,6 +59,7 @@ exports.login = async (req, res) => {
         id: user.id,
         username: user.username,
         role: user.role,
+        status: user.status,
         mustChangePassword: user.mustChangePassword
       }
     });
@@ -79,35 +88,39 @@ exports.changePassword = async (req, res) => {
       return res.status(401).json({ error: 'Current password is incorrect' });
     }
 
-    // Update password
+    // Update password and activate user
     const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
         passwordHash: hashedPassword,
-        mustChangePassword: false
+        mustChangePassword: false,
+        status: 'ACTIVE', // Activate user on first password change
+        isActive: true // Update legacy field for compatibility
       }
     });
 
     // Generate new token with updated status
     const newToken = jwt.sign(
-      { 
-        id: updatedUser.id, 
-        username: updatedUser.username, 
+      {
+        id: updatedUser.id,
+        username: updatedUser.username,
         role: updatedUser.role,
-        mustChangePassword: false 
+        status: updatedUser.status,
+        mustChangePassword: false
       },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
 
-    res.json({ 
+    res.json({
       message: 'Password updated successfully',
       token: newToken,
       user: {
         id: updatedUser.id,
         username: updatedUser.username,
         role: updatedUser.role,
+        status: updatedUser.status,
         mustChangePassword: false
       }
     });
@@ -126,6 +139,7 @@ exports.getMe = async (req, res) => {
         id: true,
         username: true,
         role: true,
+        status: true,
         mustChangePassword: true,
         createdAt: true
       }

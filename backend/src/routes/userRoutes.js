@@ -13,4 +13,10 @@ router.get('/', userController.getAllUsers.bind(userController));
 // POST /api/users - Create new user
 router.post('/', userController.createUser.bind(userController));
 
+// DELETE /api/users/:id - Soft delete user
+router.delete('/:id', userController.deleteUser.bind(userController));
+
+// PATCH /api/users/:id/status - Update user status
+router.patch('/:id/status', userController.updateUserStatus.bind(userController));
+
 module.exports = router;

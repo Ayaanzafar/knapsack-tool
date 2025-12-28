@@ -5,15 +5,21 @@ const prisma = new PrismaClient();
 const SALT_ROUNDS = 10;
 
 class UserController {
-  // GET /api/users - Get all users
+  // GET /api/users - Get all users (excluding deleted)
   async getAllUsers(req, res, next) {
     try {
       const users = await prisma.user.findMany({
+        where: {
+          status: {
+            not: 'DELETED'
+          }
+        },
         select: {
           id: true,
           username: true,
           role: true,
-          isActive: true,
+          status: true,
+          mustChangePassword: true,
           createdAt: true,
           updatedAt: true
         },
@@ -51,20 +57,101 @@ class UserController {
           username,
           passwordHash,
           role,
+          status: 'INACTIVE', // New user starts as INACTIVE
           mustChangePassword: true, // Force password change
-          isActive: true
+          isActive: true // Keep for backward compatibility
         },
         select: {
           id: true,
           username: true,
           role: true,
-          isActive: true,
+          status: true,
+          mustChangePassword: true,
           createdAt: true
         }
       });
 
       res.status(201).json(user);
     } catch (error) {
+      next(error);
+    }
+  }
+
+  // DELETE /api/users/:id - Soft delete user
+  async deleteUser(req, res, next) {
+    try {
+      const userId = parseInt(req.params.id);
+
+      // Check if user exists and is not already deleted
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      if (user.status === 'DELETED') {
+        return res.status(400).json({ error: 'User is already deleted' });
+      }
+
+      // Soft delete: set status to DELETED and record deletion time
+      const deletedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          status: 'DELETED',
+          deletedAt: new Date(),
+          isActive: false // Update legacy field for compatibility
+        },
+        select: {
+          id: true,
+          username: true,
+          status: true,
+          deletedAt: true
+        }
+      });
+
+      res.json({ message: 'User deleted successfully', user: deletedUser });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // PATCH /api/users/:id/status - Update user status (ACTIVE, HOLD)
+  async updateUserStatus(req, res, next) {
+    try {
+      const userId = parseInt(req.params.id);
+      const { status } = req.body;
+
+      // Validate status
+      const validStatuses = ['ACTIVE', 'HOLD', 'INACTIVE'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          error: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+        });
+      }
+
+      // Update user status
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          status,
+          isActive: status === 'ACTIVE' // Update legacy field
+        },
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          status: true,
+          updatedAt: true
+        }
+      });
+
+      res.json(updatedUser);
+    } catch (error) {
+      if (error.code === 'P2025') {
+        return res.status(404).json({ error: 'User not found' });
+      }
       next(error);
     }
   }

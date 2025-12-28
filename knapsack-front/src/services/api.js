@@ -143,6 +143,18 @@ export const userAPI = {
   create: async (userData) => {
     const response = await apiClient.post('/users', userData);
     return response.data;
+  },
+
+  // Soft delete user
+  delete: async (userId) => {
+    const response = await apiClient.delete(`/users/${userId}`);
+    return response.data;
+  },
+
+  // Update user status (ACTIVE, HOLD, INACTIVE)
+  updateStatus: async (userId, status) => {
+    const response = await apiClient.patch(`/users/${userId}/status`, { status });
+    return response.data;
   }
 };
 

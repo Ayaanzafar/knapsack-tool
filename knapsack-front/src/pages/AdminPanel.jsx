@@ -158,6 +158,28 @@ export default function AdminPanel() {
     }
   };
 
+  const handleUpdateUserStatus = async (userId, newStatus) => {
+    try {
+      await userAPI.updateStatus(userId, newStatus);
+      loadUsers(); // Refresh list
+    } catch (err) {
+      console.error('Failed to update user status:', err);
+      setError('Failed to update user status.');
+    }
+  };
+
+  const handleDeleteUser = async (userId, username) => {
+    if (window.confirm(`Are you sure you want to delete user "${username}"? This action will soft-delete the user (data will be preserved).`)) {
+      try {
+        await userAPI.delete(userId);
+        loadUsers(); // Refresh list
+      } catch (err) {
+        console.error('Failed to delete user:', err);
+        setError('Failed to delete user.');
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
@@ -314,6 +336,7 @@ export default function AdminPanel() {
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -323,8 +346,8 @@ export default function AdminPanel() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.username}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.role === 'MANAGER' ? 'bg-purple-100 text-purple-800' : 
-                          user.role === 'DESIGN' ? 'bg-blue-100 text-blue-800' : 
+                          user.role === 'MANAGER' ? 'bg-purple-100 text-purple-800' :
+                          user.role === 'DESIGN' ? 'bg-blue-100 text-blue-800' :
                           'bg-gray-100 text-gray-800'
                         }`}>
                           {user.role}
@@ -332,13 +355,51 @@ export default function AdminPanel() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          user.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
+                          user.status === 'INACTIVE' ? 'bg-yellow-100 text-yellow-800' :
+                          user.status === 'HOLD' ? 'bg-orange-100 text-orange-800' :
+                          'bg-gray-100 text-gray-800'
                         }`}>
-                          {user.isActive ? 'Active' : 'Inactive'}
+                          {user.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex gap-3">
+                          {user.status === 'ACTIVE' && (
+                            <button
+                              onClick={() => handleUpdateUserStatus(user.id, 'HOLD')}
+                              className="text-orange-600 hover:text-orange-800 transition-colors"
+                              title="Put on hold"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                          )}
+                          {user.status === 'HOLD' && (
+                            <button
+                              onClick={() => handleUpdateUserStatus(user.id, 'ACTIVE')}
+                              className="text-green-600 hover:text-green-800 transition-colors"
+                              title="Activate user"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleDeleteUser(user.id, user.username)}
+                            className="text-red-600 hover:text-red-800 transition-colors"
+                            title="Delete user"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
