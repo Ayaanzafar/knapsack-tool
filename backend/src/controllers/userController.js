@@ -95,10 +95,16 @@ class UserController {
         return res.status(400).json({ error: 'User is already deleted' });
       }
 
-      // Soft delete: set status to DELETED and record deletion time
+      // Auto-rename username to free it up for reuse
+      // Format: username_deleted_timestamp
+      const timestamp = Date.now();
+      const newUsername = `${user.username}_deleted_${timestamp}`;
+
+      // Soft delete: rename username, set status to DELETED, and record deletion time
       const deletedUser = await prisma.user.update({
         where: { id: userId },
         data: {
+          username: newUsername, // Rename to free up original username
           status: 'DELETED',
           deletedAt: new Date(),
           isActive: false // Update legacy field for compatibility
@@ -111,7 +117,11 @@ class UserController {
         }
       });
 
-      res.json({ message: 'User deleted successfully', user: deletedUser });
+      res.json({
+        message: 'User deleted successfully',
+        user: deletedUser,
+        originalUsername: user.username // Return original username for reference
+      });
     } catch (error) {
       next(error);
     }
