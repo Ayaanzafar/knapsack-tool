@@ -2441,11 +2441,6 @@ export default function BOMPage() {
       console.log('Saving userNotes to backend:', userNotes); // Debug log
       await bomAPI.updateBOM(bomId, dataToSave, currentChangeLog);
 
-      const freshData = await bomAPI.getBOMById(bomId);
-      if (freshData && freshData.bomData) {
-        applyFreshBom(freshData);
-      }
-
       // If we created a new BOM entry, navigate with bomId so refresh works
       if (isNewBomCreated) {
         // Store bomId in localStorage as backup for page refresh
