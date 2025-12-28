@@ -2441,14 +2441,16 @@ export default function BOMPage() {
       console.log('Saving userNotes to backend:', userNotes); // Debug log
       await bomAPI.updateBOM(bomId, dataToSave, currentChangeLog);
 
-      // If we created a new BOM entry, navigate with bomId so refresh works
+      // If we created a new BOM entry, update state with bomId without triggering re-render
       if (isNewBomCreated) {
         // Store bomId in localStorage as backup for page refresh
         localStorage.setItem('lastBomId', bomId);
-        navigate('/bom', {
-          state: { bomId: bomId },
-          replace: true
-        });
+        // Update history state silently without causing component re-render
+        window.history.replaceState(
+          { ...location.state, bomId: bomId },
+          '',
+          window.location.pathname
+        );
       }
 
       showToast('Changes saved successfully!', 'success');
