@@ -25,8 +25,14 @@ export default function AdminPanel() {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('BASIC');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
   const [copied, setCopied] = useState(false);
+
+  // Credentials Modal State
+  const [showCredentialsModal, setShowCredentialsModal] = useState(false);
+  const [createdCredentials, setCreatedCredentials] = useState({ username: '', password: '' });
+  const [copiedUsername, setCopiedUsername] = useState(false);
+  const [copiedPassword, setCopiedPassword] = useState(false);
+  const [copiedBoth, setCopiedBoth] = useState(false);
 
   // Generate random secure password
   const generatePassword = () => {
@@ -69,6 +75,46 @@ export default function AdminPanel() {
     }
   };
 
+  // Copy credentials functions for modal
+  const copyCredentialUsername = async () => {
+    try {
+      await navigator.clipboard.writeText(createdCredentials.username);
+      setCopiedUsername(true);
+      setTimeout(() => setCopiedUsername(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy username:', err);
+    }
+  };
+
+  const copyCredentialPassword = async () => {
+    try {
+      await navigator.clipboard.writeText(createdCredentials.password);
+      setCopiedPassword(true);
+      setTimeout(() => setCopiedPassword(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy password:', err);
+    }
+  };
+
+  const copyBothCredentials = async () => {
+    try {
+      const credentialsText = `Username: ${createdCredentials.username}\nPassword: ${createdCredentials.password}`;
+      await navigator.clipboard.writeText(credentialsText);
+      setCopiedBoth(true);
+      setTimeout(() => setCopiedBoth(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy credentials:', err);
+    }
+  };
+
+  const closeCredentialsModal = () => {
+    setShowCredentialsModal(false);
+    setCreatedCredentials({ username: '', password: '' });
+    setCopiedUsername(false);
+    setCopiedPassword(false);
+    setCopiedBoth(false);
+  };
+
   useEffect(() => {
     loadUsers();
   }, []);
@@ -89,16 +135,21 @@ export default function AdminPanel() {
   const handleCreateUser = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccessMessage('');
     setIsSubmitting(true);
 
     try {
       await userAPI.create({ username, password, role });
-      setSuccessMessage(`User "${username}" created successfully!`);
+
+      // Store credentials and show modal
+      setCreatedCredentials({ username, password });
+      setShowCredentialsModal(true);
+
+      // Reset form
       setUsername('');
       setPassword('');
       setRole('BASIC');
       setCopied(false);
+
       loadUsers(); // Refresh list
     } catch (err) {
       setError(err.message || 'Failed to create user.');
@@ -234,7 +285,6 @@ export default function AdminPanel() {
               </div>
 
               {error && <div className="text-red-600 text-sm">{error}</div>}
-              {successMessage && <div className="text-green-600 text-sm">{successMessage}</div>}
 
               <button
                 type="submit"
@@ -312,6 +362,157 @@ export default function AdminPanel() {
         )}
 
       </main>
+
+      {/* Credentials Success Modal */}
+      {showCredentialsModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          aria-labelledby="modal-title"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full p-6">
+              <div>
+                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                  <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="mt-3 text-center sm:mt-5">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                    User Created Successfully!
+                  </h3>
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-500 mb-4">
+                      Share these credentials with the new user:
+                    </p>
+
+                    {/* Credentials Box */}
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
+                      {/* Username */}
+                      <div className="flex items-center justify-between">
+                        <div className="text-left flex-1">
+                          <p className="text-xs text-gray-500 font-medium">Username</p>
+                          <p className="text-sm font-mono text-gray-900 mt-1">{createdCredentials.username}</p>
+                        </div>
+                        <button
+                          onClick={copyCredentialUsername}
+                          className={`ml-3 inline-flex items-center px-3 py-2 border shadow-sm text-xs font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                            copiedUsername
+                              ? 'border-green-300 text-green-700 bg-green-50'
+                              : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                          }`}
+                        >
+                          {copiedUsername ? (
+                            <>
+                              <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                              Copied
+                            </>
+                          ) : (
+                            <>
+                              <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                              </svg>
+                              Copy
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Password */}
+                      <div className="flex items-center justify-between border-t border-gray-200 pt-3">
+                        <div className="text-left flex-1">
+                          <p className="text-xs text-gray-500 font-medium">Password</p>
+                          <p className="text-sm font-mono text-gray-900 mt-1">{createdCredentials.password}</p>
+                        </div>
+                        <button
+                          onClick={copyCredentialPassword}
+                          className={`ml-3 inline-flex items-center px-3 py-2 border shadow-sm text-xs font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                            copiedPassword
+                              ? 'border-green-300 text-green-700 bg-green-50'
+                              : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                          }`}
+                        >
+                          {copiedPassword ? (
+                            <>
+                              <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                              Copied
+                            </>
+                          ) : (
+                            <>
+                              <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                              </svg>
+                              Copy
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Warning */}
+                    <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-3">
+                      <div className="flex">
+                        <div className="flex-shrink-0">
+                          <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-xs text-yellow-700">
+                            Save these credentials now. The password won't be shown again.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                <button
+                  type="button"
+                  onClick={copyBothCredentials}
+                  className={`w-full inline-flex justify-center rounded-md border shadow-sm px-4 py-2 text-base font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-1 sm:text-sm ${
+                    copiedBoth
+                      ? 'border-green-300 text-green-700 bg-green-50 hover:bg-green-100 focus:ring-green-500'
+                      : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-blue-500'
+                  }`}
+                >
+                  {copiedBoth ? (
+                    <>
+                      <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      Copied Both!
+                    </>
+                  ) : (
+                    <>
+                      <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+                        <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" />
+                      </svg>
+                      Copy Both Credentials
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeCredentialsModal}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-2 sm:text-sm"
+                >
+                  Done
+                </button>
+              </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
