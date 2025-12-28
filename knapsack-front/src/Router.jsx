@@ -3,12 +3,12 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import App from './App';
 import BOMPage from './components/BOM/BOMPage';
 import BOMPrintPreview from './components/BOM/BOMPrintPreview';
-import LoginPage from './components/Auth/LoginPage';
 import ChangePasswordPage from './components/Auth/ChangePasswordPage';
 import HomePage from './pages/HomePage';
 import CreateProjectPage from './pages/CreateProjectPage';
 import AdminPanel from './pages/AdminPanel';
 import AdminBOMView from './pages/AdminBOMView';
+import NotFoundPage from './pages/NotFoundPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const PrivateRoute = ({ children }) => {
@@ -45,7 +45,6 @@ export default function Router() {
     <AuthProvider>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
         
         <Route
@@ -97,14 +96,17 @@ export default function Router() {
           } 
         />
         
-        <Route 
-          path="/bom/print-preview" 
+        <Route
+          path="/bom/print-preview"
           element={
             <PrivateRoute>
               <BOMPrintPreview />
             </PrivateRoute>
-          } 
+          }
         />
+
+        {/* 404 Not Found - Catch all undefined routes */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </AuthProvider>
   );
