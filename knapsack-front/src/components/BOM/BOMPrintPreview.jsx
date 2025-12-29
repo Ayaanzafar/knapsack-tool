@@ -133,26 +133,33 @@ export default function BOMPrintPreview() {
     };
   }, [bomData]);
 
-  // Auto-navigate back to BOMPage after printing/canceling print (NOT in preview mode)
+  // Auto-navigate back to BOMPage or AdminBOMView after printing/canceling print (NOT in preview mode)
   useEffect(() => {
     if (isPreviewMode) return; // Don't navigate when in preview mode
 
     const handleAfterPrint = () => {
-      // Navigate back to BOMPage after print dialog closes
-      navigate('/bom', {
-        state: {
-          bomData,
-          projectId: location.state?.projectId,  // Database projectId from state
-          aluminumRate,
-          sparePercentage,
-          moduleWp,
-          changeLog,
-          userNotes,
-          savedBomId: location.state?.savedBomId,
-          printedBy
-          // No need to pass hasSavedBom - BOMPage will check database
-        }
-      });
+      // Check where to return to
+      if (location.state?.returnTo === 'adminBomView') {
+        // Return to AdminBOMView
+        const projectId = location.state?.projectId;
+        navigate(`/admin/bom/project/${projectId}`);
+      } else {
+        // Navigate back to BOMPage after print dialog closes
+        navigate('/bom', {
+          state: {
+            bomData,
+            projectId: location.state?.projectId,  // Database projectId from state
+            aluminumRate,
+            sparePercentage,
+            moduleWp,
+            changeLog,
+            userNotes,
+            savedBomId: location.state?.savedBomId,
+            printedBy
+            // No need to pass hasSavedBom - BOMPage will check database
+          }
+        });
+      }
     };
 
     // Listen for when print dialog closes (after print or cancel)
@@ -193,20 +200,27 @@ export default function BOMPrintPreview() {
   };
 
   const handleClose = () => {
-    // Navigate back to BOMPage with full state
-    navigate('/bom', {
-      state: {
-        bomData,
-        projectId: location.state?.projectId,  // Pass the database projectId
-        aluminumRate,
-        sparePercentage,
-        moduleWp,
-        changeLog,
-        userNotes,
-        savedBomId: location.state?.savedBomId,
-        printedBy
-      }
-    });
+    // Check where to return to
+    if (location.state?.returnTo === 'adminBomView') {
+      // Return to AdminBOMView
+      const projectId = location.state?.projectId;
+      navigate(`/admin/bom/project/${projectId}`);
+    } else {
+      // Navigate back to BOMPage with full state
+      navigate('/bom', {
+        state: {
+          bomData,
+          projectId: location.state?.projectId,  // Pass the database projectId
+          aluminumRate,
+          sparePercentage,
+          moduleWp,
+          changeLog,
+          userNotes,
+          savedBomId: location.state?.savedBomId,
+          printedBy
+        }
+      });
+    }
   };
 
   if (!bomData || !printSettings) {

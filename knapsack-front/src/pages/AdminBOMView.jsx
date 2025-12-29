@@ -53,7 +53,17 @@ export default function AdminBOMView() {
         console.log('AdminBOMView - savedBom.userNotes:', savedBom.userNotes);
         console.log('AdminBOMView - savedBom.changeLog:', savedBom.changeLog);
 
-        setBomData(savedBom.bomData);
+        // Add creator info to bomData for print preview
+        const bomDataWithCreator = {
+          ...savedBom.bomData,
+          projectInfo: {
+            ...savedBom.bomData.projectInfo,
+            createdBy: savedBom.user?.username || 'Unknown',
+            createdAt: savedBom.createdAt
+          }
+        };
+
+        setBomData(bomDataWithCreator);
         setChangeLog(savedBom.changeLog || []);
         setUserNotes(savedBom.userNotes || []);
         setSavedBy(savedBom.user);
@@ -83,11 +93,14 @@ export default function AdminBOMView() {
         state: {
           bomData,
           printSettings: settings,
+          projectId: parseInt(projectId), // Database project ID
           aluminumRate,
           sparePercentage,
           moduleWp,
           changeLog,
-          userNotes
+          userNotes,
+          printedBy: user?.username || 'Unknown', // Current admin's username
+          returnTo: 'adminBomView' // Flag to return to AdminBOMView
         }
       });
     } else if (action === 'direct') {
@@ -95,11 +108,14 @@ export default function AdminBOMView() {
         state: {
           bomData,
           printSettings: settings,
+          projectId: parseInt(projectId), // Database project ID
           aluminumRate,
           sparePercentage,
           moduleWp,
           changeLog,
           userNotes,
+          printedBy: user?.username || 'Unknown', // Current admin's username
+          returnTo: 'adminBomView', // Flag to return to AdminBOMView
           autoPrint: true
         }
       });
