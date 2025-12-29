@@ -1596,14 +1596,30 @@ export default function BOMPage() {
     loadBOM();
   }, [location.state, navigate]);
 
-  // Check if saved BOM exists for this project
+  // Check if saved BOM exists for this project and get creator info
   useEffect(() => {
     const checkSavedBom = async () => {
-      if (!projectId) return;
+      if (!projectId || !bomData) return;
 
       try {
         const result = await savedBomAPI.checkSavedBomExists(projectId);
         setHasSavedBom(result.exists);
+
+        // If saved BOM exists, fetch it to get creator info (only if not already set)
+        if (result.exists && !bomData.projectInfo?.createdBy) {
+          const savedBom = await savedBomAPI.getSavedBom(projectId);
+          // Add creator info to bomData
+          if (savedBom && savedBom.user) {
+            setBomData(prev => ({
+              ...prev,
+              projectInfo: {
+                ...prev.projectInfo,
+                createdBy: savedBom.user.username,
+                createdAt: savedBom.createdAt
+              }
+            }));
+          }
+        }
       } catch (error) {
         console.error('Error checking saved BOM:', error);
         setHasSavedBom(false);
@@ -1611,7 +1627,7 @@ export default function BOMPage() {
     };
 
     checkSavedBom();
-  }, [projectId, location.state?.savedBomId]);  // Re-check when returning from print or when BOM is saved
+  }, [projectId, location.state?.savedBomId, bomData?.projectInfo?.projectName]);  // Re-check when returning from print or when BOM is saved
 
   useEffect(() => {
     if (!bomData || loading) return;
@@ -2388,7 +2404,8 @@ export default function BOMPage() {
           moduleWp,
           changeLog,
           userNotes,
-          savedBomId: location.state?.savedBomId
+          savedBomId: location.state?.savedBomId,
+          printedBy: user?.username || 'Unknown'  // Current logged-in user
         }
       });
     } else if (action === 'direct') {
@@ -2403,6 +2420,7 @@ export default function BOMPage() {
           changeLog,
           userNotes,
           savedBomId: location.state?.savedBomId,
+          printedBy: user?.username || 'Unknown',  // Current logged-in user
           autoPrint: true
         }
       });
