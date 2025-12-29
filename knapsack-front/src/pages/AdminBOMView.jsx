@@ -397,12 +397,18 @@ export default function AdminBOMView() {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Summary</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-4 rounded-lg">
-              <p className="text-sm text-gray-500">Total Items</p>
-              <p className="text-2xl font-bold text-gray-900">{bomItems.length}</p>
+              <p className="text-sm text-gray-500">Total Capacity</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {((Object.values(panelCounts).reduce((a, b) => a + b, 0) * moduleWp) / 1000).toFixed(2)} kWp
+              </p>
             </div>
             <div className="bg-white p-4 rounded-lg">
-              <p className="text-sm text-gray-500">Total Weight</p>
-              <p className="text-2xl font-bold text-gray-900">{formatNumber(totals.totalWeight)} kg</p>
+              <p className="text-sm text-gray-500">Cost/Wp</p>
+              <p className="text-2xl font-bold text-gray-900">
+                ₹{formatNumber(
+                  totals.totalCost / (Object.values(panelCounts).reduce((a, b) => a + b, 0) * moduleWp)
+                )}
+              </p>
             </div>
             <div className="bg-white p-4 rounded-lg">
               <p className="text-sm text-gray-500">Total Cost</p>
