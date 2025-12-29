@@ -124,6 +124,33 @@ export default function BOMPrintPreview() {
     };
   }, [bomData]);
 
+  // Auto-navigate back to BOMPage after printing/canceling print
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      // Navigate back to BOMPage after print dialog closes
+      navigate('/bom', {
+        state: {
+          bomData,
+          projectId: location.state?.projectId,  // Database projectId from state
+          aluminumRate,
+          sparePercentage,
+          moduleWp,
+          changeLog,
+          userNotes,
+          savedBomId: location.state?.savedBomId
+          // No need to pass hasSavedBom - BOMPage will check database
+        }
+      });
+    };
+
+    // Listen for when print dialog closes (after print or cancel)
+    window.addEventListener('afterprint', handleAfterPrint);
+
+    return () => {
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, [bomData, aluminumRate, sparePercentage, moduleWp, changeLog, userNotes, navigate, location.state]);
+
   // Format numbers in Indian style
   const formatIndianNumber = (value, decimals = 2) => {
     if (value === null || value === undefined) return '0';
@@ -154,7 +181,19 @@ export default function BOMPrintPreview() {
   };
 
   const handleClose = () => {
-    navigate(-1);
+    // Navigate back to BOMPage with full state
+    navigate('/bom', {
+      state: {
+        bomData,
+        projectId: location.state?.projectId,  // Pass the database projectId
+        aluminumRate,
+        sparePercentage,
+        moduleWp,
+        changeLog,
+        userNotes,
+        savedBomId: location.state?.savedBomId
+      }
+    });
   };
 
   if (!bomData || !printSettings) {

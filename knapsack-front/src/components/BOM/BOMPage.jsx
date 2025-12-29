@@ -1347,6 +1347,7 @@ import PrintSettingsModal from './PrintSettingsModal';
 import NotesSection from './NotesSection';
 import { API_URL } from '../../services/config';
 import { bomAPI, savedBomAPI, defaultNotesAPI } from '../../services/api';
+import { setCurrentProjectId } from '../../lib/tabStorageAPI';
 import axios from 'axios';
 import { arrayMove } from '@dnd-kit/sortable';
 import * as changeTracker from '../../lib/changeTracker';
@@ -1469,6 +1470,7 @@ export default function BOMPage() {
           // Store projectId from saved BOM
           if (location.state?.projectId) {
             setProjectId(location.state.projectId);
+            setCurrentProjectId(location.state.projectId); // Also set global projectId
           }
           // Load saved changeLog and userNotes
           if (location.state?.changeLog) {
@@ -1609,7 +1611,7 @@ export default function BOMPage() {
     };
 
     checkSavedBom();
-  }, [projectId]);
+  }, [projectId, location.state?.savedBomId]);  // Re-check when returning from print or when BOM is saved
 
   useEffect(() => {
     if (!bomData || loading) return;
@@ -2380,11 +2382,13 @@ export default function BOMPage() {
         state: {
           bomData,
           printSettings: settings,
+          projectId,  // Pass database projectId
           aluminumRate,
           sparePercentage,
           moduleWp,
           changeLog,
-          userNotes
+          userNotes,
+          savedBomId: location.state?.savedBomId
         }
       });
     } else if (action === 'direct') {
@@ -2392,11 +2396,13 @@ export default function BOMPage() {
         state: {
           bomData,
           printSettings: settings,
+          projectId,  // Pass database projectId
           aluminumRate,
           sparePercentage,
           moduleWp,
           changeLog,
           userNotes,
+          savedBomId: location.state?.savedBomId,
           autoPrint: true
         }
       });
