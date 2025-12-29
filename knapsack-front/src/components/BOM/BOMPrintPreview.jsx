@@ -159,6 +159,11 @@ export default function BOMPrintPreview() {
 
   return (
     <>
+      {/* Single Watermark - Fixed position repeats on every printed page */}
+      <div className="watermark-layer">
+        <img src="/watermark0.png" alt="" />
+      </div>
+
       {/* Dynamic Print Orientation */}
       <style>{`
         @page {
@@ -174,14 +179,112 @@ export default function BOMPrintPreview() {
           display: none;
         }
 
+        /* Watermark layer - Screen */
+        .watermark-layer {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+          z-index: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .watermark-layer img {
+          width: 50%;
+          height: auto;
+          opacity: 0.08;
+        }
+
         /* =========================
           PRINT STYLES
         ========================= */
         @media print {
 
+          /* --- WATERMARK FOR PRINT - position:fixed repeats on EVERY page --- */
+          .watermark-layer {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            pointer-events: none !important;
+            z-index: 999 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            mix-blend-mode: multiply !important;
+          }
+
+          .watermark-layer img {
+            width: 60% !important;
+            max-width: 700px !important;
+            height: auto !important;
+            opacity: 0.15 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+          /* Make backgrounds semi-transparent to show watermark */
+          .print-content .bg-white {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+          }
+
+          .print-content table th,
+          .print-content table td {
+            background-color: rgba(255, 255, 255, 0) !important;
+          }
+
+          .print-content table th {
+            background-color: rgba(251, 191, 36, 1) !important;
+          }
+
+          .print-content .bg-yellow-400 {
+            background-color: rgba(251, 191, 36, 1) !important;
+          }
+
+          .print-content .bg-blue-50 {
+            background-color: rgba(239, 246, 255, 0.9) !important;
+          }
+
+          .print-content .bg-green-50 {
+            background-color: rgba(240, 253, 244, 0.9) !important;
+          }
+
+          .print-content .bg-purple-50 {
+            background-color: rgba(250, 245, 255, 0.9) !important;
+          }
+
+          .print-content .bg-yellow-50 {
+            background-color: rgba(254, 252, 232, 0.9) !important;
+          }
+
+          .print-content .bg-orange-50 {
+            background-color: rgba(255, 247, 237, 0.9) !important;
+          }
+
+          .print-content .bg-gray-50 {
+            background-color: rgba(249, 250, 251, 0.9) !important;
+          }
+
+          .print-content .bg-red-50 {
+            background-color: rgba(254, 242, 242, 0.9) !important;
+          }
+
+          .print-content .bg-yellow-50 {
+            background-color: rgba(254, 252, 232, 0.9) !important;
+          }
+
           /* --- PRINT PAGE SAFE AREA --- */
           .print-content {
             box-sizing: border-box !important;
+            position: relative;
+            z-index: 1;
 
             /* ✅ this is the key: page-level bottom safety */
             padding-bottom: 35mm !important;
@@ -189,8 +292,17 @@ export default function BOMPrintPreview() {
             font-size: ${scale}% !important;
           }
 
-          .print-content * {
+          .print-content > * {
             font-size: inherit !important;
+            position: relative;
+            z-index: 1;
+          }
+
+          /* Ensure content backgrounds are preserved */
+          .print-content,
+          .print-content * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
 
           /* --- CUSTOM FOOTER --- */
@@ -204,12 +316,41 @@ export default function BOMPrintPreview() {
 
           /* --- TABLE SCALING (prevents bottom collision) --- */
           .print-content table {
-            zoom: 0.96; /* ✅ IMPORTANT: reduces table height per page */
+            zoom: ${orientation === 'landscape' ? '0.92' : '0.96'}; /* ✅ IMPORTANT: reduces table size to fit all columns */
+            width: 100% !important;
+            table-layout: auto !important;
           }
 
           .print-content th,
           .print-content td {
-            line-height: 1.2 !important;
+            line-height: 1.3 !important;
+            padding: 3px 4px !important;
+            height: ${orientation === 'landscape' ? '20px' : '24px'} !important;
+            vertical-align: middle !important;
+          }
+
+          .print-content tr {
+            height: ${orientation === 'landscape' ? '20px' : '24px'} !important;
+          }
+
+          .print-content tbody tr {
+            height: ${orientation === 'landscape' ? '20px' : '24px'} !important;
+          }
+
+          .print-content th {
+            font-size: ${orientation === 'landscape' ? '0.55rem' : '0.65rem'} !important;
+          }
+
+          .print-content td {
+            font-size: ${orientation === 'landscape' ? '0.5rem' : '0.6rem'} !important;
+          }
+
+          /* Ensure images don't expand row height */
+          .print-content table img {
+            max-height: 16px !important;
+            width: auto !important;
+            display: block !important;
+            margin: 0 auto !important;
           }
 
           /* --- HEADINGS --- */
@@ -250,12 +391,15 @@ export default function BOMPrintPreview() {
         ========================= */
         @media screen {
           .print-content {
+            position: relative;
+            z-index: 1;
             margin: 2rem auto;
             max-width: ${orientation === 'landscape' ? '297mm' : '210mm'};
             min-height: ${orientation === 'landscape' ? '210mm' : '297mm'};
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             transform: scale(${scale / 100});
             transform-origin: top center;
+            background: transparent;
           }
         }
 
