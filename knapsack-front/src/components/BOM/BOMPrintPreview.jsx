@@ -22,6 +22,11 @@ export default function BOMPrintPreview() {
   const [changeLog, setChangeLog] = useState([]);
   const [userNotes, setUserNotes] = useState([]);
 
+  // Check if in preview mode (shown in modal iframe)
+  const params = new URLSearchParams(location.search);
+  const isPreviewMode = params.get('previewMode') === 'true';
+  const tempId = params.get('tempId');
+
   useEffect(() => {
     // Check if loading from temp data (for PDF export)
     const searchParams = new URLSearchParams(location.search);
@@ -124,8 +129,10 @@ export default function BOMPrintPreview() {
     };
   }, [bomData]);
 
-  // Auto-navigate back to BOMPage after printing/canceling print
+  // Auto-navigate back to BOMPage after printing/canceling print (NOT in preview mode)
   useEffect(() => {
+    if (isPreviewMode) return; // Don't navigate when in preview mode
+
     const handleAfterPrint = () => {
       // Navigate back to BOMPage after print dialog closes
       navigate('/bom', {
@@ -149,7 +156,7 @@ export default function BOMPrintPreview() {
     return () => {
       window.removeEventListener('afterprint', handleAfterPrint);
     };
-  }, [bomData, aluminumRate, sparePercentage, moduleWp, changeLog, userNotes, navigate, location.state]);
+  }, [bomData, aluminumRate, sparePercentage, moduleWp, changeLog, userNotes, navigate, location.state, isPreviewMode]);
 
   // Format numbers in Indian style
   const formatIndianNumber = (value, decimals = 2) => {
@@ -490,8 +497,9 @@ export default function BOMPrintPreview() {
 
       `}</style>
 
-      {/* Action Buttons & Controls - Hidden in print */}
-      <div className="no-print fixed top-4 right-4 z-50 flex flex-col gap-3">
+      {/* Action Buttons & Controls - Hidden in print and preview mode */}
+      {!isPreviewMode && (
+        <div className="no-print fixed top-4 right-4 z-50 flex flex-col gap-3">
         {/* Action Buttons */}
         <div className="flex gap-3">
           <button
@@ -574,6 +582,7 @@ export default function BOMPrintPreview() {
           </p>
         </div>
       </div>
+      )}
 
       {/* Company Logo - Outside scaled content for proper sizing */}
       <img

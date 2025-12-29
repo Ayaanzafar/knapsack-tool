@@ -54,7 +54,10 @@ router.put('/:bomId', /* enforceBomUpdatePermissions, */ bomController.updateBom
 // Export PDF
 router.post('/export-pdf', pdfController.exportPdf);
 
-// Get temporary data for PDF generation
+// Create temporary data for preview
+router.post('/temp-data', pdfController.createTempData);
+
+// Get temporary data for PDF generation/preview
 router.get('/temp-data/:id', pdfController.getTempData);
 
 

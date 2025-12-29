@@ -29,6 +29,18 @@ const storeTempData = (data) => {
     return id;
 };
 
+// Create temporary BOM data for preview
+exports.createTempData = (req, res) => {
+    try {
+        const data = req.body;
+        const tempId = storeTempData(data);
+        res.json({ tempId });
+    } catch (error) {
+        console.error('Error creating temp data:', error);
+        res.status(500).json({ error: 'Failed to create temporary data' });
+    }
+};
+
 // Retrieve temporary BOM data
 exports.getTempData = (req, res) => {
     const { id } = req.params;
