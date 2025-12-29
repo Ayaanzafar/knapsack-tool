@@ -325,24 +325,24 @@ export default function BOMPrintPreview() {
           .print-content td {
             line-height: 1.3 !important;
             padding: 3px 4px !important;
-            height: ${orientation === 'landscape' ? '20px' : '24px'} !important;
+            height: ${orientation === 'landscape' ? '28px' : '24px'} !important;
             vertical-align: middle !important;
           }
 
           .print-content tr {
-            height: ${orientation === 'landscape' ? '20px' : '24px'} !important;
+            height: ${orientation === 'landscape' ? '28px' : '24px'} !important;
           }
 
           .print-content tbody tr {
-            height: ${orientation === 'landscape' ? '20px' : '24px'} !important;
+            height: ${orientation === 'landscape' ? '28px' : '24px'} !important;
           }
 
           .print-content th {
-            font-size: ${orientation === 'landscape' ? '0.55rem' : '0.65rem'} !important;
+            font-size: ${orientation === 'landscape' ? '0.7rem' : '0.65rem'} !important;
           }
 
           .print-content td {
-            font-size: ${orientation === 'landscape' ? '0.5rem' : '0.6rem'} !important;
+            font-size: ${orientation === 'landscape' ? '0.7rem' : '0.6rem'} !important;
           }
 
           /* Ensure images don't expand row height */
