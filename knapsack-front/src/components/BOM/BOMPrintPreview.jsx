@@ -110,6 +110,20 @@ export default function BOMPrintPreview() {
     }
   }, [location.state, location.search, navigate]);
 
+  // Set page title for print header
+  useEffect(() => {
+    if (bomData?.projectInfo?.projectName) {
+      document.title = `BOM - ${bomData.projectInfo.projectName}`;
+    } else {
+      document.title = 'Bill of Materials';
+    }
+
+    // Restore original title when component unmounts
+    return () => {
+      document.title = 'knapsack-front';
+    };
+  }, [bomData]);
+
   // Format numbers in Indian style
   const formatIndianNumber = (value, decimals = 2) => {
     if (value === null || value === undefined) return '0';
@@ -198,6 +212,16 @@ export default function BOMPrintPreview() {
           width: 50%;
           height: auto;
           opacity: 0.08;
+        }
+
+        /* Company Logo - Screen preview */
+        .company-logo {
+          position: absolute;
+          top: 2rem;
+          right: 2rem;
+          width: 200px;
+          height: auto;
+          z-index: 1000;
         }
 
         /* =========================
@@ -362,6 +386,19 @@ export default function BOMPrintPreview() {
             margin: 0 auto !important;
           }
 
+          /* Company Logo - Appears on ALL pages with position:fixed */
+          /* To show ONLY on first page, we use absolute positioning instead */
+          .company-logo {
+            position: absolute !important;
+            top: 1.5cm !important;
+            right: 1cm !important;
+            width: ${orientation === 'landscape' ? '5cm' : '6cm'} !important;
+            height: auto !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            z-index: 1000 !important;
+          }
+
           /* --- HEADINGS --- */
           .print-content h1 {
             font-size: ${scale > 80 ? '1.25rem' : '1.1rem'} !important;
@@ -499,12 +536,19 @@ export default function BOMPrintPreview() {
         </div>
       </div>
 
+      {/* Company Logo - Outside scaled content for proper sizing */}
+      <img
+        src="/white_back_photo.svg"
+        alt="Company Logo"
+        className="company-logo"
+      />
+
       {/* Print Content */}
       <div className={`print-content ${orientation}`}>
         <div className="p-6 bg-white">
           {/* Header */}
-          <div className="mb-6 border-b-2 border-purple-600 pb-4">
-            <h1 className="text-2xl font-bold text-gray-900">Bill of Materials (BOM) for {bomData.projectInfo.longRailVariation || ''}</h1>
+          <div className="mb-6 border-b-2 border-purple-600 pb-4 relative">
+            <h1 className="text-2xl font-bold text-gray-900 pr-32">Bill of Materials (BOM) for {bomData.projectInfo.longRailVariation || ''}</h1>
             <p className="text-lg text-gray-700 mt-1">{bomData.projectInfo.projectName}</p>
             <p className="text-sm text-gray-500 mt-1">
               Generated: {new Date(bomData.projectInfo.generatedAt).toLocaleString()}
