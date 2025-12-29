@@ -280,6 +280,15 @@ export default function BOMPrintPreview() {
             background-color: rgba(254, 252, 232, 0.9) !important;
           }
 
+          /* Keep separator columns gray/white - NOT yellow */
+          .print-content .bg-gray-200 {
+            background-color: #f3f4f6 !important;
+          }
+
+          .print-content thead .bg-gray-200 {
+            background-color: #ffffff !important;
+          }
+
           /* --- PRINT PAGE SAFE AREA --- */
           .print-content {
             box-sizing: border-box !important;
