@@ -226,10 +226,26 @@ export default function CreateProjectPage() {
                       }`}
                   >
                     <option value="" disabled className="text-gray-400">-SELECT-</option>
-                    <option value="U Cleat Long Rail" className="text-gray-900">U Cleat Long Rail</option>
-                    <option value="L Cleat Long Rail" disabled className="text-gray-900">L Cleat Long Rail</option>
-                    <option value="Mini Rail" disabled className="text-gray-900">Mini Rail</option>
-                    <option value="Short Rail" disabled className="text-gray-900">Short Rail</option>
+                    <option value="U Cleat Long Rail - Regular" className="text-gray-900">U Cleat Long Rail - Regular</option>
+                    <option disabled value="U Cleat Long Rail - Regular - Asbestos" className="text-gray-900">U Cleat Long Rail - Regular - Asbestos</option>
+                    <option disabled value="U Cleat Long Rail - Regular - Seam Clamp" className="text-gray-900">U Cleat Long Rail - Regular - Seam Clamp</option>
+                    <option disabled value="U Cleat Long Rail - Large Span/Height" className="text-gray-900">U Cleat Long Rail - Large Span/Height</option>
+                    <option disabled value="U Cleat Long Rail - Large Span - Asbestos" className="text-gray-900">U Cleat Long Rail - Large Span - Asbestos</option>
+                    <option disabled value="U Cleat Long Rail - Large Height - Seam Clamp" className="text-gray-900">U Cleat Long Rail - Large Height - Seam Clamp</option>
+                    <option disabled value="Double U Cleat Long Rail -160mm Height" className="text-gray-900">Double U Cleat Long Rail -160mm Height</option>
+                    <option disabled value="Double U Cleat Long Rail -180mm Height" className="text-gray-900">Double U Cleat Long Rail -180mm Height</option>
+                    <option disabled value="L Cleat Long Rail - Regular" className="text-gray-900">L Cleat Long Rail - Regular</option>
+                    <option disabled value="L Cleat Long Rail - Regular - Asbestos" className="text-gray-900">L Cleat Long Rail - Regular - Asbestos</option>
+                    <option disabled value="L Cleat Long Rail - Regular - Seam Clamp" className="text-gray-900">L Cleat Long Rail - Regular - Seam Clamp</option>
+                    <option disabled value="L Cleat Long Rail - Large Cleat" className="text-gray-900">L Cleat Long Rail - Large Cleat</option>
+                    <option disabled value="L Cleat Long Rail - Large span" className="text-gray-900">L Cleat Long Rail - Large span</option>
+                    <option disabled value="L Cleat Long Rail - Large Height - Asbestos" className="text-gray-900">L Cleat Long Rail - Large Height - Asbestos</option>
+                    <option disabled value="L Cleat Long Rail - Large Height - Seam Clamp" className="text-gray-900">L Cleat Long Rail - Large Height - Seam Clamp</option>
+                    <option disabled value="L Cleat Long Rail - Large Cleat - Asbestos" className="text-gray-900">L Cleat Long Rail - Large Cleat - Asbestos</option>
+                    <option disabled value="L Cleat Long Rail - Large Cleat - Seam Clamp" className="text-gray-900">L Cleat Long Rail - Large Cleat - Seam Clamp</option>
+                    <option disabled value="C45 Long Rail" className="text-gray-900">C45 Long Rail</option>
+                    <option disabled value="C45 Long Rail - Asbestos" className="text-gray-900">C45 Long Rail - Asbestos</option>
+                    <option disabled value="C45 Long Rail - Seam Clamp" className="text-gray-900">C45 Long Rail - Seam Clamp</option>
                   </select>
                 </div>
               </div>
