@@ -218,3 +218,30 @@ model DefaultNote {
 
   @@map("default_notes")
 }
+
+// Sunrack Profiles Table - Master catalog of all Sunrack profiles with RM codes
+model SunrackProfile {
+  id                  Int      @id @default(autoincrement())
+  sNo                 Int      @unique @map("s_no")
+  regalCode           String?  @map("regal_code") @db.VarChar(50)
+  excellenceCode      String?  @map("excellence_code") @db.VarChar(50)
+  varnCode            String?  @map("varn_code") @db.VarChar(50)
+  rcCode              String?  @map("rc_code") @db.VarChar(50)
+  snalcoCode          String?  @map("snalco_code") @db.VarChar(50)
+  darshanCode         String?  @map("darshan_code") @db.VarChar(50)
+  jmCode              String?  @map("jm_code") @db.VarChar(50)
+  ralcoCode           String?  @map("ralco_code") @db.VarChar(50)
+  saiDeepCode         String?  @map("sai_deep_code") @db.VarChar(50)
+  eleanorCode         String?  @map("eleanor_code") @db.VarChar(50)
+  profileImage        String?  @map("profile_image") @db.Text
+  profileDescription  String   @map("profile_description") @db.Text
+  genericName         String   @map("generic_name") @db.VarChar(255)
+  designWeight        Decimal  @map("design_weight") @db.Decimal(10, 5)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@index([regalCode])
+  @@index([excellenceCode])
+  @@index([varnCode])
+  @@map("sunrack_profiles")
+}

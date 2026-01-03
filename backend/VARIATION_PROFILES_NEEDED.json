@@ -1,0 +1,119 @@
+[
+  {
+    "excelCode": "MA -100",
+    "sNo": 85,
+    "imageFilename": "MA-100.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 100",
+    "genericName": "External Long Rail_60mm",
+    "profileDescription": "Long Rail - 60mm Height - External"
+  },
+  {
+    "excelCode": "MA -102",
+    "sNo": 86,
+    "imageFilename": "MA-102.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 102",
+    "genericName": "External 60mm Long Rail Jointer",
+    "profileDescription": "Jointer for 60mm Height - External Long Rail"
+  },
+  {
+    "excelCode": "MA -110",
+    "sNo": 100,
+    "imageFilename": "MA-110.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 110",
+    "genericName": "Unified U Cleat",
+    "profileDescription": "Unified U Cleat - 76mm Height"
+  },
+  {
+    "excelCode": "MA - 35",
+    "sNo": 19,
+    "imageFilename": "MA-35.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 35",
+    "genericName": "Mid Clamp - 21mm Module Gap",
+    "profileDescription": "Mid Clamp - 9mm Height - 21mm Gap - 3.5mm Thickness"
+  },
+  {
+    "excelCode": "MA -43",
+    "sNo": 26,
+    "imageFilename": "MA-43.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 43",
+    "genericName": "40mm Long Rail",
+    "profileDescription": "Long Rail - 40mm Height - External"
+  },
+  {
+    "excelCode": "MA - 43",
+    "sNo": 26,
+    "imageFilename": "MA-43.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 43",
+    "genericName": "40mm Long Rail",
+    "profileDescription": "Long Rail - 40mm Height - External"
+  },
+  {
+    "excelCode": "MA - 44",
+    "sNo": 27,
+    "imageFilename": "MA-44.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 44",
+    "genericName": "Inner U Cleat",
+    "profileDescription": "U Cleat Inner"
+  },
+  {
+    "excelCode": "MA - 46",
+    "sNo": 28,
+    "imageFilename": "MA-46.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 46",
+    "genericName": "Hook Rail Nut",
+    "profileDescription": "Rail Nut - External"
+  },
+  {
+    "excelCode": "MA -52",
+    "sNo": 34,
+    "imageFilename": "MA-52.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 52",
+    "genericName": "Asbestos Curved Base",
+    "profileDescription": "Asbestos - Curved Base"
+  },
+  {
+    "excelCode": "MA -57",
+    "sNo": 38,
+    "imageFilename": "MA-57.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 57",
+    "genericName": "Standing Seam Walkway Clamp 1",
+    "profileDescription": "Seam Clamp - 38mm Height - 14mm Gap - 30mm Seam Height - Top Thread"
+  },
+  {
+    "excelCode": "MA -72",
+    "sNo": 47,
+    "imageFilename": "MA-72.png",
+    "codeSource": "Regal",
+    "regalCode": "MA 72",
+    "genericName": "External Long Rail Jointer",
+    "profileDescription": "Jointer for 40mm Height - External Long Rail"
+  },
+  {
+    "excelCode": "SN - 5306",
+    "sNo": 94,
+    "imageFilename": "SN-5306.png",
+    "codeSource": "SNALCO",
+    "regalCode": "-",
+    "genericName": "UX Long Rail - Large U Base",
+    "profileDescription": "U Cleat - Outer - 145mm Height"
+  },
+  {
+    "excelCode": "SR - 03",
+    "sNo": 56,
+    "imageFilename": "SR-03.png",
+    "codeSource": "VARN",
+    "regalCode": "-",
+    "genericName": "35mm End Clamp (Type 2)",
+    "profileDescription": "End Clamp - 35mm Height - 20mm Gap - 3.5mm Thickness"
+  }
+]

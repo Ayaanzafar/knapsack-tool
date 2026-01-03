@@ -1,0 +1,43 @@
+========================================================================================================================
+PROFILES NEEDED FOR FIRST 8 BOM VARIATIONS
+========================================================================================================================
+
+Total profiles to rename: 13
+
+Save images with these exact filenames in: backend/assets/profile-images/
+
+========================================================================================================================
+
+Image Filename           | Excel Code  | Source      | Generic Name
+------------------------------------------------------------------------------------------------------------------------
+MA-100.png               | MA -100     | Regal       | External Long Rail_60mm
+MA-102.png               | MA -102     | Regal       | External 60mm Long Rail Jointer
+MA-110.png               | MA -110     | Regal       | Unified U Cleat
+MA-35.png                | MA - 35     | Regal       | Mid Clamp - 21mm Module Gap
+MA-43.png                | MA -43      | Regal       | 40mm Long Rail
+MA-43.png                | MA - 43     | Regal       | 40mm Long Rail
+MA-44.png                | MA - 44     | Regal       | Inner U Cleat
+MA-46.png                | MA - 46     | Regal       | Hook Rail Nut
+MA-52.png                | MA -52      | Regal       | Asbestos Curved Base
+MA-57.png                | MA -57      | Regal       | Standing Seam Walkway Clamp 1
+MA-72.png                | MA -72      | Regal       | External Long Rail Jointer
+SN-5306.png              | SN - 5306   | SNALCO      | UX Long Rail - Large U Base
+SR-03.png                | SR - 03     | VARN        | 35mm End Clamp (Type 2)
+
+========================================================================================================================
+
+QUICK CHECKLIST:
+------------------------------------------------------------------------------------------------------------------------
+☐  1. MA-100.png                (External Long Rail_60mm)
+☐  2. MA-102.png                (External 60mm Long Rail Jointer)
+☐  3. MA-110.png                (Unified U Cleat)
+☐  4. MA-35.png                 (Mid Clamp - 21mm Module Gap)
+☐  5. MA-43.png                 (40mm Long Rail)
+☐  6. MA-43.png                 (40mm Long Rail)
+☐  7. MA-44.png                 (Inner U Cleat)
+☐  8. MA-46.png                 (Hook Rail Nut)
+☐  9. MA-52.png                 (Asbestos Curved Base)
+☐ 10. MA-57.png                 (Standing Seam Walkway Clamp 1)
+☐ 11. MA-72.png                 (External Long Rail Jointer)
+☐ 12. SN-5306.png               (UX Long Rail - Large U Base)
+☐ 13. SR-03.png                 (35mm End Clamp (Type 2))

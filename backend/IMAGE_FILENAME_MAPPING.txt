@@ -1,0 +1,174 @@
+========================================================================================================================
+SUNRACK PROFILE IMAGE FILENAME MAPPING
+========================================================================================================================
+
+Use this guide to name your profile images. Save images with the exact filename shown.
+Example: For MA-43, save the image as "MA-43.png"
+
+========================================================================================================================
+
+S.No  | Image Filename           | Source      | Generic Name
+------------------------------------------------------------------------------------------------------------------------
+1     | MA-01.png                | Regal       | Big Rail Nut
+2     | MA-07.png                | Regal       | 80mm Mini Rail
+3     | MA-09.png                | Regal       | Standing Seam Clamp - Part B (Type 1)
+4     | MA-10.png                | Regal       | Standing Seam Clamp - Part A (Type 1)
+5     | MA-11C.png               | Regal       | 150mm Walkway Section
+6     | MA-12.png                | Regal       | 25mm Base Rail
+7     | MA-16.png                | Regal       | Mid Clamp - 25mm Module Gap
+8     | MA-17.png                | Regal       | 35mm End Clamp (Type 1)
+9     | MA-23.png                | Regal       | 100mm Short Rail (In)
+10    | MA-24.png                | Regal       | 40mm End Clamp (Type 1)
+11    | MA-25A.png               | Regal       | V Rail (Type 2)
+12    | MA-26.png                | Regal       | Standing Seam H Clamp (Type 1)
+13    | MA-27.png                | Regal       | 65mm Short Rail (In)_V2
+14    | MA-28.png                | Regal       | 21mm Strut Channel
+15    | MA-29.png                | Regal       | Small Rail Nut
+16    | MA-30.png                | Regal       | Purlin Clamp
+17    | MA-31.png                | Regal       | 75mm Short Rail (In)_V2
+18    | MA-34.png                | Regal       | 41mm Strut Channel
+19    | MA-35.png                | Regal       | Mid Clamp - 21mm Module Gap
+20    | MA-36.png                | Regal       | 9mm Circular Tube
+21    | MA-38.png                | Regal       | Standing Seam H Clamp (Type 2)
+22    | MA-39.png                | Regal       | 75/25mm - 90 -  Mini Rail
+23    | MA-40.png                | Regal       | 70/27mm - 69 - Mini Rail
+24    | MA-41.png                | Regal       | 75/36mm - 90 - Mini Rail
+25    | MA-42.png                | Regal       | 30mm End Clamp
+26    | MA-43.png                | Regal       | 40mm Long Rail
+27    | MA-44.png                | Regal       | Inner U Cleat
+28    | MA-46.png                | Regal       | Hook Rail Nut
+29    | MA-47.png                | Regal       | Mid Clamp (M+)
+30    | MA-48.png                | Regal       | Proflex - Standing Seam Clamp - Part A
+31    | MA-49.png                | Regal       | Proflex - Standing Seam Clamp - Part B
+32    | MA-50.png                | Regal       | 65mm Short Rail (Ex)
+33    | MA-51.png                | Regal       | 100mm Short Rail (Ex)
+34    | MA-52.png                | Regal       | Asbestos Curved Base
+35    | MA-54.png                | Regal       | 89mm L Cleat
+36    | MA-55.png                | Regal       | L Type Long Rail_V2
+37    | MA-56.png                | Regal       | 70mm Short Rail (In)
+38    | MA-57.png                | Regal       | Standing Seam Walkway Clamp 1
+39    | MA-58.png                | Regal       | Standing Seam Clamp - Part A (Type 2)
+40    | MA-59.png                | Regal       | Standing Seam Clamp - Part B (Type 2)
+41    | MA-60.png                | Regal       | FRP Walkway M Clamp
+42    | MA-63.png                | Regal       | Standing Seam Clamp (Type 3) (2x)
+43    | MA-64.png                | Regal       | Kalzip Clamp - Part B
+44    | MA-65.png                | Regal       | Kalzip Clamp - Part A
+45    | MA-68.png                | Regal       | Hat Base
+46    | MA-69.png                | Regal       | Rectangle Column
+47    | MA-72.png                | Regal       | External Long Rail Jointer
+48    | MA-73.png                | Regal       | Round Tube Bracket
+49    | MA-74.png                | Regal       | Hand Rail Tube
+50    | MA-75.png                | Regal       | FRP Walkway M Clamp_V2
+51    | MA-76.png                | Regal       | L Type Long Rail_V3
+52    | MA-77.png                | Regal       | Standing Seam Clamp - Part B (Type 4)
+53    | MA-81.png                | Regal       | 75mm Standing Seam Clamp - External
+54    | MA-82.png                | Regal       | 65/17mm - 74 - Mini Rail (Ex)
+55    | LA25x25.png              | Regal       | L Angle - 25x25mm
+56    | SR-03.png                | VARN        | 35mm End Clamp (Type 2)
+57    | MA-107.png               | Regal       | L Angle - 45x35mm
+58    | SR-11.png                | VARN        | 70/42mm Mini Rail
+59    | EX-60.png                | Excellence  | Round Tube Jointer
+60    | EX-54.png                | Excellence  | 40mm End Clamp (Type 2)
+61    | SU-02.png                | RC          | 35mm End Clamp (M+)
+62    | DR-1.png                 | Darshan     | 175mm Walkway Section (2x)
+63    | DR-2.png                 | Darshan     | Ballast Tray Clamp
+64    | SN-5303.png              | SNALCO      | 97/36mm - 90 - Mini Rail (Ex)
+65    | SR-16.png                | VARN        | 33mm End Clamp
+66    | MA-84.png                | Regal       | FRP C Clamp
+67    | MA-85.png                | Regal       | Kliplock 700 Clamp - Part B
+68    | MA-86.png                | Regal       | Kliplock 700 Clamp - Part A
+69    | MA-87.png                | Regal       | Whistle Clamp
+70    | EX-01.png                | Excellence  | CNT - Front Leg
+71    | EX-02.png                | Excellence  | CNT - Back Leg
+72    | MA-112.png               | Regal       | Mid Clamp (T4)
+73    | MA-111.png               | Regal       | 35mm End Clamp (T4)
+74    | MA-108.png               | Regal       | 80mm Short Rail(Ex)
+75    | MA-89.png                | Regal       | Kalzip Flat Top Clamp
+76    | MA-90.png                | Regal       | L Type Long Rail - 60mm
+77    | MA-91.png                | Regal       | Outer U Cleat - 82mm
+78    | MA-92.png                | Regal       | Tata Short Rail
+79    | MA-93.png                | Regal       | Tata Universal Module Clamp
+80    | MA-94.png                | Regal       | Tata Rail Nut
+81    | MA-95.png                | Regal       | Multilock Seam Clamp - Part B
+82    | MA-97.png                | Regal       | Multilock Seam Clamp - Part A
+83    | MA-98.png                | Regal       | L Type Long Rail Jointert_V2
+84    | MA-99.png                | Regal       | Standing Seam Clamp - 100mm
+85    | MA-100.png               | Regal       | External Long Rail_60mm
+86    | MA-102.png               | Regal       | External 60mm Long Rail Jointer
+87    | EX-08.png                | Excellence  | CNT - Face Leg
+88    | EX-10.png                | Excellence  | 98/27 - 75 - Mini Rail (Ex)
+89    | EX-11.png                | Excellence  | 98/27 - 69 - Mini Rail (Ex)
+90    | EX-12.png                | Excellence  | 98/29 - 73 - Mini Rail (Ex)
+91    | EX-17.png                | Excellence  | Emmvee Long Rail
+92    | EX-18.png                | Excellence  | Araymond Strut Rail - 73mm
+93    | EX-26.png                | Excellence  | 100mm Short Rail (AR)
+94    | SN-5306.png              | SNALCO      | UX Long Rail - Large U Base
+95    | MA-103.png               | Regal       | 25mm Base Rail W/O Flange
+96    | MA-104.png               | Regal       | Multilok Flat Top Seam Clamp - Part A
+97    | MA-105.png               | Regal       | H Bracket_V2
+98    | MA-106.png               | Regal       | Kliplock 700 Flat Top Clamp - Part A
+99    | MA-109.png               | Regal       | 30mm End Clamp_V2
+100   | MA-110.png               | Regal       | Unified U Cleat
+101   | SN-5307.png              | SNALCO      | Height Extender - U Long Rail
+102   | MA-113.png               | Regal       | Bitumen Rail Splice
+103   | MA-114.png               | Regal       | RCC EW Channel (Purlin)
+104   | MA-115.png               | Regal       | RCC Column 40X60
+105   | MA-116.png               | Regal       | RCC Bracing 40X40
+106   | MA-117.png               | Regal       | H Bracket-V3
+107   | MA-118.png               | Regal       | RCC EW Splice (Purlin splcie)
+108   | MA-119.png               | Regal       | RCC NS CHANNEL (Rafter)
+109   | MA-120.png               | Regal       | 100 - 27- Mono Rail (Ex)
+110   | MA-121.png               | Regal       | 30mm End Clamp_Type 2
+111   | MA-122.png               | Regal       | Mid Clamp - 27mm Module Gap
+112   | MA-123.png               | Regal       | M8 Spacer
+113   | EX-36.png                | Excellence  | 98/23 - 29 - Mini Rail (Ex)
+114   | EX-41.png                | Excellence  | Flat Base (Type 2)
+115   | SR-18.png                | VARN        | Purlin Clamp (Type 2)
+116   | SR-17.png                | VARN        | Teeth Washer
+117   | SN-5311.png              | SNALCO      | Bitumen Rail - 100mm
+118   | SN-5312.png              | SNALCO      | 100/35 - 105 - Mini Rail (Ex)
+119   | SR-15.png                | VARN        | Standing Seam Clamp - 65mm
+120   | EX-51.png                | Excellence  | Toe Guard
+121   | MA-124.png               | Regal       | Waaree Flexible Module Bracket
+122   | MA-125.png               | Regal       | U Bracket
+123   | MA-126.png               | Regal       | Module Flange Bracket
+124   | MA-127.png               | Regal       | Sunrack Bottom Clamp
+125   | EX-56.png                | Excellence  | 117mm L Cleat
+126   | SU-09.png                | RC          | 60mm T Bolt Short Rail
+127   | SU-10.png                | RC          | Mid Clamp - 15mm Module Gap
+128   | MA-128.png               | Regal       | Standing Seam Walkway Clamp 2
+129   | RL-49709.png             | Ralco       | C45 Strut Base (for Magnelis Long Rail)
+130   | RL-49708.png             | Ralco       | C45 Strut Latch (for Magnelis Long Rail)
+131   | RL-49710.png             | Ralco       | 45x30 - U Channel
+132   | SU-21.png                | RC          | C45 Rail Jointer (for Magnelis Long Rail)
+133   | SN-5313.png              | SNALCO      | H Bracket for 100mm Box Column
+134   | SN-5314.png              | SNALCO      | 100mm Box Column
+135   | SN-5317.png              | SNALCO      | 5 Deg Elevator
+136   | SN-5318.png              | SNALCO      | 120mm Short Rail
+137   | RL-49704.png             | Ralco       | Strut Rail Nut
+138   | SR-02-(JM).png           | JM          | 150mm Short Rail
+139   | DR-3.png                 | Darshan     | 150mm Inter-Lock Column
+140   | MA-129.png               | Regal       | 100mm Part A - 2 Part Seam Clamp
+
+========================================================================================================================
+
+SUMMARY BY CODE SOURCE:
+------------------------------------------------------------------------------------------------------------------------
+Regal          : 98 profiles
+Excellence     : 15 profiles
+VARN           : 6 profiles
+RC             : 4 profiles
+SNALCO         : 9 profiles
+Darshan        : 3 profiles
+JM             : 1 profiles
+Ralco          : 4 profiles
+
+========================================================================================================================
+
+NOTES:
+1. Image Priority Order: Regal > Excellence > VARN > RC > SNALCO > Darshan > JM > Ralco > SaiDeep > Eleanor
+2. All spaces in codes are replaced with hyphens (e.g., "MA 43" becomes "MA-43")
+3. Recommended image format: PNG (transparent background preferred)
+4. Save all images in: backend/assets/profile-images/
+5. After saving images, run the image path update script to update the database
+
