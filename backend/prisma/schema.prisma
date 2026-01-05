@@ -129,11 +129,16 @@ model BomMasterItem {
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
-  formulas BomFormula[]
-  rmCodes  RmCode[]
+  // Link to Sunrack Profiles (for aluminum items, NULL for fasteners)
+  sunrackProfileId Int?     @map("sunrack_profile_id")
+
+  formulas       BomFormula[]
+  rmCodes        RmCode[]
+  sunrackProfile SunrackProfile? @relation(fields: [sunrackProfileId], references: [id])
 
   @@index([sunrackCode])
   @@index([category])
+  @@index([sunrackProfileId])
   @@map("bom_master_items")
 }
 
@@ -175,6 +180,7 @@ model GeneratedBom {
   bomItems     Json?    @map("bom_items")          // Minimal item data (profile references + quantities + user edits)
   bomData      Json?    @map("bom_data")           // OLD: Complete BOM data (for backward compatibility during migration)
   changeLog    Json?    @map("change_log")         // Array of user changes
+  notes        Json?    @map("notes")              // Array of notes for this BOM (copied from template, can be customized)
 
   version      Int      @default(1)                // Version number
   isLatest     Boolean  @default(true)             // Mark latest version
@@ -240,8 +246,25 @@ model SunrackProfile {
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
+  bomMasterItems BomMasterItem[]
+
   @@index([regalCode])
   @@index([excellenceCode])
   @@index([varnCode])
   @@map("sunrack_profiles")
+}
+
+// BOM Variation Templates Table - Stores template configuration for each BOM variation
+model BomVariationTemplate {
+  id            Int      @id @default(autoincrement())
+  variationName String   @unique @map("variation_name") @db.VarChar(255)
+  items         Json     @map("items")          // Array of items with sunrackCode, itemDescription, quantityFormula, etc.
+  defaultNotes  Json     @map("default_notes")  // Array of default notes ["Note 1", "Note 2", ...]
+  order         String   @default("standard") @db.VarChar(50)  // Item ordering preference
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([variationName])
+  @@map("bom_variation_templates")
 }

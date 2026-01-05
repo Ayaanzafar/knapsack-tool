@@ -1,0 +1,986 @@
+[
+  {
+    "variationName": "U Cleat Long Rail - Regular",
+    "items": [
+      {
+        "serialNumber": 1,
+        "sunrackCode": "MA -43",
+        "itemDescription": "Long Rail\r\n(Multiple Line items one for each cut length)",
+        "material": "AA 6063",
+        "length": "Cutlength from Basic Calculation ",
+        "uom": "Nos",
+        "quantityFormula": "Take respective Quanity from basic calcuation sheet"
+      },
+      {
+        "serialNumber": 2,
+        "sunrackCode": "MA -110",
+        "itemDescription": "U Cleat (5mm Hole)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to sum of SB1 & SB2  in basic calculation sheet"
+      },
+      {
+        "serialNumber": 3,
+        "sunrackCode": "MA -72",
+        "itemDescription": "Rail Jointer",
+        "material": "AA 6063",
+        "length": 150,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Joints in basic calculation sheet"
+      },
+      {
+        "serialNumber": 4,
+        "sunrackCode": "SR - 03",
+        "itemDescription": "End Clamps-35mm",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 5,
+        "sunrackCode": "MA - 35",
+        "itemDescription": "Mid Clamps ",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 6,
+        "sunrackCode": "MA - 46",
+        "itemDescription": "Rail Nuts",
+        "material": "AA 6063",
+        "length": 19,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Sum of End & Mid Clamps"
+      },
+      {
+        "serialNumber": 7,
+        "sunrackCode": null,
+        "itemDescription": "M8 Hex Head Fastener Set",
+        "material": "SS304",
+        "length": 65,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 8,
+        "sunrackCode": null,
+        "itemDescription": "M8  Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End Clamps"
+      },
+      {
+        "serialNumber": 9,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 25,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid Clamps"
+      },
+      {
+        "serialNumber": 10,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.2X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Jointers x 4)"
+      },
+      {
+        "serialNumber": 11,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.8X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to SB2 in basic Calculation"
+      },
+      {
+        "serialNumber": 12,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  5.5X63mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to SB1 in basic Calculation"
+      },
+      {
+        "serialNumber": 13,
+        "sunrackCode": null,
+        "itemDescription": "Rubber Pad 40x40mm for U- cleat",
+        "material": "EPDM",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      }
+    ],
+    "totalItems": 13
+  },
+  {
+    "variationName": "U Cleat Long Rail - Regular - Asbestos",
+    "items": [
+      {
+        "serialNumber": 1,
+        "sunrackCode": "MA -43",
+        "itemDescription": "Long Rail\r\n(Multiple Line items one for each cut length)",
+        "material": "AA 6063",
+        "length": "Cutlength from Basic Calculation ",
+        "uom": "Nos",
+        "quantityFormula": "Take respective Quanity from basic calcuation sheet"
+      },
+      {
+        "serialNumber": 2,
+        "sunrackCode": "MA -110",
+        "itemDescription": "U Cleat (9mm Hole)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to sum of SB1 & SB2  in basic calculation sheet"
+      },
+      {
+        "serialNumber": 3,
+        "sunrackCode": "MA -52",
+        "itemDescription": "Asbestos Curved Base",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 4,
+        "sunrackCode": "MA -72",
+        "itemDescription": "Rail Jointer",
+        "material": "AA 6063",
+        "length": 150,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Joints in basic calculation sheet"
+      },
+      {
+        "serialNumber": 5,
+        "sunrackCode": "SR - 03",
+        "itemDescription": "End Clamps-35mm",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 6,
+        "sunrackCode": "MA - 35",
+        "itemDescription": "Mid Clamps ",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 7,
+        "sunrackCode": "MA - 46",
+        "itemDescription": "Rail Nuts",
+        "material": "AA 6063",
+        "length": 19,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Sum of End & Mid Clamps"
+      },
+      {
+        "serialNumber": 8,
+        "sunrackCode": null,
+        "itemDescription": "M8 Hex Head Fastener Set",
+        "material": "SS304",
+        "length": 65,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 9,
+        "sunrackCode": null,
+        "itemDescription": "M8  Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End Clamps"
+      },
+      {
+        "serialNumber": 10,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 25,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid Clamps"
+      },
+      {
+        "serialNumber": 11,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.2X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Jointers x 4)"
+      },
+      {
+        "serialNumber": 12,
+        "sunrackCode": null,
+        "itemDescription": "Rubber Pad 40x40mm for U- cleat",
+        "material": "EPDM",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      }
+    ],
+    "totalItems": 12
+  },
+  {
+    "variationName": "U Cleat Long Rail - Regular - Seam Clamp",
+    "items": [
+      {
+        "serialNumber": 1,
+        "sunrackCode": "MA -43",
+        "itemDescription": "Long Rail\r\n(Multiple Line items one for each cut length)",
+        "material": "AA 6063",
+        "length": "Cutlength from Basic Calculation ",
+        "uom": "Nos",
+        "quantityFormula": "Take respective Quanity from basic calcuation sheet"
+      },
+      {
+        "serialNumber": 2,
+        "sunrackCode": "MA -110",
+        "itemDescription": "U Cleat (9mm Hole)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to sum of SB1 & SB2  in basic calculation sheet"
+      },
+      {
+        "serialNumber": 3,
+        "sunrackCode": "MA -57",
+        "itemDescription": "Seam Clamp (2 Grub screws)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 4,
+        "sunrackCode": "MA -72",
+        "itemDescription": "Rail Jointer",
+        "material": "AA 6063",
+        "length": 150,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Joints in basic calculation sheet"
+      },
+      {
+        "serialNumber": 5,
+        "sunrackCode": "SR - 03",
+        "itemDescription": "End Clamps-35mm",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 6,
+        "sunrackCode": "MA - 35",
+        "itemDescription": "Mid Clamps ",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 7,
+        "sunrackCode": "MA - 46",
+        "itemDescription": "Rail Nuts",
+        "material": "AA 6063",
+        "length": 19,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Sum of End & Mid Clamps"
+      },
+      {
+        "serialNumber": 8,
+        "sunrackCode": null,
+        "itemDescription": "M8 Hex Head Fastener Set",
+        "material": "SS304",
+        "length": 65,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 9,
+        "sunrackCode": null,
+        "itemDescription": "M8  Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End Clamps"
+      },
+      {
+        "serialNumber": 10,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 25,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid Clamps"
+      },
+      {
+        "serialNumber": 11,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Plain & Spring Washer",
+        "material": "SS304",
+        "length": 16,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of Seam Clamps"
+      },
+      {
+        "serialNumber": 12,
+        "sunrackCode": null,
+        "itemDescription": "M8 Grub Screw",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Seam Clamp x 2)"
+      },
+      {
+        "serialNumber": 13,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.2X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Jointers x 4)"
+      },
+      {
+        "serialNumber": 14,
+        "sunrackCode": null,
+        "itemDescription": "Rubber Pad 40x40mm for U- cleat",
+        "material": "EPDM",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      }
+    ],
+    "totalItems": 14
+  },
+  {
+    "variationName": "U Cleat Long Rail - Large Span/Height",
+    "items": [
+      {
+        "serialNumber": 1,
+        "sunrackCode": "MA -100",
+        "itemDescription": "Long Rail\r\n(Multiple Line items one for each cut length)",
+        "material": "AA 6063",
+        "length": "Cutlength from Basic Calculation ",
+        "uom": "Nos",
+        "quantityFormula": "Take respective Quanity from basic calcuation sheet"
+      },
+      {
+        "serialNumber": 2,
+        "sunrackCode": "MA -110",
+        "itemDescription": "U Cleat (5mm Hole)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to sum of SB1 & SB2  in basic calculation sheet"
+      },
+      {
+        "serialNumber": 3,
+        "sunrackCode": "MA -102",
+        "itemDescription": "Rail Jointer",
+        "material": "AA 6063",
+        "length": 150,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Joints in basic calculation sheet"
+      },
+      {
+        "serialNumber": 4,
+        "sunrackCode": "SR - 03",
+        "itemDescription": "End Clamps-35mm",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 5,
+        "sunrackCode": "MA - 35",
+        "itemDescription": "Mid Clamps ",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 6,
+        "sunrackCode": "MA - 46",
+        "itemDescription": "Rail Nuts",
+        "material": "AA 6063",
+        "length": 19,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Sum of End & Mid Clamps"
+      },
+      {
+        "serialNumber": 7,
+        "sunrackCode": null,
+        "itemDescription": "M8 Hex Head Fastener Set",
+        "material": "SS304",
+        "length": 65,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 8,
+        "sunrackCode": null,
+        "itemDescription": "M8  Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End Clamps"
+      },
+      {
+        "serialNumber": 9,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 25,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid Clamps"
+      },
+      {
+        "serialNumber": 10,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.2X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Jointers x 4)"
+      },
+      {
+        "serialNumber": 11,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.8X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to SB2 in basic Calculation"
+      },
+      {
+        "serialNumber": 12,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  5.5X63mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to SB1 in basic Calculation"
+      },
+      {
+        "serialNumber": 13,
+        "sunrackCode": null,
+        "itemDescription": "Rubber Pad 40x40mm for U- cleat",
+        "material": "EPDM",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      }
+    ],
+    "totalItems": 13
+  },
+  {
+    "variationName": "U Cleat Long Rail - Large Span - Asbestos",
+    "items": [
+      {
+        "serialNumber": 1,
+        "sunrackCode": "MA -100",
+        "itemDescription": "Long Rail\r\n(Multiple Line items one for each cut length)",
+        "material": "AA 6063",
+        "length": "Cutlength from Basic Calculation ",
+        "uom": "Nos",
+        "quantityFormula": "Take respective Quanity from basic calcuation sheet"
+      },
+      {
+        "serialNumber": 2,
+        "sunrackCode": "MA -110",
+        "itemDescription": "U Cleat (9mm Hole)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to sum of SB1 & SB2  in basic calculation sheet"
+      },
+      {
+        "serialNumber": 3,
+        "sunrackCode": "MA -52",
+        "itemDescription": "Asbestos Curved Base",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 4,
+        "sunrackCode": "MA -102",
+        "itemDescription": "Rail Jointer",
+        "material": "AA 6063",
+        "length": 150,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Joints in basic calculation sheet"
+      },
+      {
+        "serialNumber": 5,
+        "sunrackCode": "SR - 03",
+        "itemDescription": "End Clamps-35mm",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 6,
+        "sunrackCode": "MA - 35",
+        "itemDescription": "Mid Clamps ",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 7,
+        "sunrackCode": "MA - 46",
+        "itemDescription": "Rail Nuts",
+        "material": "AA 6063",
+        "length": 19,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Sum of End & Mid Clamps"
+      },
+      {
+        "serialNumber": 8,
+        "sunrackCode": null,
+        "itemDescription": "M8 Hex Head Fastener Set",
+        "material": "SS304",
+        "length": 65,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 9,
+        "sunrackCode": null,
+        "itemDescription": "M8  Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End Clamps"
+      },
+      {
+        "serialNumber": 10,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 25,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid Clamps"
+      },
+      {
+        "serialNumber": 11,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.2X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Jointers x 4)"
+      },
+      {
+        "serialNumber": 12,
+        "sunrackCode": null,
+        "itemDescription": "Rubber Pad 40x40mm for U- cleat",
+        "material": "EPDM",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      }
+    ],
+    "totalItems": 12
+  },
+  {
+    "variationName": "U Cleat Long Rail - Large Height - Seam Clamp",
+    "items": [
+      {
+        "serialNumber": 1,
+        "sunrackCode": "MA -110",
+        "itemDescription": "Long Rail\r\n(Multiple Line items one for each cut length)",
+        "material": "AA 6063",
+        "length": "Cutlength from Basic Calculation ",
+        "uom": "Nos",
+        "quantityFormula": "Take respective Quanity from basic calcuation sheet"
+      },
+      {
+        "serialNumber": 2,
+        "sunrackCode": "MA -110",
+        "itemDescription": "U Cleat (9mm Hole)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to sum of SB1 & SB2  in basic calculation sheet"
+      },
+      {
+        "serialNumber": 3,
+        "sunrackCode": "MA -57",
+        "itemDescription": "Seam Clamp (2 Grub screws)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 4,
+        "sunrackCode": "MA -102",
+        "itemDescription": "Rail Jointer",
+        "material": "AA 6063",
+        "length": 150,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Joints in basic calculation sheet"
+      },
+      {
+        "serialNumber": 5,
+        "sunrackCode": "SR - 03",
+        "itemDescription": "End Clamps-35mm",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 6,
+        "sunrackCode": "MA - 35",
+        "itemDescription": "Mid Clamps ",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 7,
+        "sunrackCode": "MA - 46",
+        "itemDescription": "Rail Nuts",
+        "material": "AA 6063",
+        "length": 19,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Sum of End & Mid Clamps"
+      },
+      {
+        "serialNumber": 8,
+        "sunrackCode": null,
+        "itemDescription": "M8 Hex Head Fastener Set",
+        "material": "SS304",
+        "length": 65,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      },
+      {
+        "serialNumber": 9,
+        "sunrackCode": null,
+        "itemDescription": "M8  Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End Clamps"
+      },
+      {
+        "serialNumber": 10,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 25,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid Clamps"
+      },
+      {
+        "serialNumber": 11,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Plain & Spring Washer",
+        "material": "SS304",
+        "length": 16,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of Seam Clamps"
+      },
+      {
+        "serialNumber": 12,
+        "sunrackCode": null,
+        "itemDescription": "M8 Grub Screw",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Seam Clamp x 2)"
+      },
+      {
+        "serialNumber": 13,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.2X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Jointers x 4)"
+      },
+      {
+        "serialNumber": 14,
+        "sunrackCode": null,
+        "itemDescription": "Rubber Pad 40x40mm for U- cleat",
+        "material": "EPDM",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of U Cleats"
+      }
+    ],
+    "totalItems": 14
+  },
+  {
+    "variationName": "Double U Cleat Long Rail -160mm Height",
+    "items": [
+      {
+        "serialNumber": 1,
+        "sunrackCode": "MA - 43",
+        "itemDescription": "Long Rail\r\n(Multiple Line items one for each cut length)",
+        "material": "AA 6063",
+        "length": "Cutlength from Basic Calculation ",
+        "uom": "Nos",
+        "quantityFormula": "Take respective Quanity from basic calcuation sheet"
+      },
+      {
+        "serialNumber": 2,
+        "sunrackCode": "SN - 5306",
+        "itemDescription": "External U Cleat - Large (5mm Hole)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to sum of SB1 & SB2  in basic calculation sheet"
+      },
+      {
+        "serialNumber": 3,
+        "sunrackCode": "MA - 44",
+        "itemDescription": "Internal U Cleat",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of External U Cleat"
+      },
+      {
+        "serialNumber": 4,
+        "sunrackCode": "MA -72",
+        "itemDescription": "Rail Jointer",
+        "material": "AA 6063",
+        "length": 150,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Joints in basic calculation sheet"
+      },
+      {
+        "serialNumber": 5,
+        "sunrackCode": "SR - 03",
+        "itemDescription": "End Clamps-35mm",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 6,
+        "sunrackCode": "MA - 35",
+        "itemDescription": "Mid Clamps ",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 7,
+        "sunrackCode": "MA - 46",
+        "itemDescription": "Rail Nuts",
+        "material": "AA 6063",
+        "length": 19,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Sum of End & Mid Clamps"
+      },
+      {
+        "serialNumber": 8,
+        "sunrackCode": null,
+        "itemDescription": "M8 Hex Head Fastener Set",
+        "material": "SS304",
+        "length": 60,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of External U Cleat"
+      },
+      {
+        "serialNumber": 9,
+        "sunrackCode": null,
+        "itemDescription": "M8  Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End Clamps"
+      },
+      {
+        "serialNumber": 10,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 25,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid Clamps"
+      },
+      {
+        "serialNumber": 11,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.2X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Jointers x 4)"
+      },
+      {
+        "serialNumber": 12,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  6.3X63mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of External U Cleat"
+      },
+      {
+        "serialNumber": 13,
+        "sunrackCode": null,
+        "itemDescription": "Rubber Pad 40x40mm for U- cleat",
+        "material": "EPDM",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of External U Cleat"
+      }
+    ],
+    "totalItems": 13
+  },
+  {
+    "variationName": "Double U Cleat Long Rail -180mm Height",
+    "items": [
+      {
+        "serialNumber": 1,
+        "sunrackCode": "MA -100",
+        "itemDescription": "Long Rail\r\n(Multiple Line items one for each cut length)",
+        "material": "AA 6063",
+        "length": "Cutlength from Basic Calculation ",
+        "uom": "Nos",
+        "quantityFormula": "Take respective Quanity from basic calcuation sheet"
+      },
+      {
+        "serialNumber": 2,
+        "sunrackCode": "SN - 5306",
+        "itemDescription": "External U Cleat - Large (5mm Hole)",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to sum of SB1 & SB2  in basic calculation sheet"
+      },
+      {
+        "serialNumber": 3,
+        "sunrackCode": "MA - 44",
+        "itemDescription": "Internal U Cleat",
+        "material": "AA 6063",
+        "length": 40,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of External U Cleat"
+      },
+      {
+        "serialNumber": 4,
+        "sunrackCode": "MA -102",
+        "itemDescription": "Rail Jointer",
+        "material": "AA 6063",
+        "length": 150,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Joints in basic calculation sheet"
+      },
+      {
+        "serialNumber": 5,
+        "sunrackCode": "SR - 03",
+        "itemDescription": "End Clamps-35mm",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 6,
+        "sunrackCode": "MA - 35",
+        "itemDescription": "Mid Clamps ",
+        "material": "AA 6063",
+        "length": 50,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid clamps in basic calculation sheet"
+      },
+      {
+        "serialNumber": 7,
+        "sunrackCode": "MA - 46",
+        "itemDescription": "Rail Nuts",
+        "material": "AA 6063",
+        "length": 19,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Sum of End & Mid Clamps"
+      },
+      {
+        "serialNumber": 8,
+        "sunrackCode": null,
+        "itemDescription": "M8 Hex Head Fastener Set",
+        "material": "SS304",
+        "length": 60,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of External U Cleat"
+      },
+      {
+        "serialNumber": 9,
+        "sunrackCode": null,
+        "itemDescription": "M8  Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 20,
+        "uom": "Nos",
+        "quantityFormula": "Equal to End Clamps"
+      },
+      {
+        "serialNumber": 10,
+        "sunrackCode": null,
+        "itemDescription": "M8 Allen Head Bolt with Spring Washer",
+        "material": "SS304",
+        "length": 25,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Mid Clamps"
+      },
+      {
+        "serialNumber": 11,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  4.2X19mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to (Number of Jointers x 4)"
+      },
+      {
+        "serialNumber": 12,
+        "sunrackCode": null,
+        "itemDescription": "Self Drilling Screw -  6.3X63mm - Hex Head",
+        "material": "GI",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of External U Cleat"
+      },
+      {
+        "serialNumber": 13,
+        "sunrackCode": null,
+        "itemDescription": "Rubber Pad 40x40mm for U- cleat",
+        "material": "EPDM",
+        "length": null,
+        "uom": "Nos",
+        "quantityFormula": "Equal to Number of External U Cleat"
+      }
+    ],
+    "totalItems": 13
+  }
+]
