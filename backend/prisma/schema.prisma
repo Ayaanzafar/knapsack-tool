@@ -134,6 +134,7 @@ model BomMasterItem {
 
   formulas       BomFormula[]
   rmCodes        RmCode[]
+  variationItems BomVariationItem[]
   sunrackProfile SunrackProfile? @relation(fields: [sunrackProfileId], references: [id])
 
   @@index([sunrackCode])
@@ -258,13 +259,36 @@ model SunrackProfile {
 model BomVariationTemplate {
   id            Int      @id @default(autoincrement())
   variationName String   @unique @map("variation_name") @db.VarChar(255)
-  items         Json     @map("items")          // Array of items with sunrackCode, itemDescription, quantityFormula, etc.
   defaultNotes  Json     @map("default_notes")  // Array of default notes ["Note 1", "Note 2", ...]
   order         String   @default("standard") @db.VarChar(50)  // Item ordering preference
   isActive      Boolean  @default(true) @map("is_active")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  variationItems BomVariationItem[]
 
   @@index([variationName])
   @@map("bom_variation_templates")
+}
+
+// BOM Variation Items Table - "Hard Links" between Template and Master Item
+model BomVariationItem {
+  id               Int      @id @default(autoincrement())
+  templateId       Int      @map("template_id")
+  masterItemId     Int      @map("master_item_id")
+  
+  // Overrides for this specific BOM context
+  displayOverride  String?  @map("display_override") @db.VarChar(255) // e.g. "M8 Fastener Set"
+  formulaKey       String?  @map("formula_key") @db.VarChar(50)       // Formula to use
+  quantityFormula  String?  @map("quantity_formula") @db.Text         // Human readable formula
+  
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  template         BomVariationTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  masterItem       BomMasterItem        @relation(fields: [masterItemId], references: [id])
+
+  @@index([templateId])
+  @@index([masterItemId])
+  @@map("bom_variation_items")
 }

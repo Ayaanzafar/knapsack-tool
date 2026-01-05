@@ -16,13 +16,27 @@ router.get('/:variationName', async (req, res, next) => {
     const { variationName } = req.params;
 
     const template = await prisma.bomVariationTemplate.findUnique({
-      where: { variationName: decodeURIComponent(variationName) }
+      where: { variationName: decodeURIComponent(variationName) },
+      include: {
+        variationItems: {
+          include: {
+            masterItem: {
+              include: {
+                sunrackProfile: true,
+                rmCodes: true
+              }
+            }
+          }
+        }
+      }
     });
 
     if (!template) {
       return res.status(404).json({ error: 'Template not found for this variation' });
     }
 
+    // Transform to make it easier for frontend to consume if needed
+    // or return as is for high-fidelity linking
     res.json(template);
   } catch (error) {
     console.error('Error fetching template:', error);

@@ -9,7 +9,8 @@ class BomService {
       orderBy: { serialNumber: 'asc' },
       include: {
         formulas: true,
-        rmCodes: true  // Include RM codes
+        rmCodes: true,  // Include RM codes
+        sunrackProfile: true // ✅ NEW: Include original profile codes
       }
     });
 
