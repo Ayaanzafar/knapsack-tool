@@ -190,7 +190,7 @@ class BomReconstructionService {
         profileImage: profileImage,
         itemDescription: profile.genericName,
         material: profile.material,
-        length: item.length,
+        length: item.length ?? profile.standardLength ?? null,
         uom: profile.uom,
         calculationType: item.calculationType,
         profileSerialNumber: item.profileSerialNumber,

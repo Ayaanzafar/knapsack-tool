@@ -6,7 +6,8 @@ const updates = [
   { serialNumber: "28", standardLength: 20, description: "Rail Nut - External" },
   { serialNumber: "47", standardLength: 150, description: "Jointer for 40mm Height - External Long Rail" },
   { serialNumber: "99", standardLength: 50, description: "End Clamp - 35mm Height - 21mm Gap - 3.5mm Thickness" },
-  { serialNumber: "100", standardLength: 40, description: "Unified U Cleat - 76mm Height" }
+  { serialNumber: "100", standardLength: 40, description: "Unified U Cleat - 76mm Height" },
+  { serialNumber: "56", standardLength: 50, description: "End Clamp - 35mm Height - 20mm Gap - 3.5mm Thickness (Type 2)" }
   // { serialNumber: "110", standardLength: 50, description: "End Clamp - 30mm Height - 15mm Gap - 4mm Thickness" }
 ];
 
