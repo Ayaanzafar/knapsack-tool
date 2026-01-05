@@ -204,8 +204,25 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
       if (allowed) {
         // Find Regal code from sunrackProfile if linked, otherwise from rmCodes
         let displayCode = selectedProfile.preferredRmCode;
-        if (selectedProfile.sunrackProfile && selectedProfile.sunrackProfile.regalCode) {
-          displayCode = selectedProfile.sunrackProfile.regalCode;
+        
+        // Initial image path from master item
+        let profileImage = selectedProfile.profileImagePath;
+        if (profileImage && profileImage.startsWith('/assets')) {
+          profileImage = `${API_URL}${profileImage}`;
+        } else if (!profileImage) {
+          profileImage = `${API_URL}/assets/bom-profiles/MA-43.png`;
+        }
+        
+        if (selectedProfile.sunrackProfile) {
+          if (selectedProfile.sunrackProfile.regalCode) {
+            displayCode = selectedProfile.sunrackProfile.regalCode;
+          }
+          if (selectedProfile.sunrackProfile.profileImage) {
+            // Prepend API_URL if the path starts with /assets (backend path)
+            profileImage = selectedProfile.sunrackProfile.profileImage.startsWith('/') 
+              ? `${API_URL}${selectedProfile.sunrackProfile.profileImage}`
+              : selectedProfile.sunrackProfile.profileImage;
+          }
         }
 
         const itemDescription = vItem?.displayOverride || selectedProfile.genericName;
@@ -213,7 +230,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
         const item = {
           sn: serialNumber++,
           sunrackCode: displayCode || 'MA-43',
-          profileImage: selectedProfile.profileImagePath || '/assets/bom-profiles/MA-43.png',
+          profileImage: profileImage,
           itemDescription: itemDescription,
           material: selectedProfile.material || 'AA 6000 T5/T6',
           length: cutLength,
@@ -260,10 +277,35 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
           });
 
           if (totalQty > 0) {
+            // DEBUG
+            if (profile.serialNumber === '56') {
+               console.log('[bomCalculations] Processing End Clamp:', {
+                 id: profile.id,
+                 vItem: vItem,
+                 displayCode: profile.preferredRmCode,
+                 sunrackProfile: profile.sunrackProfile
+               });
+            }
+
             // Find Regal code
             let displayCode = profile.preferredRmCode;
-            if (profile.sunrackProfile && profile.sunrackProfile.regalCode) {
-              displayCode = profile.sunrackProfile.regalCode;
+            
+            // Initial image path from master item
+            let profileImage = profile.profileImagePath;
+            if (profileImage && profileImage.startsWith('/assets')) {
+              profileImage = `${API_URL}${profileImage}`;
+            }
+
+            if (profile.sunrackProfile) {
+              if (profile.sunrackProfile.regalCode) {
+                displayCode = profile.sunrackProfile.regalCode;
+              }
+              if (profile.sunrackProfile.profileImage) {
+                // Prepend API_URL if the path starts with /assets (backend path)
+                profileImage = profile.sunrackProfile.profileImage.startsWith('/') 
+                  ? `${API_URL}${profile.sunrackProfile.profileImage}`
+                  : profile.sunrackProfile.profileImage;
+              }
             }
 
             let itemDescription = vItem.displayOverride || profile.genericName;
@@ -278,7 +320,7 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
             const bomItem = {
               sn: serialNumber++,
               sunrackCode: displayCode,
-              profileImage: profile.profileImagePath || null,
+              profileImage: profileImage,
               itemDescription: itemDescription,
               material: profile.material,
               length: profile.standardLength,
@@ -332,6 +374,11 @@ export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRat
       throw new Error(`Failed to fetch master items: ${response.status} ${response.statusText}`);
     }
     allProfiles = await response.json();
+    
+    // DEBUG: Check if End Clamp (SN 56) has sunrackProfile
+    const endClamp = allProfiles.find(p => p.serialNumber === '56');
+    console.log('[bomCalculations] End Clamp Data:', endClamp);
+
   } catch (error) {
     console.error('Error fetching master items:', error);
     // Fallback: Continue with empty profiles or handle error appropriately

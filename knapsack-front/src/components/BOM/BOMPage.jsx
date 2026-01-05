@@ -1536,7 +1536,7 @@ export default function BOMPage() {
                     if (selectedProfile) {
                       updatedItem.profileSerialNumber = change.newValue;
                       updatedItem.sunrackCode = selectedProfile.preferredRmCode || selectedProfile.sunrackCode;
-                      updatedItem.profileImage = selectedProfile.profileImagePath;
+                      updatedItem.profileImage = selectedProfile.sunrackProfile?.profileImage || selectedProfile.profileImagePath;
                       updatedItem.itemDescription = selectedProfile.genericName;
                       updatedItem.material = selectedProfile.material;
                       const weightCost = calculateWeightAndCost(updatedItem, selectedProfile, aluminumRate);

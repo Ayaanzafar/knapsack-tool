@@ -2,6 +2,7 @@
 import React, { forwardRef } from 'react';
 import ComboBox from '../ComboBox';
 import { useAuth } from '../../context/AuthContext';
+import { API_URL } from '../../services/config';
 
 const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange, profileOptions, onItemUpdate, onDeleteRow, dragHandleProps, aluminumRate, ...props }, ref) => {
   const { user } = useAuth();
@@ -10,7 +11,7 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
   const {
     sn,
     sunrackCode,
-    profileImage,
+    profileImage: rawProfileImage,
     itemDescription,
     material,
     length,
@@ -28,6 +29,20 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
     calculationType,
     userEdits,
   } = item;
+
+  // Ensure image URL is absolute
+  const profileImage = rawProfileImage && rawProfileImage.startsWith('/') 
+    ? `${API_URL}${rawProfileImage}` 
+    : rawProfileImage;
+
+  // DEBUG LOG
+  if (sn === 1 || itemDescription.includes('End Clamp')) {
+     console.log(`[BOMTableRow] Item: ${itemDescription}`, {
+       rawProfileImage,
+       API_URL,
+       finalProfileImage: profileImage
+     });
+  }
 
   // Check if spare quantity is manually overridden
   const hasManualSpare = userEdits?.manualSpareQuantity !== undefined && userEdits?.manualSpareQuantity !== null;

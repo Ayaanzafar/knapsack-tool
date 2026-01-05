@@ -107,7 +107,8 @@ class BomReconstructionService {
       where: { isActive: true },
       include: {
         formulas: true,
-        rmCodes: true
+        rmCodes: true,
+        sunrackProfile: true
       }
     });
 
@@ -162,6 +163,16 @@ class BomReconstructionService {
         return null;
       }
 
+      const displayCode =
+        profile.sunrackProfile?.regalCode ||
+        profile.preferredRmCode ||
+        profile.sunrackCode;
+
+      const profileImage =
+        profile.sunrackProfile?.profileImage ||
+        profile.profileImagePath ||
+        null;
+
       // Calculate totals
       const totalQuantity = Object.values(item.quantities || {}).reduce((sum, qty) => sum + qty, 0);
 
@@ -175,8 +186,8 @@ class BomReconstructionService {
       // Build full item with profile data
       const fullItem = {
         sn: item.sn || (index + 1),
-        sunrackCode: profile.preferredRmCode || profile.sunrackCode,
-        profileImage: profile.profileImagePath,
+        sunrackCode: displayCode,
+        profileImage: profileImage,
         itemDescription: profile.genericName,
         material: profile.material,
         length: item.length,
