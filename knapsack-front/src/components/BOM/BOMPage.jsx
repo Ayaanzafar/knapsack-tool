@@ -2290,8 +2290,16 @@ export default function BOMPage() {
           const updated = await updateVariationTemplateDefaultNotes(variationName, finalNotes);
           if (!updated) throw new Error('Failed to update template default notes');
 
+          // Clear customDefaultNotes since we're now using global defaults
+          bomData.customDefaultNotes = null;
+
           showToast(`Default notes updated for "${variationName}" (future BOMs)`);
 
+          // Trigger React re-render with cleared customDefaultNotes
+          setBomData({ ...bomData, customDefaultNotes: null });
+
+          // Wait for React to update, then reload from DB
+          await new Promise(resolve => setTimeout(resolve, 50));
           if (window.reloadDefaultNotesFromDB) await window.reloadDefaultNotesFromDB();
           setDefaultNotesChanges([]);
         } catch (error) {
@@ -2338,6 +2346,11 @@ export default function BOMPage() {
       setReviewModalOpen(false);
       setEditMode(false);
       setOriginalUserNotes([...userNotes]); // Update original notes after save
+
+      // Update bomData state with the new customDefaultNotes so NotesSection reloads
+      if (defaultNotesUpdateChoice === 'bom-only' && bomData.customDefaultNotes) {
+        setBomData({ ...bomData, customDefaultNotes: bomData.customDefaultNotes });
+      }
 
       // Reset default notes baseline after save (only if bom-only, global already reset above)
       if (defaultNotesUpdateChoice !== 'global') {

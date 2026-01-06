@@ -261,6 +261,13 @@ export default function NotesSection({
   const reloadDefaultNotesFromDB = async () => {
     console.log('Reloading default notes from database...');
     await loadDefaultNotes();
+    console.log('✅ Default notes reloaded from database');
+    // Reset the baseline after reload so changes don't show anymore
+    setTimeout(() => {
+      if (window.resetDefaultNotesBaseline) {
+        window.resetDefaultNotesBaseline();
+      }
+    }, 100);
   };
 
   // Expose functions to parent via callback
