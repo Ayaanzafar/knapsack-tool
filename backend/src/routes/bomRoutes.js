@@ -12,6 +12,11 @@ router.use(checkPasswordChange);
 // Master Items Routes - DEPRECATED (use sunrack-profiles and fasteners instead)
 // TODO: These routes use the old bom_master_items table which is being phased out
 // Use /api/bom-templates for BOM generation instead
+
+// BOMPage still uses this endpoint for "Apply to Future" (Update Master DB).
+// It supports updating fasteners (id format: F-{id}) and profiles (sNo).
+router.put('/master-items/:id', forbidBasicMasterItemMutation, bomController.updateMasterItem.bind(bomController));
+
 /*
 // GET /api/bom/master-items - Get all master items
 router.get('/master-items', bomController.getAllMasterItems.bind(bomController));

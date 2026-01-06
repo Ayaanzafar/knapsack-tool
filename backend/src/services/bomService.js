@@ -1,5 +1,6 @@
 const prisma = require('../prismaClient');
 const bomReconstructionService = require('./bomReconstructionService');
+const { Prisma } = require('@prisma/client');
 
 class BomService {
   // Get all BOM master items
@@ -71,11 +72,67 @@ class BomService {
     });
   }
 
-  // Update BOM master item
-  async updateMasterItem(serialNumber, data) {
-    return await prisma.bomMasterItem.update({
-      where: { serialNumber: serialNumber },
-      data: data, // Allow partial updates
+  // Update BOM master item (supports SunrackProfile and Fastener)
+  async updateMasterItem(idOrSerialNumber, data) {
+    const shouldLog =
+      process.env.DEBUG_BOM_MASTER_UPDATE === 'true' || process.env.NODE_ENV === 'development';
+    if (shouldLog) {
+      console.log('[BOM] updateMasterItem request:', { idOrSerialNumber, data });
+    }
+
+    // Check if it's a fastener (format: F-{id})
+    if (typeof idOrSerialNumber === 'string' && idOrSerialNumber.startsWith('F-')) {
+      const match = /^F-(\d+)$/.exec(idOrSerialNumber.trim());
+      if (!match) {
+        const err = new Error('Invalid fastener id format; expected F-{id}');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      const fastenerId = Number.parseInt(match[1], 10);
+      if (!Number.isFinite(fastenerId)) {
+        const err = new Error('Invalid fastener id');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      const updateData = {};
+      if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'costPerPiece')) {
+        const value = data.costPerPiece;
+        updateData.costPerPiece =
+          value === undefined || value === null || value === '' ? null : new Prisma.Decimal(String(value));
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        return { message: 'No update performed for fastener (no supported fields provided)' };
+      }
+
+      return await prisma.fastener.update({
+        where: { id: fastenerId },
+        data: updateData,
+      });
+    }
+
+    // Otherwise treat as SunrackProfile sNo
+    // Profiles no longer have costPerPiece in the master table, 
+    // so we only update other fields if provided.
+    const sNo = Number.parseInt(String(idOrSerialNumber).trim(), 10);
+    if (!Number.isFinite(sNo)) {
+      const err = new Error('Invalid profile sNo');
+      err.statusCode = 400;
+      throw err;
+    }
+     
+    // Remove costPerPiece from data if it exists, as it's no longer in the schema for profiles
+    const { costPerPiece, ...otherData } = data;
+    
+    if (Object.keys(otherData).length === 0) {
+      return { message: 'No update performed for profile (costPerPiece not supported)' };
+    }
+
+    return await prisma.sunrackProfile.update({
+      where: { sNo: sNo },
+      data: otherData,
     });
   }
 

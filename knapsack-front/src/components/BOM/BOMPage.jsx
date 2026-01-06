@@ -2238,8 +2238,9 @@ export default function BOMPage() {
         console.log('Updated master items:', masterUpdates.length);
       } catch (error) {
         console.error('Failed to update master items:', error);
-        if (error?.code === 'FORBIDDEN_FIELD') {
-          showToast(`${error.field || 'Field'}: ${error.data?.message || error.message}`);
+        const payload = error?.response?.data || error;
+        if (payload?.code === 'FORBIDDEN_FIELD') {
+          showToast(`${payload.field || 'Field'}: ${payload.message || 'Advanced only'}`);
         } else {
           showToast('Warning: Failed to update Master Database. Project-specific changes will still be saved.', 'warning');
         }

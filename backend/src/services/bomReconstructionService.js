@@ -86,7 +86,6 @@ class BomReconstructionService {
         uom: profile.uom,
         designWeight: profile.designWeight,
         profileImage: profile.profileImage,
-        costPerPiece: profile.costPerPiece || 0,
         isProfile: true
       };
 
