@@ -109,7 +109,7 @@ model TabRow {
   @@map("tab_rows")
 }
 
-// BOM Master Items Table - Master catalog of all BOM items
+// BOM Master Items Table - Master catalog of all BOM items (DEPRECATED - being migrated to sunrack_profiles + fasteners)
 model BomMasterItem {
   id               Int      @id @default(autoincrement())
   serialNumber     String   @unique @map("serial_number") @db.VarChar(20)
@@ -143,17 +143,59 @@ model BomMasterItem {
   @@map("bom_master_items")
 }
 
+// Fasteners Table - Stores all fasteners (bolts, screws, washers, etc.)
+model Fastener {
+  id               Int      @id @default(autoincrement())
+
+  // Keep old serial number for migration reference
+  oldSerialNumber  String?  @unique @map("old_serial_number") @db.VarChar(20)
+
+  itemDescription  String   @map("item_description") @db.VarChar(255)
+  genericName      String   @map("generic_name") @db.VarChar(100)
+  material         String?  @db.VarChar(100)
+  standardLength   Int?     @map("standard_length")
+  uom              String   @db.VarChar(20)
+  category         String?  @db.VarChar(50)
+  costPerPiece     Decimal? @map("cost_per_piece") @db.Decimal(10, 2)
+  profileImagePath String?  @map("profile_image_path") @db.VarChar(255)
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  formulas         BomFormula[]
+  variationItems   BomVariationItem[]
+
+  @@map("fasteners")
+}
+
 // BOM Formulas Table - Stores formula definitions for calculating BOM quantities
 model BomFormula {
   id                 Int      @id @default(autoincrement())
-  itemSerialNumber   String   @map("item_serial_number") @db.VarChar(20)
+
+  // OLD: Will be removed after migration
+  itemSerialNumber   String?  @map("item_serial_number") @db.VarChar(20)
+
+  // NEW: Polymorphic FK - ONE of these should be set (profiles XOR fasteners)
+  sunrackProfileId   Int?     @map("sunrack_profile_id")
+  fastenerId         Int?     @map("fastener_id")
+
   formulaKey         String   @map("formula_key") @db.VarChar(50)
   formulaDescription String?  @map("formula_description") @db.Text
   calculationLevel   Int      @map("calculation_level")
   isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
-  masterItem BomMasterItem @relation(fields: [itemSerialNumber], references: [serialNumber])
+  // OLD relation (will be removed)
+  masterItem     BomMasterItem?  @relation(fields: [itemSerialNumber], references: [serialNumber])
 
+  // NEW relations
+  sunrackProfile SunrackProfile? @relation(fields: [sunrackProfileId], references: [id])
+  fastener       Fastener?       @relation(fields: [fastenerId], references: [id])
+
+  @@index([sunrackProfileId])
+  @@index([fastenerId])
+  @@index([formulaKey])
   @@map("bom_formulas")
 }
 
@@ -230,6 +272,8 @@ model DefaultNote {
 model SunrackProfile {
   id                  Int      @id @default(autoincrement())
   sNo                 Int      @unique @map("s_no")
+
+  // Vendor codes
   regalCode           String?  @map("regal_code") @db.VarChar(50)
   excellenceCode      String?  @map("excellence_code") @db.VarChar(50)
   varnCode            String?  @map("varn_code") @db.VarChar(50)
@@ -240,14 +284,26 @@ model SunrackProfile {
   ralcoCode           String?  @map("ralco_code") @db.VarChar(50)
   saiDeepCode         String?  @map("sai_deep_code") @db.VarChar(50)
   eleanorCode         String?  @map("eleanor_code") @db.VarChar(50)
+
+  // Profile data
   profileImage        String?  @map("profile_image") @db.Text
   profileDescription  String   @map("profile_description") @db.Text
   genericName         String   @map("generic_name") @db.VarChar(255)
   designWeight        Decimal  @map("design_weight") @db.Decimal(10, 5)
+
+  // Additional properties from bom_master_items
+  material            String?  @db.VarChar(100)
+  standardLength      Int?     @map("standard_length")
+  uom                 String?  @db.VarChar(20)
+  category            String?  @db.VarChar(50)
+
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
-  bomMasterItems BomMasterItem[]
+  // Relations
+  bomMasterItems BomMasterItem[]  // OLD - will be removed
+  formulas       BomFormula[]     // NEW
+  variationItems BomVariationItem[] // NEW
 
   @@index([regalCode])
   @@index([excellenceCode])
@@ -271,24 +327,38 @@ model BomVariationTemplate {
   @@map("bom_variation_templates")
 }
 
-// BOM Variation Items Table - "Hard Links" between Template and Master Item
+// BOM Variation Items Table - "Hard Links" between Template and Items (Profiles or Fasteners)
 model BomVariationItem {
   id               Int      @id @default(autoincrement())
   templateId       Int      @map("template_id")
-  masterItemId     Int      @map("master_item_id")
-  
+
+  // OLD: Will be removed after migration
+  masterItemId     Int?     @map("master_item_id")
+
+  // NEW: Polymorphic FK - ONE of these should be set (profiles XOR fasteners)
+  sunrackProfileId Int?     @map("sunrack_profile_id")
+  fastenerId       Int?     @map("fastener_id")
+
   // Overrides for this specific BOM context
   displayOverride  String?  @map("display_override") @db.VarChar(255) // e.g. "M8 Fastener Set"
   formulaKey       String?  @map("formula_key") @db.VarChar(50)       // Formula to use
   quantityFormula  String?  @map("quantity_formula") @db.Text         // Human readable formula
-  
+
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   template         BomVariationTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  masterItem       BomMasterItem        @relation(fields: [masterItemId], references: [id])
+
+  // OLD relation (will be removed)
+  masterItem       BomMasterItem?       @relation(fields: [masterItemId], references: [id])
+
+  // NEW relations
+  sunrackProfile   SunrackProfile?      @relation(fields: [sunrackProfileId], references: [id])
+  fastener         Fastener?            @relation(fields: [fastenerId], references: [id])
 
   @@index([templateId])
   @@index([masterItemId])
+  @@index([sunrackProfileId])
+  @@index([fastenerId])
   @@map("bom_variation_items")
 }

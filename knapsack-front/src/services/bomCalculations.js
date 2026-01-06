@@ -1,5 +1,6 @@
-// src/services/bomCalculations.js
+// src/services/bomCalculations.js - UPDATED FOR NEW SCHEMA
 // Formula-based calculations for BOM hardware items
+// Now uses sunrack_profiles + fasteners instead of bom_master_items
 
 import { API_URL } from './config';
 import {
@@ -27,20 +28,22 @@ export const BOM_FORMULAS = {
 
   // Level 3: Bolt calculations
   M8x60_BOLT: (tabCalc, calculated) => calculated.U_CLEAT,
-  M8x20_BOLT: (tabCalc, calculated) => calculated.END_CLAMP, // Changed to only END_CLAMP for template alignment
-  M8x25_BOLT: (tabCalc, calculated) => calculated.MID_CLAMP, // NEW
-  M8_BOLT_PLAIN_SPRING: (tabCalc, calculated) => calculated.U_CLEAT, // NEW
-  M8_GRUB_SCREW: (tabCalc, calculated) => calculated.U_CLEAT * 2, // NEW
+  M8x60_BOLT_SHORT: (tabCalc, calculated) => calculated.U_CLEAT, // For Double U Cleat (60mm version)
+  M8x20_BOLT: (tabCalc, calculated) => calculated.END_CLAMP,
+  M8x25_BOLT: (tabCalc, calculated) => calculated.MID_CLAMP,
+  M8_BOLT_PLAIN_SPRING: (tabCalc, calculated) => calculated.U_CLEAT,
+  M8_GRUB_SCREW: (tabCalc, calculated) => calculated.U_CLEAT * 2,
 
-  // Level 4: Washers and nuts
+  // Level 4: Washers and nuts (deprecated but kept for backward compatibility)
   M8_HEX_NUTS: (tabCalc, calculated) => calculated.M8x60_BOLT,
   M8_PLAIN_WASHER: (tabCalc, calculated) => calculated.M8x60_BOLT * 2,
   M8_SPRING_WASHER: (tabCalc, calculated) => calculated.M8x60_BOLT + calculated.M8x20_BOLT + (calculated.M8x25_BOLT || 0),
 
   // Level 5: Other hardware
   SDS_4_2X13MM: (tabCalc, calculated) => calculated.RAIL_JOINTER * 4,
-  SDS_4_8X19MM: (tabCalc) => tabCalc.sb2, // NEW
+  SDS_4_8X19MM: (tabCalc) => tabCalc.sb2,
   SDS_5_5X63MM: (tabCalc) => tabCalc.sb1,
+  SDS_6_3X63MM: (tabCalc) => tabCalc.sb1 + tabCalc.sb2, // For Double U Cleat
   RUBBER_PAD: (tabCalc, calculated) => calculated.U_CLEAT,
   BLIND_RIVETS: (tabCalc) => tabCalc.sb2
 };
@@ -65,12 +68,13 @@ export function calculateTabQuantities(tabCalculation) {
 
   // Level 3: Bolt calculations
   calculated.M8x60_BOLT = BOM_FORMULAS.M8x60_BOLT(tabCalculation, calculated);
+  calculated.M8x60_BOLT_SHORT = BOM_FORMULAS.M8x60_BOLT_SHORT(tabCalculation, calculated);
   calculated.M8x20_BOLT = BOM_FORMULAS.M8x20_BOLT(tabCalculation, calculated);
   calculated.M8x25_BOLT = BOM_FORMULAS.M8x25_BOLT(tabCalculation, calculated);
   calculated.M8_BOLT_PLAIN_SPRING = BOM_FORMULAS.M8_BOLT_PLAIN_SPRING(tabCalculation, calculated);
   calculated.M8_GRUB_SCREW = BOM_FORMULAS.M8_GRUB_SCREW(tabCalculation, calculated);
 
-  // Level 4: Washers and nuts
+  // Level 4: Washers and nuts (deprecated)
   calculated.M8_HEX_NUTS = BOM_FORMULAS.M8_HEX_NUTS(tabCalculation, calculated);
   calculated.M8_PLAIN_WASHER = BOM_FORMULAS.M8_PLAIN_WASHER(tabCalculation, calculated);
   calculated.M8_SPRING_WASHER = BOM_FORMULAS.M8_SPRING_WASHER(tabCalculation, calculated);
@@ -79,6 +83,7 @@ export function calculateTabQuantities(tabCalculation) {
   calculated.SDS_4_2X13MM = BOM_FORMULAS.SDS_4_2X13MM(tabCalculation, calculated);
   calculated.SDS_4_8X19MM = BOM_FORMULAS.SDS_4_8X19MM(tabCalculation, calculated);
   calculated.SDS_5_5X63MM = BOM_FORMULAS.SDS_5_5X63MM(tabCalculation, calculated);
+  calculated.SDS_6_3X63MM = BOM_FORMULAS.SDS_6_3X63MM(tabCalculation, calculated);
   calculated.RUBBER_PAD = BOM_FORMULAS.RUBBER_PAD(tabCalculation, calculated);
   calculated.BLIND_RIVETS = BOM_FORMULAS.BLIND_RIVETS(tabCalculation, calculated);
 
@@ -87,12 +92,11 @@ export function calculateTabQuantities(tabCalculation) {
 
 /**
  * Calculate weight and cost for a BOM item
- * @param {Object} item - BOM item
- * @param {Object} profilesMap - Map of profile serial numbers to profile data
+ * @param {Object} item - BOM item with item data
  * @param {Number} aluminumRate - Rate per kg for aluminum
  * @returns {Object} - Weight and cost calculations
  */
-function calculateWeightAndCost(item, profilesMap, aluminumRate = DEFAULT_ALUMINIUM_RATE_PER_KG) {
+function calculateWeightAndCost(item, aluminumRate = DEFAULT_ALUMINIUM_RATE_PER_KG) {
   const result = {
     wtPerRm: null,  // Weight per running meter (kg/m)
     rm: null,       // Running meters
@@ -106,26 +110,12 @@ function calculateWeightAndCost(item, profilesMap, aluminumRate = DEFAULT_ALUMIN
     return result;
   }
 
-  // Try to find the profile in profilesMap by preferredRmCode
-  const profile = Object.values(profilesMap).find(p =>
-    p.preferredRmCode === item.sunrackCode  // item.sunrackCode now contains RM code
-  );
-
-  if (profile) {
-    // Determine the length to use: item.length (for cut lengths) or profile.standardLength (for accessories)
-    const lengthToUse = item.length || profile.standardLength;
-
-    // Check if it has design weight (weight-based calculation)
-    if (profile.designWeight && profile.designWeight > 0 && lengthToUse) {
-      result.wtPerRm = parseFloat(profile.designWeight);
-      result.rm = (lengthToUse / MM_TO_METERS_DIVISOR) * item.finalTotal;  // Convert mm to meters
-      result.wt = result.rm * result.wtPerRm;
-      result.cost = result.wt * aluminumRate;
-    }
-    // Check if it has cost per piece (piece-based calculation) from profile
-    else if (profile.costPerPiece && profile.costPerPiece > 0) {
-      result.cost = parseFloat(profile.costPerPiece) * item.finalTotal;
-    }
+  // For profiles: weight-based calculation
+  if (item.designWeight && item.designWeight > 0 && item.length) {
+    result.wtPerRm = parseFloat(item.designWeight);
+    result.rm = (item.length / MM_TO_METERS_DIVISOR) * item.finalTotal;
+    result.wt = result.rm * result.wtPerRm;
+    result.cost = result.wt * aluminumRate;
   }
 
   return result;
@@ -135,14 +125,17 @@ function calculateWeightAndCost(item, profilesMap, aluminumRate = DEFAULT_ALUMIN
  * Generate complete BOM items with quantities for all tabs
  * @param {Object} bomData - Collected BOM data from bomDataCollection
  * @param {Array} activeCutLengths - Active cut lengths (non-zero)
- * @param {Object} profilesMap - Map of profile serial numbers to profile data
- * @param {Number} aluminumRate - Rate per kg for aluminum (default: DEFAULT_ALUMINIUM_RATE_PER_KG)
- * @param {Object|null} template - Variation template with items array (optional, for filtering)
+ * @param {Number} aluminumRate - Rate per kg for aluminum
+ * @param {Object} template - Variation template with variationItems array
  * @returns {Array} - Array of BOM items with quantities per tab
  */
-export async function generateBOMItems(bomData, activeCutLengths, profilesMap, aluminumRate = DEFAULT_ALUMINIUM_RATE_PER_KG, template = null) {
+export async function generateBOMItems(bomData, activeCutLengths, aluminumRate = DEFAULT_ALUMINIUM_RATE_PER_KG, template) {
   const bomItems = [];
   let serialNumber = 1;
+
+  console.log('[BOM DEBUG] bomData.tabs:', bomData.tabs);
+  console.log('[BOM DEBUG] activeCutLengths:', activeCutLengths);
+  console.log('[BOM DEBUG] template:', template ? `${template.variationItems?.length} items` : 'NULL');
 
   // Calculate quantities for each tab
   const tabQuantities = {};
@@ -150,202 +143,159 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
     tabQuantities[tabName] = calculateTabQuantities(bomData.tabCalculations[tabName]);
   });
 
-  // ✅ NEW: Helper function to normalize sunrack codes (remove all non-alphanumeric characters)
-  function normalizeCode(code) {
-    if (!code) return '';
-    // Remove all non-alphanumeric characters, convert to uppercase
-    return code.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+  if (!template || !template.variationItems) {
+    console.error('❌ Template or variation items not provided!');
+    console.error('Template:', template);
+    return [];
   }
 
-  // ✅ NEW: Create Map of allowed items from relational variationItems
-  let allowedItemsMap = new Map(); // masterItemId -> variationItem (with masterItem details)
+  console.log(`✅ Processing ${template.variationItems.length} items from template`);
 
-  if (template && template.variationItems) {
-    template.variationItems.forEach(vItem => {
-      allowedItemsMap.set(vItem.masterItemId, vItem);
-    });
+  // Iterate through template variation items
+  template.variationItems.forEach((vItem, idx) => {
+    // Get item data from either sunrackProfile or fastener
+    const item = vItem.sunrackProfile || vItem.fastener;
 
-    console.log(`✅ Template filtering enabled. Allowed items count: ${allowedItemsMap.size}`);
-  } else {
-    console.log('⚠️ No template provided or no items in template. Showing all items.');
-  }
+    console.log(`[BOM DEBUG ${idx + 1}] Item:`, item?.genericName, 'Formula:', vItem.formulaKey);
 
-  // ✅ NEW: Helper function to check if item is allowed and get template data
-  function getTemplateData(profile) {
-    // If no template, allow all items (backward compatibility)
-    if (!template || !template.variationItems) return { allowed: true, vItem: null };
-
-    const vItem = allowedItemsMap.get(profile.id);
-    if (vItem) {
-      return { allowed: true, vItem };
+    if (!item) {
+      console.warn('⚠️ Variation item has no profile or fastener data:', vItem);
+      return;
     }
 
-    return { allowed: false, vItem: null };
-  }
+    const isProfile = !!vItem.sunrackProfile;
+    const isFastener = !!vItem.fastener;
+    const formulaKey = vItem.formulaKey;
 
-  // 1. Add Long Rails for each active cut length
-  const profileSerialNumbers = Object.values(bomData.tabProfiles);
-  const primaryProfileSerialNumber = profileSerialNumbers[0] || '26';
-  const selectedProfile = profilesMap[primaryProfileSerialNumber];
+    console.log(`[BOM DEBUG ${idx + 1}] isProfile:`, isProfile, 'isFastener:', isFastener, 'formulaKey:', formulaKey);
 
-  activeCutLengths.forEach(cutLength => {
-    const quantities = {};
-    let totalQty = 0;
+    // For Long Rail profiles, create multiple entries for each cut length
+    if (isProfile && formulaKey === 'LONG_RAIL') {
+      activeCutLengths.forEach(cutLength => {
+        const quantities = {};
+        let totalQty = 0;
 
-    bomData.tabs.forEach(tabName => {
-      const qty = bomData.tabCalculations[tabName].cutLengths[cutLength] || 0;
-      quantities[tabName] = qty;
-      totalQty += qty;
-    });
+        bomData.tabs.forEach(tabName => {
+          const qty = bomData.tabCalculations[tabName].cutLengths[cutLength] || 0;
+          quantities[tabName] = qty;
+          totalQty += qty;
+        });
 
-    if (totalQty > 0 && selectedProfile) {
-      const { allowed, vItem } = getTemplateData(selectedProfile);
+        console.log(`[BOM DEBUG ${idx + 1}] Long Rail ${cutLength}mm - totalQty:`, totalQty);
 
-      if (allowed) {
-        // Find Regal code from sunrackProfile if linked, otherwise from rmCodes
-        let displayCode = selectedProfile.preferredRmCode;
-        
-        // Initial image path from master item
-        let profileImage = selectedProfile.profileImagePath;
-        if (profileImage && profileImage.startsWith('/assets')) {
-          profileImage = `${API_URL}${profileImage}`;
-        } else if (!profileImage) {
-          profileImage = `${API_URL}/assets/bom-profiles/MA-43.png`;
-        }
-        
-        if (selectedProfile.sunrackProfile) {
-          if (selectedProfile.sunrackProfile.regalCode) {
-            displayCode = selectedProfile.sunrackProfile.regalCode;
+        if (totalQty > 0) {
+          const itemDescription = vItem.displayOverride || item.genericName;
+
+          // Get vendor code (Regal priority)
+          const displayCode = item.regalCode || item.excellenceCode || item.varnCode || 'N/A';
+
+          // Get profile image
+          let profileImage = item.profileImage;
+          if (profileImage && !profileImage.startsWith('http')) {
+            profileImage = `${API_URL}${profileImage}`;
           }
-          if (selectedProfile.sunrackProfile.profileImage) {
-            // Prepend API_URL if the path starts with /assets (backend path)
-            profileImage = selectedProfile.sunrackProfile.profileImage.startsWith('/') 
-              ? `${API_URL}${selectedProfile.sunrackProfile.profileImage}`
-              : selectedProfile.sunrackProfile.profileImage;
-          }
+
+          const bomItem = {
+            sn: serialNumber++,
+            sunrackCode: displayCode,
+            profileImage: profileImage,
+            itemDescription: itemDescription,
+            material: item.material || 'AA 6000 T5/T6',
+            length: cutLength,
+            uom: item.uom || 'Nos',
+            calculationType: 'CUT_LENGTH',
+            formulaKey: formulaKey,
+            designWeight: item.designWeight,
+            quantities: quantities,
+            totalQuantity: totalQty,
+            spareQuantity: Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER),
+            finalTotal: totalQty + Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER)
+          };
+
+          const weightCost = calculateWeightAndCost(bomItem, aluminumRate);
+          bomItem.wtPerRm = weightCost.wtPerRm;
+          bomItem.rm = weightCost.rm;
+          bomItem.wt = weightCost.wt;
+          bomItem.cost = weightCost.cost;
+
+          bomItems.push(bomItem);
+        }
+      });
+    } else {
+      // For all other items (accessories and fasteners)
+      if (!formulaKey) {
+        console.warn('⚠️ Item has no formula key:', item.genericName);
+        return;
+      }
+
+      const quantities = {};
+      let totalQty = 0;
+
+      bomData.tabs.forEach(tabName => {
+        const qty = tabQuantities[tabName][formulaKey] || 0;
+        quantities[tabName] = qty;
+        totalQty += qty;
+      });
+
+      console.log(`[BOM DEBUG ${idx + 1}] ${item.genericName} - totalQty:`, totalQty, 'quantities:', quantities);
+
+      if (totalQty > 0) {
+        let itemDescription = vItem.displayOverride || item.genericName;
+
+        // Apply M8/M10 formatting for fasteners if applicable
+        if (isFastener && item.standardLength && (itemDescription.startsWith('M8 ') || itemDescription.startsWith('M10 '))) {
+          const prefix = itemDescription.startsWith('M8 ') ? 'M8' : 'M10';
+          const restOfName = itemDescription.substring(prefix.length + 1);
+          itemDescription = `${prefix}x${item.standardLength} ${restOfName}`;
         }
 
-        const itemDescription = vItem?.displayOverride || selectedProfile.genericName;
+        // Get vendor code or N/A for fasteners
+        const displayCode = isProfile
+          ? (item.regalCode || item.excellenceCode || item.varnCode || 'N/A')
+          : 'N/A';
 
-        const item = {
+        // Get image
+        let profileImage = null;
+        if (isProfile && item.profileImage) {
+          profileImage = item.profileImage.startsWith('http')
+            ? item.profileImage
+            : `${API_URL}${item.profileImage}`;
+        } else if (isFastener && item.profileImagePath) {
+          profileImage = item.profileImagePath.startsWith('http')
+            ? item.profileImagePath
+            : `${API_URL}${item.profileImagePath}`;
+        }
+
+        const bomItem = {
           sn: serialNumber++,
-          sunrackCode: displayCode || 'MA-43',
+          sunrackCode: displayCode,
           profileImage: profileImage,
           itemDescription: itemDescription,
-          material: selectedProfile.material || 'AA 6000 T5/T6',
-          length: cutLength,
-          uom: 'Nos',
-          calculationType: 'CUT_LENGTH',
-          profileSerialNumber: primaryProfileSerialNumber,
+          material: item.material,
+          length: item.standardLength,
+          uom: item.uom || 'Nos',
+          calculationType: 'ACCESSORY',
+          formulaKey: formulaKey,
+          costPerPiece: item.costPerPiece,
+          designWeight: item.designWeight,
           quantities: quantities,
           totalQuantity: totalQty,
           spareQuantity: Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER),
           finalTotal: totalQty + Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER)
         };
 
-        const weightCost = calculateWeightAndCost(item, profilesMap, aluminumRate);
-        item.wtPerRm = weightCost.wtPerRm;
-        item.rm = weightCost.rm;
-        item.wt = weightCost.wt;
-        item.cost = weightCost.cost;
+        const weightCost = calculateWeightAndCost(bomItem, aluminumRate);
+        bomItem.wtPerRm = weightCost.wtPerRm;
+        bomItem.rm = weightCost.rm;
+        bomItem.wt = weightCost.wt;
+        bomItem.cost = weightCost.cost;
 
-        bomItems.push(item);
+        bomItems.push(bomItem);
       }
     }
   });
 
-  // 2. Add Accessory items
-  Object.values(profilesMap).forEach(profile => {
-    if (profile.formulas && profile.formulas.length > 0) {
-      const { allowed, vItem } = getTemplateData(profile);
-
-      if (allowed) {
-        profile.formulas.forEach(formula => {
-          const quantities = {};
-          let totalQty = 0;
-
-          // Check if this specific variationItem restricts the formula
-          // (If vItem has a formulaKey, we only use that one)
-          if (vItem.formulaKey && vItem.formulaKey !== formula.formulaKey) {
-             return;
-          }
-
-          bomData.tabs.forEach(tabName => {
-            const qty = tabQuantities[tabName][formula.formulaKey] || 0;
-            quantities[tabName] = qty;
-            totalQty += qty;
-          });
-
-          if (totalQty > 0) {
-            // DEBUG
-            if (profile.serialNumber === '56') {
-               console.log('[bomCalculations] Processing End Clamp:', {
-                 id: profile.id,
-                 vItem: vItem,
-                 displayCode: profile.preferredRmCode,
-                 sunrackProfile: profile.sunrackProfile
-               });
-            }
-
-            // Find Regal code
-            let displayCode = profile.preferredRmCode;
-            
-            // Initial image path from master item
-            let profileImage = profile.profileImagePath;
-            if (profileImage && profileImage.startsWith('/assets')) {
-              profileImage = `${API_URL}${profileImage}`;
-            }
-
-            if (profile.sunrackProfile) {
-              if (profile.sunrackProfile.regalCode) {
-                displayCode = profile.sunrackProfile.regalCode;
-              }
-              if (profile.sunrackProfile.profileImage) {
-                // Prepend API_URL if the path starts with /assets (backend path)
-                profileImage = profile.sunrackProfile.profileImage.startsWith('/') 
-                  ? `${API_URL}${profile.sunrackProfile.profileImage}`
-                  : profile.sunrackProfile.profileImage;
-              }
-            }
-
-            let itemDescription = vItem.displayOverride || profile.genericName;
-            
-            // Apply M8/M10 formatting if applicable
-            if (profile.standardLength && (itemDescription.startsWith('M8 ') || itemDescription.startsWith('M10 '))) {
-              const prefix = itemDescription.startsWith('M8 ') ? 'M8' : 'M10';
-              const restOfName = itemDescription.substring(prefix.length + 1);
-              itemDescription = `${prefix}x${profile.standardLength} ${restOfName}`;
-            }
-
-            const bomItem = {
-              sn: serialNumber++,
-              sunrackCode: displayCode,
-              profileImage: profileImage,
-              itemDescription: itemDescription,
-              material: profile.material,
-              length: profile.standardLength,
-              uom: profile.uom,
-              calculationType: 'ACCESSORY',
-              formulaKey: formula.formulaKey,
-              costPerPiece: profile.costPerPiece,
-              quantities: quantities,
-              totalQuantity: totalQty,
-              spareQuantity: Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER),
-              finalTotal: totalQty + Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER)
-            };
-
-            const weightCost = calculateWeightAndCost(bomItem, profilesMap, aluminumRate);
-            bomItem.wtPerRm = weightCost.wtPerRm;
-            bomItem.rm = weightCost.rm;
-            bomItem.wt = weightCost.wt;
-            bomItem.cost = weightCost.cost;
-
-            bomItems.push(bomItem);
-          }
-        });
-      }
-    }
-  });
+  console.log(`[BOM DEBUG] FINAL: Generated ${bomItems.length} BOM items`);
 
   return bomItems;
 }
@@ -354,79 +304,50 @@ export async function generateBOMItems(bomData, activeCutLengths, profilesMap, a
  * Complete BOM generation pipeline
  * @param {Object} bomData - Collected BOM data
  * @param {Array} activeCutLengths - Active cut lengths
- * @param {Number} aluminumRate - Rate per kg for aluminum (default: DEFAULT_ALUMINIUM_RATE_PER_KG)
+ * @param {Number} aluminumRate - Rate per kg for aluminum
  * @returns {Object} - Complete BOM structure
  */
 export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRate = DEFAULT_ALUMINIUM_RATE_PER_KG) {
-  // Fetch all profiles from API
-  const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  let allProfiles = [];
-  try {
-    const response = await fetch(`${API_URL}/api/bom/master-items`, { headers });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch master items: ${response.status} ${response.statusText}`);
-    }
-    allProfiles = await response.json();
-    
-    // DEBUG: Check if End Clamp (SN 56) has sunrackProfile
-    const endClamp = allProfiles.find(p => p.serialNumber === '56');
-    console.log('[bomCalculations] End Clamp Data:', endClamp);
-
-  } catch (error) {
-    console.error('Error fetching master items:', error);
-    // Fallback: Continue with empty profiles or handle error appropriately
-    // For now, we'll proceed but logging the error is crucial.
-    // Ideally, we might want to throw here if profiles are essential.
-  }
-
-  // ✅ NEW: Fetch variation template
+  // Fetch variation template (contains all items we need)
   const variationName = bomData.projectInfo.longRailVariation;
-  let template = null;
 
-  if (variationName) {
-    try {
-      console.log(`📋 Fetching template for variation: ${variationName}`);
-      template = await getVariationTemplate(variationName);
-
-      if (template) {
-        console.log(`✅ Template loaded successfully. Items count: ${template.items?.length || 0}`);
-      } else {
-        console.warn(`⚠️ No template found for variation: ${variationName}. Showing all items.`);
-      }
-    } catch (error) {
-      console.error('Error fetching template:', error);
-      // Continue without template (fallback to all items)
-    }
-  } else {
-    console.warn('⚠️ No variation specified. Showing all items (backward compatibility).');
+  if (!variationName) {
+    console.error('❌ No variation name provided in bomData');
+    return { items: [], totals: {} };
   }
 
-  // Create profilesMap: { serialNumber: profileData }
-  const profilesMap = {};
-  if (Array.isArray(allProfiles)) {
-    allProfiles.forEach(profile => {
-      profilesMap[profile.serialNumber] = profile;
-    });
+  console.log(`📋 Fetching template for variation: ${variationName}`);
+  const template = await getVariationTemplate(variationName);
+
+  if (!template) {
+    console.error(`❌ Template not found for variation: ${variationName}`);
+    return { items: [], totals: {} };
   }
 
-  // ✅ UPDATED: Pass template to generateBOMItems
-  const bomItems = await generateBOMItems(bomData, activeCutLengths, profilesMap, aluminumRate, template);
+  console.log(`✅ Template loaded successfully. Items count: ${template.variationItems?.length || 0}`);
 
-  return {
-    projectInfo: bomData.projectInfo,
-    tabs: bomData.tabs,
-    panelCounts: bomData.panelCounts,
-    profilesMap: profilesMap,
-    bomItems: bomItems,
-    aluminumRate: aluminumRate,
-    moduleWp: bomData.moduleWp,
-    defaultNotes: template?.defaultNotes || []  // ✅ NEW: Include default notes from template
+  // Generate BOM items using template data
+  const bomItems = await generateBOMItems(bomData, activeCutLengths, aluminumRate, template);
+
+  // Calculate totals
+  const totals = {
+    totalWeight: bomItems.reduce((sum, item) => sum + (item.wt || 0), 0),
+    totalCost: bomItems.reduce((sum, item) => sum + (item.cost || 0), 0),
+    totalItems: bomItems.length
   };
+
+  const result = {
+    bomItems: bomItems,  // Changed from 'items' to 'bomItems' to match BOMPage expectations
+    totals: totals,
+    template: template,
+    variationName: variationName
+  };
+
+  console.log('[BOM DEBUG] generateCompleteBOM returning:', {
+    itemsCount: result.bomItems.length,
+    totals: result.totals,
+    firstItem: result.bomItems[0]
+  });
+
+  return result;
 }

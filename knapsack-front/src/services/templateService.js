@@ -79,15 +79,18 @@ export async function getAllVariationTemplates() {
  * Format item description based on template item data
  * Applies M8/M10 length formatting for fasteners
  *
- * @param {Object} vItem - Variation Item from DB (with nested masterItem)
+ * @param {Object} vItem - Variation Item from DB (with nested sunrackProfile or fastener)
  * @returns {string} Formatted item description
  */
 export function formatItemDescription(vItem) {
-  // Description comes from override OR master item
-  const description = vItem.displayOverride || vItem.masterItem?.genericName || '';
-  
-  // Length comes from master item standard length
-  const length = vItem.masterItem?.standardLength;
+  // Get the item data from either sunrackProfile or fastener
+  const item = vItem.sunrackProfile || vItem.fastener;
+
+  // Description comes from override OR item generic name
+  const description = vItem.displayOverride || item?.genericName || '';
+
+  // Length comes from item standard length
+  const length = item?.standardLength;
 
   // Rule: M8/M10 fasteners → Add "x{length}" after M8/M10
   if (length && (description.startsWith('M8 ') || description.startsWith('M10 '))) {

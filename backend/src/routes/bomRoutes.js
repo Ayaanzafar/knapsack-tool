@@ -9,7 +9,10 @@ const { enforceBomUpdatePermissions, forbidBasicMasterItemMutation } = require('
 router.use(authenticateToken);
 router.use(checkPasswordChange);
 
-// Master Items Routes
+// Master Items Routes - DEPRECATED (use sunrack-profiles and fasteners instead)
+// TODO: These routes use the old bom_master_items table which is being phased out
+// Use /api/bom-templates for BOM generation instead
+/*
 // GET /api/bom/master-items - Get all master items
 router.get('/master-items', bomController.getAllMasterItems.bind(bomController));
 
@@ -23,11 +26,11 @@ router.get('/master-items/:id', bomController.getMasterItemById.bind(bomControll
 router.post('/master-items', authorizeRoles('ADVANCED'), bomController.createMasterItem.bind(bomController));
 
 // PUT /api/bom/master-items/:id - Update master item
-// COMMENTED OUT: Removed BASIC user restriction
-router.put('/master-items/:id', /* forbidBasicMasterItemMutation, */ bomController.updateMasterItem.bind(bomController));
+router.put('/master-items/:id', bomController.updateMasterItem.bind(bomController));
 
 // DELETE /api/bom/master-items/:id - Delete master item
 router.delete('/master-items/:id', authorizeRoles('ADVANCED'), bomController.deleteMasterItem.bind(bomController));
+*/
 
 // Formulas Routes
 // GET /api/bom/formulas - Get all formulas

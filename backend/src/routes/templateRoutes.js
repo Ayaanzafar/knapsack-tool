@@ -20,12 +20,8 @@ router.get('/:variationName', async (req, res, next) => {
       include: {
         variationItems: {
           include: {
-            masterItem: {
-              include: {
-                sunrackProfile: true,
-                rmCodes: true
-              }
-            }
+            sunrackProfile: true,  // For profile items
+            fastener: true         // For fastener items
           }
         }
       }

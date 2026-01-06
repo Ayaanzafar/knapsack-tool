@@ -1,7 +1,7 @@
   export const LONG_RAIL_OPTIONS = [
     { value: "U Cleat Long Rail - Regular", label: "U Cleat Long Rail - Regular" },
 
-    { value: "U Cleat Long Rail - Regular - Asbestos", label: "U Cleat Long Rail - Regular - Asbestos", disabled: true },
+    { value: "U Cleat Long Rail - Regular - Asbestos", label: "U Cleat Long Rail - Regular - Asbestos" },
     { value: "U Cleat Long Rail - Regular - Seam Clamp", label: "U Cleat Long Rail - Regular - Seam Clamp", disabled: true },
 
     { value: "U Cleat Long Rail - Large Span/Height", label: "U Cleat Long Rail - Large Span/Height", disabled: true },
