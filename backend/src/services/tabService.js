@@ -5,8 +5,8 @@ class TabService {
   async createTab(projectId, data) {
     const { name, createdAt, settings } = data;
 
-    // Get default profile (40mm Long Rail - serial number 26)
-    const defaultProfile = await prisma.bomMasterItem.findFirst({
+    // Get default profile (40mm Long Rail - sNo 26 historically)
+    const defaultProfile = await prisma.sunrackProfile.findFirst({
       where: { genericName: '40mm Long Rail' }
     });
 
@@ -15,7 +15,7 @@ class TabService {
         projectId: parseInt(projectId),
         name: name || 'Untitled Tab',
         createdAt: createdAt ? new Date(createdAt) : new Date(),
-        longRailProfileSerialNumber: defaultProfile?.serialNumber || '26',
+        longRailProfileSerialNumber: String(defaultProfile?.sNo ?? 26),
         // Settings
         moduleLength: parseInt(settings?.moduleLength || 2278),
         moduleWidth: parseInt(settings?.moduleWidth || 1134),

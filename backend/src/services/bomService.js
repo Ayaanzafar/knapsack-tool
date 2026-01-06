@@ -3,8 +3,74 @@ const bomReconstructionService = require('./bomReconstructionService');
 const { Prisma } = require('@prisma/client');
 
 class BomService {
-  // Get all BOM master items
+  // Get all BOM master items (profiles + fasteners)
   async getAllMasterItems() {
+    // New schema: master data lives in sunrack_profiles (profiles) + fasteners (hardware).
+    const [profiles, fasteners] = await Promise.all([
+      prisma.sunrackProfile.findMany({
+        orderBy: { sNo: 'asc' },
+        include: { formulas: true },
+      }),
+      prisma.fastener.findMany({
+        where: { isActive: true },
+        orderBy: { id: 'asc' },
+        include: { formulas: true },
+      }),
+    ]);
+
+    const pickPreferredProfileCode = (profile) => {
+      return (
+        profile.regalCode ||
+        profile.excellenceCode ||
+        profile.varnCode ||
+        profile.rcCode ||
+        profile.snalcoCode ||
+        profile.darshanCode ||
+        profile.jmCode ||
+        profile.ralcoCode ||
+        profile.saiDeepCode ||
+        profile.eleanorCode ||
+        null
+      );
+    };
+
+    const mappedProfiles = profiles.map((profile) => ({
+      itemType: 'PROFILE',
+      serialNumber: String(profile.sNo),
+      sunrackCode: pickPreferredProfileCode(profile),
+      itemDescription: profile.profileDescription,
+      genericName: profile.genericName,
+      designWeight: profile.designWeight,
+      material: profile.material || null,
+      standardLength: profile.standardLength ?? null,
+      uom: profile.uom || null,
+      category: profile.category || null,
+      profileImagePath: profile.profileImage || null,
+      costPerPiece: null,
+      formulas: profile.formulas || [],
+      sunrackProfile: profile,
+    }));
+
+    const mappedFasteners = fasteners.map((fastener) => ({
+      itemType: 'FASTENER',
+      serialNumber: `F-${fastener.id}`,
+      sunrackCode: null,
+      itemDescription: fastener.itemDescription,
+      genericName: fastener.genericName,
+      designWeight: null,
+      material: fastener.material || null,
+      standardLength: fastener.standardLength ?? null,
+      uom: fastener.uom,
+      category: fastener.category || null,
+      profileImagePath: fastener.profileImagePath || null,
+      costPerPiece: fastener.costPerPiece ?? null,
+      formulas: fastener.formulas || [],
+      fastener: fastener,
+    }));
+
+    return [...mappedProfiles, ...mappedFasteners];
+
+    /* Legacy bom_master_items implementation (deprecated)
     const items = await prisma.bomMasterItem.findMany({
       where: { isActive: true },
       orderBy: { serialNumber: 'asc' },
@@ -34,42 +100,143 @@ class BomService {
         preferredRmCode: preferredRmCode || null
       };
     });
+    */
   }
 
   // Get single BOM master item
   async getMasterItemById(id) {
-    return await prisma.bomMasterItem.findUnique({
-      where: { id: parseInt(id) },
-      include: {
-        formulas: true
-      }
+    const idValue = String(id).trim();
+    if (idValue.startsWith('F-')) {
+      const match = /^F-(\d+)$/.exec(idValue);
+      if (!match) return null;
+      const fastenerId = Number.parseInt(match[1], 10);
+      if (!Number.isFinite(fastenerId)) return null;
+
+      const fastener = await prisma.fastener.findUnique({
+        where: { id: fastenerId },
+        include: { formulas: true },
+      });
+      if (!fastener) return null;
+
+      return {
+        itemType: 'FASTENER',
+        serialNumber: `F-${fastener.id}`,
+        sunrackCode: null,
+        itemDescription: fastener.itemDescription,
+        genericName: fastener.genericName,
+        designWeight: null,
+        material: fastener.material || null,
+        standardLength: fastener.standardLength ?? null,
+        uom: fastener.uom,
+        category: fastener.category || null,
+        profileImagePath: fastener.profileImagePath || null,
+        costPerPiece: fastener.costPerPiece ?? null,
+        formulas: fastener.formulas || [],
+        fastener: fastener,
+      };
+    }
+
+    const sNo = Number.parseInt(idValue, 10);
+    if (!Number.isFinite(sNo)) return null;
+
+    const profile = await prisma.sunrackProfile.findUnique({
+      where: { sNo },
+      include: { formulas: true },
     });
+    if (!profile) return null;
+
+    const preferredRmCode =
+      profile.regalCode ||
+      profile.excellenceCode ||
+      profile.varnCode ||
+      profile.rcCode ||
+      profile.snalcoCode ||
+      profile.darshanCode ||
+      profile.jmCode ||
+      profile.ralcoCode ||
+      profile.saiDeepCode ||
+      profile.eleanorCode ||
+      null;
+
+    return {
+      itemType: 'PROFILE',
+      serialNumber: String(profile.sNo),
+      sunrackCode: preferredRmCode,
+      itemDescription: profile.profileDescription,
+      genericName: profile.genericName,
+      designWeight: profile.designWeight,
+      material: profile.material || null,
+      standardLength: profile.standardLength ?? null,
+      uom: profile.uom || null,
+      category: profile.category || null,
+      profileImagePath: profile.profileImage || null,
+      costPerPiece: null,
+      formulas: profile.formulas || [],
+      sunrackProfile: profile,
+    };
   }
 
   // Get BOM master item by Sunrack code
   async getMasterItemBySunrackCode(sunrackCode) {
-    return await prisma.bomMasterItem.findUnique({
-      where: { sunrackCode },
-      include: {
-        formulas: true
-      }
+    const code = String(sunrackCode).trim();
+    if (!code) return null;
+
+    const profile = await prisma.sunrackProfile.findFirst({
+      where: {
+        OR: [
+          { regalCode: code },
+          { excellenceCode: code },
+          { varnCode: code },
+          { rcCode: code },
+          { snalcoCode: code },
+          { darshanCode: code },
+          { jmCode: code },
+          { ralcoCode: code },
+          { saiDeepCode: code },
+          { eleanorCode: code },
+        ],
+      },
+      include: { formulas: true },
     });
+
+    if (!profile) return null;
+
+    const preferredRmCode =
+      profile.regalCode ||
+      profile.excellenceCode ||
+      profile.varnCode ||
+      profile.rcCode ||
+      profile.snalcoCode ||
+      profile.darshanCode ||
+      profile.jmCode ||
+      profile.ralcoCode ||
+      profile.saiDeepCode ||
+      profile.eleanorCode ||
+      null;
+
+    return {
+      itemType: 'PROFILE',
+      serialNumber: String(profile.sNo),
+      sunrackCode: preferredRmCode,
+      itemDescription: profile.profileDescription,
+      genericName: profile.genericName,
+      designWeight: profile.designWeight,
+      material: profile.material || null,
+      standardLength: profile.standardLength ?? null,
+      uom: profile.uom || null,
+      category: profile.category || null,
+      profileImagePath: profile.profileImage || null,
+      costPerPiece: null,
+      formulas: profile.formulas || [],
+      sunrackProfile: profile,
+    };
   }
 
   // Create BOM master item
   async createMasterItem(data) {
-    return await prisma.bomMasterItem.create({
-      data: {
-        serialNumber: data.serialNumber,
-        sunrackCode: data.sunrackCode || null,
-        itemDescription: data.itemDescription,
-        material: data.material || null,
-        standardLength: data.standardLength || null,
-        uom: data.uom,
-        category: data.category || null,
-        profileImagePath: data.profileImagePath || null
-      }
-    });
+    const err = new Error('Deprecated: master items are now sunrack_profiles + fasteners');
+    err.statusCode = 410;
+    throw err;
   }
 
   // Update BOM master item (supports SunrackProfile and Fastener)
@@ -138,10 +305,9 @@ class BomService {
 
   // Delete BOM master item (soft delete)
   async deleteMasterItem(id) {
-    return await prisma.bomMasterItem.update({
-      where: { id: parseInt(id) },
-      data: { isActive: false }
-    });
+    const err = new Error('Deprecated: master items are now sunrack_profiles + fasteners');
+    err.statusCode = 410;
+    throw err;
   }
 
   // Get all BOM formulas
@@ -149,7 +315,8 @@ class BomService {
     return await prisma.bomFormula.findMany({
       where: { isActive: true },
       include: {
-        masterItem: true
+        sunrackProfile: true,
+        fastener: true
       },
       orderBy: { calculationLevel: 'asc' }
     });
