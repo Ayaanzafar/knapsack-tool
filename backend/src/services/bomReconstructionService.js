@@ -74,7 +74,7 @@ class BomReconstructionService {
 
     // Map profiles (using serialNumber as key)
     allProfiles.forEach(profile => {
-      const displayCode = profile.regalCode || profile.excellenceCode || profile.varnCode || 'N/A';
+      const displayCode = profile.regalCode || profile.excellenceCode || profile.varnCode || null;
       
       const mappedProfile = {
         serialNumber: profile.sNo, // Use sNo as serialNumber
@@ -100,7 +100,7 @@ class BomReconstructionService {
       
       const mappedFastener = {
         serialNumber: key,
-        sunrackCode: 'N/A', // Fasteners usually don't have vendor codes in the same way
+        sunrackCode: null, // Fasteners usually don't have vendor codes in the same way
         genericName: fastener.name || fastener.genericName, // Fallback to genericName if name is missing
         itemDescription: fastener.name || fastener.itemDescription,
         material: fastener.material,

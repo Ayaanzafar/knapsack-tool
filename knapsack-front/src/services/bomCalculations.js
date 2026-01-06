@@ -210,7 +210,7 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
           const itemDescription = vItem.displayOverride || item.genericName;
 
           // Get vendor code (Regal priority)
-          const displayCode = item.regalCode || item.excellenceCode || item.varnCode || 'N/A';
+          const displayCode = item.regalCode || item.excellenceCode || item.varnCode || null;
 
           // Get profile image
           let profileImage = item.profileImage;
@@ -273,10 +273,10 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
           itemDescription = `${prefix}x${item.standardLength} ${restOfName}`;
         }
 
-        // Get vendor code or N/A for fasteners
+        // Get vendor code or null for fasteners
         const displayCode = isProfile
-          ? (item.regalCode || item.excellenceCode || item.varnCode || 'N/A')
-          : 'N/A';
+          ? (item.regalCode || item.excellenceCode || item.varnCode || null)
+          : null;
 
         // Get image
         let profileImage = null;
