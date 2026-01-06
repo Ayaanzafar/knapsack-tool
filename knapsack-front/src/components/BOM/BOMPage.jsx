@@ -1420,9 +1420,14 @@ export default function BOMPage() {
       setProfiles(Object.values(nextBomData.profilesMap));
     }
 
-    if (typeof nextBomData.aluminumRate === 'number') setAluminumRate(nextBomData.aluminumRate);
-    if (typeof nextBomData.sparePercentage === 'number') setSparePercentage(nextBomData.sparePercentage);
-    if (typeof nextBomData.moduleWp === 'number') setModuleWp(nextBomData.moduleWp);
+    const nextAluminumRate = Number.parseFloat(nextBomData.aluminumRate);
+    if (Number.isFinite(nextAluminumRate)) setAluminumRate(nextAluminumRate);
+
+    const nextSparePercentage = Number.parseFloat(nextBomData.sparePercentage);
+    if (Number.isFinite(nextSparePercentage)) setSparePercentage(nextSparePercentage);
+
+    const nextModuleWp = Number.parseFloat(nextBomData.moduleWp);
+    if (Number.isFinite(nextModuleWp)) setModuleWp(nextModuleWp);
 
     // Always initialize userNotes - even if empty array
     const loadedNotes = Array.isArray(nextBomData.userNotes) ? nextBomData.userNotes : [];
@@ -1472,6 +1477,17 @@ export default function BOMPage() {
             setProjectId(location.state.projectId);
             setCurrentProjectId(location.state.projectId); // Also set global projectId
           }
+
+          // Restore globals when coming back from Print Preview or other screens that pass them separately.
+          const stateAluminumRate = Number.parseFloat(location.state?.aluminumRate);
+          if (Number.isFinite(stateAluminumRate)) setAluminumRate(stateAluminumRate);
+
+          const stateSparePercentage = Number.parseFloat(location.state?.sparePercentage);
+          if (Number.isFinite(stateSparePercentage)) setSparePercentage(stateSparePercentage);
+
+          const stateModuleWp = Number.parseFloat(location.state?.moduleWp);
+          if (Number.isFinite(stateModuleWp)) setModuleWp(stateModuleWp);
+
           // Load saved changeLog and userNotes
           if (location.state?.changeLog) {
             setChangeLog(location.state.changeLog);
@@ -1565,15 +1581,14 @@ export default function BOMPage() {
 
           setBomData(data.bomData);
 
-          if (data.bomData.aluminumRate) {
-            setAluminumRate(data.bomData.aluminumRate);
-          }
-          if (typeof data.bomData.sparePercentage === 'number') {
-            setSparePercentage(data.bomData.sparePercentage);
-          }
-          if (typeof data.bomData.moduleWp === 'number') {
-            setModuleWp(data.bomData.moduleWp);
-          }
+          const loadedAluminumRate = Number.parseFloat(data.bomData.aluminumRate);
+          if (Number.isFinite(loadedAluminumRate)) setAluminumRate(loadedAluminumRate);
+
+          const loadedSparePercentage = Number.parseFloat(data.bomData.sparePercentage);
+          if (Number.isFinite(loadedSparePercentage)) setSparePercentage(loadedSparePercentage);
+
+          const loadedModuleWp = Number.parseFloat(data.bomData.moduleWp);
+          if (Number.isFinite(loadedModuleWp)) setModuleWp(loadedModuleWp);
 
           // Load userNotes from backend
           if (data.bomData.userNotes && Array.isArray(data.bomData.userNotes)) {
@@ -2185,7 +2200,13 @@ export default function BOMPage() {
     setIsSavingSnapshot(true);
     try {
       const customDefaultNotes = bomData.customDefaultNotes || null;
-      await savedBomAPI.saveBomSnapshot(projectId, bomData, userNotes, changeLog, customDefaultNotes);
+      const bomDataWithGlobals = {
+        ...bomData,
+        aluminumRate,
+        sparePercentage,
+        moduleWp,
+      };
+      await savedBomAPI.saveBomSnapshot(projectId, bomDataWithGlobals, userNotes, changeLog, customDefaultNotes);
       setHasSavedBom(true);
       showToast('✅ BOM snapshot saved successfully!');
     } catch (error) {

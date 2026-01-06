@@ -22,11 +22,16 @@ class BomReconstructionService {
    * @returns {Promise<object>} - { bomMetadata, bomItems } minimal format
    */
   async convertToMinimalBOM(fullBomData) {
+    const toFiniteNumberOrDefault = (value, fallback) => {
+      const n = Number.parseFloat(value);
+      return Number.isFinite(n) ? n : fallback;
+    };
+
     // Extract metadata (non-redundant data)
     const bomMetadata = {
-      aluminumRate: fullBomData.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG,
-      sparePercentage: fullBomData.sparePercentage || DEFAULT_SPARE_PERCENTAGE,
-      moduleWp: fullBomData.moduleWp || DEFAULT_MODULE_WP,
+      aluminumRate: toFiniteNumberOrDefault(fullBomData.aluminumRate, DEFAULT_ALUMINIUM_RATE_PER_KG),
+      sparePercentage: toFiniteNumberOrDefault(fullBomData.sparePercentage, DEFAULT_SPARE_PERCENTAGE),
+      moduleWp: toFiniteNumberOrDefault(fullBomData.moduleWp, DEFAULT_MODULE_WP),
       tabs: fullBomData.tabs || [],
       panelCounts: fullBomData.panelCounts || {},
       projectInfo: fullBomData.projectInfo || {},
@@ -116,9 +121,14 @@ class BomReconstructionService {
     });
 
     // 3. Rebuild full BOM items
-    const aluminumRate = bomMetadata.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG;
-    const sparePercentage = bomMetadata.sparePercentage || DEFAULT_SPARE_PERCENTAGE;
-    const moduleWp = bomMetadata.moduleWp || DEFAULT_MODULE_WP;
+    const toFiniteNumberOrDefault = (value, fallback) => {
+      const n = Number.parseFloat(value);
+      return Number.isFinite(n) ? n : fallback;
+    };
+
+    const aluminumRate = toFiniteNumberOrDefault(bomMetadata.aluminumRate, DEFAULT_ALUMINIUM_RATE_PER_KG);
+    const sparePercentage = toFiniteNumberOrDefault(bomMetadata.sparePercentage, DEFAULT_SPARE_PERCENTAGE);
+    const moduleWp = toFiniteNumberOrDefault(bomMetadata.moduleWp, DEFAULT_MODULE_WP);
 
     const fullBomItems = bomItems.map((item, index) => {
       // Find profile or fastener

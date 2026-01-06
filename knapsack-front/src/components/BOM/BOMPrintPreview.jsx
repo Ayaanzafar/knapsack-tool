@@ -24,6 +24,22 @@ export default function BOMPrintPreview() {
   const [printedBy, setPrintedBy] = useState('');
   const [printedAt] = useState(new Date()); // Current timestamp when preview is opened
 
+  const resolveImageUrl = (rawUrl) => {
+    if (!rawUrl) return null;
+    if (/^(data:|blob:)/i.test(rawUrl)) return rawUrl;
+    if (/^https?:\/\//i.test(rawUrl)) return rawUrl;
+
+    const normalized = rawUrl.startsWith('/') ? rawUrl : `/${rawUrl}`;
+
+    if (normalized.startsWith('/profile-images/')) {
+      return `${API_URL}/assets${normalized}`;
+    }
+
+    const isBackendAsset = normalized.startsWith('/assets/') || normalized.startsWith('/uploads/');
+
+    return isBackendAsset ? `${API_URL}${normalized}` : rawUrl;
+  };
+
   // Check if in preview mode (shown in modal iframe)
   const params = new URLSearchParams(location.search);
   const isPreviewMode = params.get('previewMode') === 'true';
@@ -748,7 +764,14 @@ export default function BOMPrintPreview() {
                           <td className={`border border-gray-400 px-2 py-1 text-xs text-center ${bgColor}`}>{item.sunrackCode || '-'}</td>
                           <td className={`border border-gray-400 px-2 py-1 text-center ${bgColor}`}>
                             {item.profileImage ? (
-                              <img src={item.profileImage} alt={item.sunrackCode} className="w-8 h-8 object-contain mx-auto" />
+                              <img
+                                src={resolveImageUrl(item.profileImage)}
+                                alt={item.sunrackCode}
+                                className="w-8 h-8 object-contain mx-auto"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
                             ) : (
                               '-'
                             )}
