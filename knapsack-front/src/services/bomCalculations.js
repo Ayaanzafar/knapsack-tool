@@ -40,7 +40,7 @@ export const BOM_FORMULAS = {
   M8_SPRING_WASHER: (tabCalc, calculated) => calculated.M8x60_BOLT + calculated.M8x20_BOLT + (calculated.M8x25_BOLT || 0),
 
   // Level 5: Other hardware
-  SDS_4_2X13MM: (tabCalc, calculated) => calculated.RAIL_JOINTER * 4,
+  SDS_4_2X19MM: (tabCalc, calculated) => calculated.RAIL_JOINTER * 4,
   SDS_4_8X19MM: (tabCalc) => tabCalc.sb2,
   SDS_5_5X63MM: (tabCalc) => tabCalc.sb1,
   SDS_6_3X63MM: (tabCalc) => tabCalc.sb1 + tabCalc.sb2, // For Double U Cleat
@@ -80,7 +80,7 @@ export function calculateTabQuantities(tabCalculation) {
   calculated.M8_SPRING_WASHER = BOM_FORMULAS.M8_SPRING_WASHER(tabCalculation, calculated);
 
   // Level 5: Other hardware
-  calculated.SDS_4_2X13MM = BOM_FORMULAS.SDS_4_2X13MM(tabCalculation, calculated);
+  calculated.SDS_4_2X19MM = BOM_FORMULAS.SDS_4_2X19MM(tabCalculation, calculated);
   calculated.SDS_4_8X19MM = BOM_FORMULAS.SDS_4_8X19MM(tabCalculation, calculated);
   calculated.SDS_5_5X63MM = BOM_FORMULAS.SDS_5_5X63MM(tabCalculation, calculated);
   calculated.SDS_6_3X63MM = BOM_FORMULAS.SDS_6_3X63MM(tabCalculation, calculated);

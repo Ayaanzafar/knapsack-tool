@@ -7,7 +7,7 @@ const FASTENER_FORMULAS = [
   { fastenerName: 'M8 Hex Head Fastener Set', length: 60, formulaKey: 'M8x60_BOLT_SHORT', calculationLevel: 3 },
   { fastenerName: 'M8  Allen Head Bolt with Spring Washer', length: 20, formulaKey: 'M8x20_BOLT', calculationLevel: 3 }, // Note: TWO spaces
   { fastenerName: 'M8 Allen Head Bolt with Spring Washer', length: 25, formulaKey: 'M8x25_BOLT', calculationLevel: 3 },
-  { fastenerName: 'Self Drilling Screw -  4.2X19mm - Hex Head', length: 19, formulaKey: 'SDS_4_2X13MM', calculationLevel: 5 },
+  { fastenerName: 'Self Drilling Screw -  4.2X19mm - Hex Head', length: 19, formulaKey: 'SDS_4_2X19MM', calculationLevel: 5 },
   { fastenerName: 'Self Drilling Screw -  4.8X19mm - Hex Head', length: 19, formulaKey: 'SDS_4_8X19MM', calculationLevel: 5 },
   { fastenerName: 'Self Drilling Screw -  5.5X63mm - Hex Head', length: 63, formulaKey: 'SDS_5_5X63MM', calculationLevel: 5 },
   { fastenerName: 'Self Drilling Screw -  6.3X63mm - Hex Head', length: 63, formulaKey: 'SDS_6_3X63MM', calculationLevel: 5 },
