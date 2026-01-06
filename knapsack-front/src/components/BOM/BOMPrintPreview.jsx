@@ -867,6 +867,8 @@ export default function BOMPrintPreview() {
               userNotes={userNotes || []}
               onNotesChange={() => {}}
               editMode={false}
+              variationName={bomData?.projectInfo?.longRailVariation}
+              customDefaultNotes={bomData?.customDefaultNotes}
             />
           </div>
 

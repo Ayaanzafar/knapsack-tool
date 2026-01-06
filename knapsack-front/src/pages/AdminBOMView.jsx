@@ -439,6 +439,8 @@ export default function AdminBOMView() {
             userNotes={userNotes || []}
             onNotesChange={() => {}}
             editMode={false}
+            variationName={bomData?.projectInfo?.longRailVariation}
+            customDefaultNotes={bomData?.customDefaultNotes}
           />
         </div>
 

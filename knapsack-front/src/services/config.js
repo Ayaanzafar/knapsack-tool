@@ -12,11 +12,11 @@ export const API_URL = API_BASE_URL.replace('/api', '');
 export const API_BASE = API_BASE_URL;
 
 // Log the configuration (useful for debugging)
-console.log('API Configuration:', {
-  API_BASE_URL,
-  API_URL,
-  environment: import.meta.env.MODE || 'development'
-});
+// console.log('API Configuration:', {
+//   API_BASE_URL,
+//   API_URL,
+//   environment: import.meta.env.MODE || 'development'
+// });
 
 export default {
   API_BASE_URL,

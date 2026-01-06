@@ -248,8 +248,8 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
                       className="mt-1 w-4 h-4 text-purple-600"
                     />
                     <div className="flex-1">
-                      <div className="font-semibold text-sm text-gray-900">Update Globally (All Future BOMs)</div>
-                      <div className="text-xs text-gray-600">Changes will be saved to the master default notes. All future BOMs will use these updated notes.</div>
+                      <div className="font-semibold text-sm text-gray-900">Update This Variation (All Future BOMs)</div>
+                      <div className="text-xs text-gray-600">Changes will be saved to this variation template’s default notes. Future BOMs for this variation will use these updated notes.</div>
                     </div>
                   </label>
                   <label className="flex items-start gap-3 cursor-pointer p-2 rounded hover:bg-gray-50">
@@ -263,7 +263,7 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
                     />
                     <div className="flex-1">
                       <div className="font-semibold text-sm text-gray-900">Use for This BOM Only</div>
-                      <div className="text-xs text-gray-600">Changes will be saved only for this specific BOM. Other BOMs will still use the global default notes.</div>
+                      <div className="text-xs text-gray-600">Changes will be saved only for this specific BOM. Other BOMs will still use the template default notes.</div>
                     </div>
                   </label>
                 </div>

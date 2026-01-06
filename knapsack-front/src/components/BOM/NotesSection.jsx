@@ -1,8 +1,34 @@
 import { useState, useEffect } from 'react';
 import { defaultNotesAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { getVariationTemplate } from '../../services/templateService';
 
-export default function NotesSection({ userNotes, onNotesChange, editMode, onDefaultNotesChange }) {
+const normalizeDefaultNotes = (raw) => {
+  if (!Array.isArray(raw)) return [];
+
+  const noteTexts = raw
+    .map((n) => {
+      if (typeof n === 'string') return n;
+      if (n && typeof n === 'object') return n.noteText ?? n.text ?? '';
+      return '';
+    })
+    .map((s) => String(s).trim())
+    .filter(Boolean);
+
+  return noteTexts.map((noteText, idx) => ({
+    noteOrder: idx + 1,
+    noteText,
+  }));
+};
+
+export default function NotesSection({
+  userNotes,
+  onNotesChange,
+  editMode,
+  onDefaultNotesChange,
+  variationName,
+  customDefaultNotes,
+}) {
   const { user } = useAuth();
   const [defaultNotes, setDefaultNotes] = useState([]);
   const [originalDefaultNotes, setOriginalDefaultNotes] = useState([]);
@@ -21,11 +47,29 @@ export default function NotesSection({ userNotes, onNotesChange, editMode, onDef
   // Load default notes from database
   useEffect(() => {
     loadDefaultNotes();
-  }, []);
+  }, [variationName, customDefaultNotes]);
 
   const loadDefaultNotes = async () => {
     try {
       setLoadingDefaults(true);
+      if (Array.isArray(customDefaultNotes) && customDefaultNotes.length > 0) {
+        const normalized = normalizeDefaultNotes(customDefaultNotes);
+        setDefaultNotes(normalized);
+        setOriginalDefaultNotes(JSON.parse(JSON.stringify(normalized)));
+        return;
+      }
+
+      if (variationName) {
+        const template = await getVariationTemplate(variationName);
+        const normalized = normalizeDefaultNotes(template?.defaultNotes || []);
+        if (normalized.length > 0) {
+          setDefaultNotes(normalized);
+          setOriginalDefaultNotes(JSON.parse(JSON.stringify(normalized)));
+          return;
+        }
+      }
+
+      // Fallback: legacy global default notes table
       const notes = await defaultNotesAPI.getAll();
       setDefaultNotes(notes);
       setOriginalDefaultNotes(JSON.parse(JSON.stringify(notes)));

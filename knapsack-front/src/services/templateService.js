@@ -37,10 +37,52 @@ export async function getVariationTemplate(variationName) {
     }
 
     const template = await response.json();
-    console.log(`✅ Template loaded for variation: ${variationName}`, template);
+    // console.log(`✅ Template loaded for variation: ${variationName}`, template);
     return template;
   } catch (error) {
     console.error('Error fetching template:', error);
+    return null;
+  }
+}
+
+/**
+ * Update variation template default notes (MANAGER only)
+ * @param {string} variationName
+ * @param {Array<string>|Array<{noteOrder:number,noteText:string}>} defaultNotes
+ * @returns {Promise<{variationName:string, defaultNotes:Array<{noteOrder:number,noteText:string}>} | null>}
+ */
+export async function updateVariationTemplateDefaultNotes(variationName, defaultNotes) {
+  if (!variationName) {
+    console.warn('No variation name provided to updateVariationTemplateDefaultNotes');
+    return null;
+  }
+
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/bom-templates/${encodeURIComponent(variationName)}/default-notes`,
+      {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ defaultNotes }),
+      }
+    );
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      throw new Error(text || `Failed to update template default notes (HTTP ${response.status})`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating template default notes:', error);
     return null;
   }
 }

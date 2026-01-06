@@ -1346,7 +1346,8 @@ import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
 import NotesSection from './NotesSection';
 import { API_URL } from '../../services/config';
-import { bomAPI, savedBomAPI, defaultNotesAPI } from '../../services/api';
+import { bomAPI, savedBomAPI } from '../../services/api';
+import { updateVariationTemplateDefaultNotes } from '../../services/templateService';
 import { setCurrentProjectId } from '../../lib/tabStorageAPI';
 import axios from 'axios';
 import { arrayMove } from '@dnd-kit/sortable';
@@ -1574,10 +1575,10 @@ export default function BOMPage() {
           }
 
           // DEBUG: Check profilesMap before setting
-          if (data.bomData.profilesMap && data.bomData.profilesMap[94]) {
-            console.log('[BOMPage loadBOM] profilesMap[94]:', data.bomData.profilesMap[94]);
-            console.log('[BOMPage loadBOM] profilesMap[94].sunrackCode:', data.bomData.profilesMap[94].sunrackCode);
-          }
+          // if (data.bomData.profilesMap && data.bomData.profilesMap[94]) {
+          //   console.log('[BOMPage loadBOM] profilesMap[94]:', data.bomData.profilesMap[94]);
+          //   console.log('[BOMPage loadBOM] profilesMap[94].sunrackCode:', data.bomData.profilesMap[94].sunrackCode);
+          // }
 
           setBomData(data.bomData);
 
@@ -1594,11 +1595,11 @@ export default function BOMPage() {
           if (data.bomData.userNotes && Array.isArray(data.bomData.userNotes)) {
             setUserNotes(data.bomData.userNotes);
             setOriginalUserNotes(data.bomData.userNotes);
-            console.log('Initial load - userNotes from backend:', data.bomData.userNotes);
+            // console.log('Initial load - userNotes from backend:', data.bomData.userNotes);
           } else {
             setUserNotes([]);
             setOriginalUserNotes([]);
-            console.log('Initial load - no userNotes found, initializing empty array');
+            // console.log('Initial load - no userNotes found, initializing empty array');
           }
 
           if (data.bomData.bomItems && data.bomData.bomItems.length > 0) {
@@ -1654,7 +1655,7 @@ export default function BOMPage() {
   }, [projectId, location.state?.savedBomId, bomData?.projectInfo?.projectName]);  // Re-check when returning from print or when BOM is saved
 
   useEffect(() => {
-    if (!bomData || loading) return;
+    if (!bomData || loading || !bomData.profilesMap) return;
 
     const updatedBomData = { ...bomData };
     updatedBomData.bomItems = bomData.bomItems.map(item => {
@@ -1670,7 +1671,7 @@ export default function BOMPage() {
   }, [aluminumRate, loading]);
 
   useEffect(() => {
-    if (!bomData || loading) return;
+    if (!bomData || loading || !bomData.profilesMap) return;
 
     const updatedBomData = { ...bomData };
     updatedBomData.bomItems = bomData.bomItems.map(item => {
@@ -2230,25 +2231,25 @@ export default function BOMPage() {
 
     const hasBomChanges = changes.length > 0 || additions.length > 0 || deletions.length > 0;
 
-    console.log('Done Editing - Notes changed:', notesChanged); // Debug log
-    console.log('Current notes:', userNotes); // Debug log
-    console.log('Original notes:', originalUserNotes); // Debug log
-    console.log('BOM changes:', hasBomChanges); // Debug log
-    console.log('Default notes changes:', hasDefaultNotesChanges, defaultNotesChanges); // Debug log
+    // console.log('Done Editing - Notes changed:', notesChanged); // Debug log
+    // console.log('Current notes:', userNotes); // Debug log
+    // console.log('Original notes:', originalUserNotes); // Debug log
+    // console.log('BOM changes:', hasBomChanges); // Debug log
+    // console.log('Default notes changes:', hasDefaultNotesChanges, defaultNotesChanges); // Debug log
 
     if (hasBomChanges || hasDefaultNotesChanges) {
       // BOM changes OR default notes changes exist - show review modal
       setReviewModalOpen(true);
     } else if (notesChanged) {
       // Only user notes changed - save directly without review modal
-      console.log('Saving user notes only...'); // Debug log
+      // console.log('Saving user notes only...'); // Debug log
       await saveWithExplicitData(bomData, changeLog);
       setEditMode(false);
       setOriginalUserNotes([...userNotes]); // Update original notes after save
       changeTracker.stopTracking();
     } else {
       // No changes detected, just exit edit mode without saving
-      console.log('No changes detected'); // Debug log
+      // console.log('No changes detected'); // Debug log
       setEditMode(false);
       changeTracker.stopTracking();
     }
@@ -2278,49 +2279,24 @@ export default function BOMPage() {
     const { defaultNotesChanges, defaultNotesUpdateChoice } = defaultNotesData;
     if (defaultNotesChanges && defaultNotesChanges.length > 0 && defaultNotesUpdateChoice) {
       if (defaultNotesUpdateChoice === 'global') {
-        // Update global default notes
+        // Update template default notes (per longRailVariation)
         try {
-          // Separate changes by type
-          const additions = defaultNotesChanges.filter(c => c.type === 'ADD');
-          const edits = defaultNotesChanges.filter(c => c.type === 'EDIT');
-          const deletions = defaultNotesChanges.filter(c => c.type === 'DELETE');
-
-          // Sort deletions in descending order (highest noteOrder first)
-          // This prevents renumbering issues when deleting multiple notes
-          deletions.sort((a, b) => b.noteOrder - a.noteOrder);
-
-          // Process deletions first (to avoid conflicts)
-          for (const deletion of deletions) {
-            await defaultNotesAPI.deleteNote(deletion.noteOrder);
-            console.log('Deleted default note:', deletion.noteOrder);
+          const variationName = bomData?.projectInfo?.longRailVariation;
+          if (!variationName) {
+            throw new Error('Missing longRailVariation; cannot update template default notes');
           }
 
-          // Process edits
-          if (edits.length > 0) {
-            const notesToUpdate = edits.map(change => ({
-              noteOrder: change.noteOrder,
-              noteText: change.newText
-            }));
-            await defaultNotesAPI.updateNotes(notesToUpdate);
-            console.log('Updated global default notes:', notesToUpdate.length);
-          }
+          const finalNotes = window.currentDefaultNotes || [];
+          const updated = await updateVariationTemplateDefaultNotes(variationName, finalNotes);
+          if (!updated) throw new Error('Failed to update template default notes');
 
-          // Process additions
-          for (const addition of additions) {
-            await defaultNotesAPI.addNote(addition.newText);
-            console.log('Added default note:', addition.newText);
-          }
+          showToast(`Default notes updated for "${variationName}" (future BOMs)`);
 
-          showToast(`Default notes updated globally: ${additions.length} added, ${edits.length} edited, ${deletions.length} deleted`);
-
-          // Reload notes from database to get correct noteOrders after add/delete
-          if (window.reloadDefaultNotesFromDB) {
-            await window.reloadDefaultNotesFromDB();
-          }
+          if (window.reloadDefaultNotesFromDB) await window.reloadDefaultNotesFromDB();
           setDefaultNotesChanges([]);
         } catch (error) {
-          console.error('Failed to update global default notes:', error);
-          showToast('Warning: Failed to update global default notes. BOM-specific changes will still be saved.', 'warning');
+          console.error('Failed to update template default notes:', error);
+          showToast('Warning: Failed to update template default notes. BOM-specific changes will still be saved.', 'warning');
         }
       }
       // If 'bom-only', custom default notes will be saved with the BOM snapshot (handled in saveBomSnapshot)
@@ -2495,6 +2471,18 @@ export default function BOMPage() {
 
       console.log('Saving userNotes to backend:', userNotes); // Debug log
       await bomAPI.updateBOM(bomId, dataToSave, currentChangeLog);
+
+      // Also update the saved snapshot if it exists (so "Show Last Saved BOM" has latest data)
+      if (projectId && hasSavedBom) {
+        try {
+          const customDefaultNotes = bomData.customDefaultNotes || null;
+          await savedBomAPI.saveBomSnapshot(projectId, dataToSave, userNotes, currentChangeLog, customDefaultNotes);
+          // console.log('✅ Snapshot updated with latest changes');
+        } catch (error) {
+          console.warn('Failed to update snapshot:', error);
+          // Non-critical error, don't block the save
+        }
+      }
 
       // If we created a new BOM entry, update state with bomId without triggering re-render
       if (isNewBomCreated) {
@@ -2953,6 +2941,8 @@ export default function BOMPage() {
               onNotesChange={handleNotesChange}
               editMode={editMode}
               onDefaultNotesChange={setDefaultNotesChanges}
+              variationName={bomData?.projectInfo?.longRailVariation}
+              customDefaultNotes={bomData?.customDefaultNotes}
             />
           </div>
         </div>
