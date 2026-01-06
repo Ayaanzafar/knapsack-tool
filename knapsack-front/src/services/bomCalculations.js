@@ -151,6 +151,9 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
 
   console.log(`✅ Processing ${template.variationItems.length} items from template`);
 
+  // Map to store unique profiles/fasteners for BOMPage lookup
+  const profilesMap = {};
+
   // Iterate through template variation items
   template.variationItems.forEach((vItem, idx) => {
     // Get item data from either sunrackProfile or fastener
@@ -166,6 +169,26 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
     const isProfile = !!vItem.sunrackProfile;
     const isFastener = !!vItem.fastener;
     const formulaKey = vItem.formulaKey;
+
+    // Add to profilesMap
+    // Use sNo for profiles, F-{id} for fasteners
+    const profileKey = isProfile ? item.sNo : `F-${item.id}`;
+    
+    // Ensure item has necessary fields for BOMPage calculations
+    const mapItem = { ...item };
+    if (isProfile) {
+      mapItem.serialNumber = item.sNo; // Map sNo to serialNumber for BOMPage compatibility
+    }
+    if (isFastener) {
+      // Ensure fasteners have costPerPiece in the map item
+      mapItem.costPerPiece = parseFloat(item.costPerPiece) || 0;
+      // Map other fields BOMPage might expect from a profile
+      mapItem.genericName = item.name || item.genericName;
+      mapItem.profileImagePath = item.imagePath || item.profileImagePath;
+      mapItem.standardLength = item.length || item.standardLength;
+    }
+    
+    profilesMap[profileKey] = mapItem;
 
     console.log(`[BOM DEBUG ${idx + 1}] isProfile:`, isProfile, 'isFastener:', isFastener, 'formulaKey:', formulaKey);
 
@@ -209,7 +232,8 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
             quantities: quantities,
             totalQuantity: totalQty,
             spareQuantity: Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER),
-            finalTotal: totalQty + Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER)
+            finalTotal: totalQty + Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER),
+            profileSerialNumber: profileKey // Link to profilesMap
           };
 
           const weightCost = calculateWeightAndCost(bomItem, aluminumRate);
@@ -281,7 +305,8 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
           quantities: quantities,
           totalQuantity: totalQty,
           spareQuantity: Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER),
-          finalTotal: totalQty + Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER)
+          finalTotal: totalQty + Math.ceil(totalQty * SPARE_CALCULATION_MULTIPLIER),
+          profileSerialNumber: profileKey // Link to profilesMap
         };
 
         const weightCost = calculateWeightAndCost(bomItem, aluminumRate);
@@ -297,7 +322,7 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
 
   console.log(`[BOM DEBUG] FINAL: Generated ${bomItems.length} BOM items`);
 
-  return bomItems;
+  return { bomItems, profilesMap };
 }
 
 /**
@@ -313,7 +338,7 @@ export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRat
 
   if (!variationName) {
     console.error('❌ No variation name provided in bomData');
-    return { items: [], totals: {} };
+    return { bomItems: [], totals: {} };
   }
 
   console.log(`📋 Fetching template for variation: ${variationName}`);
@@ -321,13 +346,13 @@ export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRat
 
   if (!template) {
     console.error(`❌ Template not found for variation: ${variationName}`);
-    return { items: [], totals: {} };
+    return { bomItems: [], totals: {} };
   }
 
   console.log(`✅ Template loaded successfully. Items count: ${template.variationItems?.length || 0}`);
 
   // Generate BOM items using template data
-  const bomItems = await generateBOMItems(bomData, activeCutLengths, aluminumRate, template);
+  const { bomItems, profilesMap } = await generateBOMItems(bomData, activeCutLengths, aluminumRate, template);
 
   // Calculate totals
   const totals = {
@@ -337,7 +362,8 @@ export async function generateCompleteBOM(bomData, activeCutLengths, aluminumRat
   };
 
   const result = {
-    bomItems: bomItems,  // Changed from 'items' to 'bomItems' to match BOMPage expectations
+    bomItems: bomItems,
+    profilesMap: profilesMap, // Return profilesMap for BOMPage lookups
     totals: totals,
     template: template,
     variationName: variationName

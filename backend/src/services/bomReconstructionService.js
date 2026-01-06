@@ -11,14 +11,14 @@ const {
  *
  * This service handles conversion between minimal and full BOM formats:
  * - convertToMinimalBOM: Strips redundant data for storage (90% size reduction)
- * - reconstructFullBOM: Rebuilds complete BOM from minimal data + database profiles
+ * - reconstructFullBOM: Rebuilds complete BOM from minimal data + database profiles/fasteners
  */
 class BomReconstructionService {
   /**
    * Convert full BOM data to minimal format for storage
-   * Removes all redundant profile data that exists in bom_master_items
+   * Removes all redundant profile/fastener data that exists in DB
    *
-   * @param {object} fullBomData - Complete BOM data with all profile information
+   * @param {object} fullBomData - Complete BOM data
    * @returns {Promise<object>} - { bomMetadata, bomItems } minimal format
    */
   async convertToMinimalBOM(fullBomData) {
@@ -33,55 +33,15 @@ class BomReconstructionService {
       userNotes: fullBomData.userNotes || []
     };
 
-    // If profileSerialNumber is missing in items, we need to look it up
-    // Fetch profiles once to resolve serial numbers
-    const allProfiles = await prisma.bomMasterItem.findMany({
-      where: { isActive: true },
-      include: {
-        rmCodes: true,
-        formulas: true
-      }
-    });
-
-    // Create lookup maps
-    const profileBySunrackCode = {};
-    const profileByRmCode = {};
-    const profileByFormulaKey = {};
-
-    allProfiles.forEach(profile => {
-      if (profile.sunrackCode) {
-        profileBySunrackCode[profile.sunrackCode] = profile;
-      }
-      profile.rmCodes.forEach(rm => {
-        if (rm.code) {
-          profileByRmCode[rm.code] = profile;
-        }
-      });
-      if (profile.formulas) {
-        profile.formulas.forEach(formula => {
-          profileByFormulaKey[formula.formulaKey] = profile;
-        });
-      }
-    });
-
     // Extract minimal item data (only what's generated/calculated + user edits)
     const bomItems = (fullBomData.bomItems || []).map(item => {
-      let profileSerialNumber = item.profileSerialNumber;
-
-      // If profileSerialNumber is missing, derive it from other fields
-      if (!profileSerialNumber) {
-        const profile = profileBySunrackCode[item.sunrackCode] ||
-                       profileByRmCode[item.sunrackCode] ||
-                       profileByFormulaKey[item.formulaKey];
-
-        if (profile) {
-          profileSerialNumber = profile.serialNumber;
-        }
-      }
-
+      // profileSerialNumber should already be correct from frontend
+      // For profiles: serialNumber (integer)
+      // For fasteners: F-{id} (string)
+      
       return {
         sn: item.sn,
-        profileSerialNumber: profileSerialNumber,  // Reference to bom_master_items
+        profileSerialNumber: item.profileSerialNumber,
         calculationType: item.calculationType,     // CUT_LENGTH or ACCESSORY
         length: item.length || null,               // Cut length (if applicable)
         quantities: item.quantities || {},         // Per-tab quantities
@@ -94,84 +54,93 @@ class BomReconstructionService {
   }
 
   /**
-   * Reconstruct full BOM data from minimal storage + database profiles
-   * Fetches profile data from bom_master_items and rebuilds complete BOM structure
+   * Reconstruct full BOM data from minimal storage + database profiles/fasteners
+   * Fetches data from sunrack_profiles and fasteners tables
    *
    * @param {object} bomMetadata - Metadata (aluminum rate, spare %, tabs, etc.)
    * @param {array} bomItems - Minimal item data (references + quantities)
    * @returns {Promise<object>} - Complete BOM data with all profile information
    */
   async reconstructFullBOM(bomMetadata, bomItems) {
-    // 1. Fetch all profiles from database with formulas and RM codes
-    const allProfiles = await prisma.bomMasterItem.findMany({
-      where: { isActive: true },
-      include: {
-        formulas: true,
-        rmCodes: true,
-        sunrackProfile: true
-      }
-    });
+    // 1. Fetch all profiles and fasteners
+    const [allProfiles, allFasteners] = await Promise.all([
+      prisma.sunrackProfile.findMany({}),
+      prisma.fastener.findMany()
+    ]);
 
-    // 2. Create profilesMap and lookup maps: { serialNumber: profileData }
+    // 2. Create profilesMap: { id: data }
     const profilesMap = {};
-    const profileByFormulaKey = {};
+    const profileByFormulaKey = {}; // Helper for legacy formula key lookup if needed
 
+    // Map profiles (using serialNumber as key)
     allProfiles.forEach(profile => {
-      // Find preferred RM code (Regal priority)
-      let preferredRmCode = profile.rmCodes.find(
-        rm => rm.vendorName === 'Regal' && rm.code !== null
-      )?.code;
-
-      // If Regal's code not available, find any non-NULL code
-      if (!preferredRmCode) {
-        preferredRmCode = profile.rmCodes.find(
-          rm => rm.code !== null
-        )?.code;
-      }
-
-      const enrichedProfile = {
-        ...profile,
-        preferredRmCode: preferredRmCode || null
+      const displayCode = profile.regalCode || profile.excellenceCode || profile.varnCode || 'N/A';
+      
+      const mappedProfile = {
+        serialNumber: profile.sNo, // Use sNo as serialNumber
+        sunrackCode: displayCode,
+        genericName: profile.genericName,
+        itemDescription: profile.genericName,
+        material: profile.material,
+        standardLength: profile.standardLength,
+        uom: profile.uom,
+        designWeight: profile.designWeight,
+        profileImage: profile.profileImage,
+        costPerPiece: profile.costPerPiece || 0,
+        isProfile: true
       };
 
-      profilesMap[profile.serialNumber] = enrichedProfile;
-
-      // Also map by formula key for fallback lookup
-      if (profile.formulas) {
-        profile.formulas.forEach(formula => {
-          profileByFormulaKey[formula.formulaKey] = enrichedProfile;
-        });
-      }
+      // Ensure key is string to match JSON storage
+      profilesMap[String(profile.sNo)] = mappedProfile;
     });
 
-    // 3. Rebuild full BOM items with profile data
+    // Map fasteners (using F-{id} as key)
+    allFasteners.forEach(fastener => {
+      const key = `F-${fastener.id}`;
+      
+      const mappedFastener = {
+        serialNumber: key,
+        sunrackCode: 'N/A', // Fasteners usually don't have vendor codes in the same way
+        genericName: fastener.name || fastener.genericName, // Fallback to genericName if name is missing
+        itemDescription: fastener.name || fastener.itemDescription,
+        material: fastener.material,
+        standardLength: fastener.length || fastener.standardLength,
+        uom: fastener.uom || 'Nos',
+        designWeight: 0, // Fasteners usually don't use weight calculation
+        profileImage: fastener.profileImagePath,
+        costPerPiece: Number(fastener.costPerPiece || 0), // Ensure number
+        isProfile: false,
+        isFastener: true
+      };
+
+      profilesMap[key] = mappedFastener;
+    });
+
+    // 3. Rebuild full BOM items
     const aluminumRate = bomMetadata.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG;
     const sparePercentage = bomMetadata.sparePercentage || DEFAULT_SPARE_PERCENTAGE;
     const moduleWp = bomMetadata.moduleWp || DEFAULT_MODULE_WP;
 
     const fullBomItems = bomItems.map((item, index) => {
-      // Try to find profile by serial number first, then fallback to formula key
-      let profile = profilesMap[item.profileSerialNumber];
-
-      // Fallback: try to find by formula key if profileSerialNumber lookup failed
-      if (!profile && item.formulaKey) {
-        profile = profileByFormulaKey[item.formulaKey];
-      }
+      // Find profile or fastener
+      // Ensure we lookup with string key
+      let profile = profilesMap[String(item.profileSerialNumber)];
 
       if (!profile) {
-        console.warn(`Profile not found for item ${item.sn || index + 1}: serialNumber=${item.profileSerialNumber}, formulaKey=${item.formulaKey}`);
+        console.warn(`[Reconstruction] Profile/Fastener not found for item ${item.sn || index + 1}: serialNumber=${item.profileSerialNumber}`);
         return null;
       }
 
-      const displayCode =
-        profile.sunrackProfile?.regalCode ||
-        profile.preferredRmCode ||
-        profile.sunrackCode;
-
-      const profileImage =
-        profile.sunrackProfile?.profileImage ||
-        profile.profileImagePath ||
-        null;
+      // Handle M8/M10 description formatting for fasteners
+      let itemDescription = profile.itemDescription;
+      if (profile.isFastener && profile.standardLength && itemDescription && (itemDescription.startsWith('M8 ') || itemDescription.startsWith('M10 '))) {
+        // Simple check to avoid double formatting if it was saved
+        if (!itemDescription.includes(`x${profile.standardLength}`)) {
+             const prefix = itemDescription.startsWith('M8 ') ? 'M8' : 'M10';
+             const restOfName = itemDescription.substring(prefix.length + 1);
+             itemDescription = `${prefix}x${profile.standardLength} ${restOfName}`;
+        }
+      }
 
       // Calculate totals
       const totalQuantity = Object.values(item.quantities || {}).reduce((sum, qty) => sum + qty, 0);
@@ -183,12 +152,12 @@ class BomReconstructionService {
 
       const finalTotal = totalQuantity + spareQuantity;
 
-      // Build full item with profile data
+      // Build full item
       const fullItem = {
         sn: item.sn || (index + 1),
-        sunrackCode: displayCode,
-        profileImage: profileImage,
-        itemDescription: profile.genericName,
+        sunrackCode: profile.sunrackCode,
+        profileImage: profile.profileImage,
+        itemDescription: itemDescription,
         material: profile.material,
         length: item.length ?? profile.standardLength ?? null,
         uom: profile.uom,
@@ -231,7 +200,7 @@ class BomReconstructionService {
    * Calculate weight and cost for a BOM item
    *
    * @param {object} item - BOM item with quantities
-   * @param {object} profile - Profile data from bom_master_items
+   * @param {object} profile - Profile/Fastener data
    * @param {number} aluminumRate - Rate per kg for aluminum
    * @returns {object} - { wtPerRm, rm, wt, cost, costPerPiece }
    */
@@ -249,8 +218,9 @@ class BomReconstructionService {
       result.costPerPiece = parseFloat(item.userEdits.userProvidedCostPerPiece);
       result.cost = result.costPerPiece * item.finalTotal;
       return result;
-    } else if (item.userEdits?.costPerPiece !== undefined) {
-      // Legacy support
+    } 
+    // Legacy support
+    else if (item.userEdits?.costPerPiece !== undefined) {
       result.costPerPiece = parseFloat(item.userEdits.costPerPiece);
       result.cost = result.costPerPiece * item.finalTotal;
       return result;

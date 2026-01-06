@@ -36,7 +36,7 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
     : rawProfileImage;
 
   // DEBUG LOG
-  if (sn === 1 || itemDescription.includes('End Clamp')) {
+  if (sn === 1 || (itemDescription && itemDescription.includes('End Clamp'))) {
      console.log(`[BOMTableRow] Item: ${itemDescription}`, {
        rawProfileImage,
        API_URL,
