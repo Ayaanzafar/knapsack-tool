@@ -62,7 +62,13 @@ export default function CreateBOMButton({ tabsData, projectName, longRailVariati
       const activeCutLengths = getActiveCutLengths(bomData);
 
       // Generate complete BOM structure (NOW ASYNC!)
-      const completeBOM = await generateCompleteBOM(bomData, activeCutLengths);
+      const generatedBOM = await generateCompleteBOM(bomData, activeCutLengths);
+
+      // MERGE original bomData (with tabs, panelCounts, projectInfo) with generated items
+      const completeBOM = {
+        ...bomData,
+        ...generatedBOM
+      };
 
       // Save to database
       const savedBOM = await bomAPI.saveBOM(projectId, completeBOM);
