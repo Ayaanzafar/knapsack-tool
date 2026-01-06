@@ -1557,6 +1557,12 @@ export default function BOMPage() {
             data.bomData.bomItems = items;
           }
 
+          // DEBUG: Check profilesMap before setting
+          if (data.bomData.profilesMap && data.bomData.profilesMap[94]) {
+            console.log('[BOMPage loadBOM] profilesMap[94]:', data.bomData.profilesMap[94]);
+            console.log('[BOMPage loadBOM] profilesMap[94].sunrackCode:', data.bomData.profilesMap[94].sunrackCode);
+          }
+
           setBomData(data.bomData);
 
           if (data.bomData.aluminumRate) {

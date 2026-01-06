@@ -74,7 +74,7 @@ class BomReconstructionService {
 
     // Map profiles (using serialNumber as key)
     allProfiles.forEach(profile => {
-      const displayCode = profile.regalCode || profile.excellenceCode || profile.varnCode || null;
+      const displayCode = profile.regalCode || profile.snalcoCode || profile.excellenceCode || profile.varnCode || null;
       
       const mappedProfile = {
         serialNumber: profile.sNo, // Use sNo as serialNumber

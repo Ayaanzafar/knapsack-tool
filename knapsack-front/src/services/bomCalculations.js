@@ -176,6 +176,10 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
     
     // Ensure item has necessary fields for BOMPage calculations
     const mapItem = { ...item };
+
+    // Add sunrackCode to mapItem (BOMPage expects this field)
+    mapItem.sunrackCode = item.regalCode || item.snalcoCode || item.excellenceCode || item.varnCode || null;
+
     if (isProfile) {
       mapItem.serialNumber = item.sNo; // Map sNo to serialNumber for BOMPage compatibility
     }
@@ -189,6 +193,16 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
     }
     
     profilesMap[profileKey] = mapItem;
+
+    // DEBUG: Log profilesMap entry for sNo 94
+    if (isProfile && item.sNo === 94) {
+      console.log('=== DEBUG profilesMap[94] ===');
+      console.log('mapItem:', mapItem);
+      console.log('mapItem.sunrackCode:', mapItem.sunrackCode);
+      console.log('mapItem.snalcoCode:', mapItem.snalcoCode);
+      console.log('mapItem.regalCode:', mapItem.regalCode);
+      console.log('===================================');
+    }
 
     console.log(`[BOM DEBUG ${idx + 1}] isProfile:`, isProfile, 'isFastener:', isFastener, 'formulaKey:', formulaKey);
 
@@ -209,8 +223,20 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
         if (totalQty > 0) {
           const itemDescription = vItem.displayOverride || item.genericName;
 
-          // Get vendor code (Regal priority)
-          const displayCode = item.regalCode || item.excellenceCode || item.varnCode || null;
+          // Get vendor code (Regal priority, then Snalco)
+          const displayCode = item.regalCode || item.snalcoCode || item.excellenceCode || item.varnCode || null;
+
+          // DEBUG: Log for sNo 94 (UX Long Rail)
+          if (item.sNo === 94) {
+            console.log('=== DEBUG sNo 94 (UX Long Rail) - LONG_RAIL PATH ===');
+            console.log('Item data:', item);
+            console.log('regalCode:', item.regalCode);
+            console.log('snalcoCode:', item.snalcoCode);
+            console.log('excellenceCode:', item.excellenceCode);
+            console.log('varnCode:', item.varnCode);
+            console.log('Final displayCode:', displayCode);
+            console.log('===================================');
+          }
 
           // Get profile image
           let profileImage = item.profileImage;
@@ -273,10 +299,22 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
           itemDescription = `${prefix}x${item.standardLength} ${restOfName}`;
         }
 
-        // Get vendor code or null for fasteners
+        // Get vendor code or null for fasteners (Regal priority, then Snalco)
         const displayCode = isProfile
-          ? (item.regalCode || item.excellenceCode || item.varnCode || null)
+          ? (item.regalCode || item.snalcoCode || item.excellenceCode || item.varnCode || null)
           : null;
+
+        // DEBUG: Log for sNo 94 (UX Long Rail)
+        if (isProfile && item.sNo === 94) {
+          console.log('=== DEBUG sNo 94 (UX Long Rail) ===');
+          console.log('Item data:', item);
+          console.log('regalCode:', item.regalCode);
+          console.log('snalcoCode:', item.snalcoCode);
+          console.log('excellenceCode:', item.excellenceCode);
+          console.log('varnCode:', item.varnCode);
+          console.log('Final displayCode:', displayCode);
+          console.log('===================================');
+        }
 
         // Get image
         let profileImage = null;
@@ -309,6 +347,14 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
           profileSerialNumber: profileKey // Link to profilesMap
         };
 
+        // DEBUG: Log final bomItem for sNo 94
+        if (isProfile && item.sNo === 94) {
+          console.log('=== DEBUG bomItem for sNo 94 ===');
+          console.log('bomItem.sunrackCode:', bomItem.sunrackCode);
+          console.log('Full bomItem:', bomItem);
+          console.log('===================================');
+        }
+
         const weightCost = calculateWeightAndCost(bomItem, aluminumRate);
         bomItem.wtPerRm = weightCost.wtPerRm;
         bomItem.rm = weightCost.rm;
@@ -316,11 +362,26 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
         bomItem.cost = weightCost.cost;
 
         bomItems.push(bomItem);
+
+        // DEBUG: Log if this is sNo 94
+        if (isProfile && item.sNo === 94) {
+          console.log('=== PUSHED sNo 94 to bomItems array ===');
+          console.log('Array length now:', bomItems.length);
+        }
       }
     }
   });
 
   console.log(`[BOM DEBUG] FINAL: Generated ${bomItems.length} BOM items`);
+
+  // DEBUG: Check if sNo 94 is in the final array
+  const sno94Item = bomItems.find(item => item.profileSerialNumber === 94);
+  if (sno94Item) {
+    console.log('=== sNo 94 FOUND in final bomItems ===');
+    console.log('Item:', sno94Item);
+  } else {
+    console.log('=== WARNING: sNo 94 NOT FOUND in final bomItems ===');
+  }
 
   return { bomItems, profilesMap };
 }
