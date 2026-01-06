@@ -104,7 +104,7 @@ class BomReconstructionService {
         genericName: fastener.name || fastener.genericName, // Fallback to genericName if name is missing
         itemDescription: fastener.name || fastener.itemDescription,
         material: fastener.material,
-        standardLength: fastener.length || fastener.standardLength,
+        standardLength: fastener.standardLength, // Use value directly (can be null)
         uom: fastener.uom || 'Nos',
         designWeight: 0, // Fasteners usually don't use weight calculation
         profileImage: fastener.profileImagePath,

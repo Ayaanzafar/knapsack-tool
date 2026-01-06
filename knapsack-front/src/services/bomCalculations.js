@@ -185,7 +185,7 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
       // Map other fields BOMPage might expect from a profile
       mapItem.genericName = item.name || item.genericName;
       mapItem.profileImagePath = item.imagePath || item.profileImagePath;
-      mapItem.standardLength = item.length || item.standardLength;
+      mapItem.standardLength = item.standardLength; // Use standardLength directly (can be null)
     }
     
     profilesMap[profileKey] = mapItem;
