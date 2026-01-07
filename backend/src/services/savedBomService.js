@@ -1,4 +1,5 @@
 const prisma = require('../prismaClient');
+const bomReconstructionService = require('./bomReconstructionService');
 
 class SavedBomService {
   // Save or update BOM snapshot for a project
@@ -52,7 +53,26 @@ class SavedBomService {
       }
     });
 
-    return savedBom;
+    if (!savedBom) return null;
+
+    // Backward compatibility: some stored snapshots may not contain profilesMap,
+    // which BOMPage needs for recalculations on edits.
+    const needsReconstruction =
+      savedBom?.bomData &&
+      !savedBom.bomData?.profilesMap &&
+      Array.isArray(savedBom.bomData?.bomItems) &&
+      savedBom.bomData.bomItems.length > 0;
+
+    if (!needsReconstruction) return savedBom;
+
+    try {
+      const { bomMetadata, bomItems } = await bomReconstructionService.convertToMinimalBOM(savedBom.bomData);
+      const reconstructed = await bomReconstructionService.reconstructFullBOM(bomMetadata, bomItems);
+      return { ...savedBom, bomData: reconstructed };
+    } catch (error) {
+      console.warn('[getSavedBomByProjectId] Failed to reconstruct legacy savedBom.bomData; returning stored bomData as-is:', error?.message || error);
+      return savedBom;
+    }
   }
 
   // Check if saved BOM exists for a project

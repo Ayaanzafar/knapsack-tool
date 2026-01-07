@@ -1413,6 +1413,10 @@ export default function BOMPage() {
       bomItems: freshData.bomData.bomItems ? ensureStableIds(freshData.bomData.bomItems) : []
     };
 
+    // Debug: Check if profilesMap is present
+    console.log('[applyFreshBom] bomData has profilesMap:', !!nextBomData.profilesMap);
+    console.log('[applyFreshBom] profilesMap keys:', nextBomData.profilesMap ? Object.keys(nextBomData.profilesMap).length : 0);
+
     setBomData(nextBomData);
     setOriginalBomData(nextBomData);
     setChangeLog(freshData.changeLog || []);
@@ -1456,6 +1460,8 @@ export default function BOMPage() {
         setLoading(true);
         let data;
         let bomId = location.state?.bomId;
+        const stateProjectId = location.state?.projectId ? Number.parseInt(location.state.projectId) : null;
+        const stateSavedBomId = location.state?.savedBomId ?? null;
 
         // If no bomId in state, check localStorage (for page refresh case)
         if (!bomId && !location.state?.bomData) {
@@ -1474,9 +1480,9 @@ export default function BOMPage() {
         } else if (location.state?.bomData) {
           data = { bomData: location.state.bomData };
           // Store projectId from saved BOM
-          if (location.state?.projectId) {
-            setProjectId(location.state.projectId);
-            setCurrentProjectId(location.state.projectId); // Also set global projectId
+          if (stateProjectId) {
+            setProjectId(stateProjectId);
+            setCurrentProjectId(stateProjectId); // Also set global projectId
           }
 
           // Restore globals when coming back from Print Preview or other screens that pass them separately.
@@ -1504,6 +1510,62 @@ export default function BOMPage() {
         }
 
         if (data && data.bomData) {
+          // Some navigation flows pass bomData without profilesMap (e.g., saved snapshots / print-preview temp data).
+          // BOM editing requires profilesMap for recalculations, so backfill it if missing.
+          if (!data.bomData.profilesMap) {
+            console.warn('[BOMPage] bomData missing profilesMap; attempting to backfill.');
+            try {
+              // Prefer server-derived data when possible (ensures the same shape as BOM generation).
+              if (bomId) {
+                const fresh = await bomAPI.getBOMById(bomId);
+                if (fresh?.bomData?.profilesMap) {
+                  data.bomData = fresh.bomData;
+                }
+              } else if (stateProjectId) {
+                try {
+                  const saved = await savedBomAPI.getSavedBom(stateProjectId);
+                  if (saved?.bomData?.profilesMap) {
+                    data.bomData = saved.bomData;
+                  }
+                } catch {
+                  // Ignore if no saved BOM exists; we will fall back to master-items.
+                }
+              }
+
+              // Final fallback: build profilesMap from master items (profiles + fasteners).
+              if (!data.bomData.profilesMap) {
+                const masterItems = await bomAPI.getAllMasterItems();
+                const profilesMap = {};
+
+                (masterItems || []).forEach((mi) => {
+                  if (!mi?.serialNumber) return;
+                  profilesMap[String(mi.serialNumber)] = {
+                    serialNumber: String(mi.serialNumber),
+                    sunrackCode: mi.sunrackCode ?? null,
+                    genericName: mi.genericName ?? null,
+                    itemDescription: mi.itemDescription ?? mi.genericName ?? null,
+                    material: mi.material ?? null,
+                    standardLength: mi.standardLength ?? null,
+                    uom: mi.uom ?? null,
+                    designWeight: mi.designWeight ?? null,
+                    costPerPiece: mi.costPerPiece ?? null,
+                    profileImagePath: mi.profileImagePath ?? null,
+                    preferredRmCode: mi.preferredRmCode ?? null,
+                    sunrackProfile: mi.sunrackProfile ?? null,
+                    fastener: mi.fastener ?? null,
+                    isProfile: mi.itemType === 'PROFILE',
+                    isFastener: mi.itemType === 'FASTENER',
+                  };
+                });
+
+                data.bomData.profilesMap = profilesMap;
+                console.warn('[BOMPage] profilesMap backfilled from master items:', Object.keys(profilesMap).length);
+              }
+            } catch (e) {
+              console.error('Failed to backfill profilesMap:', e);
+            }
+          }
+
           if (data.bomData.bomItems) {
             data.bomData.bomItems = ensureStableIds(data.bomData.bomItems);
           }
@@ -1657,44 +1719,50 @@ export default function BOMPage() {
   useEffect(() => {
     if (!bomData || loading || !bomData.profilesMap) return;
 
-    const updatedBomData = { ...bomData };
-    updatedBomData.bomItems = bomData.bomItems.map(item => {
-      const profile = bomData.profilesMap[item.profileSerialNumber];
-      if (profile) {
-        const weightCost = calculateWeightAndCost(item, profile, aluminumRate);
-        return { ...item, ...weightCost };
-      }
-      return item;
-    });
+    setBomData(prevBomData => {
+      if (!prevBomData || !prevBomData.profilesMap) return prevBomData;
 
-    setBomData(updatedBomData);
+      const updatedBomData = { ...prevBomData };
+      updatedBomData.bomItems = prevBomData.bomItems.map(item => {
+        const profile = prevBomData.profilesMap[item.profileSerialNumber];
+        if (profile) {
+          const weightCost = calculateWeightAndCost(item, profile, aluminumRate);
+          return { ...item, ...weightCost };
+        }
+        return item;
+      });
+      return updatedBomData;
+    });
   }, [aluminumRate, loading]);
 
   useEffect(() => {
     if (!bomData || loading || !bomData.profilesMap) return;
 
-    const updatedBomData = { ...bomData };
-    updatedBomData.bomItems = bomData.bomItems.map(item => {
-      const totalQty = item.totalQuantity;
-      const spareQty = Math.ceil(totalQty * (sparePercentage / 100));
-      const finalTotal = totalQty + spareQty;
+    setBomData(prevBomData => {
+      if (!prevBomData || !prevBomData.profilesMap) return prevBomData;
 
-      const updatedItem = {
-        ...item,
-        spareQuantity: spareQty,
-        finalTotal: finalTotal
-      };
+      const updatedBomData = { ...prevBomData };
+      updatedBomData.bomItems = prevBomData.bomItems.map(item => {
+        const totalQty = item.totalQuantity;
+        const spareQty = Math.ceil(totalQty * (sparePercentage / 100));
+        const finalTotal = totalQty + spareQty;
 
-      const profile = bomData.profilesMap[updatedItem.profileSerialNumber];
-      if (profile) {
-        const weightCost = calculateWeightAndCost(updatedItem, profile, aluminumRate);
-        return { ...updatedItem, ...weightCost };
-      }
+        const updatedItem = {
+          ...item,
+          spareQuantity: spareQty,
+          finalTotal: finalTotal
+        };
 
-      return updatedItem;
+        const profile = prevBomData.profilesMap[updatedItem.profileSerialNumber];
+        if (profile) {
+          const weightCost = calculateWeightAndCost(updatedItem, profile, aluminumRate);
+          return { ...updatedItem, ...weightCost };
+        }
+
+        return updatedItem;
+      });
+      return updatedBomData;
     });
-
-    setBomData(updatedBomData);
   }, [sparePercentage]);
 
   const handleBack = () => {
@@ -1836,6 +1904,14 @@ export default function BOMPage() {
   };
 
   const handleItemUpdate = (itemSn, field, value) => {
+    if (!bomData || !bomData.profilesMap) {
+      console.warn('Cannot update item: bomData or profilesMap not available');
+      console.warn('  bomData exists:', !!bomData);
+      console.warn('  profilesMap exists:', !!bomData?.profilesMap);
+      console.warn('  profilesMap keys:', bomData?.profilesMap ? Object.keys(bomData.profilesMap).length : 'N/A');
+      return;
+    }
+
     const originalItem = bomData.bomItems.find(item => item.sn === itemSn);
     if (!originalItem) return;
 

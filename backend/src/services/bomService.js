@@ -422,17 +422,24 @@ class BomService {
 
     let bomDataToReturn;
 
-    // Handle backward compatibility: check if old bomData format exists
-    if (bom.bomData) {
-      // Old format: return as-is
+    // Prefer new optimized format when available (even if legacy bomData column still exists).
+    if (bom.bomMetadata && bom.bomItems) {
+      bomDataToReturn = await bomReconstructionService.reconstructFullBOM(bom.bomMetadata, bom.bomItems);
+    } else if (bom.bomData) {
+      // Legacy format: return as-is if it already contains profilesMap, otherwise reconstruct.
       bomDataToReturn = bom.bomData;
-    }
-    // New optimized format: reconstruct full BOM from minimal data
-    else if (bom.bomMetadata && bom.bomItems) {
-      bomDataToReturn = await bomReconstructionService.reconstructFullBOM(
-        bom.bomMetadata,
-        bom.bomItems
-      );
+
+      const needsReconstruction =
+        !bomDataToReturn?.profilesMap && Array.isArray(bomDataToReturn?.bomItems) && bomDataToReturn.bomItems.length > 0;
+
+      if (needsReconstruction) {
+        try {
+          const { bomMetadata, bomItems } = await bomReconstructionService.convertToMinimalBOM(bomDataToReturn);
+          bomDataToReturn = await bomReconstructionService.reconstructFullBOM(bomMetadata, bomItems);
+        } catch (error) {
+          console.warn('[getBomById] Failed to reconstruct legacy bomData; returning stored bomData as-is:', error?.message || error);
+        }
+      }
     }
 
     if (bomDataToReturn) {
