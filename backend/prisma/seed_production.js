@@ -101,7 +101,7 @@ async function seedProduction() {
       // but since we seeded profiles and fasteners first, it should be fine.
       
       // Clean up relation fields just in case
-      const { masterItem, sunrackProfile, fastener, ...formulaData } = formula;
+      const { masterItem, sunrackProfile, fastener, itemSerialNumber, ...formulaData } = formula;
 
       await prisma.bomFormula.upsert({
         where: { id: formula.id },
@@ -124,7 +124,7 @@ async function seedProduction() {
     // For variation items, since they are link tables, we want to match IDs exactly.
     for (const item of data.variationItems) {
       // Clean up relation objects
-      const { template, masterItem, sunrackProfile, fastener, ...itemData } = item;
+      const { template, masterItem, sunrackProfile, fastener, masterItemId, ...itemData } = item;
 
       await prisma.bomVariationItem.upsert({
         where: { id: item.id },
