@@ -2899,7 +2899,7 @@ export default function BOMPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-6">
+      <main className={editMode ? 'w-full px-2 py-6' : 'container mx-auto px-6 py-6'}>
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
           <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white px-4 py-4">
             <div className="flex items-center justify-between gap-6">
