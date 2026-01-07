@@ -2033,16 +2033,18 @@ export default function BOMPage() {
         } else if (field === 'material') {
           oldValue = originalItem.material;
           updatedItem.material = value;
+          const isFastenerItem = typeof item.profileSerialNumber === 'string' && item.profileSerialNumber.startsWith('F-');
 
           changeTracker.trackChange({
             id: `${item._id}-material`,
-            type: 'EDIT_MATERIAL',
+            type: isFastenerItem ? 'EDIT_FASTENER_MATERIAL' : 'EDIT_MATERIAL',
             oldValue: oldValue,
             newValue: value,
             itemName: item.itemDescription,
             rowNumber: item.sn,
             tabName: null,
             sunrackCode: item.sunrackCode,
+            profileSerialNumber: item.profileSerialNumber,
           });
         }
 
@@ -2429,6 +2431,26 @@ export default function BOMPage() {
       }
     }
 
+    // Handle fastener material updates in database (single fastener only)
+    const fastenerMaterialUpdates = changesWithReasons.filter(c => c.type === 'EDIT_FASTENER_MATERIAL');
+
+    for (const update of fastenerMaterialUpdates) {
+      try {
+        const fastenerSerialNumber = update.profileSerialNumber;
+        if (!fastenerSerialNumber) continue;
+
+        await bomAPI.updateFastenerMaterial({
+          fastenerSerialNumber,
+          newMaterial: update.newValue,
+        });
+
+        showToast(`Fastener material updated for Row ${update.rowNumber} to "${update.newValue}"`);
+      } catch (error) {
+        console.error('Failed to update fastener material in database:', error);
+        showToast('Warning: Failed to update fastener material in master database. BOM changes will still be saved.', 'warning');
+      }
+    }
+
     // Handle default notes changes
     const { defaultNotesChanges, defaultNotesUpdateChoice } = defaultNotesData;
     if (defaultNotesChanges && defaultNotesChanges.length > 0 && defaultNotesUpdateChoice) {
@@ -2483,6 +2505,10 @@ export default function BOMPage() {
 
       if (change.type === 'EDIT_MATERIAL') {
         logEntry.sunrackCode = change.sunrackCode;
+      }
+
+      if (change.type === 'EDIT_FASTENER_MATERIAL') {
+        logEntry.profileSerialNumber = change.profileSerialNumber;
       }
 
       return logEntry;

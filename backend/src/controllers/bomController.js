@@ -160,6 +160,26 @@ class BomController {
       next(error);
     }
   }
+
+  // PUT /api/bom/update-fastener-material - Update material in fasteners table
+  async updateFastenerMaterial(req, res, next) {
+    try {
+      const { fastenerSerialNumber, newMaterial } = req.body;
+
+      if (!fastenerSerialNumber) {
+        return res.status(400).json({ error: 'fastenerSerialNumber is required' });
+      }
+
+      if (!newMaterial) {
+        return res.status(400).json({ error: 'newMaterial is required' });
+      }
+
+      const result = await bomService.updateFastenerMaterial({ fastenerSerialNumber, newMaterial });
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new BomController();

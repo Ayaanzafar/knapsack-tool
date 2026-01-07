@@ -41,6 +41,11 @@ export default function ChangeLogDisplay({ changeLog }) {
           ? `Material for "${change.itemName}" (Sunrack Code: ${change.sunrackCode}, Row ${change.rowNumber}) changed from "${change.oldValue}" to "${change.newValue}".`
           : `Material for "${change.itemName}" (Row ${change.rowNumber}) changed from "${change.oldValue}" to "${change.newValue}".`;
 
+      case 'EDIT_FASTENER_MATERIAL':
+        return change.profileSerialNumber
+          ? `Fastener material for "${change.itemName}" (Fastener: ${change.profileSerialNumber}, Row ${change.rowNumber}) changed from "${change.oldValue}" to "${change.newValue}".`
+          : `Fastener material for "${change.itemName}" (Row ${change.rowNumber}) changed from "${change.oldValue}" to "${change.newValue}".`;
+
       case 'CHANGE_MODULE_WP':
         return `Module Wp changed globally from ${change.oldValue}W to ${change.newValue}W.`;
 

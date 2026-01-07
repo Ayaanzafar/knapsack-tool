@@ -547,6 +547,41 @@ class BomService {
       };
     }
   }
+
+  /**
+   * Updates material in fasteners table (single fastener)
+   * @param {object} params - Update parameters
+   * @param {string} params.fastenerSerialNumber - Fastener serial number (format: F-{id})
+   * @param {string} params.newMaterial - New material value
+   * @returns {Promise<object>} Update result with count
+   */
+  async updateFastenerMaterial({ fastenerSerialNumber, newMaterial }) {
+    const serial = String(fastenerSerialNumber || '').trim();
+    const match = /^F-(\d+)$/.exec(serial);
+    if (!match) {
+      const err = new Error('Invalid fastenerSerialNumber format; expected F-{id}');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const fastenerId = Number.parseInt(match[1], 10);
+    if (!Number.isFinite(fastenerId)) {
+      const err = new Error('Invalid fastener id');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    await prisma.fastener.update({
+      where: { id: fastenerId },
+      data: { material: newMaterial },
+    });
+
+    return {
+      success: true,
+      count: 1,
+      message: `Updated material for fastener "${serial}" to "${newMaterial}"`,
+    };
+  }
 }
 
 module.exports = new BomService();

@@ -20,6 +20,9 @@ router.put('/master-items/:id', forbidBasicMasterItemMutation, bomController.upd
 // Update material in sunrack_profiles
 router.put('/update-material', bomController.updateMaterial.bind(bomController));
 
+// Update material in fasteners (single fastener by serialNumber F-{id})
+router.put('/update-fastener-material', bomController.updateFastenerMaterial.bind(bomController));
+
 /*
 // GET /api/bom/master-items - Get all master items
 router.get('/master-items', bomController.getAllMasterItems.bind(bomController));
