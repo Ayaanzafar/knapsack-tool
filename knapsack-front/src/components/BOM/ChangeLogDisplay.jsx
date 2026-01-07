@@ -36,6 +36,12 @@ export default function ChangeLogDisplay({ changeLog }) {
       case 'EDIT_COST_PER_PIECE':
         return `Cost per piece for "${change.itemName}" (Row ${change.rowNumber}) changed from ₹${change.oldValue} to ₹${change.newValue}.`;
 
+      case 'EDIT_MATERIAL':
+        return `Material for "${change.itemName}" (Row ${change.rowNumber}) changed from "${change.oldValue}" to "${change.newValue}".`;
+
+      case 'CHANGE_MODULE_WP':
+        return `Module Wp changed globally from ${change.oldValue}W to ${change.newValue}W.`;
+
       default:
         return 'Change recorded';
     }

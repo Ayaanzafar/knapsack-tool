@@ -184,7 +184,17 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
 
       {/* Material */}
       <td className={`border border-gray-400 px-2 py-2 text-sm text-center ${getCellBgColor()}`}>
-        {material}
+        {editMode ? (
+          <input
+            type="text"
+            value={material || ''}
+            onChange={(e) => handleInputChange('material', e.target.value)}
+            className="w-full p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Enter material"
+          />
+        ) : (
+          material
+        )}
       </td>
 
       {/* Length */}

@@ -329,6 +329,12 @@ export const bomAPI = {
     return response.data;
   },
 
+  // Update material in sunrack_profiles
+  updateMaterial: async (data) => {
+    const response = await apiClient.put('/bom/update-material', data);
+    return response.data;
+  },
+
   // Delete BOM master item
   deleteMasterItem: async (id) => {
     const response = await apiClient.delete(`/bom/master-items/${id}`);

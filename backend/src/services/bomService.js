@@ -484,6 +484,69 @@ class BomService {
       },
     });
   }
+
+  /**
+   * Updates material in sunrack_profiles table
+   * @param {object} params - Update parameters
+   * @param {string} params.sunrackCode - Sunrack code to update (for single update)
+   * @param {string} params.oldMaterial - Old material value (for bulk update)
+   * @param {string} params.newMaterial - New material value
+   * @param {boolean} params.applyToAll - Whether to update all items with oldMaterial
+   * @returns {Promise<object>} Update result with count
+   */
+  async updateMaterial({ sunrackCode, oldMaterial, newMaterial, applyToAll }) {
+    if (applyToAll) {
+      // Update all profiles with the old material
+      const result = await prisma.sunrackProfile.updateMany({
+        where: {
+          material: oldMaterial
+        },
+        data: {
+          material: newMaterial
+        }
+      });
+
+      return {
+        success: true,
+        count: result.count,
+        message: `Updated ${result.count} profile(s) from "${oldMaterial}" to "${newMaterial}"`
+      };
+    } else {
+      // Update single profile by sunrack code
+      // Find profile by matching any of the vendor code fields
+      const profile = await prisma.sunrackProfile.findFirst({
+        where: {
+          OR: [
+            { regalCode: sunrackCode },
+            { excellenceCode: sunrackCode },
+            { varnCode: sunrackCode },
+            { rcCode: sunrackCode },
+            { snalcoCode: sunrackCode },
+            { darshanCode: sunrackCode },
+            { jmCode: sunrackCode },
+            { ralcoCode: sunrackCode },
+            { saiDeepCode: sunrackCode },
+            { eleanorCode: sunrackCode }
+          ]
+        }
+      });
+
+      if (!profile) {
+        throw new Error(`Profile with sunrack code "${sunrackCode}" not found`);
+      }
+
+      const updatedProfile = await prisma.sunrackProfile.update({
+        where: { id: profile.id },
+        data: { material: newMaterial }
+      });
+
+      return {
+        success: true,
+        count: 1,
+        message: `Updated material for "${sunrackCode}" to "${newMaterial}"`
+      };
+    }
+  }
 }
 
 module.exports = new BomService();

@@ -17,6 +17,9 @@ router.use(checkPasswordChange);
 // It supports updating fasteners (id format: F-{id}) and profiles (sNo).
 router.put('/master-items/:id', forbidBasicMasterItemMutation, bomController.updateMasterItem.bind(bomController));
 
+// Update material in sunrack_profiles
+router.put('/update-material', bomController.updateMaterial.bind(bomController));
+
 /*
 // GET /api/bom/master-items - Get all master items
 router.get('/master-items', bomController.getAllMasterItems.bind(bomController));

@@ -2030,6 +2030,19 @@ export default function BOMPage() {
             rowNumber: item.sn,
             tabName: null,
           });
+        } else if (field === 'material') {
+          oldValue = originalItem.material;
+          updatedItem.material = value;
+
+          changeTracker.trackChange({
+            id: `${item._id}-material`,
+            type: 'EDIT_MATERIAL',
+            oldValue: oldValue,
+            newValue: value,
+            itemName: item.itemDescription,
+            rowNumber: item.sn,
+            tabName: null,
+          });
         }
 
         const totalQty = Object.values(updatedItem.quantities).reduce((sum, q) => sum + q, 0);
@@ -2348,6 +2361,63 @@ export default function BOMPage() {
         } else {
           showToast('Warning: Failed to update Master Database. Project-specific changes will still be saved.', 'warning');
         }
+      }
+    }
+
+    // Handle material updates in database
+    const materialUpdates = changesWithReasons.filter(c => c.type === 'EDIT_MATERIAL');
+
+    for (const update of materialUpdates) {
+      try {
+        if (update.applyMaterialGlobally) {
+          // Update all profiles in database with the old material
+          await bomAPI.updateMaterial({
+            oldMaterial: update.oldValue,
+            newMaterial: update.newValue,
+            applyToAll: true
+          });
+
+          // Apply material changes globally to all items in current BOM
+          // Use originalBomData to find items that had the old material value
+          const updatedBomItems = bomData.bomItems.map(item => {
+            // Find this item in original data to check its original material
+            const originalItem = originalBomData.bomItems.find(orig => orig._id === item._id);
+
+            // Check if this item originally had the old material value
+            if (originalItem && originalItem.material === update.oldValue) {
+              return { ...item, material: update.newValue };
+            }
+            return item;
+          });
+
+          // Update bomData with the new materials
+          setBomData({ ...bomData, bomItems: updatedBomItems });
+
+          // Update the local bomData reference for saving
+          bomData.bomItems = updatedBomItems;
+
+          // Count how many items were updated
+          const updateCount = updatedBomItems.filter((item) => {
+            const originalItem = originalBomData.bomItems.find(orig => orig._id === item._id);
+            return originalItem && originalItem.material === update.oldValue;
+          }).length;
+
+          showToast(`Material updated for ${updateCount} item(s) from "${update.oldValue}" to "${update.newValue}"`);
+        } else {
+          // Update single profile in database
+          const currentItem = bomData.bomItems.find(item => item.sn === update.rowNumber);
+          if (currentItem && currentItem.sunrackCode) {
+            await bomAPI.updateMaterial({
+              sunrackCode: currentItem.sunrackCode,
+              newMaterial: update.newValue,
+              applyToAll: false
+            });
+            showToast(`Material updated for "${currentItem.sunrackCode}" to "${update.newValue}"`);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to update material in database:', error);
+        showToast('Warning: Failed to update material in master database. BOM changes will still be saved.', 'warning');
       }
     }
 

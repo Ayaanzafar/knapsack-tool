@@ -140,6 +140,30 @@ class BomController {
       next(error);
     }
   }
+
+  // PUT /api/bom/update-material - Update material in sunrack_profiles
+  async updateMaterial(req, res, next) {
+    try {
+      const { sunrackCode, oldMaterial, newMaterial, applyToAll } = req.body;
+
+      if (!newMaterial) {
+        return res.status(400).json({ error: 'newMaterial is required' });
+      }
+
+      if (applyToAll && !oldMaterial) {
+        return res.status(400).json({ error: 'oldMaterial is required when applyToAll is true' });
+      }
+
+      if (!applyToAll && !sunrackCode) {
+        return res.status(400).json({ error: 'sunrackCode is required when updating single item' });
+      }
+
+      const result = await bomService.updateMaterial({ sunrackCode, oldMaterial, newMaterial, applyToAll });
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new BomController();
