@@ -6,7 +6,7 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
   const { user } = useAuth();
   const [reasons, setReasons] = useState({});
   const [updateMasterMap, setUpdateMasterMap] = useState({});
-  const [applyMaterialGloballyMap, setApplyMaterialGloballyMap] = useState({});
+  const [materialUpdateChoice, setMaterialUpdateChoice] = useState({});
   const [defaultNotesUpdateChoice, setDefaultNotesUpdateChoice] = useState('bom-only'); // 'global' or 'bom-only'
 
   // Check if user is ADMIN or MANAGER
@@ -55,6 +55,18 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
     }
   }, [isOpen, allChanges]);
 
+  useEffect(() => {
+    if (isOpen) {
+      const initialChoices = {};
+      allChanges.forEach(change => {
+        if (change.type === 'EDIT_MATERIAL') {
+          initialChoices[change.id] = 'current';
+        }
+      });
+      setMaterialUpdateChoice(initialChoices);
+    }
+  }, [isOpen, allChanges]);
+
   if (!isOpen) return null;
 
   // Check if any change requires the "Update Master DB?" option
@@ -77,10 +89,10 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
     }));
   };
 
-  const handleApplyMaterialGloballyChange = (id, checked) => {
-    setApplyMaterialGloballyMap(prev => ({
+  const handleMaterialUpdateChoiceChange = (id, choice) => {
+    setMaterialUpdateChoice(prev => ({
       ...prev,
-      [id]: checked
+      [id]: choice
     }));
   };
 
@@ -101,7 +113,9 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
       ...change,
       reason: reasons[change.id],
       updateMaster: updateMasterMap[change.id] || false,
-      applyMaterialGlobally: applyMaterialGloballyMap[change.id] || false
+      materialUpdateChoice: change.type === 'EDIT_MATERIAL'
+        ? (materialUpdateChoice[change.id] || 'current')
+        : undefined
     }));
 
     onConfirm(changesWithReasons, {
@@ -110,7 +124,7 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
     });
     setReasons({});
     setUpdateMasterMap({});
-    setApplyMaterialGloballyMap({});
+    setMaterialUpdateChoice({});
     setDefaultNotesUpdateChoice('bom-only');
   };
 
@@ -142,7 +156,7 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
                   <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Update Master DB?</th>
                 )}
                 {hasMaterialChanges && (
-                  <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Apply to All?</th>
+                  <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Update Scope</th>
                 )}
                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">Reason <span className="text-red-500">*</span></th>
               </tr>
@@ -187,19 +201,41 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
                   )}
                   {hasMaterialChanges && (
                     <td className="px-4 py-3 text-center">
-                      {change.type === 'EDIT_MATERIAL' && (
-                        <div className="flex flex-col items-center">
-                          <input
-                            type="checkbox"
-                            checked={applyMaterialGloballyMap[change.id] || false}
-                            onChange={(e) => handleApplyMaterialGloballyChange(change.id, e.target.checked)}
-                            className="w-4 h-4 text-purple-600 rounded cursor-pointer"
-                          />
-                          <span className="text-[10px] text-gray-500 mt-1 text-center">
-                            All "{change.oldValue}"
-                          </span>
-                        </div>
-                      )}
+                      {change.type === 'EDIT_MATERIAL' && (() => {
+                        const sunrackCode = change.sunrackCode
+                          || bomData?.bomItems?.find(item => item.sn === change.rowNumber)?.sunrackCode;
+
+                        return (
+                          <div className="flex flex-col gap-2 items-start">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name={`material-scope-${change.id}`}
+                                value="current"
+                                checked={(materialUpdateChoice[change.id] || 'current') === 'current'}
+                                onChange={() => handleMaterialUpdateChoiceChange(change.id, 'current')}
+                                className="w-4 h-4 text-purple-600"
+                              />
+                              <span className="text-xs">
+                                Only &quot;{sunrackCode || 'this sunrack code'}&quot;
+                              </span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name={`material-scope-${change.id}`}
+                                value="all"
+                                checked={materialUpdateChoice[change.id] === 'all'}
+                                onChange={() => handleMaterialUpdateChoiceChange(change.id, 'all')}
+                                className="w-4 h-4 text-purple-600"
+                              />
+                              <span className="text-xs">
+                                All Sunrack Codes
+                              </span>
+                            </label>
+                          </div>
+                        );
+                      })()}
                     </td>
                   )}
                   <td className="px-4 py-3">

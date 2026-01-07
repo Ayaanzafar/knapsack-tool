@@ -2042,6 +2042,7 @@ export default function BOMPage() {
             itemName: item.itemDescription,
             rowNumber: item.sn,
             tabName: null,
+            sunrackCode: item.sunrackCode,
           });
         }
 
@@ -2369,22 +2370,18 @@ export default function BOMPage() {
 
     for (const update of materialUpdates) {
       try {
-        if (update.applyMaterialGlobally) {
-          // Update all profiles in database with the old material
+        const materialUpdateChoice = update.materialUpdateChoice || (update.applyMaterialGlobally ? 'all' : 'current');
+
+        if (materialUpdateChoice === 'all') {
+          // Update ALL profiles in database (sunrack_profiles.material)
           await bomAPI.updateMaterial({
-            oldMaterial: update.oldValue,
             newMaterial: update.newValue,
             applyToAll: true
           });
 
-          // Apply material changes globally to all items in current BOM
-          // Use originalBomData to find items that had the old material value
+          // Apply material changes globally to all items in current BOM with a sunrack code
           const updatedBomItems = bomData.bomItems.map(item => {
-            // Find this item in original data to check its original material
-            const originalItem = originalBomData.bomItems.find(orig => orig._id === item._id);
-
-            // Check if this item originally had the old material value
-            if (originalItem && originalItem.material === update.oldValue) {
+            if (item.sunrackCode) {
               return { ...item, material: update.newValue };
             }
             return item;
@@ -2397,22 +2394,33 @@ export default function BOMPage() {
           bomData.bomItems = updatedBomItems;
 
           // Count how many items were updated
-          const updateCount = updatedBomItems.filter((item) => {
-            const originalItem = originalBomData.bomItems.find(orig => orig._id === item._id);
-            return originalItem && originalItem.material === update.oldValue;
-          }).length;
+          const updateCount = updatedBomItems.filter(item => item.sunrackCode).length;
 
-          showToast(`Material updated for ${updateCount} item(s) from "${update.oldValue}" to "${update.newValue}"`);
+          showToast(`Material updated for ALL sunrack codes (${updateCount} row(s)) to "${update.newValue}"`);
         } else {
-          // Update single profile in database
-          const currentItem = bomData.bomItems.find(item => item.sn === update.rowNumber);
-          if (currentItem && currentItem.sunrackCode) {
+          // Default: update only items with the same sunrack code
+          const sunrackCode = update.sunrackCode || bomData.bomItems.find(item => item.sn === update.rowNumber)?.sunrackCode;
+
+          if (sunrackCode) {
             await bomAPI.updateMaterial({
-              sunrackCode: currentItem.sunrackCode,
+              sunrackCode,
               newMaterial: update.newValue,
               applyToAll: false
             });
-            showToast(`Material updated for "${currentItem.sunrackCode}" to "${update.newValue}"`);
+
+            const updatedBomItems = bomData.bomItems.map(item => {
+              if (item.sunrackCode === sunrackCode) {
+                return { ...item, material: update.newValue };
+              }
+              return item;
+            });
+
+            bomData.bomItems = updatedBomItems;
+            setBomData({ ...bomData, bomItems: updatedBomItems });
+
+            const updateCount = updatedBomItems.filter(item => item.sunrackCode === sunrackCode).length;
+
+            showToast(`Material updated for sunrack code "${sunrackCode}" (${updateCount} row(s)) to "${update.newValue}"`);
           }
         }
       } catch (error) {
@@ -2471,6 +2479,10 @@ export default function BOMPage() {
       if (change.type === 'EDIT_PROFILE') {
         logEntry.oldProfileName = change.oldProfileName;
         logEntry.newProfileName = change.newProfileName;
+      }
+
+      if (change.type === 'EDIT_MATERIAL') {
+        logEntry.sunrackCode = change.sunrackCode;
       }
 
       return logEntry;

@@ -489,18 +489,16 @@ class BomService {
    * Updates material in sunrack_profiles table
    * @param {object} params - Update parameters
    * @param {string} params.sunrackCode - Sunrack code to update (for single update)
-   * @param {string} params.oldMaterial - Old material value (for bulk update)
+   * @param {string} params.oldMaterial - Old material value (optional; filters bulk update when provided)
    * @param {string} params.newMaterial - New material value
-   * @param {boolean} params.applyToAll - Whether to update all items with oldMaterial
+   * @param {boolean} params.applyToAll - Whether to bulk update (all profiles, or filtered by oldMaterial)
    * @returns {Promise<object>} Update result with count
    */
   async updateMaterial({ sunrackCode, oldMaterial, newMaterial, applyToAll }) {
     if (applyToAll) {
-      // Update all profiles with the old material
+      // Update all profiles, optionally filtered by old material (legacy behavior)
       const result = await prisma.sunrackProfile.updateMany({
-        where: {
-          material: oldMaterial
-        },
+        where: oldMaterial ? { material: oldMaterial } : {},
         data: {
           material: newMaterial
         }
@@ -509,7 +507,9 @@ class BomService {
       return {
         success: true,
         count: result.count,
-        message: `Updated ${result.count} profile(s) from "${oldMaterial}" to "${newMaterial}"`
+        message: oldMaterial
+          ? `Updated ${result.count} profile(s) from "${oldMaterial}" to "${newMaterial}"`
+          : `Updated ${result.count} profile(s) to "${newMaterial}"`
       };
     } else {
       // Update single profile by sunrack code

@@ -37,7 +37,9 @@ export default function ChangeLogDisplay({ changeLog }) {
         return `Cost per piece for "${change.itemName}" (Row ${change.rowNumber}) changed from ₹${change.oldValue} to ₹${change.newValue}.`;
 
       case 'EDIT_MATERIAL':
-        return `Material for "${change.itemName}" (Row ${change.rowNumber}) changed from "${change.oldValue}" to "${change.newValue}".`;
+        return change.sunrackCode
+          ? `Material for "${change.itemName}" (Sunrack Code: ${change.sunrackCode}, Row ${change.rowNumber}) changed from "${change.oldValue}" to "${change.newValue}".`
+          : `Material for "${change.itemName}" (Row ${change.rowNumber}) changed from "${change.oldValue}" to "${change.newValue}".`;
 
       case 'CHANGE_MODULE_WP':
         return `Module Wp changed globally from ${change.oldValue}W to ${change.newValue}W.`;

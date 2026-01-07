@@ -150,10 +150,6 @@ class BomController {
         return res.status(400).json({ error: 'newMaterial is required' });
       }
 
-      if (applyToAll && !oldMaterial) {
-        return res.status(400).json({ error: 'oldMaterial is required when applyToAll is true' });
-      }
-
       if (!applyToAll && !sunrackCode) {
         return res.status(400).json({ error: 'sunrackCode is required when updating single item' });
       }
