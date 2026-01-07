@@ -4,7 +4,7 @@ import { TextField } from './ui';
 import { parseNumList } from '../lib/storage';
 import { useAuth } from '../context/AuthContext';
 
-export default function GlobalInputs({ settings, setSettings, applyToAll }) {
+export default function GlobalInputs({ settings, setSettings, applyToAll, longRailVariation }) {
   const { user } = useAuth();
   const isBasicUser = user?.role === 'BASIC';
   const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
@@ -50,6 +50,7 @@ export default function GlobalInputs({ settings, setSettings, applyToAll }) {
     endClampWidth,
     buffer,
     purlinDistance,
+    seamToSeamDistance = 1700,
     railsPerSide,
     enabledLengths,
     priority
@@ -97,6 +98,7 @@ export default function GlobalInputs({ settings, setSettings, applyToAll }) {
         endClampWidth: 40,
         buffer: 15,
         purlinDistance: 1700,
+        seamToSeamDistance: 1700,
         railsPerSide: 2,
         priority: 'cost'
       }));
@@ -223,27 +225,62 @@ export default function GlobalInputs({ settings, setSettings, applyToAll }) {
         {/* Site Parameters */}
         <div className="border-2 border-green-200 rounded-lg p-2.5 bg-green-50/30">
           <h3 className="text-xs font-bold text-green-700 mb-2 uppercase tracking-wide">Site Parameters</h3>
-          <div>
-            <label className="block text-[14px] text-gray-600 mb-0.5">Purlin to Purlin Distance (mm)</label>
-            <input
-              type="number"
-              value={purlinDistance}
-              onChange={e => updateSetting('purlinDistance', e.target.value)}
-              className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
-            />
-            {applyToAll && (
-              <button
-                onClick={() => applyToAll('purlinDistance', purlinDistance)}
-                className="mt-2 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-1.5"
-                title="Apply this value to all tabs"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-                  <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
-                </svg>
-                Apply to All Tabs
-              </button>
-            )}
+          <div className="space-y-2">
+            <div>
+              <label className={`block text-[14px] mb-0.5 ${longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
+                Purlin to Purlin Distance (mm)
+              </label>
+              <input
+                type="number"
+                value={purlinDistance}
+                disabled={longRailVariation?.endsWith('Seam Clamp')}
+                onChange={e => updateSetting('purlinDistance', e.target.value)}
+                className={`w-full rounded border px-2 py-1 text-sm text-center font-medium ${
+                  longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''
+                }`}
+              />
+              {applyToAll && !longRailVariation?.endsWith('Seam Clamp') && (
+                <button
+                  onClick={() => applyToAll('purlinDistance', purlinDistance)}
+                  className="mt-2 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-1.5"
+                  title="Apply this value to all tabs"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                    <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                  </svg>
+                  Apply to All Tabs
+                </button>
+              )}
+            </div>
+
+            <div>
+              <label className={`block text-[14px] mb-0.5 ${!longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
+                Seam to Seam/Crest to Crest Distance (mm)
+              </label>
+              <input
+                type="number"
+                value={seamToSeamDistance}
+                disabled={!longRailVariation?.endsWith('Seam Clamp')}
+                onChange={e => updateSetting('seamToSeamDistance', e.target.value)}
+                className={`w-full rounded border px-2 py-1 text-sm text-center font-medium ${
+                  !longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''
+                }`}
+              />
+               {applyToAll && longRailVariation?.endsWith('Seam Clamp') && (
+                <button
+                  onClick={() => applyToAll('seamToSeamDistance', seamToSeamDistance)}
+                  className="mt-2 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-1.5"
+                  title="Apply this value to all tabs"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                    <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                  </svg>
+                  Apply to All Tabs
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -66,6 +66,7 @@ model Tab {
   endClampWidth      Decimal  @default(40) @map("end_clamp_width") @db.Decimal(10, 2)
   buffer             Decimal  @default(15) @map("buffer") @db.Decimal(10, 2)
   purlinDistance     Decimal  @default(1700) @map("purlin_distance") @db.Decimal(10, 2)
+  seamToSeamDistance Decimal  @default(1700) @map("seam_to_seam_distance") @db.Decimal(10, 2)
   railsPerSide       Int      @default(2) @map("rails_per_side")
   lengthsInput       String?  @map("lengths_input") @db.Text
   enabledLengths     Json?    @map("enabled_lengths")

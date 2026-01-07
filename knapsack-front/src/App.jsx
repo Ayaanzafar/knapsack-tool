@@ -409,6 +409,7 @@ export default function App() {
             settings={activeTab?.settings}
             setSettings={updateSettings}
             applyToAll={applySettingToAll}
+            longRailVariation={longRailVariation}
           />
         </div>
 
