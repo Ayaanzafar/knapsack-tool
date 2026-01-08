@@ -1334,8 +1334,8 @@
 
 
 
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useLocation, useNavigate, useBeforeUnload } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import BOMTable from './BOMTable';
 import ComboBox from '../ComboBox';
 import AddRowModal from './AddRowModal';
@@ -1399,6 +1399,48 @@ export default function BOMPage() {
   // Saved BOM states
   const [hasSavedBom, setHasSavedBom] = useState(false);
   const [isSavingSnapshot, setIsSavingSnapshot] = useState(false);
+
+  // Dirty state tracking
+  const [isDirty, setIsDirty] = useState(false);
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [hasRowOrderChanges, setHasRowOrderChanges] = useState(false);
+  const skipBeforeUnloadRef = useRef(false);
+
+  const hasUnsavedChanges = useCallback(() => {
+    if (isDirty) return true;
+    if (!editMode) return false;
+
+    const pendingChanges = changeTracker.getChanges();
+    const pendingAdditions = changeTracker.getAdditions();
+    const pendingDeletions = changeTracker.getDeletions();
+
+    const notesChanged = JSON.stringify(userNotes) !== JSON.stringify(originalUserNotes);
+    const hasDefaultNotesChanges = defaultNotesChanges && defaultNotesChanges.length > 0;
+    const hasBomChanges =
+      pendingChanges.length > 0 ||
+      pendingAdditions.length > 0 ||
+      pendingDeletions.length > 0 ||
+      hasRowOrderChanges;
+
+    return hasBomChanges || notesChanged || hasDefaultNotesChanges;
+  }, [isDirty, editMode, userNotes, originalUserNotes, defaultNotesChanges, hasRowOrderChanges]);
+
+  const isPrintDisabled = !hasSavedBom || hasUnsavedChanges();
+  const printTooltip = isPrintDisabled ? 'Save the BOM before print.' : 'Print BOM';
+
+  // Prevent browser tab close/refresh if dirty
+  useBeforeUnload(
+    useCallback(
+      (e) => {
+        if (skipBeforeUnloadRef.current) return;
+        if (hasUnsavedChanges()) {
+          e.preventDefault();
+          e.returnValue = ''; // Required for Chrome
+        }
+      },
+      [hasUnsavedChanges]
+    )
+  );
 
   const showToast = (message, type = 'info') => {
     setToast({ id: Date.now(), message, type });
@@ -1766,7 +1808,11 @@ export default function BOMPage() {
   }, [sparePercentage]);
 
   const handleBack = () => {
-    navigate('/app');
+    if (hasUnsavedChanges()) {
+      setShowUnsavedModal(true);
+    } else {
+      navigate('/app');
+    }
   };
 
   const calculateWeightAndCost = (item, profile, aluRate) => {
@@ -2179,8 +2225,7 @@ export default function BOMPage() {
 
       const updatedBomData = { ...bomData, bomItems: renumberedItems };
       setBomData(updatedBomData);
-
-      saveWithExplicitData(updatedBomData, changeLog);
+      setHasRowOrderChanges(true);
     }
   };
 
@@ -2210,58 +2255,14 @@ export default function BOMPage() {
     }
   };
 
-  const handleSaveChanges = async () => {
-    const bomId = location.state?.bomId;
-    if (!bomId) {
-      showToast('Cannot save changes: BOM ID is missing.', 'error');
-      return;
-    }
 
-    setIsSaving(true);
-    try {
-      const dataToSave = {
-        projectInfo: bomData.projectInfo,
-        tabs: bomData.tabs,
-        panelCounts: bomData.panelCounts,
-        bomItems: bomData.bomItems,
-        aluminumRate: aluminumRate,
-        sparePercentage: sparePercentage,
-        moduleWp: moduleWp,
-      };
-
-      await bomAPI.updateBOM(bomId, dataToSave, changeLog);
-
-      const freshData = await bomAPI.getBOMById(bomId);
-
-      if (freshData && freshData.bomData) {
-        applyFreshBom(freshData);
-      }
-
-      showToast('Changes saved successfully!', 'success');
-    } catch (error) {
-      console.error('Failed to save changes:', error);
-
-      if (error?.code === 'FORBIDDEN_FIELD') {
-        showToast(`${error.field || 'Field'}: ${error.data?.message || error.message}`);
-        await revertBomFromServer(bomId);
-        changeTracker.stopTracking();
-        setEditMode(false);
-      } else if (error?.code === 'PASSWORD_CHANGE_REQUIRED') {
-        showToast('Password change required before continuing.');
-        await revertBomFromServer(bomId);
-        changeTracker.stopTracking();
-        setEditMode(false);
-      } else {
-        showToast(`Failed to save changes: ${error.message}`, 'error');
-      }
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   const handleDiscardChanges = async () => {
     if (window.confirm('Are you sure you want to discard all unsaved changes? This will reload the BOM data.')) {
+      skipBeforeUnloadRef.current = true;
       changeTracker.stopTracking();
+      setIsDirty(false);
+      setHasRowOrderChanges(false);
       setUserNotes([...originalUserNotes]); // Restore original notes
       setEditMode(false);
       window.location.reload();
@@ -2278,35 +2279,66 @@ export default function BOMPage() {
     } else {
       setOriginalBomData(bomData);
       setOriginalUserNotes([...userNotes]); // Save original notes
+      setHasRowOrderChanges(false);
       changeTracker.startTracking();
       setEditMode(true);
     }
   };
 
-  // Save BOM Snapshot
-  const handleSaveBomSnapshot = async () => {
-    if (!projectId) {
-      showToast('Error: Project ID not found');
-      return;
+  // Full Save (Active + Snapshot)
+  const handleFullSave = async () => {
+    // 1. Save Active BOM (generated_boms)
+    // Note: saveWithExplicitData handles toasts and errors
+    const result = await saveWithExplicitData(bomData, changeLog);
+    if (!result.ok) return false;
+
+    // 2. Save Snapshot (saved_boms)
+    if (projectId) {
+      setIsSavingSnapshot(true);
+      try {
+        const customDefaultNotes = bomData.customDefaultNotes || null;
+        const bomDataWithGlobals = {
+          ...bomData,
+          aluminumRate,
+          sparePercentage,
+          moduleWp,
+        };
+        await savedBomAPI.saveBomSnapshot(projectId, bomDataWithGlobals, userNotes, changeLog, customDefaultNotes);
+        setHasSavedBom(true);
+        // saveWithExplicitData already showed success toast
+      } catch (error) {
+        console.error('Error saving BOM snapshot:', error);
+        showToast('Warning: Failed to save snapshot history (Active BOM is safe)', 'warning');
+      } finally {
+        setIsSavingSnapshot(false);
+      }
     }
 
-    setIsSavingSnapshot(true);
-    try {
-      const customDefaultNotes = bomData.customDefaultNotes || null;
-      const bomDataWithGlobals = {
-        ...bomData,
-        aluminumRate,
-        sparePercentage,
-        moduleWp,
-      };
-      await savedBomAPI.saveBomSnapshot(projectId, bomDataWithGlobals, userNotes, changeLog, customDefaultNotes);
-      setHasSavedBom(true);
-      showToast('✅ BOM snapshot saved successfully!');
-    } catch (error) {
-      console.error('Error saving BOM snapshot:', error);
-      showToast('❌ Failed to save BOM snapshot');
-    } finally {
-      setIsSavingSnapshot(false);
+    setIsDirty(false);
+    setHasRowOrderChanges(false);
+    setOriginalUserNotes([...userNotes]);
+    return true;
+  };
+
+  const handleManualSave = async () => {
+    await handleFullSave();
+  };
+
+  const handleExitWithoutSave = () => {
+    skipBeforeUnloadRef.current = true;
+    setIsDirty(false); // Allow navigation
+    setHasRowOrderChanges(false);
+    changeTracker.stopTracking();
+    setShowUnsavedModal(false);
+    navigate('/app');
+  };
+
+  const handleSaveAndExit = async () => {
+    const success = await handleFullSave();
+    if (success) {
+      skipBeforeUnloadRef.current = true;
+      setShowUnsavedModal(false);
+      navigate('/app');
     }
   };
 
@@ -2321,28 +2353,22 @@ export default function BOMPage() {
     // Check if default notes have changed
     const hasDefaultNotesChanges = defaultNotesChanges && defaultNotesChanges.length > 0;
 
-    const hasBomChanges = changes.length > 0 || additions.length > 0 || deletions.length > 0;
+    const hasTrackedBomChanges = changes.length > 0 || additions.length > 0 || deletions.length > 0;
 
-    // console.log('Done Editing - Notes changed:', notesChanged); // Debug log
-    // console.log('Current notes:', userNotes); // Debug log
-    // console.log('Original notes:', originalUserNotes); // Debug log
-    // console.log('BOM changes:', hasBomChanges); // Debug log
-    // console.log('Default notes changes:', hasDefaultNotesChanges, defaultNotesChanges); // Debug log
-
-    if (hasBomChanges || hasDefaultNotesChanges) {
+    if (hasTrackedBomChanges || hasDefaultNotesChanges) {
       // BOM changes OR default notes changes exist - show review modal
       setReviewModalOpen(true);
-    } else if (notesChanged) {
-      // Only user notes changed - save directly without review modal
-      // console.log('Saving user notes only...'); // Debug log
-      await saveWithExplicitData(bomData, changeLog);
+    } else if (notesChanged || hasRowOrderChanges) {
+      // Only user notes and/or row order changed - mark dirty and exit edit mode
+      setIsDirty(true);
       setEditMode(false);
-      setOriginalUserNotes([...userNotes]); // Update original notes after save
+      setHasRowOrderChanges(false);
       changeTracker.stopTracking();
+      showToast('Changes applied locally. Remember to click "Save BOM".', 'info');
     } else {
       // No changes detected, just exit edit mode without saving
-      // console.log('No changes detected'); // Debug log
       setEditMode(false);
+      setHasRowOrderChanges(false);
       changeTracker.stopTracking();
     }
   };
@@ -2525,27 +2551,27 @@ export default function BOMPage() {
       }
     }
 
-    const result = await saveWithExplicitData(bomData, updatedChangeLog);
-    if (result?.ok) {
-      setReviewModalOpen(false);
-      setEditMode(false);
-      setOriginalUserNotes([...userNotes]); // Update original notes after save
-
-      // Update bomData state with the new customDefaultNotes so NotesSection reloads
-      if (defaultNotesUpdateChoice === 'bom-only' && bomData.customDefaultNotes) {
-        setBomData({ ...bomData, customDefaultNotes: bomData.customDefaultNotes });
-      }
-
-      // Reset default notes baseline after save (only if bom-only, global already reset above)
-      if (defaultNotesUpdateChoice !== 'global') {
-        if (window.resetDefaultNotesBaseline) {
-          window.resetDefaultNotesBaseline();
-        }
-        setDefaultNotesChanges([]);
-      }
-
-      changeTracker.stopTracking();
+    // Mark as dirty instead of saving immediately
+    setIsDirty(true);
+    setReviewModalOpen(false);
+    setEditMode(false);
+    setHasRowOrderChanges(false);
+    
+    // Update bomData customDefaultNotes state so UI reflects it
+    if (defaultNotesUpdateChoice === 'bom-only' && bomData.customDefaultNotes) {
+      setBomData({ ...bomData, customDefaultNotes: bomData.customDefaultNotes });
     }
+
+    // Reset default notes baseline
+    if (defaultNotesUpdateChoice !== 'global') {
+      if (window.resetDefaultNotesBaseline) {
+        window.resetDefaultNotesBaseline();
+      }
+      setDefaultNotesChanges([]);
+    }
+
+    changeTracker.stopTracking();
+    showToast('Changes applied locally. Remember to click "Save BOM".', 'info');
   };
 
   const exportToPDF = async (settings) => {
@@ -2850,12 +2876,12 @@ export default function BOMPage() {
 
               {!editMode && (
                 <button
-                  onClick={handleSaveBomSnapshot}
-                  disabled={isSavingSnapshot}
+                  onClick={handleManualSave}
+                  disabled={isSavingSnapshot || isSaving}
                   className="group px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 flex items-center gap-2 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  title="Save current BOM as snapshot"
+                  title="Save BOM"
                 >
-                  {isSavingSnapshot ? (
+                  {isSavingSnapshot || isSaving ? (
                     <>
                       <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -2874,26 +2900,30 @@ export default function BOMPage() {
                 </button>
               )}
 
-              {!editMode && <button
-                disabled={!hasSavedBom}
-                className={`group px-5 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-semibold shadow-sm hover:shadow-md transform hover:scale-105 ${!hasSavedBom ? 'opacity-50 cursor-not-allowed' : ''}`}
-                onClick={() => setPrintSettingsModalOpen(true)}
-                title={!hasSavedBom ? 'Please save BOM before printing' : 'Print BOM'}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 group-hover:scale-110 transition-transform"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>Print</span>
-              </button>}
+              {!editMode && (
+                <span title={printTooltip} className="inline-block">
+                  <button
+                    disabled={isPrintDisabled}
+                    className={`group px-5 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-semibold shadow-sm hover:shadow-md transform hover:scale-105 ${isPrintDisabled ? 'opacity-50 cursor-not-allowed hover:scale-100 hover:shadow-sm' : ''}`}
+                    onClick={() => setPrintSettingsModalOpen(true)}
+                    aria-disabled={isPrintDisabled}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 group-hover:scale-110 transition-transform"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span>Print</span>
+                  </button>
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -3175,6 +3205,63 @@ export default function BOMPage() {
         onConfirm={handleReviewConfirm}
         showToast={showToast}
       />
+
+      {/* Unsaved Changes Modal */}
+      {showUnsavedModal && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-[100]"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.25)' }}
+          aria-labelledby="modal-title"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full overflow-hidden transform transition-all">
+            <div className="px-4 pt-5 pb-4 sm:p-6">
+              <div className="sm:flex sm:items-start">
+                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg className="h-6 w-6 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                    Unsaved Changes
+                  </h3>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      You have unsaved changes. Do you want to save them before leaving?
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={handleSaveAndExit}
+                disabled={isSaving}
+              >
+                {isSaving ? 'Saving...' : 'Save & Exit'}
+              </button>
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={handleExitWithoutSave}
+              >
+                Exit without Saving
+              </button>
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setShowUnsavedModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <PrintSettingsModal
         isOpen={printSettingsModalOpen}
