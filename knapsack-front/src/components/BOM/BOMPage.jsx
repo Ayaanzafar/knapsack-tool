@@ -1345,6 +1345,7 @@ import ReasonModal from './ReasonModal';
 import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
 import NotesSection from './NotesSection';
+import Tooltip from '../Tooltip';
 import { API_URL } from '../../services/config';
 import { bomAPI, savedBomAPI } from '../../services/api';
 import { updateVariationTemplateDefaultNotes } from '../../services/templateService';
@@ -2880,7 +2881,7 @@ export default function BOMPage() {
               </button>
 
               {!editMode && (
-                <span title={saveBomTooltip} className="inline-block">
+                <Tooltip content={saveBomTooltip}>
                   <button
                     onClick={handleManualSave}
                     disabled={isSaveBomDisabled}
@@ -2904,11 +2905,11 @@ export default function BOMPage() {
                       </>
                     )}
                   </button>
-                </span>
+                </Tooltip>
               )}
 
               {!editMode && (
-                <span title={printTooltip} className="inline-block">
+                <Tooltip content={printTooltip}>
                   <button
                     disabled={isPrintDisabled}
                     className={`group px-5 py-2.5 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 font-semibold shadow-sm hover:shadow-md transform hover:scale-105 ${isPrintDisabled ? 'opacity-50 cursor-not-allowed hover:scale-100 hover:shadow-sm' : ''}`}
@@ -2929,7 +2930,7 @@ export default function BOMPage() {
                     </svg>
                     <span>Print</span>
                   </button>
-                </span>
+                </Tooltip>
               )}
             </div>
           </div>

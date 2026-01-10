@@ -3,7 +3,7 @@
 
 // Get base URL from environment or use default
 // Export the base URL with /api suffix (for most endpoints)
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Export the base URL without /api suffix (for raw endpoints)
 export const API_URL = API_BASE_URL.replace('/api', '');
