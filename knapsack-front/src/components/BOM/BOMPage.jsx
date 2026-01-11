@@ -1458,7 +1458,12 @@ export default function BOMPage() {
 
     const nextBomData = {
       ...freshData.bomData,
-      bomItems: freshData.bomData.bomItems ? ensureStableIds(freshData.bomData.bomItems) : []
+      bomItems: freshData.bomData.bomItems ? ensureStableIds(freshData.bomData.bomItems) : [],
+      // Ensure projectInfo has createdBy field set to current user if not already set
+      projectInfo: {
+        ...freshData.bomData.projectInfo,
+        createdBy: freshData.bomData.projectInfo?.createdBy || user?.username || 'Unknown'
+      }
     };
 
     // Debug: Check if profilesMap is present
@@ -1690,7 +1695,16 @@ export default function BOMPage() {
           //   console.log('[BOMPage loadBOM] profilesMap[94].sunrackCode:', data.bomData.profilesMap[94].sunrackCode);
           // }
 
-          setBomData(data.bomData);
+          // Ensure projectInfo.createdBy is set
+          const bomDataToSet = {
+            ...data.bomData,
+            projectInfo: {
+              ...data.bomData.projectInfo,
+              createdBy: data.bomData.projectInfo?.createdBy || user?.username || 'Unknown'
+            }
+          };
+
+          setBomData(bomDataToSet);
 
           const loadedAluminumRate = Number.parseFloat(data.bomData.aluminumRate);
           if (Number.isFinite(loadedAluminumRate)) setAluminumRate(loadedAluminumRate);

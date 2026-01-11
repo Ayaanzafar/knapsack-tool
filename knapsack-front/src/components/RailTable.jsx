@@ -251,7 +251,7 @@ export default function RailTable({
     const calculatedSB1 = Math.ceil(required / purlin) + 1;
 
     if (calculatedSB1 > 0) {
-      console.log(`💾 Setting initial SB1=${calculatedSB1} for new row ${createdRow.id}`);
+      //console.log(`💾 Setting initial SB1=${calculatedSB1} for new row ${createdRow.id}`);
 
       // Update UI optimistically
       setRows(currentRows =>
@@ -490,13 +490,13 @@ export default function RailTable({
       : 0;
 
     // Debug logging for Ratio of Supports to module
-    // console.log('=== Supports Calculation Debug ===');
-    // console.log('totals.sb1:', result.sb1);
-    // console.log('totals.sb2:', result.sb2);
-    // console.log('totals.modules:', result.modules);
-    // console.log('Sum (sb1 + sb2):', result.sb1 + result.sb2);
-    // console.log('Ratio (sb1+sb2)/modules:', result.modules > 0 ? ((result.sb1 + result.sb2) / result.modules) : 0);
-    // console.log('==================================');
+    // //console.log('=== Supports Calculation Debug ===');
+    // //console.log('totals.sb1:', result.sb1);
+    // //console.log('totals.sb2:', result.sb2);
+    // //console.log('totals.modules:', result.modules);
+    // //console.log('Sum (sb1 + sb2):', result.sb1 + result.sb2);
+    // //console.log('Ratio (sb1+sb2)/modules:', result.modules > 0 ? ((result.sb1 + result.sb2) / result.modules) : 0);
+    // //console.log('==================================');
 
     return result;
   }, [rowResults, allLengths, railsPerSide, enableSB2]);
@@ -571,7 +571,7 @@ export default function RailTable({
 
           await rowAPI.reorder(tabId, rowOrders);
 
-          console.log('✅ Row order saved to database');
+          //console.log('✅ Row order saved to database');
         } catch (error) {
           console.error('❌ Failed to save row order:', error);
           // Optionally: rollback to old order on error
@@ -583,13 +583,13 @@ export default function RailTable({
 
   // Initialize SB1 values when enableSB2 is turned on
   useEffect(() => {
-    console.log('🔍 SB1 Init useEffect triggered:', { enableSB2, tabId, rowsLength: rows.length });
+    //console.log('🔍 SB1 Init useEffect triggered:', { enableSB2, tabId, rowsLength: rows.length });
 
     if (enableSB2 && tabId && rows.length > 0) {
-      console.log('✅ Conditions met, initializing SB1 for rows...');
+      // //console.log('✅ Conditions met, initializing SB1 for rows...');
 
       rows.forEach(row => {
-        console.log(`  Row ${row.id}: supportBase1=${row.supportBase1}, modules=${row.modules}`);
+        //console.log(`  Row ${row.id}: supportBase1=${row.supportBase1}, modules=${row.modules}`);
 
         // Only initialize if supportBase1 is not already set (null or 0)
         if (row.supportBase1 == null || row.supportBase1 === 0) {
@@ -602,21 +602,21 @@ export default function RailTable({
           });
           const defaultSB1 = calculateSB1(required);
 
-          console.log(`    Calculated SB1=${defaultSB1} for row ${row.id}`);
+          //console.log(`    Calculated SB1=${defaultSB1} for row ${row.id}`);
 
           // Save calculated value to database
           if (defaultSB1 > 0) {
-            console.log(`    💾 Saving SB1=${defaultSB1} to database for row ${row.id}`);
+            //console.log(`    💾 Saving SB1=${defaultSB1} to database for row ${row.id}`);
             updateRowSupportBaseToDB(row.id, 'supportBase1', defaultSB1);
           } else {
-            console.log(`    ⚠️ Skipping save: SB1=${defaultSB1} is not > 0`);
+            //console.log(`    ⚠️ Skipping save: SB1=${defaultSB1} is not > 0`);
           }
         } else {
-          console.log(`    ℹ️ Skipping row ${row.id}: supportBase1 already set to ${row.supportBase1}`);
+          //console.log(`    ℹ️ Skipping row ${row.id}: supportBase1 already set to ${row.supportBase1}`);
         }
       });
     } else {
-      console.log('❌ Conditions not met:', { enableSB2, tabId, rowsLength: rows.length });
+      //console.log('❌ Conditions not met:', { enableSB2, tabId, rowsLength: rows.length });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enableSB2, tabId]); // Only run when enableSB2 or tabId changes
@@ -625,13 +625,13 @@ export default function RailTable({
   useEffect(() => {
     // Only auto-update when enableSB2 is disabled (SB1 is auto-calculated)
     if (!enableSB2 && tabId && rows.length > 0) {
-      console.log('🔄 Recalculating SB1 for all rows (enableSB2=false)...');
+      //console.log('🔄 Recalculating SB1 for all rows (enableSB2=false)...');
 
       rows.forEach(row => {
         // Skip rows with temporary IDs (timestamp-based IDs > 1000000000000)
         // These rows haven't been saved to DB yet
         if (row.id > 1000000000000) {
-          console.log(`  ⏭️ Skipping temp row ${row.id} (not yet saved to DB)`);
+          //console.log(`  ⏭️ Skipping temp row ${row.id} (not yet saved to DB)`);
           return;
         }
 
@@ -647,7 +647,7 @@ export default function RailTable({
         // Only update if different from current value (to avoid unnecessary API calls)
         const currentSB1 = Number(row.supportBase1) || 0;
         if (newSB1 > 0 && newSB1 !== currentSB1) {
-          console.log(`  💾 Updating SB1=${newSB1} for row ${row.id} (was ${currentSB1})`);
+          //console.log(`  💾 Updating SB1=${newSB1} for row ${row.id} (was ${currentSB1})`);
           updateRowSupportBaseToDB(row.id, 'supportBase1', newSB1);
         }
       });
