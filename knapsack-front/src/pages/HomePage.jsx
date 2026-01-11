@@ -694,7 +694,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Shuffle from './Shuffle';
+import Shuffle from './shuffle';
 import ElectricBorder from './ElectricBorder';
 import SplitText from './SplitText';
 
