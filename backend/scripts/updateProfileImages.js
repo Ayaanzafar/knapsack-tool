@@ -1,6 +1,6 @@
 /**
  * Update Profile Images in Database
- * Scans backend/assets/profile-images/ folder and updates database with image paths
+ * Scans backend/static/profile-images/ folder and updates database with image paths
  */
 
 const fs = require('fs');
@@ -14,7 +14,7 @@ async function updateProfileImages() {
     console.log('🚀 Updating Profile Images in Database...\n');
 
     // Define image folder path
-    const imageFolder = path.join(__dirname, '..', 'assets', 'profile-images');
+    const imageFolder = path.join(__dirname, '..', 'static', 'profile-images');
 
     // Check if folder exists
     if (!fs.existsSync(imageFolder)) {
@@ -79,7 +79,7 @@ async function updateProfileImages() {
 
       if (profile) {
         // Update database with image path
-        const imagePath = `/assets/profile-images/${filename}`;
+        const imagePath = `/static/profile-images/${filename}`;
 
         await prisma.sunrackProfile.update({
           where: { id: profile.id },

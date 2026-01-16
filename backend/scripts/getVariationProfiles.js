@@ -128,7 +128,7 @@ async function getVariationProfiles() {
     textContent += 'PROFILES NEEDED FOR FIRST 8 BOM VARIATIONS\n';
     textContent += '='.repeat(120) + '\n\n';
     textContent += `Total profiles to rename: ${matchedProfiles.length}\n\n`;
-    textContent += 'Save images with these exact filenames in: backend/assets/profile-images/\n\n';
+    textContent += 'Save images with these exact filenames in: backend/static/profile-images/\n\n';
     textContent += '='.repeat(120) + '\n\n';
 
     textContent += `${'Image Filename'.padEnd(25)}| ${'Excel Code'.padEnd(12)}| ${'Source'.padEnd(12)}| Generic Name\n`;

@@ -45,7 +45,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Serve static files (uploaded images and master assets)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use('/assets', express.static(path.join(__dirname, '../assets')));
+app.use('/static', express.static(path.join(__dirname, '../static')));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

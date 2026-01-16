@@ -206,7 +206,7 @@ async function generateImageMapping() {
     textContent += '1. Image Priority Order: Regal > Excellence > VARN > RC > SNALCO > Darshan > JM > Ralco > SaiDeep > Eleanor\n';
     textContent += '2. All spaces in codes are replaced with hyphens (e.g., "MA 43" becomes "MA-43")\n';
     textContent += '3. Recommended image format: PNG (transparent background preferred)\n';
-    textContent += '4. Save all images in: backend/assets/profile-images/\n';
+    textContent += '4. Save all images in: backend/static/profile-images/\n';
     textContent += '5. After saving images, run the image path update script to update the database\n\n';
 
     // Save text file

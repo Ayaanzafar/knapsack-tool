@@ -32,10 +32,10 @@ export default function BOMPrintPreview() {
     const normalized = rawUrl.startsWith('/') ? rawUrl : `/${rawUrl}`;
 
     if (normalized.startsWith('/profile-images/')) {
-      return `${API_URL}/assets${normalized}`;
+      return `${API_URL}/static${normalized}`;
     }
 
-    const isBackendAsset = normalized.startsWith('/assets/') || normalized.startsWith('/uploads/');
+    const isBackendAsset = normalized.startsWith('/static/') || normalized.startsWith('/uploads/');
 
     return isBackendAsset ? `${API_URL}${normalized}` : rawUrl;
   };
