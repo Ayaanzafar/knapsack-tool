@@ -123,7 +123,8 @@ async function main() {
             data: {
               templateId: template.id,
               fastenerId: fastener.id,
-              formulaKey: formulaKey
+              formulaKey: formulaKey,
+              sortOrder: parseInt(sn) || 0  // Use S.N from Excel as sort order
             }
           });
 

@@ -320,7 +320,8 @@ async function main() {
         sunrackProfileId: null,
         fastenerId: null,
         displayOverride: itemDesc,
-        formulaKey: null
+        formulaKey: null,
+        sortOrder: sn  // Use S.N from Excel as sort order
       };
 
       if (isProfile) {

@@ -344,6 +344,7 @@ model BomVariationItem {
   displayOverride  String?  @map("display_override") @db.VarChar(255) // e.g. "M8 Fastener Set"
   formulaKey       String?  @map("formula_key") @db.VarChar(50)       // Formula to use
   quantityFormula  String?  @map("quantity_formula") @db.Text         // Human readable formula
+  sortOrder        Int      @default(0) @map("sort_order")            // Display order (from Excel S.N)
 
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")

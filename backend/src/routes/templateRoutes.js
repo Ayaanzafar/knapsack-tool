@@ -42,7 +42,8 @@ router.get('/:variationName', async (req, res, next) => {
           include: {
             sunrackProfile: true,  // For profile items
             fastener: true         // For fastener items
-          }
+          },
+          orderBy: { sortOrder: 'asc' }
         }
       }
     });
