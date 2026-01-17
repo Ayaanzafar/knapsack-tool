@@ -25,6 +25,7 @@ export const BOM_FORMULAS = {
   // Level 2: Calculated from Level 1
   U_CLEAT: (tabCalc) => tabCalc.sb1 + tabCalc.sb2,
   RAIL_NUTS: (tabCalc, calculated) => calculated.END_CLAMP + calculated.MID_CLAMP,
+  RAIL_NUT: (tabCalc, calculated) => calculated.END_CLAMP + calculated.MID_CLAMP, // Alias for RAIL_NUTS
 
   // Level 3: Bolt calculations
   M8x60_BOLT: (tabCalc, calculated) => calculated.U_CLEAT,
@@ -45,7 +46,26 @@ export const BOM_FORMULAS = {
   SDS_5_5X63MM: (tabCalc) => tabCalc.sb1,
   SDS_6_3X63MM: (tabCalc) => tabCalc.sb1 + tabCalc.sb2, // For Double U Cleat
   RUBBER_PAD: (tabCalc, calculated) => calculated.U_CLEAT,
-  BLIND_RIVETS: (tabCalc) => tabCalc.sb2
+  BLIND_RIVETS: (tabCalc) => tabCalc.sb2,
+
+  // ========================================
+  // C45 Long Rail specific formulas
+  // ========================================
+  // C45 Rail - uses same cut length logic as LONG_RAIL
+  C45_RAIL: (tabCalc, cutLength) => tabCalc.cutLengths[cutLength] || 0,
+
+  // C45 Base and Latch - same as U_CLEAT (sb1 + sb2)
+  C45_BASE: (tabCalc) => tabCalc.sb1 + tabCalc.sb2,
+  C45_LATCH: (tabCalc) => tabCalc.sb1 + tabCalc.sb2,
+
+  // Allen Head Bolts for C45
+  M8x40_ALLEN_BOLT: (tabCalc, calculated) => calculated.END_CLAMP,
+  M8x45_ALLEN_BOLT: (tabCalc, calculated) => calculated.MID_CLAMP,
+  M8_LATCH_BOLT: (tabCalc, calculated) => calculated.U_CLEAT || (tabCalc.sb1 + tabCalc.sb2),
+
+  // Asbestos and Seam Clamp variants
+  ASBESTOS_BASE: (tabCalc) => tabCalc.sb1 + tabCalc.sb2,
+  SEAM_CLAMP: (tabCalc) => tabCalc.sb1 + tabCalc.sb2
 };
 
 /**
@@ -86,6 +106,16 @@ export function calculateTabQuantities(tabCalculation) {
   calculated.SDS_6_3X63MM = BOM_FORMULAS.SDS_6_3X63MM(tabCalculation, calculated);
   calculated.RUBBER_PAD = BOM_FORMULAS.RUBBER_PAD(tabCalculation, calculated);
   calculated.BLIND_RIVETS = BOM_FORMULAS.BLIND_RIVETS(tabCalculation, calculated);
+
+  // C45 Long Rail specific calculations
+  calculated.RAIL_NUT = BOM_FORMULAS.RAIL_NUT(tabCalculation, calculated);
+  calculated.C45_BASE = BOM_FORMULAS.C45_BASE(tabCalculation, calculated);
+  calculated.C45_LATCH = BOM_FORMULAS.C45_LATCH(tabCalculation, calculated);
+  calculated.M8x40_ALLEN_BOLT = BOM_FORMULAS.M8x40_ALLEN_BOLT(tabCalculation, calculated);
+  calculated.M8x45_ALLEN_BOLT = BOM_FORMULAS.M8x45_ALLEN_BOLT(tabCalculation, calculated);
+  calculated.M8_LATCH_BOLT = BOM_FORMULAS.M8_LATCH_BOLT(tabCalculation, calculated);
+  calculated.ASBESTOS_BASE = BOM_FORMULAS.ASBESTOS_BASE(tabCalculation, calculated);
+  calculated.SEAM_CLAMP = BOM_FORMULAS.SEAM_CLAMP(tabCalculation, calculated);
 
   return calculated;
 }
@@ -206,8 +236,8 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
 
     console.log(`[BOM DEBUG ${idx + 1}] isProfile:`, isProfile, 'isFastener:', isFastener, 'formulaKey:', formulaKey);
 
-    // For Long Rail profiles, create multiple entries for each cut length
-    if (isProfile && formulaKey === 'LONG_RAIL') {
+    // For Long Rail profiles (including C45), create multiple entries for each cut length
+    if (isProfile && (formulaKey === 'LONG_RAIL' || formulaKey === 'C45_RAIL')) {
       activeCutLengths.forEach(cutLength => {
         const quantities = {};
         let totalQty = 0;

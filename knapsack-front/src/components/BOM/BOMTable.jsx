@@ -52,7 +52,7 @@ function SortableBOMTableRow(props) {
 // So we need to forwardRef in BOMTableRow OR pass a prop like `rowRef`.,
 // Let's modify BOMTableRow to accept `rowRef` and `style` props.
 
-export default function BOMTable({ bomData, editMode, onProfileChange, profileOptions, onItemUpdate, aluminumRate, sparePercentage, onDeleteRow, onDragEnd }) {
+export default function BOMTable({ bomData, editMode, onProfileChange, profileOptions, onItemUpdate, aluminumRate, hdgRate, magnelisRate, sparePercentage, onDeleteRow, onDragEnd }) {
   const { tabs, panelCounts, bomItems, projectInfo } = bomData;
 
   const sensors = useSensors(
@@ -186,12 +186,16 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
             {/* Blank separator column */}
             <th className="bg-gray-200 w-4"></th>
 
-            {/* Weight & Cost section - Aluminum Rate */}
+            {/* Weight & Cost section - Material Rates */}
             <th
               colSpan={6}
               className="border border-gray-400 px-3 py-1 text-sm font-bold text-center"
             >
-              Aluminum Rate per kg: ₹{aluminumRate}
+              <span className="text-purple-700">Al: ₹{aluminumRate}</span>
+              <span className="mx-2 text-gray-400">|</span>
+              <span className="text-orange-700">HDG: ₹{hdgRate}</span>
+              <span className="mx-2 text-gray-400">|</span>
+              <span className="text-teal-700">Magnelis: ₹{magnelisRate}</span>
             </th>
 
           </tr>
@@ -266,7 +270,7 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
               Wt<br />(kg)
             </th>
             <th className="border border-gray-400 px-3 py-2 text-xs font-bold text-center">
-              Al Rate/Kg<br />(₹/kg)
+              Rate per<br />Unit Wt (₹/kg)
             </th>
             <th className="border border-gray-400 px-3 py-2 text-xs font-bold text-center">
               Rate/Piece<br />(₹)
@@ -292,6 +296,8 @@ export default function BOMTable({ bomData, editMode, onProfileChange, profileOp
                 isEven={index % 2 === 0}
                 editMode={editMode}
                 aluminumRate={aluminumRate}
+                hdgRate={hdgRate}
+                magnelisRate={magnelisRate}
                 profileOptions={profileOptions}
                 onProfileChange={onProfileChange}
                 onItemUpdate={onItemUpdate}

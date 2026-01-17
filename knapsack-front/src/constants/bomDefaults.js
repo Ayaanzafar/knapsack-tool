@@ -5,8 +5,10 @@
  * Modify these values to change defaults throughout the application.
  */
 
-// Material Rates
+// Material Rates (₹/kg)
 export const DEFAULT_ALUMINIUM_RATE_PER_KG = 460;
+export const DEFAULT_HDG_RATE_PER_KG = 125;
+export const DEFAULT_MAGNELIS_RATE_PER_KG = 125;
 
 // Module Specifications
 export const DEFAULT_MODULE_WP = 590;
@@ -25,6 +27,8 @@ export const FLOAT_COMPARISON_TOLERANCE = 1e-9;
 // Export as a single object for convenience
 export const BOM_DEFAULTS = {
   aluminiumRatePerKg: DEFAULT_ALUMINIUM_RATE_PER_KG,
+  hdgRatePerKg: DEFAULT_HDG_RATE_PER_KG,
+  magnelisRatePerKg: DEFAULT_MAGNELIS_RATE_PER_KG,
   moduleWp: DEFAULT_MODULE_WP,
   sparePercentage: DEFAULT_SPARE_PERCENTAGE,
   spareMultiplier: SPARE_CALCULATION_MULTIPLIER,

@@ -1356,6 +1356,8 @@ import * as changeTracker from '../../lib/changeTracker';
 import { useAuth } from '../../context/AuthContext';
 import {
   DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_HDG_RATE_PER_KG,
+  DEFAULT_MAGNELIS_RATE_PER_KG,
   DEFAULT_MODULE_WP,
   DEFAULT_SPARE_PERCENTAGE
 } from '../../constants/bomDefaults';
@@ -1381,6 +1383,8 @@ export default function BOMPage() {
   const [sparePercentage, setSparePercentage] = useState(DEFAULT_SPARE_PERCENTAGE);
   const [moduleWp, setModuleWp] = useState(DEFAULT_MODULE_WP);
   const [aluminumRate, setAluminumRate] = useState(DEFAULT_ALUMINIUM_RATE_PER_KG);
+  const [hdgRate, setHdgRate] = useState(DEFAULT_HDG_RATE_PER_KG);
+  const [magnelisRate, setMagnelisRate] = useState(DEFAULT_MAGNELIS_RATE_PER_KG);
   const [changeLog, setChangeLog] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -1835,6 +1839,26 @@ export default function BOMPage() {
     }
   };
 
+  // Helper function to get the default rate based on material type
+  const getDefaultRateByMaterial = (material) => {
+    if (!material) return parseFloat(aluminumRate) || 0;
+
+    const mat = material.toLowerCase();
+
+    // Magnelis/Galvalume materials
+    if (mat.includes('magnelis') || mat.includes('galvalume')) {
+      return parseFloat(magnelisRate) || 0;
+    }
+
+    // HDG (Hot Dip Galvanized) materials
+    if (mat.includes('hdg') || mat === 'gi' || mat.includes('galvanized')) {
+      return parseFloat(hdgRate) || 0;
+    }
+
+    // Aluminium materials (AA 6063, AA 6065, etc.) or default
+    return parseFloat(aluminumRate) || 0;
+  };
+
   const calculateWeightAndCost = (item, profile, aluRate) => {
     const result = {
       wtPerRm: null,
@@ -1861,7 +1885,10 @@ export default function BOMPage() {
 
     const lengthToUse = parseFloat(item.length || item.userEdits?.userProvidedStandardLength || profile?.standardLength) || 0;
     const designWeight = parseFloat(profile?.designWeight) || 0;
-    const rate = parseFloat(item.userEdits?.manualAluminumRate ?? aluRate) || 0;
+
+    // Get rate: use manual override if set, otherwise use material-based rate
+    const defaultRate = getDefaultRateByMaterial(item.material || profile?.material);
+    const rate = parseFloat(item.userEdits?.manualAluminumRate ?? defaultRate) || 0;
 
     if (designWeight > 0 && lengthToUse > 0) {
       result.wtPerRm = designWeight;
@@ -2993,35 +3020,37 @@ export default function BOMPage() {
 
           <div className="px-6 py-5 bg-gradient-to-b from-gray-50 to-white border-b border-gray-200">
             <div className="flex flex-wrap items-center gap-6">
+              {/* Module Wp */}
               <div className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-200">
                 <label className="text-sm font-bold text-gray-700 whitespace-nowrap flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
                   </svg>
-                  Aluminum Rate (₹/kg):
+                  Module Wp:
                 </label>
                 <input
                   type="number"
-                  value={aluminumRate}
+                  value={moduleWp}
                   onChange={(e) => {
                     const newValue = parseFloat(e.target.value) || 0;
                     changeTracker.trackChange({
-                      id: 'global-aluminum-rate',
-                      type: 'CHANGE_ALUMINUM_RATE',
-                      oldValue: aluminumRate,
+                      id: `global-module-wp`,
+                      type: 'CHANGE_MODULE_WP',
+                      oldValue: moduleWp,
                       newValue: newValue,
                       itemName: 'Global Settings',
                     });
-                    setAluminumRate(newValue);
+                    setModuleWp(newValue);
                   }}
-                  step="0.01"
+                  step="1"
                   min="0"
                   disabled={!editMode}
-                  className={`w-32 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
+                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
                     }`}
                 />
               </div>
 
+              {/* Spare % */}
               <div className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-200">
                 <label className="text-sm font-bold text-gray-700 whitespace-nowrap flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-600" viewBox="0 0 20 20" fill="currentColor">
@@ -3051,31 +3080,92 @@ export default function BOMPage() {
                 />
               </div>
 
+              {/* Aluminum Rate */}
               <div className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-200">
                 <label className="text-sm font-bold text-gray-700 whitespace-nowrap flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
                   </svg>
-                  Module Wp:
+                  Aluminium (₹/kg):
                 </label>
                 <input
                   type="number"
-                  value={moduleWp}
+                  value={aluminumRate}
                   onChange={(e) => {
                     const newValue = parseFloat(e.target.value) || 0;
                     changeTracker.trackChange({
-                      id: `global-module-wp`,
-                      type: 'CHANGE_MODULE_WP',
-                      oldValue: moduleWp,
+                      id: 'global-aluminum-rate',
+                      type: 'CHANGE_ALUMINUM_RATE',
+                      oldValue: aluminumRate,
                       newValue: newValue,
                       itemName: 'Global Settings',
                     });
-                    setModuleWp(newValue);
+                    setAluminumRate(newValue);
                   }}
-                  step="1"
+                  step="0.01"
                   min="0"
                   disabled={!editMode}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
+                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
+                    }`}
+                />
+              </div>
+
+              {/* HDG Rate */}
+              <div className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-200">
+                <label className="text-sm font-bold text-gray-700 whitespace-nowrap flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
+                  </svg>
+                  HDG (₹/kg):
+                </label>
+                <input
+                  type="number"
+                  value={hdgRate}
+                  onChange={(e) => {
+                    const newValue = parseFloat(e.target.value) || 0;
+                    changeTracker.trackChange({
+                      id: 'global-hdg-rate',
+                      type: 'CHANGE_HDG_RATE',
+                      oldValue: hdgRate,
+                      newValue: newValue,
+                      itemName: 'Global Settings',
+                    });
+                    setHdgRate(newValue);
+                  }}
+                  step="0.01"
+                  min="0"
+                  disabled={!editMode}
+                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-orange-400'
+                    }`}
+                />
+              </div>
+
+              {/* Magnelis/Galvalume Rate */}
+              <div className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-200">
+                <label className="text-sm font-bold text-gray-700 whitespace-nowrap flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-teal-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
+                  </svg>
+                  Magnelis (₹/kg):
+                </label>
+                <input
+                  type="number"
+                  value={magnelisRate}
+                  onChange={(e) => {
+                    const newValue = parseFloat(e.target.value) || 0;
+                    changeTracker.trackChange({
+                      id: 'global-magnelis-rate',
+                      type: 'CHANGE_MAGNELIS_RATE',
+                      oldValue: magnelisRate,
+                      newValue: newValue,
+                      itemName: 'Global Settings',
+                    });
+                    setMagnelisRate(newValue);
+                  }}
+                  step="0.01"
+                  min="0"
+                  disabled={!editMode}
+                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-teal-400'
                     }`}
                 />
               </div>
@@ -3122,6 +3212,8 @@ export default function BOMPage() {
             profileOptions={profileOptions}
             onItemUpdate={handleItemUpdate}
             aluminumRate={aluminumRate}
+            hdgRate={hdgRate}
+            magnelisRate={magnelisRate}
             sparePercentage={sparePercentage}
             onDeleteRow={handleDeleteRowClick}
             onDragEnd={handleDragEnd}

@@ -4,10 +4,10 @@ import ComboBox from '../ComboBox';
 import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../services/config';
 
-const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange, profileOptions, onItemUpdate, onDeleteRow, dragHandleProps, aluminumRate, ...props }, ref) => {
+const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange, profileOptions, onItemUpdate, onDeleteRow, dragHandleProps, aluminumRate, hdgRate, magnelisRate, ...props }, ref) => {
   const { user } = useAuth();
   const isBasicUser = user?.role === 'BASIC';
-  
+
   const {
     sn,
     sunrackCode,
@@ -31,23 +31,57 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
   } = item;
 
   // Ensure image URL is absolute
-  const profileImage = rawProfileImage && rawProfileImage.startsWith('/') 
-    ? `${API_URL}${rawProfileImage}` 
+  const profileImage = rawProfileImage && rawProfileImage.startsWith('/')
+    ? `${API_URL}${rawProfileImage}`
     : rawProfileImage;
 
-  // DEBUG LOG
-  // if (sn === 1 || (itemDescription && itemDescription.includes('End Clamp'))) {
-  //    console.log(`[BOMTableRow] Item: ${itemDescription}`, {
-  //      rawProfileImage,
-  //      API_URL,
-  //      finalProfileImage: profileImage
-  //    });
-  // }
+  // Determine the default rate based on material type
+  const getDefaultRateByMaterial = () => {
+    if (!material) return parseFloat(aluminumRate) || 0;
+
+    const mat = material.toLowerCase();
+
+    // Magnelis/Galvalume materials
+    if (mat.includes('magnelis') || mat.includes('galvalume')) {
+      return parseFloat(magnelisRate) || 0;
+    }
+
+    // HDG (Hot Dip Galvanized) materials
+    if (mat.includes('hdg') || mat === 'gi' || mat.includes('galvanized')) {
+      return parseFloat(hdgRate) || 0;
+    }
+
+    // Aluminium materials (AA 6063, AA 6065, etc.)
+    if (mat.includes('aa 60') || mat.includes('alumin') || mat.includes('al ')) {
+      return parseFloat(aluminumRate) || 0;
+    }
+
+    // Default to aluminium rate for unknown materials
+    return parseFloat(aluminumRate) || 0;
+  };
+
+  // Get the material rate type for display
+  const getMaterialRateType = () => {
+    if (!material) return 'Al';
+
+    const mat = material.toLowerCase();
+
+    if (mat.includes('magnelis') || mat.includes('galvalume')) {
+      return 'Magnelis';
+    }
+    if (mat.includes('hdg') || mat === 'gi' || mat.includes('galvanized')) {
+      return 'HDG';
+    }
+    return 'Al';
+  };
 
   // Check if spare quantity is manually overridden
   const hasManualSpare = userEdits?.manualSpareQuantity !== undefined && userEdits?.manualSpareQuantity !== null;
   const hasManualAlRate = userEdits?.manualAluminumRate !== undefined && userEdits?.manualAluminumRate !== null;
-  const effectiveAlRate = hasManualAlRate ? (parseFloat(userEdits.manualAluminumRate) || 0) : (parseFloat(aluminumRate) || 0);
+
+  // Get the default rate based on material, then check for manual override
+  const defaultRateByMaterial = getDefaultRateByMaterial();
+  const effectiveAlRate = hasManualAlRate ? (parseFloat(userEdits.manualAluminumRate) || 0) : defaultRateByMaterial;
 
   // Format numbers for display
   const formatNumber = (value, decimals = 2) => {
@@ -292,27 +326,27 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
         {formatNumber(wt, 1)}
       </td>
 
-      {/* Al Rate/Kg */}
+      {/* Rate per Unit Wt */}
       <td className={`border border-gray-400 px-3 py-2 text-sm text-center ${hasManualAlRate ? 'bg-blue-100' : 'bg-orange-50'}`}>
         {((wtPerRm > 0 || wt > 0) && !costPerPiece) ? (
           editMode ? (
             <div className="flex items-center justify-center gap-1">
               <input
                 type="number"
-                value={hasManualAlRate ? userEdits.manualAluminumRate : aluminumRate}
+                value={hasManualAlRate ? userEdits.manualAluminumRate : defaultRateByMaterial}
                 onChange={(e) => handleInputChange('manualAluminumRate', e.target.value)}
                 className={`w-20 p-1 text-center border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                   hasManualAlRate ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
                 }`}
                 step="0.01"
                 min="0"
-                title={hasManualAlRate ? 'Manual override active' : 'Using global aluminum rate'}
+                title={hasManualAlRate ? 'Manual override active' : `Using ${getMaterialRateType()} rate (${material || 'default'})`}
               />
               {hasManualAlRate && (
                 <button
                   onClick={handleResetAlRate}
                   className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-200 rounded transition-colors"
-                  title="Reset to global aluminum rate"
+                  title={`Reset to ${getMaterialRateType()} rate`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
