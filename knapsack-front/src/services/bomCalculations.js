@@ -208,7 +208,7 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
     const mapItem = { ...item };
 
     // Add sunrackCode to mapItem (BOMPage expects this field)
-    mapItem.sunrackCode = item.regalCode || item.snalcoCode || item.excellenceCode || item.varnCode || null;
+    mapItem.sunrackCode = item.regalCode || item.ralcoCode || item.snalcoCode || item.excellenceCode || item.varnCode || null;
 
     if (isProfile) {
       mapItem.serialNumber = item.sNo; // Map sNo to serialNumber for BOMPage compatibility
@@ -254,7 +254,7 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
           const itemDescription = vItem.displayOverride || item.genericName;
 
           // Get vendor code (Regal priority, then Snalco)
-          const displayCode = item.regalCode || item.snalcoCode || item.excellenceCode || item.varnCode || null;
+          const displayCode = item.regalCode || item.ralcoCode || item.snalcoCode || item.excellenceCode || item.varnCode || null;
 
           // DEBUG: Log for sNo 94 (UX Long Rail)
           if (item.sNo === 94) {
@@ -331,7 +331,7 @@ export async function generateBOMItems(bomData, activeCutLengths, aluminumRate =
 
         // Get vendor code or null for fasteners (Regal priority, then Snalco)
         const displayCode = isProfile
-          ? (item.regalCode || item.snalcoCode || item.excellenceCode || item.varnCode || null)
+          ? (item.regalCode || item.ralcoCode || item.snalcoCode || item.excellenceCode || item.varnCode || null)
           : null;
 
         // DEBUG: Log for sNo 94 (UX Long Rail)
