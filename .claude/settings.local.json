@@ -14,7 +14,9 @@
       "Bash(node scripts/setDefaultProfile.js:*)",
       "Bash(node scripts/seedBomFormulas.js:*)",
       "Bash(node -e:*)",
-      "Bash(node scripts/checkRmCodes.js:*)"
+      "Bash(node scripts/checkRmCodes.js:*)",
+      "Bash(node scripts/migrations/13_analyze_c45_variations.js:*)",
+      "Bash(node scripts/migrations/14_add_c45_variations.js:*)"
     ],
     "deny": [],
     "ask": []

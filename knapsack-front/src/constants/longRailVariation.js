@@ -24,7 +24,7 @@
     { value: "L Cleat Long Rail - Large Cleat - Asbestos", label: "L Cleat Long Rail - Large Cleat - Asbestos", disabled: true },
     { value: "L Cleat Long Rail - Large Cleat - Seam Clamp", label: "L Cleat Long Rail - Large Cleat - Seam Clamp", disabled: true },
 
-    { value: "C45 Long Rail", label: "C45 Long Rail", disabled: true },
-    { value: "C45 Long Rail - Asbestos", label: "C45 Long Rail - Asbestos", disabled: true },
-    { value: "C45 Long Rail - Seam Clamp", label: "C45 Long Rail - Seam Clamp", disabled: true },
+    { value: "C45 Long Rail", label: "C45 Long Rail" },
+    { value: "C45 Long Rail - Asbestos", label: "C45 Long Rail - Asbestos" },
+    { value: "C45 Long Rail - Seam Clamp", label: "C45 Long Rail - Seam Clamp" },
   ];
