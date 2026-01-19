@@ -82,6 +82,11 @@ class UserController {
     try {
       const userId = parseInt(req.params.id);
 
+      // Prevent self-deletion
+      if (req.user.id === userId) {
+        return res.status(400).json({ error: 'You cannot delete your own account' });
+      }
+
       // Check if user exists and is not already deleted
       const user = await prisma.user.findUnique({
         where: { id: userId }
@@ -133,6 +138,11 @@ class UserController {
       const userId = parseInt(req.params.id);
       const { status } = req.body;
 
+      // Prevent self-status update (like putting self on HOLD)
+      if (req.user.id === userId) {
+        return res.status(400).json({ error: 'You cannot change your own account status' });
+      }
+
       // Validate status
       const validStatuses = ['ACTIVE', 'HOLD', 'INACTIVE'];
       if (!validStatuses.includes(status)) {
@@ -170,6 +180,11 @@ class UserController {
   async resetPassword(req, res, next) {
     try {
       const userId = parseInt(req.params.id);
+
+      // Prevent self-reset
+      if (req.user.id === userId) {
+        return res.status(400).json({ error: 'You cannot reset your own password here. Use profile settings instead.' });
+      }
 
       // Check if user exists
       const user = await prisma.user.findUnique({

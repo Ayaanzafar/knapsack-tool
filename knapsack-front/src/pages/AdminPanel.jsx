@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { userAPI } from '../services/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BOMManagementTab from './BOMManagementTab';
+import { useAuth } from '../context/AuthContext';
 
 export default function AdminPanel() {
+  const { user: currentUser } = useAuth();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('users'); // 'users' or 'boms'
   const [users, setUsers] = useState([]);
@@ -395,45 +397,51 @@ export default function AdminPanel() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="flex gap-3">
-                          <button
-                            onClick={() => handleResetPassword(user.id, user.username)}
-                            className="text-blue-600 hover:text-blue-800 transition-colors"
-                            title="Reset password"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(user.id, user.username)}
-                            className="text-red-600 hover:text-red-800 transition-colors"
-                            title="Delete user"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                          {user.status === 'ACTIVE' && (
-                            <button
-                              onClick={() => handleUpdateUserStatus(user.id, 'HOLD', user.username)}
-                              className="text-orange-600 hover:text-orange-800 transition-colors"
-                              title="Put on hold"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
-                            </button>
-                          )}
-                          {user.status === 'HOLD' && (
-                            <button
-                              onClick={() => handleUpdateUserStatus(user.id, 'ACTIVE', user.username)}
-                              className="text-green-600 hover:text-green-800 transition-colors"
-                              title="Activate user"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                              </svg>
-                            </button>
+                          {currentUser?.id !== user.id ? (
+                            <>
+                              <button
+                                onClick={() => handleResetPassword(user.id, user.username)}
+                                className="text-blue-600 hover:text-blue-800 transition-colors"
+                                title="Reset password"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteUser(user.id, user.username)}
+                                className="text-red-600 hover:text-red-800 transition-colors"
+                                title="Delete user"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                              </button>
+                              {user.status === 'ACTIVE' && (
+                                <button
+                                  onClick={() => handleUpdateUserStatus(user.id, 'HOLD', user.username)}
+                                  className="text-orange-600 hover:text-orange-800 transition-colors"
+                                  title="Put on hold"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                  </svg>
+                                </button>
+                              )}
+                              {user.status === 'HOLD' && (
+                                <button
+                                  onClick={() => handleUpdateUserStatus(user.id, 'ACTIVE', user.username)}
+                                  className="text-green-600 hover:text-green-800 transition-colors"
+                                  title="Activate user"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                                  </svg>
+                                </button>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-xs text-gray-400 italic">Current User</span>
                           )}
                         </div>
                       </td>
