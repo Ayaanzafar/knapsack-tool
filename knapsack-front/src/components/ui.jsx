@@ -27,17 +27,45 @@ export function TextField({ label, value, setValue, className = '', disabled = f
 }
 
 export function NumberField({ label, value, setValue, step, className = '', disabled = false }) {
+  // Determine if decimals are allowed based on step
+  const allowDecimals = step && parseFloat(step) < 1;
+
+  const handleChange = (e) => {
+    const inputValue = e.target.value;
+
+    // Filter input based on whether decimals are allowed
+    let filtered;
+    if (allowDecimals) {
+      filtered = inputValue.replace(/[^0-9.]/g, '');
+      // Ensure only one decimal point
+      const parts = filtered.split('.');
+      if (parts.length > 2) {
+        filtered = parts[0] + '.' + parts.slice(1).join('');
+      }
+    } else {
+      filtered = inputValue.replace(/[^0-9]/g, '');
+    }
+
+    // Convert empty string to 0 immediately, prevent negative values
+    if (filtered === '') {
+      setValue(0);
+    } else {
+      const numValue = allowDecimals ? parseFloat(filtered) : parseInt(filtered);
+      setValue(Math.max(0, numValue || 0));
+    }
+  };
+
   return (
     <label className={`block ${className}`}>
       {label && <div className={`mb-1 text-sm ${disabled ? 'text-gray-400' : 'text-gray-600'}`}>{label}</div>}
       <input
-        type="number"
-        step={step}
+        type="text"
+        inputMode={allowDecimals ? 'decimal' : 'numeric'}
         className={`w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 ${
           disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
         }`}
         value={value}
-        onChange={e => setValue(e.target.value)}
+        onChange={handleChange}
         disabled={disabled}
       />
     </label>

@@ -162,9 +162,13 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
                       Standard Length (mm):
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
                       value={standardLength}
-                      onChange={(e) => setStandardLength(e.target.value)}
+                      onChange={(e) => {
+                        const filtered = e.target.value.replace(/[^0-9]/g, '');
+                        setStandardLength(filtered === '' ? 0 : Math.max(0, parseInt(filtered) || 0));
+                      }}
                       placeholder="e.g., 6000"
                       disabled={calculationMethod !== 'standard_length'}
                       className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
@@ -198,11 +202,16 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
                       Cost Per Piece (₹):
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       value={costPerPiece}
-                      onChange={(e) => setCostPerPiece(e.target.value)}
+                      onChange={(e) => {
+                        const filtered = e.target.value.replace(/[^0-9.]/g, '');
+                        const parts = filtered.split('.');
+                        const validFiltered = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : filtered;
+                        setCostPerPiece(validFiltered === '' ? 0 : Math.max(0, parseFloat(validFiltered) || 0));
+                      }}
                       placeholder="e.g., 25.50"
-                      step="0.01"
                       disabled={calculationMethod !== 'cost_per_piece'}
                       className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
                         calculationMethod !== 'cost_per_piece' ? 'bg-gray-100 cursor-not-allowed' : 'border-gray-300'
@@ -229,10 +238,13 @@ export default function AddRowModal({ isOpen, afterRowNumber, profiles, tabs, on
                     {tabName}:
                   </label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     value={quantities[tabName] || 0}
-                    onChange={(e) => handleQuantityChange(tabName, e.target.value)}
-                    min="0"
+                    onChange={(e) => {
+                      const filtered = e.target.value.replace(/[^0-9]/g, '');
+                      handleQuantityChange(tabName, filtered === '' ? 0 : Math.max(0, parseInt(filtered) || 0));
+                    }}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>

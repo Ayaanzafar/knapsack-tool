@@ -90,22 +90,28 @@ function SortableRow({
       </td>
       <td className="px-3 py-2 border-b">
         <input
-          type="number"
+          type="text"
+          inputMode="numeric"
           value={row.quantity ?? 1}
-          onChange={(e) => updateRowQuantity(row.id, e.target.value)}
+          onChange={(e) => {
+            const filtered = e.target.value.replace(/[^0-9]/g, '');
+            updateRowQuantity(row.id, filtered === '' ? 1 : Math.max(1, parseInt(filtered) || 1));
+          }}
           onClick={(e) => e.stopPropagation()}
           className="w-16 px-2 py-1 border rounded text-center"
-          min="1"
         />
       </td>
       <td className="px-3 py-2 border-b">
         <input
-          type="number"
+          type="text"
+          inputMode="numeric"
           value={row.modules}
-          onChange={(e) => updateRowModules(row.id, e.target.value)}
+          onChange={(e) => {
+            const filtered = e.target.value.replace(/[^0-9]/g, '');
+            updateRowModules(row.id, filtered === '' ? 1 : Math.max(1, parseInt(filtered) || 1));
+          }}
           onClick={(e) => e.stopPropagation()}
           className="w-16 px-2 py-1 border rounded text-center"
-          min="1"
         />
       </td>
       <td className="px-3 py-2 text-center border-b">
@@ -143,12 +149,15 @@ function SortableRow({
       <td className="px-3 py-2 text-center border-b">
         {enableSB2 ? (
           <input
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={sb1Value}
-            onChange={(e) => updateRowSupportBase(row.id, 'supportBase1', e.target.value)}
+            onChange={(e) => {
+              const filtered = e.target.value.replace(/[^0-9]/g, '');
+              updateRowSupportBase(row.id, 'supportBase1', filtered === '' ? 0 : Math.max(0, parseInt(filtered) || 0));
+            }}
             onClick={(e) => e.stopPropagation()}
             className="w-16 px-2 py-1 border rounded text-center"
-            min="0"
           />
         ) : (
           defaultSB1
@@ -157,12 +166,15 @@ function SortableRow({
       <td className="px-3 py-2 text-center border-b">
         {enableSB2 ? (
           <input
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={sb2Value}
-            onChange={(e) => updateRowSupportBase(row.id, 'supportBase2', e.target.value)}
+            onChange={(e) => {
+              const filtered = e.target.value.replace(/[^0-9]/g, '');
+              updateRowSupportBase(row.id, 'supportBase2', filtered === '' ? 0 : Math.max(0, parseInt(filtered) || 0));
+            }}
             onClick={(e) => e.stopPropagation()}
             className="w-16 px-2 py-1 border rounded text-center"
-            min="0"
           />
         ) : (
           '-'

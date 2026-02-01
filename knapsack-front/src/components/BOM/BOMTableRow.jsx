@@ -79,6 +79,25 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
   const hasManualSpare = userEdits?.manualSpareQuantity !== undefined && userEdits?.manualSpareQuantity !== null;
   const hasManualAlRate = userEdits?.manualAluminumRate !== undefined && userEdits?.manualAluminumRate !== null;
 
+  // Helper function to validate and filter positive numeric input (integers only for quantities)
+  const handleNumericInput = (value, allowDecimals = false) => {
+    // Allow empty string for clearing
+    if (value === '') return '';
+    // Remove any negative signs and non-numeric characters
+    if (allowDecimals) {
+      const filtered = value.replace(/[^0-9.]/g, '');
+      // Ensure only one decimal point
+      const parts = filtered.split('.');
+      if (parts.length > 2) {
+        return parts[0] + '.' + parts.slice(1).join('');
+      }
+      return filtered;
+    } else {
+      // Only allow integers (no decimals) for quantities
+      return value.replace(/[^0-9]/g, '');
+    }
+  };
+
   // Get the default rate based on material, then check for manual override
   const defaultRateByMaterial = getDefaultRateByMaterial();
   const effectiveAlRate = hasManualAlRate ? (parseFloat(userEdits.manualAluminumRate) || 0) : defaultRateByMaterial;
@@ -249,9 +268,13 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
         >
           {editMode ? (
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
               value={quantities[tabName] || 0}
-              onChange={(e) => handleInputChange(`quantity_${tabName}`, e.target.value)}
+              onChange={(e) => {
+                const filtered = handleNumericInput(e.target.value, false);
+                handleInputChange(`quantity_${tabName}`, filtered === '' ? 0 : filtered);
+              }}
               className="w-16 p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           ) : (
@@ -273,9 +296,13 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
         {editMode ? (
           <div className="flex items-center justify-center gap-1">
             <input
-              type="number"
-              value={spareQuantity}
-              onChange={(e) => handleInputChange('spareQuantity', e.target.value)}
+              type="text"
+              inputMode="numeric"
+              value={spareQuantity || 0}
+              onChange={(e) => {
+                const filtered = handleNumericInput(e.target.value, false);
+                handleInputChange('spareQuantity', filtered === '' ? 0 : filtered);
+              }}
               className={`w-16 p-1 text-center border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                 hasManualSpare ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
               }`}
@@ -332,14 +359,16 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
           editMode ? (
             <div className="flex items-center justify-center gap-1">
               <input
-                type="number"
-                value={hasManualAlRate ? userEdits.manualAluminumRate : defaultRateByMaterial}
-                onChange={(e) => handleInputChange('manualAluminumRate', e.target.value)}
+                type="text"
+                inputMode="decimal"
+                value={hasManualAlRate ? (userEdits.manualAluminumRate || 0) : (defaultRateByMaterial || 0)}
+                onChange={(e) => {
+                  const filtered = handleNumericInput(e.target.value, true);
+                  handleInputChange('manualAluminumRate', filtered === '' ? 0 : filtered);
+                }}
                 className={`w-20 p-1 text-center border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                   hasManualAlRate ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
                 }`}
-                step="0.01"
-                min="0"
                 title={hasManualAlRate ? 'Manual override active' : `Using ${getMaterialRateType()} rate (${material || 'default'})`}
               />
               {hasManualAlRate && (
@@ -367,11 +396,14 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
         {costPerPiece ? (
           editMode ? (
             <input
-              type="number"
+              type="text"
+              inputMode="decimal"
               value={costPerPiece || 0}
-              onChange={(e) => handleInputChange('costPerPiece', e.target.value)}
+              onChange={(e) => {
+                const filtered = handleNumericInput(e.target.value, true);
+                handleInputChange('costPerPiece', filtered === '' ? 0 : filtered);
+              }}
               className="w-20 p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-              step="0.01"
             />
           ) : (
             formatNumber(costPerPiece, 2)

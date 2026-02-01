@@ -2021,7 +2021,9 @@ export default function BOMPage() {
         if (field.startsWith('quantity_')) {
           const tabName = field.split('_')[1];
           oldValue = originalItem.quantities[tabName] || 0;
-          updatedItem.quantities = { ...updatedItem.quantities, [tabName]: Number(value) || 0 };
+          // Handle empty string and ensure non-negative integer
+          const numValue = value === '' ? 0 : Math.max(0, parseInt(value) || 0);
+          updatedItem.quantities = { ...updatedItem.quantities, [tabName]: numValue };
 
           changeTracker.trackChange({
             id: `${item._id}-${tabName}`,
@@ -2035,7 +2037,8 @@ export default function BOMPage() {
 
         } else if (field === 'spareQuantity') {
           oldValue = originalItem.userEdits?.manualSpareQuantity ?? 'Auto';
-          const manualSpare = Number(value) || 0;
+          // Handle empty string and ensure non-negative integer
+          const manualSpare = value === '' ? 0 : Math.max(0, parseInt(value) || 0);
           updatedItem.spareQuantity = manualSpare;
           updatedItem.userEdits = { ...updatedItem.userEdits, manualSpareQuantity: manualSpare };
 
@@ -2051,7 +2054,8 @@ export default function BOMPage() {
 
         } else if (field === 'costPerPiece') {
           oldValue = originalItem.userEdits?.userProvidedCostPerPiece ?? originalItem.costPerPiece ?? 0;
-          const newRate = parseFloat(value) || 0;
+          // Handle empty string and ensure non-negative decimal
+          const newRate = value === '' ? 0 : Math.max(0, parseFloat(value) || 0);
           updatedItem.costPerPiece = newRate;
           updatedItem.userEdits = {
             ...updatedItem.userEdits,
@@ -2073,7 +2077,7 @@ export default function BOMPage() {
         } else if (field === 'manualAluminumRate') {
           oldValue = originalItem.userEdits?.manualAluminumRate ?? aluminumRate;
 
-          const parsed = value === '' || value === null || value === undefined ? null : parseFloat(value);
+          const parsed = value === '' || value === null || value === undefined ? null : Math.max(0, parseFloat(value) || 0);
           const isValid = parsed !== null && !isNaN(parsed);
           const isSameAsGlobal = isValid && Math.abs(parsed - aluminumRate) < 1e-9;
           const useGlobal = !isValid || isSameAsGlobal;
@@ -3029,10 +3033,12 @@ export default function BOMPage() {
                   Module Wp:
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={moduleWp}
                   onChange={(e) => {
-                    const newValue = parseFloat(e.target.value) || 0;
+                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
+                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
                     changeTracker.trackChange({
                       id: `global-module-wp`,
                       type: 'CHANGE_MODULE_WP',
@@ -3042,8 +3048,6 @@ export default function BOMPage() {
                     });
                     setModuleWp(newValue);
                   }}
-                  step="1"
-                  min="0"
                   disabled={!editMode}
                   className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
                     }`}
@@ -3059,10 +3063,12 @@ export default function BOMPage() {
                   Spare %:
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={sparePercentage}
                   onChange={(e) => {
-                    const newValue = parseFloat(e.target.value) || 0;
+                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
+                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
                     changeTracker.trackChange({
                       id: `global-spare-pct`,
                       type: 'CHANGE_SPARE_PERCENTAGE',
@@ -3072,8 +3078,6 @@ export default function BOMPage() {
                     });
                     setSparePercentage(newValue);
                   }}
-                  step="0.1"
-                  min="0"
                   disabled={!editMode}
                   className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-green-400'
                     }`}
@@ -3089,10 +3093,12 @@ export default function BOMPage() {
                   Aluminium (₹/kg):
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={aluminumRate}
                   onChange={(e) => {
-                    const newValue = parseFloat(e.target.value) || 0;
+                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
+                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
                     changeTracker.trackChange({
                       id: 'global-aluminum-rate',
                       type: 'CHANGE_ALUMINUM_RATE',
@@ -3102,8 +3108,6 @@ export default function BOMPage() {
                     });
                     setAluminumRate(newValue);
                   }}
-                  step="0.01"
-                  min="0"
                   disabled={!editMode}
                   className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
                     }`}
@@ -3119,10 +3123,12 @@ export default function BOMPage() {
                   HDG (₹/kg):
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={hdgRate}
                   onChange={(e) => {
-                    const newValue = parseFloat(e.target.value) || 0;
+                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
+                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
                     changeTracker.trackChange({
                       id: 'global-hdg-rate',
                       type: 'CHANGE_HDG_RATE',
@@ -3132,8 +3138,6 @@ export default function BOMPage() {
                     });
                     setHdgRate(newValue);
                   }}
-                  step="0.01"
-                  min="0"
                   disabled={!editMode}
                   className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-orange-400'
                     }`}
@@ -3149,10 +3153,12 @@ export default function BOMPage() {
                   Magnelis (₹/kg):
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={magnelisRate}
                   onChange={(e) => {
-                    const newValue = parseFloat(e.target.value) || 0;
+                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
+                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
                     changeTracker.trackChange({
                       id: 'global-magnelis-rate',
                       type: 'CHANGE_MAGNELIS_RATE',
@@ -3162,8 +3168,6 @@ export default function BOMPage() {
                     });
                     setMagnelisRate(newValue);
                   }}
-                  step="0.01"
-                  min="0"
                   disabled={!editMode}
                   className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-teal-400'
                     }`}
@@ -3182,11 +3186,13 @@ export default function BOMPage() {
                       Add After Row:
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
                       value={addAfterRow}
-                      onChange={(e) => setAddAfterRow(parseInt(e.target.value) || 1)}
-                      min="0"
-                      max={bomData.bomItems.length}
+                      onChange={(e) => {
+                        const filtered = e.target.value.replace(/[^0-9]/g, '');
+                        setAddAfterRow(filtered === '' ? 1 : Math.max(0, Math.min(bomData.bomItems.length, parseInt(filtered) || 1)));
+                      }}
                       className="w-20 px-3 py-2 border-2 border-green-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white hover:border-green-400 transition-all"
                     />
                   </div>
