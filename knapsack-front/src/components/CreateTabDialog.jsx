@@ -38,7 +38,6 @@ export default function CreateTabDialog({ isOpen, onClose, onCreate, existingTab
       // className="fixed inset-0 bg-black bg-opacity-5 flex items-center justify-center z-50"
       className="fixed inset-0 flex items-center justify-center z-50"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-      onClick={onClose}
     >
       <div
         className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md"
