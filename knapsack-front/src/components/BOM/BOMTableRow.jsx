@@ -1,6 +1,7 @@
 // src/components/BOM/BOMTableRow.jsx
 import React, { forwardRef } from 'react';
 import ComboBox from '../ComboBox';
+import NumberInputWithSpinner from '../NumberInputWithSpinner';
 import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../services/config';
 
@@ -267,15 +268,11 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
           className={`border border-gray-400 px-2 py-2 text-sm text-center font-medium ${getCellBgColor()}`}
         >
           {editMode ? (
-            <input
-              type="text"
-              inputMode="numeric"
+            <NumberInputWithSpinner
               value={quantities[tabName] || 0}
-              onChange={(e) => {
-                const filtered = handleNumericInput(e.target.value, false);
-                handleInputChange(`quantity_${tabName}`, filtered === '' ? 0 : filtered);
-              }}
-              className="w-16 p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              onChange={(val) => handleInputChange(`quantity_${tabName}`, val)}
+              minValue={0}
+              size="sm"
             />
           ) : (
             quantities[tabName] || 0
@@ -295,18 +292,12 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
       <td className={`border border-gray-400 px-2 py-2 text-sm text-center ${hasManualSpare ? 'bg-blue-100' : 'bg-green-50'}`}>
         {editMode ? (
           <div className="flex items-center justify-center gap-1">
-            <input
-              type="text"
-              inputMode="numeric"
+            <NumberInputWithSpinner
               value={spareQuantity || 0}
-              onChange={(e) => {
-                const filtered = handleNumericInput(e.target.value, false);
-                handleInputChange('spareQuantity', filtered === '' ? 0 : filtered);
-              }}
-              className={`w-16 p-1 text-center border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                hasManualSpare ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
-              }`}
-              title={hasManualSpare ? 'Manual override active' : 'Auto-calculated from spare %'}
+              onChange={(val) => handleInputChange('spareQuantity', val)}
+              minValue={0}
+              size="sm"
+              className={hasManualSpare ? 'border-blue-400 bg-blue-50' : ''}
             />
             {hasManualSpare && (
               <button
@@ -358,18 +349,12 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
         {((wtPerRm > 0 || wt > 0) && !costPerPiece) ? (
           editMode ? (
             <div className="flex items-center justify-center gap-1">
-              <input
-                type="text"
-                inputMode="decimal"
+              <NumberInputWithSpinner
                 value={hasManualAlRate ? (userEdits.manualAluminumRate || 0) : (defaultRateByMaterial || 0)}
-                onChange={(e) => {
-                  const filtered = handleNumericInput(e.target.value, true);
-                  handleInputChange('manualAluminumRate', filtered === '' ? 0 : filtered);
-                }}
-                className={`w-20 p-1 text-center border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                  hasManualAlRate ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
-                }`}
-                title={hasManualAlRate ? 'Manual override active' : `Using ${getMaterialRateType()} rate (${material || 'default'})`}
+                onChange={(val) => handleInputChange('manualAluminumRate', val)}
+                minValue={0}
+                size="sm"
+                className={hasManualAlRate ? 'border-blue-400 bg-blue-50' : ''}
               />
               {hasManualAlRate && (
                 <button
@@ -395,15 +380,11 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
       <td className={`border border-gray-400 px-3 py-2 text-sm text-center ${getCellBgColor()}`}>
         {costPerPiece ? (
           editMode ? (
-            <input
-              type="text"
-              inputMode="decimal"
+            <NumberInputWithSpinner
               value={costPerPiece || 0}
-              onChange={(e) => {
-                const filtered = handleNumericInput(e.target.value, true);
-                handleInputChange('costPerPiece', filtered === '' ? 0 : filtered);
-              }}
-              className="w-20 p-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              onChange={(val) => handleInputChange('costPerPiece', val)}
+              minValue={0}
+              size="sm"
             />
           ) : (
             formatNumber(costPerPiece, 2)

@@ -5,8 +5,15 @@ export default function NumberInputWithSpinner({
   onChange,
   disabled = false,
   className = '',
-  minValue = 0
+  minValue = 0,
+  size = 'md'  // 'sm', 'md', 'lg'
 }) {
+  // Size configurations
+  const sizeClasses = {
+    sm: 'px-2 py-1 text-xs pr-7',
+    md: 'px-3 py-1.5 text-sm pr-8',
+    lg: 'px-3 py-2 text-sm pr-8'
+  };
   const handleInputChange = (e) => {
     const filtered = e.target.value.replace(/[^0-9.]/g, '');
     // Same as GlobalInputs/BOMPage: empty becomes 0, then enforce minValue
@@ -25,14 +32,14 @@ export default function NumberInputWithSpinner({
         value={value}
         onChange={handleInputChange}
         disabled={disabled}
-        className={`w-full rounded border border-gray-300 px-3 py-2 text-sm text-center font-medium pr-8 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${className}`}
+        className={`w-full rounded border border-gray-300 text-center font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${sizeClasses[size]} ${className}`}
       />
       {!disabled && (
         <div className="absolute right-1 top-1/2 -translate-y-1/2 flex flex-col gap-0.5">
           <button
             type="button"
             onClick={increment}
-            className="w-6 h-4 flex items-center justify-center bg-white hover:bg-purple-50 border border-gray-300 rounded shadow-sm transition-all hover:border-purple-400 hover:shadow active:bg-purple-100"
+            className="w-6 h-2.5 flex items-center justify-center bg-white hover:bg-purple-50 border border-gray-300 rounded shadow-sm transition-all hover:border-purple-400 hover:shadow active:bg-purple-100"
             title="Increment"
           >
             <svg
@@ -47,7 +54,7 @@ export default function NumberInputWithSpinner({
           <button
             type="button"
             onClick={decrement}
-            className="w-6 h-4 flex items-center justify-center bg-white hover:bg-purple-50 border border-gray-300 rounded shadow-sm transition-all hover:border-purple-400 hover:shadow active:bg-purple-100"
+            className="w-6 h-2.5 flex items-center justify-center bg-white hover:bg-purple-50 border border-gray-300 rounded shadow-sm transition-all hover:border-purple-400 hover:shadow active:bg-purple-100"
             title="Decrement"
           >
             <svg

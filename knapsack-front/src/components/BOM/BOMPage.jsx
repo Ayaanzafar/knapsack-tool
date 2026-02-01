@@ -1346,6 +1346,7 @@ import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
 import NotesSection from './NotesSection';
 import Tooltip from '../Tooltip';
+import NumberInputWithSpinner from '../NumberInputWithSpinner';
 import { API_URL } from '../../services/config';
 import { bomAPI, savedBomAPI } from '../../services/api';
 import { updateVariationTemplateDefaultNotes } from '../../services/templateService';
@@ -3032,26 +3033,24 @@ export default function BOMPage() {
                   </svg>
                   Module Wp:
                 </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={moduleWp}
-                  onChange={(e) => {
-                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                    changeTracker.trackChange({
-                      id: `global-module-wp`,
-                      type: 'CHANGE_MODULE_WP',
-                      oldValue: moduleWp,
-                      newValue: newValue,
-                      itemName: 'Global Settings',
-                    });
-                    setModuleWp(newValue);
-                  }}
-                  disabled={!editMode}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-blue-400'
-                    }`}
-                />
+                <div className="w-24">
+                  <NumberInputWithSpinner
+                    value={moduleWp}
+                    onChange={(newValue) => {
+                      changeTracker.trackChange({
+                        id: `global-module-wp`,
+                        type: 'CHANGE_MODULE_WP',
+                        oldValue: moduleWp,
+                        newValue: newValue,
+                        itemName: 'Global Settings',
+                      });
+                      setModuleWp(newValue);
+                    }}
+                    disabled={!editMode}
+                    className={!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
+                    minValue={0}
+                  />
+                </div>
               </div>
 
               {/* Spare % */}
@@ -3062,26 +3061,24 @@ export default function BOMPage() {
                   </svg>
                   Spare %:
                 </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={sparePercentage}
-                  onChange={(e) => {
-                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                    changeTracker.trackChange({
-                      id: `global-spare-pct`,
-                      type: 'CHANGE_SPARE_PERCENTAGE',
-                      oldValue: sparePercentage,
-                      newValue: newValue,
-                      itemName: 'Global Settings',
-                    });
-                    setSparePercentage(newValue);
-                  }}
-                  disabled={!editMode}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-green-400'
-                    }`}
-                />
+                <div className="w-24">
+                  <NumberInputWithSpinner
+                    value={sparePercentage}
+                    onChange={(newValue) => {
+                      changeTracker.trackChange({
+                        id: `global-spare-pct`,
+                        type: 'CHANGE_SPARE_PERCENTAGE',
+                        oldValue: sparePercentage,
+                        newValue: newValue,
+                        itemName: 'Global Settings',
+                      });
+                      setSparePercentage(newValue);
+                    }}
+                    disabled={!editMode}
+                    className={!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
+                    minValue={0}
+                  />
+                </div>
               </div>
 
               {/* Aluminum Rate */}
@@ -3092,26 +3089,24 @@ export default function BOMPage() {
                   </svg>
                   Aluminium (₹/kg):
                 </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={aluminumRate}
-                  onChange={(e) => {
-                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                    changeTracker.trackChange({
-                      id: 'global-aluminum-rate',
-                      type: 'CHANGE_ALUMINUM_RATE',
-                      oldValue: aluminumRate,
-                      newValue: newValue,
-                      itemName: 'Global Settings',
-                    });
-                    setAluminumRate(newValue);
-                  }}
-                  disabled={!editMode}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-purple-400'
-                    }`}
-                />
+                <div className="w-24">
+                  <NumberInputWithSpinner
+                    value={aluminumRate}
+                    onChange={(newValue) => {
+                      changeTracker.trackChange({
+                        id: 'global-aluminum-rate',
+                        type: 'CHANGE_ALUMINUM_RATE',
+                        oldValue: aluminumRate,
+                        newValue: newValue,
+                        itemName: 'Global Settings',
+                      });
+                      setAluminumRate(newValue);
+                    }}
+                    disabled={!editMode}
+                    className={!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
+                    minValue={0}
+                  />
+                </div>
               </div>
 
               {/* HDG Rate */}
@@ -3122,26 +3117,24 @@ export default function BOMPage() {
                   </svg>
                   HDG (₹/kg):
                 </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={hdgRate}
-                  onChange={(e) => {
-                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                    changeTracker.trackChange({
-                      id: 'global-hdg-rate',
-                      type: 'CHANGE_HDG_RATE',
-                      oldValue: hdgRate,
-                      newValue: newValue,
-                      itemName: 'Global Settings',
-                    });
-                    setHdgRate(newValue);
-                  }}
-                  disabled={!editMode}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-orange-400'
-                    }`}
-                />
+                <div className="w-24">
+                  <NumberInputWithSpinner
+                    value={hdgRate}
+                    onChange={(newValue) => {
+                      changeTracker.trackChange({
+                        id: 'global-hdg-rate',
+                        type: 'CHANGE_HDG_RATE',
+                        oldValue: hdgRate,
+                        newValue: newValue,
+                        itemName: 'Global Settings',
+                      });
+                      setHdgRate(newValue);
+                    }}
+                    disabled={!editMode}
+                    className={!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
+                    minValue={0}
+                  />
+                </div>
               </div>
 
               {/* Magnelis/Galvalume Rate */}
@@ -3152,26 +3145,24 @@ export default function BOMPage() {
                   </svg>
                   Magnelis (₹/kg):
                 </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={magnelisRate}
-                  onChange={(e) => {
-                    const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                    const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                    changeTracker.trackChange({
-                      id: 'global-magnelis-rate',
-                      type: 'CHANGE_MAGNELIS_RATE',
-                      oldValue: magnelisRate,
-                      newValue: newValue,
-                      itemName: 'Global Settings',
-                    });
-                    setMagnelisRate(newValue);
-                  }}
-                  disabled={!editMode}
-                  className={`w-24 px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white hover:border-teal-400'
-                    }`}
-                />
+                <div className="w-24">
+                  <NumberInputWithSpinner
+                    value={magnelisRate}
+                    onChange={(newValue) => {
+                      changeTracker.trackChange({
+                        id: 'global-magnelis-rate',
+                        type: 'CHANGE_MAGNELIS_RATE',
+                        oldValue: magnelisRate,
+                        newValue: newValue,
+                        itemName: 'Global Settings',
+                      });
+                      setMagnelisRate(newValue);
+                    }}
+                    disabled={!editMode}
+                    className={!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
+                    minValue={0}
+                  />
+                </div>
               </div>
 
               {editMode && (
@@ -3185,16 +3176,15 @@ export default function BOMPage() {
                       </svg>
                       Add After Row:
                     </label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={addAfterRow}
-                      onChange={(e) => {
-                        const filtered = e.target.value.replace(/[^0-9]/g, '');
-                        setAddAfterRow(filtered === '' ? 1 : Math.max(0, Math.min(bomData.bomItems.length, parseInt(filtered) || 1)));
-                      }}
-                      className="w-20 px-3 py-2 border-2 border-green-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white hover:border-green-400 transition-all"
-                    />
+                    <div className="w-20">
+                      <NumberInputWithSpinner
+                        value={addAfterRow}
+                        onChange={(newValue) => {
+                          setAddAfterRow(Math.max(0, Math.min(bomData.bomItems.length, newValue)));
+                        }}
+                        minValue={0}
+                      />
+                    </div>
                   </div>
 
                   <button
