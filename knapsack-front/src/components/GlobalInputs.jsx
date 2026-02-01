@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { TextField } from './ui';
 import { parseNumList } from '../lib/storage';
 import { useAuth } from '../context/AuthContext';
+import NumberInputWithSpinner from './NumberInputWithSpinner';
 
 export default function GlobalInputs({ settings, setSettings, applyToAll, longRailVariation }) {
   const { user } = useAuth();
@@ -144,44 +145,23 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
           <div className="grid grid-cols-2 gap-1.5">
             <div>
               <label className="block text-[14px] text-gray-600 mb-0.5">Module Length (mm)</label>
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberInputWithSpinner
                 value={moduleLength}
-                onChange={e => {
-                  const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                  const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                  updateSetting('moduleLength', newValue);
-                }}
-                className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
+                onChange={(val) => updateSetting('moduleLength', val)}
               />
             </div>
             <div>
               <label className="block text-[14px] text-gray-600 mb-0.5">Module Width (mm)</label>
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberInputWithSpinner
                 value={moduleWidth}
-                onChange={e => {
-                  const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                  const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                  updateSetting('moduleWidth', newValue);
-                }}
-                className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
+                onChange={(val) => updateSetting('moduleWidth', val)}
               />
             </div>
             <div>
               <label className="block text-[14px] text-gray-600 mb-0.5">Frame Thickness (mm)</label>
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberInputWithSpinner
                 value={frameThickness}
-                onChange={e => {
-                  const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                  const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                  updateSetting('frameThickness', newValue);
-                }}
-                className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
+                onChange={(val) => updateSetting('frameThickness', val)}
               />
             </div>
             <div>
@@ -200,16 +180,9 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
                 End Clamp after Module(mm)
               </label>
 
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberInputWithSpinner
                 value={endClampWidth}
-                onChange={e => {
-                  const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                  const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                  updateSetting('endClampWidth', newValue);
-                }}
-                className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
+                onChange={(val) => updateSetting('endClampWidth', val)}
               />
             </div>
             <div>
@@ -218,16 +191,9 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
                 Mid Clamp Gap(mm)
               </label>
 
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberInputWithSpinner
                 value={midClamp}
-                onChange={e => {
-                  const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                  const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                  updateSetting('midClamp', newValue);
-                }}
-                className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
+                onChange={(val) => updateSetting('midClamp', val)}
               />
             </div>
             <div className="relative group">
@@ -235,35 +201,20 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
                 Buffer after End Clamp(mm)
                 {isBasicUser && <span className="ml-1 text-xs text-red-500">(Advanced Only)</span>}
               </label>
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberInputWithSpinner
                 value={buffer}
+                onChange={(val) => updateSetting('buffer', val)}
                 disabled={isBasicUser}
-                onChange={e => {
-                  const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                  const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                  updateSetting('buffer', newValue);
-                }}
-                className={`w-full rounded border px-2 py-1 text-sm text-center font-medium ${
-                  isBasicUser ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''
-                }`}
-                title={isBasicUser ? "Advanced only" : ""}
+                className={isBasicUser ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
             </div>
             <div>
               {/* <label className="block text-[14px] text-gray-600 mb-0.5">Rails/side</label> */}
               <label className="block text-[13px] text-gray-600 mb-0.5">No. of Rails per each side of module</label>
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberInputWithSpinner
                 value={railsPerSide}
-                onChange={e => {
-                  const filtered = e.target.value.replace(/[^0-9]/g, '');
-                  const newValue = filtered === '' ? 1 : Math.max(1, parseInt(filtered) || 1);
-                  updateSetting('railsPerSide', newValue);
-                }}
-                className="w-full rounded border px-2 py-1 text-sm text-center font-medium"
+                onChange={(val) => updateSetting('railsPerSide', val)}
+                minValue={1}
               />
               {Number(railsPerSide) === 1 && (
                 <p className="text-[10px] text-amber-600 mt-0.5">⚠ Typically its 2</p>
@@ -280,19 +231,11 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
               <label className={`block text-[14px] mb-0.5 ${longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
                 Purlin to Purlin Distance (mm)
               </label>
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberInputWithSpinner
                 value={purlinDistance}
+                onChange={(val) => updateSetting('purlinDistance', val)}
                 disabled={longRailVariation?.endsWith('Seam Clamp')}
-                onChange={e => {
-                  const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                  const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                  updateSetting('purlinDistance', newValue);
-                }}
-                className={`w-full rounded border px-2 py-1 text-sm text-center font-medium ${
-                  longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''
-                }`}
+                className={longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
               {applyToAll && !longRailVariation?.endsWith('Seam Clamp') && (
                 <button
@@ -313,19 +256,11 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
               <label className={`block text-[14px] mb-0.5 ${!longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
                 Seam to Seam/Crest to Crest Distance (mm)
               </label>
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberInputWithSpinner
                 value={seamToSeamDistance}
+                onChange={(val) => updateSetting('seamToSeamDistance', val)}
                 disabled={!longRailVariation?.endsWith('Seam Clamp')}
-                onChange={e => {
-                  const filtered = e.target.value.replace(/[^0-9.]/g, '');
-                  const newValue = filtered === '' ? 0 : Math.max(0, parseFloat(filtered) || 0);
-                  updateSetting('seamToSeamDistance', newValue);
-                }}
-                className={`w-full rounded border px-2 py-1 text-sm text-center font-medium ${
-                  !longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''
-                }`}
+                className={!longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
                {applyToAll && longRailVariation?.endsWith('Seam Clamp') && (
                 <button

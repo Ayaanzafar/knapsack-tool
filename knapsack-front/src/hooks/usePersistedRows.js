@@ -99,7 +99,7 @@ export function usePersistedRows(tabId, rows, setRows, onRowCreated) {
 
   // Update row quantity
   const updateRowQuantity = useCallback((id, quantity) => {
-    const numQuantity = Math.max(1, Number(quantity) || 1);
+    const numQuantity = Number(quantity) || 0;  // Allow 0, same as modules
     updateRow(id, { quantity: numQuantity });
   }, [updateRow]);
 

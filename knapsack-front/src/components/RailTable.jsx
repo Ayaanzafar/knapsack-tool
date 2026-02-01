@@ -7,6 +7,7 @@ import { usePersistedRows } from '../hooks/usePersistedRows';
 import { rowAPI } from '../services/api';
 import ResultCard from './ResultCard';
 import { useAuth } from '../context/AuthContext';
+import NumberInputWithSpinner from './NumberInputWithSpinner';
 import {
   DndContext,
   closestCenter,
@@ -89,30 +90,22 @@ function SortableRow({
         <span className="text-gray-400 hover:text-purple-600 text-xl select-none">⋮⋮</span>
       </td>
       <td className="px-3 py-2 border-b">
-        <input
-          type="text"
-          inputMode="numeric"
-          value={row.quantity ?? 1}
-          onChange={(e) => {
-            const filtered = e.target.value.replace(/[^0-9]/g, '');
-            updateRowQuantity(row.id, filtered === '' ? 1 : Math.max(1, parseInt(filtered) || 1));
-          }}
-          onClick={(e) => e.stopPropagation()}
-          className="w-16 px-2 py-1 border rounded text-center"
-        />
+        <div onClick={(e) => e.stopPropagation()}>
+          <NumberInputWithSpinner
+            value={row.quantity ?? 0}
+            onChange={(val) => updateRowQuantity(row.id, val)}
+            minValue={0}
+          />
+        </div>
       </td>
       <td className="px-3 py-2 border-b">
-        <input
-          type="text"
-          inputMode="numeric"
-          value={row.modules}
-          onChange={(e) => {
-            const filtered = e.target.value.replace(/[^0-9]/g, '');
-            updateRowModules(row.id, filtered === '' ? 1 : Math.max(1, parseInt(filtered) || 1));
-          }}
-          onClick={(e) => e.stopPropagation()}
-          className="w-16 px-2 py-1 border rounded text-center"
-        />
+        <div onClick={(e) => e.stopPropagation()}>
+          <NumberInputWithSpinner
+            value={row.modules ?? 0}
+            onChange={(val) => updateRowModules(row.id, val)}
+            minValue={0}
+          />
+        </div>
       </td>
       <td className="px-3 py-2 text-center border-b">
         2
@@ -148,34 +141,26 @@ function SortableRow({
       </td>
       <td className="px-3 py-2 text-center border-b">
         {enableSB2 ? (
-          <input
-            type="text"
-            inputMode="numeric"
-            value={sb1Value}
-            onChange={(e) => {
-              const filtered = e.target.value.replace(/[^0-9]/g, '');
-              updateRowSupportBase(row.id, 'supportBase1', filtered === '' ? 0 : Math.max(0, parseInt(filtered) || 0));
-            }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-16 px-2 py-1 border rounded text-center"
-          />
+          <div onClick={(e) => e.stopPropagation()}>
+            <NumberInputWithSpinner
+              value={sb1Value}
+              onChange={(val) => updateRowSupportBase(row.id, 'supportBase1', val)}
+              minValue={0}
+            />
+          </div>
         ) : (
           defaultSB1
         )}
       </td>
       <td className="px-3 py-2 text-center border-b">
         {enableSB2 ? (
-          <input
-            type="text"
-            inputMode="numeric"
-            value={sb2Value}
-            onChange={(e) => {
-              const filtered = e.target.value.replace(/[^0-9]/g, '');
-              updateRowSupportBase(row.id, 'supportBase2', filtered === '' ? 0 : Math.max(0, parseInt(filtered) || 0));
-            }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-16 px-2 py-1 border rounded text-center"
-          />
+          <div onClick={(e) => e.stopPropagation()}>
+            <NumberInputWithSpinner
+              value={sb2Value}
+              onChange={(val) => updateRowSupportBase(row.id, 'supportBase2', val)}
+              minValue={0}
+            />
+          </div>
         ) : (
           '-'
         )}
