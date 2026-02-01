@@ -1,5 +1,7 @@
 // src/components/NumberInputWithSpinner.jsx
 
+import { useState, useEffect } from 'react';
+
 export default function NumberInputWithSpinner({
   value,
   onChange,
@@ -8,28 +10,61 @@ export default function NumberInputWithSpinner({
   minValue = 0,
   size = 'md'  // 'sm', 'md', 'lg'
 }) {
+  // Internal state to preserve decimal points during typing
+  const [displayValue, setDisplayValue] = useState(String(value ?? ''));
+
+  // Sync display value when external value changes
+  useEffect(() => {
+    setDisplayValue(String(value ?? ''));
+  }, [value]);
+
   // Size configurations
   const sizeClasses = {
     sm: 'px-2 py-1 text-xs pr-7',
     md: 'px-3 py-1.5 text-sm pr-8',
     lg: 'px-3 py-2 text-sm pr-8'
   };
+
   const handleInputChange = (e) => {
     const filtered = e.target.value.replace(/[^0-9.]/g, '');
-    // Same as GlobalInputs/BOMPage: empty becomes 0, then enforce minValue
-    const newValue = filtered === '' ? 0 : Math.max(minValue, parseFloat(filtered) || 0);
-    onChange(newValue);
+
+    // Update display value immediately to preserve typing experience
+    setDisplayValue(filtered);
+
+    if (filtered === '') {
+      onChange(0);
+      return;
+    }
+
+    // Allow typing decimal point (e.g., "10." stays as "10." not become "10")
+    if (filtered.endsWith('.')) {
+      // Don't call onChange yet, wait for more digits
+      return;
+    }
+
+    // Parse to number and enforce minValue
+    const numValue = parseFloat(filtered) || 0;
+    onChange(Math.max(minValue, numValue));
   };
 
-  const increment = () => onChange((value || minValue) + 1);
-  const decrement = () => onChange(Math.max(minValue, (value || minValue) - 1));
+  const increment = () => {
+    const newValue = (value || minValue) + 1;
+    onChange(newValue);
+    setDisplayValue(String(newValue));
+  };
+
+  const decrement = () => {
+    const newValue = Math.max(minValue, (value || minValue) - 1);
+    onChange(newValue);
+    setDisplayValue(String(newValue));
+  };
 
   return (
     <div className="relative group">
       <input
         type="text"
         inputMode="numeric"
-        value={value}
+        value={displayValue}
         onChange={handleInputChange}
         disabled={disabled}
         className={`w-full rounded border border-gray-300 text-center font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${sizeClasses[size]} ${className}`}
