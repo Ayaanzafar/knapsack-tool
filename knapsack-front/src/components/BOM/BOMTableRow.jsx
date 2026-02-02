@@ -378,7 +378,7 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
 
       {/* Rate Per Piece */}
       <td className={`border border-gray-400 px-3 py-2 text-sm text-center ${getCellBgColor()}`}>
-        {costPerPiece ? (
+        {costPerPiece !== null && costPerPiece !== undefined ? (
           editMode ? (
             <NumberInputWithSpinner
               value={costPerPiece || 0}
