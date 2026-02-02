@@ -1720,15 +1720,21 @@ export default function BOMPage() {
           const loadedModuleWp = Number.parseFloat(data.bomData.moduleWp);
           if (Number.isFinite(loadedModuleWp)) setModuleWp(loadedModuleWp);
 
-          // Load userNotes from backend
-          if (data.bomData.userNotes && Array.isArray(data.bomData.userNotes)) {
-            setUserNotes(data.bomData.userNotes);
-            setOriginalUserNotes(data.bomData.userNotes);
-            // console.log('Initial load - userNotes from backend:', data.bomData.userNotes);
+          // Load userNotes from backend ONLY if not already loaded from location.state
+          // (location.state has priority because it contains the most recent saved snapshot)
+          if (!location.state?.userNotes) {
+            if (data.bomData.userNotes && Array.isArray(data.bomData.userNotes)) {
+              setUserNotes(data.bomData.userNotes);
+              setOriginalUserNotes(data.bomData.userNotes);
+              console.log('✅ Initial load - userNotes from backend:', data.bomData.userNotes);
+            } else {
+              setUserNotes([]);
+              setOriginalUserNotes([]);
+              console.log('⚠️ Initial load - no userNotes found in backend, initializing empty array');
+              console.log('Backend data received:', data.bomData);
+            }
           } else {
-            setUserNotes([]);
-            setOriginalUserNotes([]);
-            // console.log('Initial load - no userNotes found, initializing empty array');
+            console.log('✅ UserNotes already loaded from location.state - skipping data.bomData.userNotes');
           }
 
           if (data.bomData.bomItems && data.bomData.bomItems.length > 0) {
@@ -2322,6 +2328,7 @@ export default function BOMPage() {
   };
 
   const handleNotesChange = (updatedNotes) => {
+    console.log('📝 User notes changed:', updatedNotes);
     setUserNotes(updatedNotes);
   };
 
