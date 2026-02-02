@@ -69,6 +69,18 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
 
   if (!isOpen) return null;
 
+  // Helper function to get a human-readable name for change types
+  const getChangeTypeName = (type) => {
+    const typeMap = {
+      'CHANGE_MODULE_WP': 'Module Wp',
+      'CHANGE_SPARE_PERCENTAGE': 'Spare %',
+      'CHANGE_ALUMINUM_RATE': 'Aluminium Rate (₹/kg)',
+      'CHANGE_HDG_RATE': 'HDG Rate (₹/kg)',
+      'CHANGE_MAGNELIS_RATE': 'Magnelis Rate (₹/kg)',
+    };
+    return typeMap[type] || type;
+  };
+
   // Check if any change requires the "Update Master DB?" option
   const hasUpdateMasterChanges = allChanges.some(change => change.type === 'EDIT_COST_PER_PIECE');
 
@@ -162,15 +174,23 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {allChanges.map((change) => (
-                <tr key={change.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    <div className="font-medium">{change.itemName}</div>
-                    <div className="text-xs text-gray-500">Row {change.rowNumber}</div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-center text-gray-600 font-medium">
-                    {change.tabName || '-'}
-                  </td>
+              {allChanges.map((change) => {
+                // Check if this is a global parameter change
+                const isGlobalChange = change.type && change.type.startsWith('CHANGE_');
+                const displayName = isGlobalChange ? getChangeTypeName(change.type) : change.itemName;
+                const displayLocation = isGlobalChange ? 'Global' : (change.tabName || '-');
+
+                return (
+                  <tr key={change.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      <div className="font-medium">{displayName}</div>
+                      {!isGlobalChange && change.rowNumber && (
+                        <div className="text-xs text-gray-500">Row {change.rowNumber}</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-center text-gray-600 font-medium">
+                      {displayLocation}
+                    </td>
                   <td className="px-4 py-3 text-sm text-center">
                     <div className="flex items-center justify-center gap-2">
                       <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-medium">
@@ -249,7 +269,8 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
                     />
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
 
