@@ -276,7 +276,7 @@ export default function Header({
           {/* Project Name */}
           <div className="flex items-center gap-2">
             <span className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
-              Project
+              Project Name
             </span>
             <input
               type="text"
@@ -330,7 +330,7 @@ export default function Header({
           {/* Project Name */}
           <div className="flex items-center gap-2">
             <span className="text-xs uppercase tracking-wide text-gray-500 font-semibold">
-              Project
+              Project Name
             </span>
             <span className="text-sm font-semibold text-amber-700">
               {projectName}
