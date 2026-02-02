@@ -32,6 +32,7 @@ export default function AdminPanel() {
   // Credentials Modal State
   const [showCredentialsModal, setShowCredentialsModal] = useState(false);
   const [createdCredentials, setCreatedCredentials] = useState({ username: '', password: '' });
+  const [credentialAction, setCredentialAction] = useState('create'); // 'create' or 'reset'
   const [copiedUsername, setCopiedUsername] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
   const [copiedBoth, setCopiedBoth] = useState(false);
@@ -143,6 +144,7 @@ export default function AdminPanel() {
       await userAPI.create({ username, password, role });
 
       // Store credentials and show modal
+      setCredentialAction('create');
       setCreatedCredentials({ username, password });
       setShowCredentialsModal(true);
 
@@ -183,6 +185,7 @@ export default function AdminPanel() {
         const result = await userAPI.resetPassword(userId);
 
         // Show credentials modal with new password
+        setCredentialAction('reset');
         setCreatedCredentials({
           username: username,
           password: result.temporaryPassword
@@ -486,11 +489,13 @@ export default function AdminPanel() {
                 </div>
                 <div className="mt-3 text-center sm:mt-5">
                   <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                    User Created Successfully!
+                    {credentialAction === 'reset' ? 'Password Reset Successfully!' : 'User Created Successfully!'}
                   </h3>
                   <div className="mt-4">
                     <p className="text-sm text-gray-500 mb-4">
-                      Share these credentials with the new user:
+                      {credentialAction === 'reset'
+                        ? 'Share these new credentials with the user:'
+                        : 'Share these credentials with the new user:'}
                     </p>
 
                     {/* Credentials Box */}
