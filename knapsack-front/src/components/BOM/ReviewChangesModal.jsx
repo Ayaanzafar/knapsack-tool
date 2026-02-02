@@ -81,6 +81,20 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
     return typeMap[type] || type;
   };
 
+  // Helper function to get column name for item-specific changes
+  const getColumnName = (type) => {
+    const columnMap = {
+      'EDIT_PROFILE': 'Item Description',
+      'EDIT_SPARE_QUANTITY': 'Spare Quantity',
+      'EDIT_COST_PER_PIECE': 'Rate/Piece',
+      'EDIT_ALUMINUM_RATE_OVERRIDE': 'Rate per Unit Wt',
+      'EDIT_MATERIAL': 'Material',
+      'EDIT_FASTENER_MATERIAL': 'Material',
+      'EDIT_QUANTITY': 'Quantity',
+    };
+    return columnMap[type] || 'Item';
+  };
+
   // Check if any change requires the "Update Master DB?" option
   const hasUpdateMasterChanges = allChanges.some(change => change.type === 'EDIT_COST_PER_PIECE');
 
@@ -178,18 +192,30 @@ export default function ReviewChangesModal({ isOpen, changes, defaultNotesChange
                 // Check if this is a global parameter change
                 const isGlobalChange = change.type && change.type.startsWith('CHANGE_');
                 const displayName = isGlobalChange ? getChangeTypeName(change.type) : change.itemName;
-                const displayLocation = isGlobalChange ? 'Global' : (change.tabName || '-');
+
+                // Determine location display
+                let displayLocation;
+                if (isGlobalChange) {
+                  displayLocation = 'Global';
+                } else if (change.tabName) {
+                  displayLocation = change.tabName;
+                } else if (!change.tabName && change.rowNumber) {
+                  // Item-specific change - show column name (tabName is null or undefined)
+                  displayLocation = getColumnName(change.type);
+                } else {
+                  displayLocation = '-';
+                }
 
                 return (
                   <tr key={change.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm text-gray-900">
                       <div className="font-medium">{displayName}</div>
-                      {!isGlobalChange && change.rowNumber && (
-                        <div className="text-xs text-gray-500">Row {change.rowNumber}</div>
-                      )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-center text-gray-600 font-medium">
-                      {displayLocation}
+                    <td className="px-4 py-3 text-sm text-center text-gray-600">
+                      <div className="font-medium">{displayLocation}</div>
+                      {!isGlobalChange && change.rowNumber && (
+                        <div className="text-xs text-gray-500 mt-0.5">(Row {change.rowNumber})</div>
+                      )}
                     </td>
                   <td className="px-4 py-3 text-sm text-center">
                     <div className="flex items-center justify-center gap-2">
