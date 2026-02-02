@@ -57,9 +57,10 @@
     font-size: 10pt;
   }
 
-  h1 {
+  /* Remove h1 override to let Tailwind classes work */
+  /* h1 {
     font-size: 16pt;
-  }
+  } */
 
   h2 {
     font-size: 14pt;
@@ -78,5 +79,42 @@
   /* Remove hover effects */
   *:hover {
     background-color: inherit !important;
+  }
+
+  /* Keep footer together with content */
+  .mt-4.pt-2.border-t {
+    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
+  }
+
+  /* Reduce spacing to fit footer on same page */
+  .notes-section {
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Force portrait title size - Override browser defaults */
+  .print-content.portrait h1 {
+    font-size: 16px !important;
+    padding-right: 180px !important;
+    line-height: 1.3 !important;
+    word-wrap: break-word !important;
+    white-space: normal !important;
+  }
+
+  .print-content.portrait p {
+    font-size: 14px !important;
+  }
+
+  /* Keep landscape title size */
+  .print-content.landscape h1 {
+    font-size: 24px !important;
+    padding-right: 200px !important;
+    line-height: 1.3 !important;
+    word-wrap: break-word !important;
+    white-space: normal !important;
+  }
+
+  .print-content.landscape p {
+    font-size: 18px !important;
   }
 }
