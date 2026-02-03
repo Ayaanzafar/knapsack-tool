@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { TextField } from './ui';
 import { parseNumList } from '../lib/storage';
+import { DEFAULT_MODULE_WP } from '../constants/bomDefaults';
 import { useAuth } from '../context/AuthContext';
 import NumberInputWithSpinner from './NumberInputWithSpinner';
 
@@ -51,7 +52,8 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
     endClampWidth,
     buffer,
     purlinDistance,
-    seamToSeamDistance = 1700,
+    seamToSeamDistance = 400,
+    maxSupportDistance = 1800,
     railsPerSide,
     enabledLengths,
     priority
@@ -115,7 +117,8 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
         endClampWidth: 40,
         buffer: 15,
         purlinDistance: 1700,
-        seamToSeamDistance: 1700,
+        seamToSeamDistance: 400,
+        maxSupportDistance: 1800,
         railsPerSide: 2,
         priority: 'cost'
       }));
@@ -165,7 +168,13 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
               />
             </div>
             <div>
-              {/* Empty box */}
+              <label className="block text-[14px] text-gray-600 mb-0.5">Module Wp (W)</label>
+              <NumberInputWithSpinner
+                value={DEFAULT_MODULE_WP}
+                disabled={true}
+                className="bg-gray-100 cursor-not-allowed text-gray-400"
+              />
+              <p className="text-[10px] text-gray-400 mt-0.5">Editable in BOM</p>
             </div>
           </div>
         </div>
@@ -252,30 +261,43 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
               )}
             </div>
 
-            <div>
-              <label className={`block text-[14px] mb-0.5 ${!longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
-                Seam to Seam/Crest to Crest Distance (mm)
-              </label>
-              <NumberInputWithSpinner
-                value={seamToSeamDistance}
-                onChange={(val) => updateSetting('seamToSeamDistance', val)}
-                disabled={!longRailVariation?.endsWith('Seam Clamp')}
-                className={!longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
-              />
-               {applyToAll && longRailVariation?.endsWith('Seam Clamp') && (
-                <button
-                  onClick={() => applyToAll('seamToSeamDistance', seamToSeamDistance)}
-                  className="mt-2 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-1.5"
-                  title="Apply this value to all tabs"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-                    <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
-                  </svg>
-                  Apply to All Tabs
-                </button>
-              )}
+            <div className="grid grid-cols-2 gap-1.5">
+              <div>
+                <label className={`block text-[14px] mb-0.5 ${!longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Seam to Seam (mm)
+                </label>
+                <NumberInputWithSpinner
+                  value={seamToSeamDistance}
+                  onChange={(val) => updateSetting('seamToSeamDistance', val)}
+                  disabled={!longRailVariation?.endsWith('Seam Clamp')}
+                  className={!longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
+                />
+              </div>
+              <div>
+                <label className={`block text-[14px] mb-0.5 ${!longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Max Support Distance (mm)
+                </label>
+                <NumberInputWithSpinner
+                  value={maxSupportDistance}
+                  onChange={(val) => updateSetting('maxSupportDistance', val)}
+                  disabled={!longRailVariation?.endsWith('Seam Clamp')}
+                  className={!longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
+                />
+              </div>
             </div>
+            {applyToAll && longRailVariation?.endsWith('Seam Clamp') && (
+              <button
+                onClick={() => { applyToAll('seamToSeamDistance', seamToSeamDistance); applyToAll('maxSupportDistance', maxSupportDistance); }}
+                className="mt-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-1.5"
+                title="Apply these values to all tabs"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                  <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                </svg>
+                Apply to All Tabs
+              </button>
+            )}
           </div>
         </div>
       </div>

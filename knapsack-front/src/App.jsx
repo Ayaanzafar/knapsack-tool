@@ -424,6 +424,7 @@ export default function App() {
             settings={activeTab?.settings}
             setSettings={updateSettings}
             selectedRow={selectedRow}
+            longRailVariation={longRailVariation}
           />
         </section>
 

@@ -10,7 +10,7 @@ import { DEFAULT_MODULE_WP } from '../constants/bomDefaults';
  * Calculate totals for a single tab
  * This mirrors the calculation logic from RailTable.jsx
  */
-function calculateTabTotals(tab) {
+function calculateTabTotals(tab, longRailVariation) {
   const { rows, settings } = tab;
   const {
     railsPerSide = 2,
@@ -21,6 +21,9 @@ function calculateTabTotals(tab) {
     midClamp = 20,
     endClampWidth = 40,
     buffer = 15,
+    purlinDistance = 1700,
+    seamToSeamDistance = 400,
+    maxSupportDistance = 1800,
     lengthsInput = '',
     enabledLengths = {},
     maxWastePct = '',
@@ -121,8 +124,15 @@ function calculateTabTotals(tab) {
       }
 
       // SB1 and SB2 calculations
-      const purlinDist = Number(settings.purlinDistance) || 1700;
-      const defaultSB1 = calculateSB1(required, purlinDist);
+      let sb1Divisor;
+      if (longRailVariation?.endsWith('Seam Clamp')) {
+        const seam = Number(seamToSeamDistance) || 400;
+        const maxSupport = Number(maxSupportDistance) || 1800;
+        sb1Divisor = seam * Math.floor(maxSupport / seam) || 1;
+      } else {
+        sb1Divisor = Number(purlinDistance) || 1;
+      }
+      const defaultSB1 = calculateSB1(required, sb1Divisor);
       const sb1Value = enableSB2 ? (row.supportBase1 ?? defaultSB1) : defaultSB1;
       const sb2Value = enableSB2 ? (row.supportBase2 ?? 0) : 0;
 
@@ -180,7 +190,7 @@ export function collectBOMData(tabsData, projectName, longRailVariation) {
     bomData.tabProfiles[tabName] = tab.longRailProfileSerialNumber || '26';
 
     // Calculate totals for this tab
-    const tabTotals = calculateTabTotals(tab);
+    const tabTotals = calculateTabTotals(tab, longRailVariation);
 
     bomData.panelCounts[tabName] = tabTotals.modules;
     bomData.tabCalculations[tabName] = {

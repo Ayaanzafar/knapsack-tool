@@ -222,7 +222,8 @@ export default function RailTable({
   setSelectedRowId,
   settings,
   setSettings,
-  selectedRow
+  selectedRow,
+  longRailVariation
 }) {
   const { user } = useAuth();
   const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
@@ -244,8 +245,15 @@ export default function RailTable({
       buffer: Number(settings?.buffer) || 0
     });
 
-    const purlin = Number(settings?.purlinDistance) || 1;
-    const calculatedSB1 = Math.ceil(required / purlin) + 1;
+    let divisor;
+    if (longRailVariation?.endsWith('Seam Clamp')) {
+      const seam = Number(settings?.seamToSeamDistance) || 400;
+      const maxSupport = Number(settings?.maxSupportDistance) || 1800;
+      divisor = seam * Math.floor(maxSupport / seam) || 1;
+    } else {
+      divisor = Number(settings?.purlinDistance) || 1;
+    }
+    const calculatedSB1 = Math.ceil(required / divisor) + 1;
 
     if (calculatedSB1 > 0) {
       //console.log(`💾 Setting initial SB1=${calculatedSB1} for new row ${createdRow.id}`);
@@ -330,6 +338,8 @@ export default function RailTable({
     endClampWidth,
     buffer,
     purlinDistance,
+    seamToSeamDistance,
+    maxSupportDistance,
     railsPerSide,
     lengthsInput,
     enabledLengths,
@@ -409,8 +419,15 @@ export default function RailTable({
 
   // Calculate default SB1 value for a row
   const calculateSB1 = (required) => {
-    const purlin = Number(purlinDistance) || 1;
-    return Math.ceil(required / purlin) + 1;
+    let divisor;
+    if (longRailVariation?.endsWith('Seam Clamp')) {
+      const seam = Number(seamToSeamDistance) || 400;
+      const maxSupport = Number(maxSupportDistance) || 1800;
+      divisor = seam * Math.floor(maxSupport / seam) || 1;
+    } else {
+      divisor = Number(purlinDistance) || 1;
+    }
+    return Math.ceil(required / divisor) + 1;
   };
 
   // Calculate totals for all columns
@@ -650,7 +667,7 @@ export default function RailTable({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [moduleWidth, midClamp, endClampWidth, buffer, purlinDistance, enableSB2, rows.length]);
+  }, [moduleWidth, midClamp, endClampWidth, buffer, purlinDistance, seamToSeamDistance, maxSupportDistance, enableSB2, rows.length]);
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm">
