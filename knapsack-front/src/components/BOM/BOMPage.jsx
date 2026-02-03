@@ -313,7 +313,7 @@
 //           const updatedItem = {
 //             ...item,
 //             sunrackCode: selectedProfile.preferredRmCode || selectedProfile.sunrackCode,
-//             profileImage: selectedProfile.profileImagePath,
+//             profileImage: selectedProfile.profileImage,
 //             itemDescription: selectedProfile.genericName,
 //             material: selectedProfile.material,
 //             profileSerialNumber: profileSerialNumber
@@ -335,7 +335,7 @@
 //           const updatedItem = {
 //             ...item,
 //             sunrackCode: selectedProfile.preferredRmCode || selectedProfile.sunrackCode,
-//             profileImage: selectedProfile.profileImagePath,
+//             profileImage: selectedProfile.profileImage,
 //             itemDescription: selectedProfile.genericName,
 //             material: selectedProfile.material,
 //             profileSerialNumber: profileSerialNumber
@@ -1607,7 +1607,7 @@ export default function BOMPage() {
                     uom: mi.uom ?? null,
                     designWeight: mi.designWeight ?? null,
                     costPerPiece: mi.costPerPiece ?? null,
-                    profileImagePath: mi.profileImagePath ?? null,
+                    profileImage: mi.profileImagePath ?? null,
                     preferredRmCode: mi.preferredRmCode ?? null,
                     sunrackProfile: mi.sunrackProfile ?? null,
                     fastener: mi.fastener ?? null,
@@ -1673,7 +1673,7 @@ export default function BOMPage() {
                     if (selectedProfile) {
                       updatedItem.profileSerialNumber = change.newValue;
                       updatedItem.sunrackCode = selectedProfile.preferredRmCode || selectedProfile.sunrackCode;
-                      updatedItem.profileImage = selectedProfile.sunrackProfile?.profileImage || selectedProfile.profileImagePath;
+                      updatedItem.profileImage = selectedProfile.profileImage;
                       if (updatedItem.calculationType === 'ACCESSORY') {
                         updatedItem.length = selectedProfile.standardLength ?? updatedItem.length;
                       }
@@ -1960,7 +1960,7 @@ export default function BOMPage() {
           const updatedItem = {
             ...item,
             sunrackCode: selectedProfile.preferredRmCode || selectedProfile.sunrackCode,
-            profileImage: selectedProfile.profileImagePath,
+            profileImage: selectedProfile.profileImage,
             itemDescription: selectedProfile.genericName,
             material: selectedProfile.material,
             profileSerialNumber: profileSerialNumber
@@ -1982,7 +1982,7 @@ export default function BOMPage() {
           const updatedItem = {
             ...item,
             sunrackCode: selectedProfile.preferredRmCode || selectedProfile.sunrackCode,
-            profileImage: selectedProfile.profileImagePath,
+            profileImage: selectedProfile.profileImage,
             itemDescription: selectedProfile.genericName,
             material: selectedProfile.material,
             profileSerialNumber: profileSerialNumber
