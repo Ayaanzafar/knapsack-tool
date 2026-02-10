@@ -163,7 +163,7 @@ function calculateTabTotals(tab, longRailVariation) {
  * @param {string} projectName - The project name
  * @returns {Object} - Structured data for BOM generation
  */
-export function collectBOMData(tabsData, projectName, longRailVariation) {
+export function collectBOMData(tabsData, projectName, longRailVariation, moduleWp) {
   const { tabs } = tabsData;
 
   const bomData = {
@@ -174,7 +174,7 @@ export function collectBOMData(tabsData, projectName, longRailVariation) {
       totalTabs: tabs.length,
       generatedAt: new Date().toISOString()
     },
-    moduleWp: DEFAULT_MODULE_WP,
+    moduleWp: moduleWp || DEFAULT_MODULE_WP,
     tabs: [],
     panelCounts: {},
     tabCalculations: {},

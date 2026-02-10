@@ -9,6 +9,7 @@ class ProjectService {
         clientName: data.clientName || null,
         projectId: data.projectId || null,
         longRailVariation: data.longRailVariation || null,
+        moduleWp: data.moduleWp !== undefined ? parseInt(data.moduleWp) : 590,
         userId: data.userId || null
       }
     });
@@ -69,6 +70,7 @@ class ProjectService {
     if (data.clientName !== undefined) updateData.clientName = data.clientName;
     if (data.projectId !== undefined) updateData.projectId = data.projectId;
     if (data.longRailVariation !== undefined) updateData.longRailVariation = data.longRailVariation;
+    if (data.moduleWp !== undefined) updateData.moduleWp = parseInt(data.moduleWp);
 
     return await prisma.project.update({
       where: { id: parseInt(id) },

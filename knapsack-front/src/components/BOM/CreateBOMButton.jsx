@@ -7,7 +7,7 @@ import { bomAPI, savedBomAPI } from '../../services/api';
 import { getCurrentProjectId } from '../../lib/tabStorageAPI';
 
 
-export default function CreateBOMButton({ tabsData, projectName, longRailVariation }) {
+export default function CreateBOMButton({ tabsData, projectName, longRailVariation, moduleWp }) {
   const navigate = useNavigate();
   const [hasSavedBom, setHasSavedBom] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
@@ -56,7 +56,7 @@ export default function CreateBOMButton({ tabsData, projectName, longRailVariati
       }
 
       // Collect data from all tabs
-      const bomData = collectBOMData(tabsData, projectName, longRailVariation);
+      const bomData = collectBOMData(tabsData, projectName, longRailVariation, moduleWp);
 
       // Get active cut lengths (non-zero)
       const activeCutLengths = getActiveCutLengths(bomData);

@@ -6,7 +6,7 @@ import { DEFAULT_MODULE_WP } from '../constants/bomDefaults';
 import { useAuth } from '../context/AuthContext';
 import NumberInputWithSpinner from './NumberInputWithSpinner';
 
-export default function GlobalInputs({ settings, setSettings, applyToAll, longRailVariation }) {
+export default function GlobalInputs({ settings, setSettings, applyToAll, longRailVariation, moduleWp, setModuleWp }) {
   const { user } = useAuth();
   const isBasicUser = user?.role === 'BASIC';
   const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
@@ -122,6 +122,8 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
         railsPerSide: 2,
         priority: 'cost'
       }));
+      // Reset module Wp (project-level)
+      setModuleWp(DEFAULT_MODULE_WP);
     }
   };
 
@@ -170,11 +172,10 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
             <div>
               <label className="block text-[14px] text-gray-600 mb-0.5">Module Wp (W)</label>
               <NumberInputWithSpinner
-                value={DEFAULT_MODULE_WP}
-                disabled={true}
-                className="bg-gray-100 cursor-not-allowed text-gray-400"
+                value={moduleWp || DEFAULT_MODULE_WP}
+                onChange={(val) => setModuleWp(val)}
               />
-              <p className="text-[10px] text-gray-400 mt-0.5">Editable in BOM</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">Shared across all tabs</p>
             </div>
           </div>
         </div>

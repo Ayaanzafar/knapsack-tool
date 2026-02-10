@@ -33,6 +33,7 @@ export default function App() {
   const [clientName, setClientName] = useState('');
   const [projectId, setProjectId] = useState('');
   const [longRailVariation, setLongRailVariation] = useState('');
+  const [moduleWp, setModuleWp] = useState(590);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -72,6 +73,7 @@ export default function App() {
         setClientName(project.clientName || '');
         setProjectId(project.projectId || '');
         setLongRailVariation(project.longRailVariation || '');
+        setModuleWp(project.moduleWp != null ? Number(project.moduleWp) : 590);
 
         // Load tabs
         const loadedTabsData = await loadTabs();
@@ -189,6 +191,19 @@ export default function App() {
       }
     } catch (err) {
       console.error('Failed to update project ID:', err);
+    }
+  };
+
+  // Update module Wp (project-level)
+  const handleModuleWpChange = async (newModuleWp) => {
+    try {
+      setModuleWp(newModuleWp);
+      const currentProjectId = getCurrentProjectId();
+      if (currentProjectId) {
+        await projectAPI.update(currentProjectId, { moduleWp: newModuleWp });
+      }
+    } catch (err) {
+      console.error('Failed to update module Wp:', err);
     }
   };
 
@@ -410,6 +425,8 @@ export default function App() {
             setSettings={updateSettings}
             applyToAll={applySettingToAll}
             longRailVariation={longRailVariation}
+            moduleWp={moduleWp}
+            setModuleWp={handleModuleWpChange}
           />
         </div>
 
@@ -433,6 +450,7 @@ export default function App() {
           tabsData={tabsData}
           projectName={projectName}
           longRailVariation={longRailVariation}
+          moduleWp={moduleWp}
         />
       </main>
 
