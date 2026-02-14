@@ -135,28 +135,28 @@ export default function BOMManagementTab() {
           <table className="min-w-full divide-y divide-gray-300">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 w-48">
                   Project Name
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-40">
                   Client
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-32">
                   Project ID
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-32">
                   Created By
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-40">
                   Created At
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-40">
                   Last Updated
                 </th>
                 {/* <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                   Changes
                 </th> */}
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-24">
                   Actions
                 </th>
               </tr>
@@ -164,14 +164,20 @@ export default function BOMManagementTab() {
             <tbody className="divide-y divide-gray-200 bg-white">
               {filteredBoms.map((bom) => (
                 <tr key={bom.id} className="hover:bg-gray-50">
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
-                    {bom.projectName || 'N/A'}
+                  <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 max-w-xs">
+                    <div className="truncate" title={bom.projectName || 'N/A'}>
+                      {bom.projectName || 'N/A'}
+                    </div>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                    {bom.clientName || 'N/A'}
+                  <td className="px-3 py-4 text-sm text-gray-700 max-w-xs">
+                    <div className="truncate" title={bom.clientName || 'N/A'}>
+                      {bom.clientName || 'N/A'}
+                    </div>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                    {bom.projectId || 'N/A'}
+                  <td className="px-3 py-4 text-sm text-gray-700 max-w-xs">
+                    <div className="truncate" title={bom.projectId || 'N/A'}>
+                      {bom.projectId || 'N/A'}
+                    </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
                     <span className="inline-flex items-center">
