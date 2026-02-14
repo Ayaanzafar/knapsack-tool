@@ -78,9 +78,9 @@ class BomShareService {
 
   /**
    * Access shared BOM via token
-   * - Check if user has permission
-   * - Create copy if first access
-   * - Return BOM info
+   * - Check if user has permission (sharer or recipient)
+   * - Create copy if first access by recipient
+   * - Return original BOM if accessed by sharer
    * @param {string} shareToken - The share token
    * @param {number} currentUserId - ID of user accessing the share
    * @returns {Promise<Object>} - Share info and BOM ID
@@ -101,7 +101,11 @@ class BomShareService {
         sharedWith: {
           select: { id: true, username: true }
         },
-        createdBom: true
+        createdBom: {
+          include: {
+            project: true
+          }
+        }
       }
     });
 
@@ -109,8 +113,28 @@ class BomShareService {
       throw new Error('Share link not found or expired');
     }
 
+    const currentUserIdInt = parseInt(currentUserId);
+
+    // Check if current user is the sharer (person who created the share)
+    if (share.sharedByUserId === currentUserIdInt) {
+      // Sharer is viewing the link - give them access to their original BOM
+      return {
+        shareInfo: {
+          parentBomId: share.parentBomId,
+          sharedBy: share.sharedBy,
+          sharedWith: share.sharedWith,
+          message: share.message,
+          createdAt: share.createdAt
+        },
+        bomId: share.parentBomId,
+        projectId: share.parentBom.projectId,
+        isSharer: true,
+        isFirstAccess: false
+      };
+    }
+
     // Check if current user is the intended recipient
-    if (share.sharedWithUserId !== parseInt(currentUserId)) {
+    if (share.sharedWithUserId !== currentUserIdInt) {
       throw new Error('Access denied: This BOM was not shared with you');
     }
 
@@ -320,18 +344,27 @@ class BomShareService {
   async getSharedWithUser(userId) {
     const shares = await prisma.bomShare.findMany({
       where: {
-        sharedWithUserId: parseInt(userId),
-        isAccessed: true
+        sharedWithUserId: parseInt(userId)
       },
       include: {
         parentBom: {
-          include: {
-            project: true
+          select: {
+            id: true,
+            projectId: true,
+            project: {
+              select: {
+                id: true,
+                name: true,
+                clientName: true,
+                projectId: true
+              }
+            }
           }
         },
         createdBom: {
-          include: {
-            project: true
+          select: {
+            id: true,
+            projectId: true
           }
         },
         sharedBy: {
@@ -345,6 +378,22 @@ class BomShareService {
     });
 
     return shares;
+  }
+
+  /**
+   * Get count of new (unaccessed) shares for a user
+   * @param {number} userId - ID of the user
+   * @returns {Promise<number>} - Count of new shares
+   */
+  async getNewSharesCount(userId) {
+    const count = await prisma.bomShare.count({
+      where: {
+        sharedWithUserId: parseInt(userId),
+        isAccessed: false
+      }
+    });
+
+    return count;
   }
 }
 

@@ -18,4 +18,7 @@ router.get('/share-history/:bomId', bomShareController.getShareHistory);
 // Get BOMs shared with current user
 router.get('/shared-with-me', bomShareController.getSharedWithMe);
 
+// Get count of new unaccessed shares
+router.get('/new-shares-count', bomShareController.getNewSharesCount);
+
 module.exports = router;

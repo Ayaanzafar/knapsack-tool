@@ -9,6 +9,7 @@ import CreateProjectPage from './pages/CreateProjectPage';
 import AdminPanel from './pages/AdminPanel';
 import AdminBOMView from './pages/AdminBOMView';
 import SharedBOMPage from './pages/SharedBOMPage';
+import SharedWithMePage from './pages/SharedWithMePage';
 import NotFoundPage from './pages/NotFoundPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -19,7 +20,7 @@ const PrivateRoute = ({ children }) => {
   if (loading) return <div>Loading...</div>;
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   if (user?.mustChangePassword && location.pathname !== '/change-password') {
@@ -112,6 +113,16 @@ export default function Router() {
           element={
             <PrivateRoute>
               <SharedBOMPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Shared with Me - View all BOMs shared with current user */}
+        <Route
+          path="/shared-with-me"
+          element={
+            <PrivateRoute>
+              <SharedWithMePage />
             </PrivateRoute>
           }
         />

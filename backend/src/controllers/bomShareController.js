@@ -114,6 +114,28 @@ class BomShareController {
       });
     }
   }
+
+  /**
+   * GET /api/bom/new-shares-count
+   * Get count of new (unaccessed) shares for current user
+   */
+  async getNewSharesCount(req, res) {
+    try {
+      const userId = req.user.id;
+      const count = await bomShareService.getNewSharesCount(userId);
+
+      res.json({
+        success: true,
+        count
+      });
+    } catch (error) {
+      console.error('Error fetching new shares count:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to fetch new shares count'
+      });
+    }
+  }
 }
 
 module.exports = new BomShareController();

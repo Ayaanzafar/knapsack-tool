@@ -691,21 +691,40 @@
 
 
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import bomShareAPI from '../services/bomShareAPI';
 import Shuffle from './shuffle';
 import ElectricBorder from './ElectricBorder';
 import SplitText from './SplitText';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, user, logout, login } = useAuth();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [newSharesCount, setNewSharesCount] = useState(0);
+
+  // Fetch new shares count when authenticated
+  useEffect(() => {
+    const fetchNewSharesCount = async () => {
+      if (isAuthenticated) {
+        try {
+          const response = await bomShareAPI.getNewSharesCount();
+          setNewSharesCount(response.count || 0);
+        } catch (error) {
+          console.error('Failed to fetch new shares count:', error);
+        }
+      }
+    };
+
+    fetchNewSharesCount();
+  }, [isAuthenticated]);
 
   const handleCreateBOM = () => {
     navigate('/projects/create');
@@ -724,8 +743,15 @@ export default function HomePage() {
       const { user: loggedInUser } = await login(username, password);
       if (loggedInUser.mustChangePassword) {
         navigate('/change-password');
+      } else {
+        // Check if there's a redirect path stored (from PrivateRoute)
+        const from = location.state?.from?.pathname || null;
+        if (from) {
+          // Redirect to the original path they were trying to access
+          navigate(from, { replace: true });
+        }
+        // Otherwise, user stays on HomePage (authenticated view)
       }
-      // After successful login, user stays on HomePage (authenticated view)
     } catch (err) {
       setError(err.message || 'Failed to login');
     } finally {
@@ -1041,6 +1067,21 @@ export default function HomePage() {
             className="h-10 transition-transform hover:scale-105 duration-300"
           />
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/shared-with-me')}
+              className="relative px-5 py-2.5 border-2 border-purple-600 bg-white text-purple-600 text-sm font-semibold rounded-lg hover:bg-purple-50 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 flex items-center gap-2"
+              aria-label="View Shared BOMs"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              Shared with Me
+              {newSharesCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center animate-pulse">
+                  {newSharesCount}
+                </span>
+              )}
+            </button>
             {isManager && (
               <button
                 onClick={() => navigate('/admin')}

@@ -101,6 +101,15 @@ const bomShareAPI = {
 
     const response = await apiClient.get(url);
     return response.data;
+  },
+
+  /**
+   * Get count of new (unaccessed) shares for current user
+   * @returns {Promise<Object>} - Count of new shares
+   */
+  async getNewSharesCount() {
+    const response = await apiClient.get('/bom/new-shares-count');
+    return response.data;
   }
 };
 

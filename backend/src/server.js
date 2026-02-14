@@ -63,8 +63,9 @@ app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tabs', tabRoutes);
 app.use('/api/rows', rowRoutes);
-app.use('/api/bom', bomRoutes);
+// IMPORTANT: Share routes must come BEFORE general BOM routes to avoid conflicts
 app.use('/api/bom', bomShareRoutes);
+app.use('/api/bom', bomRoutes);
 app.use('/api/saved-boms', savedBomRoutes);
 app.use('/api/default-notes', defaultNotesRoutes);
 app.use('/api/bom-templates', templateRoutes);
