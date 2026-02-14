@@ -136,6 +136,29 @@ class BomShareController {
       });
     }
   }
+
+  /**
+   * GET /api/bom/share-preview/:token
+   * Get public preview of shared BOM (NO authentication required)
+   */
+  async getSharePreview(req, res) {
+    try {
+      const { token } = req.params;
+      const preview = await bomShareService.getSharePreview(token);
+
+      res.json({
+        success: true,
+        preview
+      });
+    } catch (error) {
+      console.error('Error fetching share preview:', error);
+      const statusCode = error.message.includes('not found') ? 404 : 500;
+      res.status(statusCode).json({
+        success: false,
+        error: error.message || 'Failed to fetch share preview'
+      });
+    }
+  }
 }
 
 module.exports = new BomShareController();

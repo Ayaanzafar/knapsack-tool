@@ -745,10 +745,10 @@ export default function HomePage() {
         navigate('/change-password');
       } else {
         // Check if there's a redirect path stored (from PrivateRoute)
-        const from = location.state?.from?.pathname || null;
-        if (from) {
+        const fromPath = location.state?.from?.pathname;
+        if (fromPath) {
           // Redirect to the original path they were trying to access
-          navigate(from, { replace: true });
+          navigate(fromPath, { replace: true });
         }
         // Otherwise, user stays on HomePage (authenticated view)
       }
@@ -782,7 +782,7 @@ export default function HomePage() {
 
         <main className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            {/* Left Side - Site Information with improved hierarchy */}
+            {/* Left Side - Site Information */}
             <div className="space-y-12 pt-4">
               <div className="space-y-6">
                 <h1 className="text-5xl font-bold sm:text-6xl leading-tight tracking-tight text-black">
@@ -889,6 +889,7 @@ export default function HomePage() {
                   <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-yellow-900 to-transparent rounded-full -mr-20 -mt-20 opacity-20"></div>
                   
                   <div className="relative z-10">
+                    {/* Login Header */}
                     <div className="mb-10">
                       <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-linear-to-br from-yellow-400 to-yellow-500 shadow-lg mb-4">
                         <svg className="w-8 h-8 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

@@ -10,6 +10,7 @@ import AdminPanel from './pages/AdminPanel';
 import AdminBOMView from './pages/AdminBOMView';
 import SharedBOMPage from './pages/SharedBOMPage';
 import SharedWithMePage from './pages/SharedWithMePage';
+import SharedLoginPage from './pages/SharedLoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -20,6 +21,13 @@ const PrivateRoute = ({ children }) => {
   if (loading) return <div>Loading...</div>;
 
   if (!isAuthenticated) {
+    // If trying to access a shared BOM, redirect to special share login page
+    if (location.pathname.startsWith('/bom/shared/')) {
+      const token = location.pathname.split('/').pop();
+      return <Navigate to={`/share-login/${token}`} replace />;
+    }
+
+    // Otherwise, redirect to normal home page
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
@@ -106,6 +114,9 @@ export default function Router() {
             </PrivateRoute>
           }
         />
+
+        {/* Shared BOM login page (NO auth required) */}
+        <Route path="/share-login/:token" element={<SharedLoginPage />} />
 
         {/* Shared BOM access via token */}
         <Route

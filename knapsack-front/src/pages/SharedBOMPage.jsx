@@ -1,30 +1,68 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import bomShareAPI from '../services/bomShareAPI';
+import { savedBomAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 export default function SharedBOMPage() {
   const { token } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    handleShareAccess();
+  }, [token, isAuthenticated]);
+
+  const handleShareAccess = async () => {
+    // If not authenticated, fetch preview and redirect to login
+    if (!isAuthenticated) {
+      try {
+        const response = await bomShareAPI.getSharePreview(token);
+
+        // Redirect to login with share preview info
+        navigate('/', {
+          state: {
+            from: location,
+            sharePreview: response.preview,
+            shareToken: token
+          },
+          replace: true
+        });
+      } catch (error) {
+        console.error('Failed to fetch share preview:', error);
+        setError(error.message || 'Invalid or expired share link');
+        setLoading(false);
+      }
+      return;
+    }
+
+    // If authenticated, proceed to access the shared BOM
     accessSharedBom();
-  }, [token]);
+  };
 
   const accessSharedBom = async () => {
     try {
       setLoading(true);
       setError(null);
 
+      // Step 1: Access the shared BOM (creates copy if needed)
       const response = await bomShareAPI.accessSharedBom(token);
 
-      // Redirect to the project page with the shared BOM
-      // Pass share info via state so we can show the shared banner
-      navigate('/app', {
+      // Step 2: Fetch the actual BOM data from the saved BOM
+      const savedBom = await savedBomAPI.getSavedBom(response.projectId);
+
+      // Step 3: Navigate directly to BOM page with the actual BOM data
+      navigate('/bom', {
         state: {
+          bomData: savedBom.bomData,  // The actual BOM data
+          savedBomId: response.bomId,
           projectId: response.projectId,
-          isSharedCopy: true,
+          userNotes: savedBom.userNotes,
+          changeLog: savedBom.changeLog,
+          isSharedCopy: !response.isSharer,  // True if recipient, false if sharer
           shareInfo: response.shareInfo,
           isFirstAccess: response.isFirstAccess
         },

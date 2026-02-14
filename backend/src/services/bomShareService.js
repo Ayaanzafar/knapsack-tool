@@ -395,6 +395,62 @@ class BomShareService {
 
     return count;
   }
+
+  /**
+   * Get public preview of a shared BOM (NO authentication required)
+   * Used to show share info on login page
+   * @param {string} shareToken - The share token
+   * @returns {Promise<Object>} - Public share preview info
+   */
+  async getSharePreview(shareToken) {
+    const share = await prisma.bomShare.findUnique({
+      where: { shareToken },
+      include: {
+        parentBom: {
+          include: {
+            project: {
+              select: {
+                name: true,
+                clientName: true,
+                projectId: true
+              }
+            }
+          }
+        },
+        sharedBy: {
+          select: {
+            username: true,
+            role: true
+          }
+        },
+        sharedWith: {
+          select: {
+            username: true
+          }
+        }
+      }
+    });
+
+    if (!share) {
+      throw new Error('Share link not found or expired');
+    }
+
+    return {
+      sharedBy: {
+        username: share.sharedBy.username,
+        role: share.sharedBy.role
+      },
+      sharedWith: {
+        username: share.sharedWith.username
+      },
+      projectName: share.parentBom.project.name,
+      clientName: share.parentBom.project.clientName,
+      projectId: share.parentBom.project.projectId,
+      message: share.message,
+      sharedAt: share.createdAt,
+      isAccessed: share.isAccessed
+    };
+  }
 }
 
 module.exports = new BomShareService();

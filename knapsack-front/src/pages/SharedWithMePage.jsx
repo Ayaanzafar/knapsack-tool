@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import bomShareAPI from '../services/bomShareAPI';
+import { savedBomAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 export default function SharedWithMePage() {
@@ -30,13 +31,21 @@ export default function SharedWithMePage() {
 
   const handleOpenSharedBOM = async (shareToken) => {
     try {
+      // Step 1: Access the shared BOM (creates copy if needed)
       const response = await bomShareAPI.accessSharedBom(shareToken);
 
-      // Navigate to the project with the shared BOM
-      navigate('/app', {
+      // Step 2: Fetch the actual BOM data from the saved BOM
+      const savedBom = await savedBomAPI.getSavedBom(response.projectId);
+
+      // Step 3: Navigate directly to BOM page with the actual BOM data
+      navigate('/bom', {
         state: {
+          bomData: savedBom.bomData,  // The actual BOM data
+          savedBomId: response.bomId,
           projectId: response.projectId,
-          isSharedCopy: true,
+          userNotes: savedBom.userNotes,
+          changeLog: savedBom.changeLog,
+          isSharedCopy: !response.isSharer,  // True if recipient, false if sharer
           shareInfo: response.shareInfo,
           isFirstAccess: response.isFirstAccess
         }

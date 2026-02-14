@@ -3,7 +3,10 @@ const router = express.Router();
 const bomShareController = require('../controllers/bomShareController');
 const { authenticateToken } = require('../middleware/authMiddleware');
 
-// All routes require authentication
+// Public route - NO authentication required (for login page preview)
+router.get('/share-preview/:token', bomShareController.getSharePreview);
+
+// All other routes require authentication
 router.use(authenticateToken);
 
 // Create share links for a BOM

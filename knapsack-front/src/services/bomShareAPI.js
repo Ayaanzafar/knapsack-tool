@@ -110,6 +110,17 @@ const bomShareAPI = {
   async getNewSharesCount() {
     const response = await apiClient.get('/bom/new-shares-count');
     return response.data;
+  },
+
+  /**
+   * Get public preview of a shared BOM (NO authentication required)
+   * Used to show share info on login page
+   * @param {string} token - The share token
+   * @returns {Promise<Object>} - Share preview info
+   */
+  async getSharePreview(token) {
+    const response = await apiClient.get(`/bom/share-preview/${token}`);
+    return response.data;
   }
 };
 
