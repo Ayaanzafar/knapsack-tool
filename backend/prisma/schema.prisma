@@ -49,7 +49,7 @@ model User {
   savedBoms          SavedBom[]       @relation("CreatedBoms")
   sharedBoms         SavedBom[]       @relation("SharedBoms")
   sharesCreated      BomShare[]       @relation("SharesCreated")
-  sharesReceived     BomShare[]       @relation("SharesReceived")
+  sharesReceived     BomShareUser[]   @relation("SharesReceived")
 
   @@map("users")
 }
@@ -268,8 +268,8 @@ model SavedBom {
   copiedBoms            SavedBom[] @relation("BomCopies")
   sharedBy              User?     @relation("SharedBoms", fields: [sharedByUserId], references: [id], onDelete: SetNull)
 
-  sharesAsParent        BomShare[] @relation("ParentBomShares")
-  sharesAsCreated       BomShare[] @relation("CreatedBomShares")
+  sharesAsParent        BomShare[]     @relation("ParentBomShares")
+  sharesAsCreated       BomShareUser[] @relation("CreatedBomShares")
 
   @@index([projectId])
   @@index([parentBomId])
@@ -384,27 +384,42 @@ model BomVariationItem {
   @@map("bom_variation_items")
 }
 
-// BOM Shares Table - Tracks BOM sharing activities
+// BOM Shares Table - Tracks BOM sharing activities (ONE share = ONE link for multiple users)
 model BomShare {
   id                Int       @id @default(autoincrement())
   shareToken        String    @unique @map("share_token") @db.VarChar(255)
   parentBomId       Int       @map("parent_bom_id")
   sharedByUserId    Int       @map("shared_by_user_id")
-  sharedWithUserId  Int       @map("shared_with_user_id")
-  createdBomId      Int?      @map("created_bom_id")
   message           String?   @db.Text
   createdAt         DateTime  @default(now()) @map("created_at")
-  accessedAt        DateTime? @map("accessed_at")
-  isAccessed        Boolean   @default(false) @map("is_accessed")
 
-  parentBom         SavedBom  @relation("ParentBomShares", fields: [parentBomId], references: [id], onDelete: Cascade)
-  sharedBy          User      @relation("SharesCreated", fields: [sharedByUserId], references: [id], onDelete: Cascade)
-  sharedWith        User      @relation("SharesReceived", fields: [sharedWithUserId], references: [id], onDelete: Cascade)
-  createdBom        SavedBom? @relation("CreatedBomShares", fields: [createdBomId], references: [id], onDelete: SetNull)
+  parentBom         SavedBom       @relation("ParentBomShares", fields: [parentBomId], references: [id], onDelete: Cascade)
+  sharedBy          User           @relation("SharesCreated", fields: [sharedByUserId], references: [id], onDelete: Cascade)
+  sharedWithUsers   BomShareUser[] // NEW: Multiple users can access this single link
 
   @@index([shareToken])
   @@index([sharedByUserId])
-  @@index([sharedWithUserId])
   @@index([parentBomId])
   @@map("bom_shares")
+}
+
+// BOM Share Users Table - Junction table tracking which users have access to each share
+model BomShareUser {
+  id              Int       @id @default(autoincrement())
+  bomShareId      Int       @map("bom_share_id")
+  userId          Int       @map("user_id")
+  isAccessed      Boolean   @default(false) @map("is_accessed")
+  accessedAt      DateTime? @map("accessed_at")
+  createdBomId    Int?      @map("created_bom_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  bomShare        BomShare  @relation(fields: [bomShareId], references: [id], onDelete: Cascade)
+  user            User      @relation("SharesReceived", fields: [userId], references: [id], onDelete: Cascade)
+  createdBom      SavedBom? @relation("CreatedBomShares", fields: [createdBomId], references: [id], onDelete: SetNull)
+
+  @@unique([bomShareId, userId]) // Prevent duplicate shares to same user
+  @@index([bomShareId])
+  @@index([userId])
+  @@index([createdBomId])
+  @@map("bom_share_users")
 }

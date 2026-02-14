@@ -25,7 +25,7 @@ class BomShareController {
         });
       }
 
-      const shares = await bomShareService.createShares(
+      const share = await bomShareService.createShares(
         bomId || projectId,
         sharedByUserId,
         sharedWithUserIds,
@@ -35,7 +35,7 @@ class BomShareController {
 
       res.json({
         success: true,
-        shares
+        share // Single share object with one link for all users
       });
     } catch (error) {
       console.error('Error creating shares:', error);

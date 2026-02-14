@@ -116,7 +116,10 @@ export default function SharedLoginPage() {
               📤 You've Been Invited!
             </h1>
             <p className="text-purple-100 text-lg">
-              {sharePreview?.sharedBy.username} ({sharePreview?.sharedBy.role}) shared a BOM with you
+              {sharePreview?.sharedBy.username} ({sharePreview?.sharedBy.role}) shared a BOM with{' '}
+              {sharePreview?.sharedWithUsers.length > 1
+                ? `${sharePreview.sharedWithUsers.length} users`
+                : 'you'}
             </p>
           </div>
 

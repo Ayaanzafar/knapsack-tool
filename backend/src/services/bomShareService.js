@@ -10,13 +10,13 @@ class BomShareService {
   }
 
   /**
-   * Create share links for multiple users
+   * Create ONE share link for multiple users
    * @param {number} parentBomIdOrProjectId - ID of the BOM or Project being shared
    * @param {number} sharedByUserId - ID of user creating the share
    * @param {number[]} sharedWithUserIds - Array of user IDs to share with
    * @param {string|null} message - Optional message for recipients
    * @param {boolean} isProjectId - If true, treat first param as projectId
-   * @returns {Promise<Array>} - Array of created shares with share links
+   * @returns {Promise<Object>} - Single share object with one link for all users
    */
   async createShares(parentBomIdOrProjectId, sharedByUserId, sharedWithUserIds, message = null, isProjectId = false) {
     // Lookup BOM by projectId or bomId
@@ -39,41 +39,46 @@ class BomShareService {
 
     const parentBomId = parentBom.id;
 
-    const shares = [];
+    // Generate ONE token for all users
+    const shareToken = this.generateShareToken();
 
-    for (const sharedWithUserId of sharedWithUserIds) {
-      const shareToken = this.generateShareToken();
-
-      const share = await prisma.bomShare.create({
-        data: {
-          shareToken,
-          parentBomId: parentBomId,
-          sharedByUserId: parseInt(sharedByUserId),
-          sharedWithUserId: parseInt(sharedWithUserId),
-          message
-        },
-        include: {
-          sharedWith: {
-            select: {
-              id: true,
-              username: true,
-              role: true
+    // Create ONE share record
+    const share = await prisma.bomShare.create({
+      data: {
+        shareToken,
+        parentBomId: parentBomId,
+        sharedByUserId: parseInt(sharedByUserId),
+        message,
+        sharedWithUsers: {
+          create: sharedWithUserIds.map(userId => ({
+            userId: parseInt(userId)
+          }))
+        }
+      },
+      include: {
+        sharedWithUsers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                role: true
+              }
             }
           }
         }
-      });
+      }
+    });
 
-      shares.push({
-        shareId: share.id,
-        shareToken: share.shareToken,
-        sharedWithUser: share.sharedWith,
-        shareLink: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/bom/shared/${shareToken}`,
-        message: share.message,
-        createdAt: share.createdAt
-      });
-    }
-
-    return shares;
+    // Return single share object with list of users
+    return {
+      shareId: share.id,
+      shareToken: share.shareToken,
+      shareLink: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/bom/shared/${shareToken}`,
+      message: share.message,
+      sharedWithUsers: share.sharedWithUsers.map(su => su.user),
+      createdAt: share.createdAt
+    };
   }
 
   /**
@@ -86,7 +91,7 @@ class BomShareService {
    * @returns {Promise<Object>} - Share info and BOM ID
    */
   async accessSharedBom(shareToken, currentUserId) {
-    // Find share record
+    // Find share record with all recipients
     const share = await prisma.bomShare.findUnique({
       where: { shareToken },
       include: {
@@ -98,12 +103,16 @@ class BomShareService {
         sharedBy: {
           select: { id: true, username: true }
         },
-        sharedWith: {
-          select: { id: true, username: true }
-        },
-        createdBom: {
+        sharedWithUsers: {
           include: {
-            project: true
+            user: {
+              select: { id: true, username: true, role: true }
+            },
+            createdBom: {
+              include: {
+                project: true
+              }
+            }
           }
         }
       }
@@ -122,7 +131,7 @@ class BomShareService {
         shareInfo: {
           parentBomId: share.parentBomId,
           sharedBy: share.sharedBy,
-          sharedWith: share.sharedWith,
+          sharedWithUsers: share.sharedWithUsers.map(su => su.user),
           message: share.message,
           createdAt: share.createdAt
         },
@@ -133,13 +142,15 @@ class BomShareService {
       };
     }
 
-    // Check if current user is the intended recipient
-    if (share.sharedWithUserId !== currentUserIdInt) {
+    // Check if current user is one of the intended recipients
+    const shareUser = share.sharedWithUsers.find(su => su.userId === currentUserIdInt);
+
+    if (!shareUser) {
       throw new Error('Access denied: This BOM was not shared with you');
     }
 
-    // If already accessed, return existing copy
-    if (share.isAccessed && share.createdBomId) {
+    // If already accessed by this user, return their existing copy
+    if (shareUser.isAccessed && shareUser.createdBomId) {
       return {
         shareInfo: {
           parentBomId: share.parentBomId,
@@ -147,13 +158,13 @@ class BomShareService {
           message: share.message,
           createdAt: share.createdAt
         },
-        bomId: share.createdBomId,
-        projectId: share.createdBom.projectId,
+        bomId: shareUser.createdBomId,
+        projectId: shareUser.createdBom.projectId,
         isFirstAccess: false
       };
     }
 
-    // First access - create a copy of the BOM
+    // First access by this user - create a copy of the BOM
     const { copiedBom, newProject } = await this.copyBomForUser(
       share.parentBomId,
       currentUserId,
@@ -161,9 +172,9 @@ class BomShareService {
       shareToken
     );
 
-    // Update share record
-    await prisma.bomShare.update({
-      where: { id: share.id },
+    // Update share user record (not the main share record)
+    await prisma.bomShareUser.update({
+      where: { id: shareUser.id },
       data: {
         isAccessed: true,
         accessedAt: new Date(),
@@ -304,29 +315,33 @@ class BomShareService {
   /**
    * Get share history for a BOM
    * @param {number} bomId - ID of the BOM
-   * @returns {Promise<Array>} - Array of shares
+   * @returns {Promise<Array>} - Array of shares with their recipients
    */
   async getShareHistory(bomId) {
     const shares = await prisma.bomShare.findMany({
       where: { parentBomId: parseInt(bomId) },
       include: {
-        sharedWith: {
-          select: {
-            id: true,
-            username: true,
-            role: true
+        sharedWithUsers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                role: true
+              }
+            },
+            createdBom: {
+              select: {
+                id: true,
+                projectId: true
+              }
+            }
           }
         },
         sharedBy: {
           select: {
             id: true,
             username: true
-          }
-        },
-        createdBom: {
-          select: {
-            id: true,
-            projectId: true
           }
         }
       },
@@ -342,21 +357,31 @@ class BomShareService {
    * @returns {Promise<Array>} - Array of shares received by the user
    */
   async getSharedWithUser(userId) {
-    const shares = await prisma.bomShare.findMany({
+    const shareUsers = await prisma.bomShareUser.findMany({
       where: {
-        sharedWithUserId: parseInt(userId)
+        userId: parseInt(userId)
       },
       include: {
-        parentBom: {
-          select: {
-            id: true,
-            projectId: true,
-            project: {
+        bomShare: {
+          include: {
+            parentBom: {
               select: {
                 id: true,
-                name: true,
-                clientName: true,
-                projectId: true
+                projectId: true,
+                project: {
+                  select: {
+                    id: true,
+                    name: true,
+                    clientName: true,
+                    projectId: true
+                  }
+                }
+              }
+            },
+            sharedBy: {
+              select: {
+                id: true,
+                username: true
               }
             }
           }
@@ -366,18 +391,24 @@ class BomShareService {
             id: true,
             projectId: true
           }
-        },
-        sharedBy: {
-          select: {
-            id: true,
-            username: true
-          }
         }
       },
       orderBy: { createdAt: 'desc' }
     });
 
-    return shares;
+    // Transform to match the old format
+    return shareUsers.map(su => ({
+      id: su.bomShare.id,
+      shareToken: su.bomShare.shareToken,
+      parentBomId: su.bomShare.parentBomId,
+      message: su.bomShare.message,
+      createdAt: su.bomShare.createdAt,
+      isAccessed: su.isAccessed,
+      accessedAt: su.accessedAt,
+      parentBom: su.bomShare.parentBom,
+      createdBom: su.createdBom,
+      sharedBy: su.bomShare.sharedBy
+    }));
   }
 
   /**
@@ -386,9 +417,9 @@ class BomShareService {
    * @returns {Promise<number>} - Count of new shares
    */
   async getNewSharesCount(userId) {
-    const count = await prisma.bomShare.count({
+    const count = await prisma.bomShareUser.count({
       where: {
-        sharedWithUserId: parseInt(userId),
+        userId: parseInt(userId),
         isAccessed: false
       }
     });
@@ -423,9 +454,14 @@ class BomShareService {
             role: true
           }
         },
-        sharedWith: {
-          select: {
-            username: true
+        sharedWithUsers: {
+          include: {
+            user: {
+              select: {
+                username: true,
+                role: true
+              }
+            }
           }
         }
       }
@@ -440,15 +476,15 @@ class BomShareService {
         username: share.sharedBy.username,
         role: share.sharedBy.role
       },
-      sharedWith: {
-        username: share.sharedWith.username
-      },
+      sharedWithUsers: share.sharedWithUsers.map(su => ({
+        username: su.user.username,
+        role: su.user.role
+      })),
       projectName: share.parentBom.project.name,
       clientName: share.parentBom.project.clientName,
       projectId: share.parentBom.project.projectId,
       message: share.message,
-      sharedAt: share.createdAt,
-      isAccessed: share.isAccessed
+      sharedAt: share.createdAt
     };
   }
 }

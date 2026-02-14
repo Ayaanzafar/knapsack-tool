@@ -19,7 +19,8 @@
       "Bash(node scripts/migrations/14_add_c45_variations.js:*)",
       "Bash(find:*)",
       "Bash(python3 -c \"\nimport zipfile, os\nz = zipfile.ZipFile\\(''All Profiles - 05-12-2025 - Product Codes.xlsx''\\)\nmedia = [f for f in z.namelist\\(\\) if ''media'' in f]\nprint\\(''Images in xlsx:'', len\\(media\\)\\)\nfor f in media[:15]:\n    print\\(f\\)\n\")",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(tasklist:*)"
     ],
     "deny": [],
     "ask": []

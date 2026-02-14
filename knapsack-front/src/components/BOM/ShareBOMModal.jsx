@@ -59,7 +59,7 @@ export default function ShareBOMModal({ isOpen, onClose, projectId }) {
         selectedUsers,
         message || null
       );
-      setShareLinks(response.shares || []);
+      setShareLinks(response.share ? [response.share] : []); // Wrap single share in array for easier rendering
       setShowSuccess(true);
     } catch (error) {
       console.error('Failed to share BOM:', error);
@@ -229,24 +229,43 @@ export default function ShareBOMModal({ isOpen, onClose, projectId }) {
               <div className="space-y-3">
                 {shareLinks.map((share, index) => (
                   <div key={index} className="border rounded-lg p-4 bg-gray-50">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <div className="font-medium text-gray-900">
-                          {share.sharedWithUser.username}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {share.sharedWithUser.role}
-                        </div>
+                    {/* Share Link Section */}
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="font-semibold text-gray-900 text-sm">Share Link:</div>
+                        <button
+                          onClick={() => copyLink(share.shareLink)}
+                          className="px-3 py-1.5 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition-colors flex items-center gap-2"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          Copy Link
+                        </button>
                       </div>
-                      <button
-                        onClick={() => copyLink(share.shareLink)}
-                        className="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition-colors"
-                      >
-                        Copy Link
-                      </button>
+                      <div className="text-xs text-gray-600 font-mono bg-white p-3 rounded border break-all">
+                        {share.shareLink}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-600 font-mono bg-white p-2 rounded border break-all">
-                      {share.shareLink}
+
+                    {/* Shared With Users List */}
+                    <div>
+                      <div className="font-semibold text-gray-900 text-sm mb-2">Shared with:</div>
+                      <div className="space-y-2">
+                        {share.sharedWithUsers.map((user, userIndex) => (
+                          <div key={userIndex} className="flex items-center gap-2 bg-white px-3 py-2 rounded border">
+                            <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                              <span className="text-purple-600 font-semibold text-sm">
+                                {user.username.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-gray-900 text-sm">{user.username}</div>
+                              <div className="text-xs text-gray-500">{user.role}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 ))}
