@@ -251,6 +251,45 @@ class UserController {
       next(error);
     }
   }
+
+  // GET /api/users/list - Get list of users for sharing (accessible to all authenticated users)
+  async getUserList(req, res, next) {
+    try {
+      const { role } = req.query;
+      const currentUserId = req.user.id;
+
+      // Build where clause
+      const where = {
+        status: 'ACTIVE', // Only show active users
+        id: {
+          not: currentUserId // Exclude current user
+        }
+      };
+
+      // Add role filter if provided
+      if (role && role !== 'ALL') {
+        where.role = role;
+      }
+
+      const users = await prisma.user.findMany({
+        where,
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          status: true
+        },
+        orderBy: { username: 'asc' }
+      });
+
+      res.json({
+        success: true,
+        users
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new UserController();

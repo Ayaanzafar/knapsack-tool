@@ -1344,6 +1344,7 @@ import ReviewChangesModal from './ReviewChangesModal';
 import ReasonModal from './ReasonModal';
 import ChangeLogDisplay from './ChangeLogDisplay';
 import PrintSettingsModal from './PrintSettingsModal';
+import ShareBOMModal from './ShareBOMModal';
 import NotesSection from './NotesSection';
 import Tooltip from '../Tooltip';
 import NumberInputWithSpinner from '../NumberInputWithSpinner';
@@ -1396,6 +1397,7 @@ export default function BOMPage() {
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [toast, setToast] = useState(null);
 
   const [userNotes, setUserNotes] = useState([]);
@@ -1713,6 +1715,12 @@ export default function BOMPage() {
 
           const loadedAluminumRate = Number.parseFloat(data.bomData.aluminumRate);
           if (Number.isFinite(loadedAluminumRate)) setAluminumRate(loadedAluminumRate);
+
+          const loadedHdgRate = Number.parseFloat(data.bomData.hdgRate);
+          if (Number.isFinite(loadedHdgRate)) setHdgRate(loadedHdgRate);
+
+          const loadedMagnelisRate = Number.parseFloat(data.bomData.magnelisRate);
+          if (Number.isFinite(loadedMagnelisRate)) setMagnelisRate(loadedMagnelisRate);
 
           const loadedSparePercentage = Number.parseFloat(data.bomData.sparePercentage);
           if (Number.isFinite(loadedSparePercentage)) setSparePercentage(loadedSparePercentage);
@@ -2359,6 +2367,8 @@ export default function BOMPage() {
         const bomDataWithGlobals = {
           ...bomData,
           aluminumRate,
+          hdgRate,
+          magnelisRate,
           sparePercentage,
           moduleWp,
         };
@@ -2746,6 +2756,8 @@ export default function BOMPage() {
         panelCounts: currentBomData.panelCounts,
         bomItems: currentBomData.bomItems,
         aluminumRate: aluminumRate,
+        hdgRate: hdgRate,
+        magnelisRate: magnelisRate,
         sparePercentage: sparePercentage,
         moduleWp: moduleWp,
         userNotes: userNotes,
@@ -2985,12 +2997,70 @@ export default function BOMPage() {
                   </button>
                 </Tooltip>
               )}
+
+              {!editMode && hasSavedBom && (
+                <Tooltip content="Share BOM with other users">
+                  <button
+                    className="group px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 flex items-center gap-2 font-semibold shadow-md hover:shadow-lg transform hover:scale-105"
+                    onClick={() => setShowShareModal(true)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 group-hover:scale-110 transition-transform"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                      />
+                    </svg>
+                    <span>Share</span>
+                  </button>
+                </Tooltip>
+              )}
             </div>
           </div>
         </div>
       </header>
 
       <main className={editMode ? 'w-full px-2 py-6' : 'container mx-auto px-6 py-6'}>
+        {/* Shared BOM Banner */}
+        {location.state?.isSharedCopy && location.state?.shareInfo && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
+            <div className="flex items-start gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="flex-1">
+                <h3 className="font-semibold text-blue-900 mb-1 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                  Shared BOM
+                  {location.state?.isFirstAccess && (
+                    <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">New</span>
+                  )}
+                </h3>
+                <p className="text-sm text-blue-800">
+                  Shared by: <strong>{location.state?.shareInfo?.sharedBy?.username}</strong>
+                </p>
+                {location.state?.shareInfo?.message && (
+                  <p className="text-sm text-blue-700 mt-1 italic">
+                    "{location.state.shareInfo.message}"
+                  </p>
+                )}
+                <p className="text-xs text-blue-600 mt-2">
+                  This is your copy - edit freely. Changes won't affect the original BOM.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
           <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white px-4 py-4">
             <div className="flex items-center justify-between gap-6">
@@ -3390,6 +3460,13 @@ export default function BOMPage() {
         moduleWp={moduleWp}
         changeLog={changeLog}
         userNotes={userNotes}
+      />
+
+      {/* Share BOM Modal */}
+      <ShareBOMModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        projectId={projectId}
       />
 
       {toast && (

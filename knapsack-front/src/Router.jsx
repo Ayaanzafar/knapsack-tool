@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import CreateProjectPage from './pages/CreateProjectPage';
 import AdminPanel from './pages/AdminPanel';
 import AdminBOMView from './pages/AdminBOMView';
+import SharedBOMPage from './pages/SharedBOMPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -101,6 +102,16 @@ export default function Router() {
           element={
             <PrivateRoute>
               <BOMPrintPreview />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Shared BOM access via token */}
+        <Route
+          path="/bom/shared/:token"
+          element={
+            <PrivateRoute>
+              <SharedBOMPage />
             </PrivateRoute>
           }
         />

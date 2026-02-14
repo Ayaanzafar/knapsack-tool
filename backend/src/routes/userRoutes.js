@@ -3,7 +3,10 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const { authenticateToken, authorizeRoles } = require('../middleware/authMiddleware');
 
-// Protect all user routes - Only accessible by MANAGERS
+// Public authenticated routes (accessible to all authenticated users)
+router.get('/list', authenticateToken, userController.getUserList.bind(userController));
+
+// Protect all other user routes - Only accessible by MANAGERS
 router.use(authenticateToken);
 router.use(authorizeRoles('MANAGER'));
 

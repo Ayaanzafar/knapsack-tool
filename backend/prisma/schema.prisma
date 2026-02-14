@@ -46,7 +46,10 @@ model User {
 
   projects           Project[]
   generatedBoms      GeneratedBom[]
-  savedBoms          SavedBom[]
+  savedBoms          SavedBom[]       @relation("CreatedBoms")
+  sharedBoms         SavedBom[]       @relation("SharedBoms")
+  sharesCreated      BomShare[]       @relation("SharesCreated")
+  sharesReceived     BomShare[]       @relation("SharesReceived")
 
   @@map("users")
 }
@@ -243,20 +246,34 @@ model GeneratedBom {
 
 // Saved BOMs Table - Stores user-saved BOM snapshots (one per project)
 model SavedBom {
-  id                 Int      @id @default(autoincrement())
-  projectId          Int      @unique @map("project_id")
-  bomData            Json     @map("bom_data")                  // Complete BOM snapshot
-  userNotes          Json?    @map("user_notes")                // User notes at save time
-  changeLog          Json?    @map("change_log")                // Change log at save time
-  customDefaultNotes Json?    @map("custom_default_notes")      // Custom default notes for this BOM (if different from global)
-  createdBy          Int      @map("created_by")                // User who saved
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
+  id                    Int      @id @default(autoincrement())
+  projectId             Int      @unique @map("project_id")
+  bomData               Json     @map("bom_data")                  // Complete BOM snapshot
+  userNotes             Json?    @map("user_notes")                // User notes at save time
+  changeLog             Json?    @map("change_log")                // Change log at save time
+  customDefaultNotes    Json?    @map("custom_default_notes")      // Custom default notes for this BOM (if different from global)
+  createdBy             Int      @map("created_by")                // User who saved
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [createdBy], references: [id])
+  // Sharing fields
+  parentBomId           Int?     @map("parent_bom_id")             // References the BOM this was copied from
+  sharedByUserId        Int?     @map("shared_by_user_id")         // User who shared this BOM
+  isSharedCopy          Boolean  @default(false) @map("is_shared_copy") // Flag to identify if this is a shared copy
+  createdFromShareToken String?  @map("created_from_share_token") @db.VarChar(255) // The token used to create this copy
+
+  project               Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user                  User      @relation("CreatedBoms", fields: [createdBy], references: [id])
+  parentBom             SavedBom? @relation("BomCopies", fields: [parentBomId], references: [id], onDelete: SetNull)
+  copiedBoms            SavedBom[] @relation("BomCopies")
+  sharedBy              User?     @relation("SharedBoms", fields: [sharedByUserId], references: [id], onDelete: SetNull)
+
+  sharesAsParent        BomShare[] @relation("ParentBomShares")
+  sharesAsCreated       BomShare[] @relation("CreatedBomShares")
 
   @@index([projectId])
+  @@index([parentBomId])
+  @@index([sharedByUserId])
   @@map("saved_boms")
 }
 
@@ -365,4 +382,29 @@ model BomVariationItem {
   @@index([sunrackProfileId])
   @@index([fastenerId])
   @@map("bom_variation_items")
+}
+
+// BOM Shares Table - Tracks BOM sharing activities
+model BomShare {
+  id                Int       @id @default(autoincrement())
+  shareToken        String    @unique @map("share_token") @db.VarChar(255)
+  parentBomId       Int       @map("parent_bom_id")
+  sharedByUserId    Int       @map("shared_by_user_id")
+  sharedWithUserId  Int       @map("shared_with_user_id")
+  createdBomId      Int?      @map("created_bom_id")
+  message           String?   @db.Text
+  createdAt         DateTime  @default(now()) @map("created_at")
+  accessedAt        DateTime? @map("accessed_at")
+  isAccessed        Boolean   @default(false) @map("is_accessed")
+
+  parentBom         SavedBom  @relation("ParentBomShares", fields: [parentBomId], references: [id], onDelete: Cascade)
+  sharedBy          User      @relation("SharesCreated", fields: [sharedByUserId], references: [id], onDelete: Cascade)
+  sharedWith        User      @relation("SharesReceived", fields: [sharedWithUserId], references: [id], onDelete: Cascade)
+  createdBom        SavedBom? @relation("CreatedBomShares", fields: [createdBomId], references: [id], onDelete: SetNull)
+
+  @@index([shareToken])
+  @@index([sharedByUserId])
+  @@index([sharedWithUserId])
+  @@index([parentBomId])
+  @@map("bom_shares")
 }
