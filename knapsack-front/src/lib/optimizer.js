@@ -182,7 +182,7 @@ export function generateScenarios(baseConfig) {
   const minPossiblePieces = Math.ceil(baseConfig.required / maxL);
 
   // Generate scenarios with different maxPieces values
-  for (let pieces = minPossiblePieces; pieces <= Math.min(minPossiblePieces + 4, 8); pieces++) {
+  for (let pieces = minPossiblePieces; pieces <= minPossiblePieces + 4; pieces++) {
     const result = optimizeCuts({
       ...baseConfig,
       maxPieces: pieces
@@ -196,7 +196,7 @@ export function generateScenarios(baseConfig) {
   // Also try with different alpha values to get varied solutions
   const alphaVariations = [0, 100, 500, 1000];
   for (const alpha of alphaVariations) {
-    for (let pieces = minPossiblePieces; pieces <= Math.min(minPossiblePieces + 2, 6); pieces++) {
+    for (let pieces = minPossiblePieces; pieces <= minPossiblePieces + 2; pieces++) {
       const result = optimizeCuts({
         ...baseConfig,
         maxPieces: pieces,
