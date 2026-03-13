@@ -207,6 +207,24 @@ export const projectAPI = {
 };
 
 // ====================
+// WALKWAY API
+// ====================
+
+export const walkwayAPI = {
+  // Get all rows for a walkway project
+  getRows: async (projectId) => {
+    const response = await apiClient.get(`/projects/${projectId}/walkway-rows`);
+    return response.data;
+  },
+
+  // Replace all rows for a walkway project
+  syncRows: async (projectId, rows) => {
+    const response = await apiClient.post(`/projects/${projectId}/walkway-rows/sync`, { rows });
+    return response.data;
+  },
+};
+
+// ====================
 // TAB API
 // ====================
 

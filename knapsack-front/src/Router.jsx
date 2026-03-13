@@ -6,6 +6,8 @@ import BOMPrintPreview from './components/BOM/BOMPrintPreview';
 import ChangePasswordPage from './components/Auth/ChangePasswordPage';
 import HomePage from './pages/HomePage';
 import CreateProjectPage from './pages/CreateProjectPage';
+import CreateWalkwayProjectPage from './pages/CreateWalkwayProjectPage';
+import WalkwayApp from './pages/WalkwayApp';
 import AdminPanel from './pages/AdminPanel';
 import AdminBOMView from './pages/AdminBOMView';
 import SharedBOMPage from './pages/SharedBOMPage';
@@ -80,12 +82,30 @@ export default function Router() {
         />
 
         <Route
-          path="/projects/create" 
+          path="/projects/create"
           element={
             <PrivateRoute>
               <CreateProjectPage />
             </PrivateRoute>
-          } 
+          }
+        />
+
+        <Route
+          path="/walkway/create"
+          element={
+            <PrivateRoute>
+              <CreateWalkwayProjectPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/walkway-app"
+          element={
+            <PrivateRoute>
+              <WalkwayApp />
+            </PrivateRoute>
+          }
         />
         
         <Route 

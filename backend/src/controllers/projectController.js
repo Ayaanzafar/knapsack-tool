@@ -18,12 +18,13 @@ class ProjectController {
   // GET /api/projects - Get all projects (filtered by user) with pagination
   async getAllProjects(req, res, next) {
     try {
-      const { page, limit, sortBy, search } = req.query;
+      const { page, limit, sortBy, search, moduleType } = req.query;
       const options = {
         page: parseInt(page) || 1,
         limit: parseInt(limit) || 10,
         sortBy: sortBy || 'latest',
-        search: search || undefined
+        search: search || undefined,
+        moduleType: moduleType || undefined
       };
 
       let result;

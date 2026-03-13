@@ -17,18 +17,36 @@ model Project {
   clientName         String?  @map("client_name") @db.VarChar(255)
   projectId          String?  @map("project_id") @db.VarChar(100)
   longRailVariation  String?  @map("long_rail_variation") @db.VarChar(100)
+  moduleType         String   @default("LONG_RAIL") @map("module_type") @db.VarChar(20)
   moduleWp           Decimal  @default(590) @map("module_wp") @db.Decimal(10, 2)
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
   userId             Int?     @map("user_id")
   isActive           Boolean  @default(true) @map("is_active")
 
-  createdBy     User?   @relation(fields: [userId], references: [id])
+  createdBy     User?         @relation(fields: [userId], references: [id])
   tabs          Tab[]
   generatedBoms GeneratedBom[]
   savedBom      SavedBom?
+  walkwayRows   WalkwayRow[]
 
   @@map("projects")
+}
+
+// Walkway Rows Table - Stores individual walkway section rows within a walkway project
+model WalkwayRow {
+  id        Int      @id @default(autoincrement())
+  projectId Int      @map("project_id")
+  rowNumber Int      @map("row_number")
+  type      String   @default("H") @db.VarChar(1)  // "H" = Horizontal, "V" = Vertical
+  length    Decimal  @db.Decimal(10, 3)             // Length in meters
+  qty       Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("walkway_rows")
 }
 
 // Users Table - Stores authentication and role information

@@ -734,6 +734,10 @@ export default function HomePage() {
     navigate('/projects/create');
   };
 
+  const handleWalkway = () => {
+    navigate('/walkway/create');
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -1037,9 +1041,10 @@ export default function HomePage() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
         </svg>
       ),
-      available: false,
-      badge: 'Q1 2026',
-      badgeColor: 'bg-blue-400'
+      available: true,
+      badge: 'Active',
+      badgeColor: 'bg-green-500',
+      onClick: handleWalkway
     },
     {
       id: 'future-module',

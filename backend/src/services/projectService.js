@@ -9,6 +9,7 @@ class ProjectService {
         clientName: data.clientName || null,
         projectId: data.projectId || null,
         longRailVariation: data.longRailVariation || null,
+        moduleType: data.moduleType || 'LONG_RAIL',
         moduleWp: data.moduleWp !== undefined ? parseInt(data.moduleWp) : 590,
         userId: data.userId || null
       }
@@ -95,11 +96,12 @@ class ProjectService {
 
   // Get all projects with pagination
   async getAllProjectsPaginated(options) {
-    const { page, limit, sortBy, search } = options;
+    const { page, limit, sortBy, search, moduleType } = options;
     const skip = (page - 1) * limit;
 
     // Build where clause
     const where = { isActive: true };
+    if (moduleType) where.moduleType = moduleType;
     if (search) {
       where.OR = [
         { name: { contains: search } },
@@ -147,7 +149,7 @@ class ProjectService {
 
   // Get projects by User ID with pagination
   async getProjectsByUserPaginated(userId, options) {
-    const { page, limit, sortBy, search } = options;
+    const { page, limit, sortBy, search, moduleType } = options;
     const skip = (page - 1) * limit;
 
     // Build where clause
@@ -155,6 +157,7 @@ class ProjectService {
       isActive: true,
       userId: parseInt(userId)
     };
+    if (moduleType) where.moduleType = moduleType;
 
     if (search) {
       where.OR = [
