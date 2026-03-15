@@ -402,15 +402,17 @@ export default function WalkwayApp() {
           </div>
         )}
 
-        {/* Create BOM (coming soon) */}
+        {/* Create BOM */}
         <div className="flex justify-end">
-          <button disabled title="BOM generation coming soon"
-            className="flex items-center gap-2 px-6 py-3 bg-gray-200 text-gray-400 font-bold rounded-xl cursor-not-allowed text-sm"
+          <button
+            onClick={() => navigate('/walkway-bom')}
+            disabled={!hasAnyCalc}
+            className="flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl shadow-sm transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5 text-sm disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Create BOM <span className="text-xs font-normal">(Coming Soon)</span>
+            Create BOM
           </button>
         </div>
       </main>

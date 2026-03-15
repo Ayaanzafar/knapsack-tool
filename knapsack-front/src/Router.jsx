@@ -8,6 +8,8 @@ import HomePage from './pages/HomePage';
 import CreateProjectPage from './pages/CreateProjectPage';
 import CreateWalkwayProjectPage from './pages/CreateWalkwayProjectPage';
 import WalkwayApp from './pages/WalkwayApp';
+import WalkwayBOMPage from './pages/WalkwayBOMPage';
+import WalkwayBOMPrintPreview from './pages/WalkwayBOMPrintPreview';
 import AdminPanel from './pages/AdminPanel';
 import AdminBOMView from './pages/AdminBOMView';
 import SharedBOMPage from './pages/SharedBOMPage';
@@ -104,6 +106,24 @@ export default function Router() {
           element={
             <PrivateRoute>
               <WalkwayApp />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/walkway-bom"
+          element={
+            <PrivateRoute>
+              <WalkwayBOMPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/walkway-bom/print-preview"
+          element={
+            <PrivateRoute>
+              <WalkwayBOMPrintPreview />
             </PrivateRoute>
           }
         />

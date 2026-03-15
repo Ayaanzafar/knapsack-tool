@@ -222,6 +222,18 @@ export const walkwayAPI = {
     const response = await apiClient.post(`/projects/${projectId}/walkway-rows/sync`, { rows });
     return response.data;
   },
+
+  // Save walkway BOM snapshot (reuses SavedBom table)
+  saveBOM: async (projectId, bomData) => {
+    const response = await apiClient.post(`/saved-boms/project/${projectId}`, { bomData });
+    return response.data;
+  },
+
+  // Get saved walkway BOM
+  getBOM: async (projectId) => {
+    const response = await apiClient.get(`/saved-boms/project/${projectId}`);
+    return response.data;
+  },
 };
 
 // ====================
