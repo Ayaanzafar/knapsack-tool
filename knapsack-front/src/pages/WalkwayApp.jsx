@@ -77,25 +77,27 @@ export default function WalkwayApp() {
   }, [navigate]);
 
   // Autosave rows to API (debounced 1.5s)
+  const syncRowsNow = useCallback(async (rowsToSave) => {
+    if (!projectIdRef.current) return;
+    setSaveStatus('saving');
+    try {
+      await walkwayAPI.syncRows(projectIdRef.current, rowsToSave.map(r => ({
+        type: r.type,
+        length: parseFloat(r.length) || 0,
+        qty: parseInt(r.qty) || 1
+      })));
+      setSaveStatus('saved');
+    } catch (err) {
+      console.error('Autosave failed:', err);
+      setSaveStatus('unsaved');
+    }
+  }, []);
+
   const scheduleSave = useCallback((rowsToSave) => {
     setSaveStatus('unsaved');
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(async () => {
-      if (!projectIdRef.current) return;
-      setSaveStatus('saving');
-      try {
-        await walkwayAPI.syncRows(projectIdRef.current, rowsToSave.map(r => ({
-          type: r.type,
-          length: parseFloat(r.length) || 0,
-          qty: parseInt(r.qty) || 1
-        })));
-        setSaveStatus('saved');
-      } catch (err) {
-        console.error('Autosave failed:', err);
-        setSaveStatus('unsaved');
-      }
-    }, 1500);
-  }, []);
+    saveTimerRef.current = setTimeout(() => syncRowsNow(rowsToSave), 1500);
+  }, [syncRowsNow]);
 
   const updateRow = useCallback((id, field, value) => {
     setRows(prev => {
@@ -405,7 +407,14 @@ export default function WalkwayApp() {
         {/* Create BOM */}
         <div className="flex justify-end">
           <button
-            onClick={() => navigate('/walkway-bom')}
+            onClick={async () => {
+              if (saveTimerRef.current) {
+                clearTimeout(saveTimerRef.current);
+                saveTimerRef.current = null;
+              }
+              await syncRowsNow(rows);
+              navigate('/walkway-bom');
+            }}
             disabled={!hasAnyCalc}
             className="flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl shadow-sm transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5 text-sm disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
           >
