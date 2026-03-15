@@ -1,18 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { projectAPI, walkwayAPI } from '../services/api';
 import { calculateWalkwayBOM } from '../lib/walkwayBomCalculations';
 
 const WALKWAY_PROJECT_KEY = 'currentWalkwayProjectId';
-const WALKWAY_BOM_SETTINGS_KEY = 'walkwayBomSettings';
 
-// ── BOM Settings Modal ──────────────────────────────────────────────────────
+// ── First-time setup modal (just Al Rate, required to start) ─────────────────
 
-function BOMSettingsModal({ onConfirm, onCancel }) {
+function FirstSetupModal({ onConfirm, onCancel }) {
   const [alRate, setAlRate] = useState('');
-  const [sparePct, setSparePct] = useState('0.1');
-  const [includeBlindRivets, setIncludeBlindRivets] = useState(true);
-  const [includeSDS, setIncludeSDS] = useState(true);
   const [error, setError] = useState('');
 
   const handleSubmit = () => {
@@ -20,87 +16,33 @@ function BOMSettingsModal({ onConfirm, onCancel }) {
       setError('Please enter a valid Aluminum Rate.');
       return;
     }
-    if (!includeBlindRivets && !includeSDS) {
-      setError('Select at least one fastener type.');
-      return;
-    }
     setError('');
-    onConfirm({
-      alRate: parseFloat(alRate),
-      sparePct: parseFloat(sparePct) || 0.1,
-      includeBlindRivets,
-      includeSDS,
-    });
+    onConfirm(parseFloat(alRate));
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-        {/* Header */}
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
         <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 px-6 py-4">
-          <h2 className="text-lg font-bold text-white">BOM Settings</h2>
-          <p className="text-yellow-100 text-sm mt-0.5">Configure before generating the walkway BOM</p>
+          <h2 className="text-lg font-bold text-white">Set Aluminum Rate</h2>
+          <p className="text-yellow-100 text-sm mt-0.5">Required to calculate material costs</p>
         </div>
-
-        <div className="px-6 py-5 space-y-5">
-          {/* Aluminum Rate */}
+        <div className="px-6 py-5 space-y-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">
               Aluminum Rate <span className="text-gray-400 font-normal">(INR / kg)</span>
             </label>
             <input
-              type="number" min="0" step="0.01"
+              type="number" min="0" step="0.01" autoFocus
               value={alRate}
               onChange={e => setAlRate(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
               placeholder="e.g. 220"
               className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm font-medium"
             />
           </div>
-
-          {/* Spare % */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Spare % <span className="text-gray-400 font-normal">(applied to all items)</span>
-            </label>
-            <input
-              type="number" min="0" step="0.1"
-              value={sparePct}
-              onChange={e => setSparePct(e.target.value)}
-              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm font-medium"
-            />
-          </div>
-
-          {/* Fastener checkboxes */}
-          <div>
-            <p className="text-sm font-semibold text-gray-700 mb-2">Fastener Options</p>
-            <div className="space-y-2">
-              <label className="flex items-center gap-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={includeBlindRivets}
-                  onChange={e => setIncludeBlindRivets(e.target.checked)}
-                  className="w-4 h-4 accent-yellow-500"
-                />
-                <span className="text-sm text-gray-700">Blind Rivets <span className="text-gray-400">(4.8×15mm)</span></span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={includeSDS}
-                  onChange={e => setIncludeSDS(e.target.checked)}
-                  className="w-4 h-4 accent-yellow-500"
-                />
-                <span className="text-sm text-gray-700">SDS Screws</span>
-              </label>
-            </div>
-          </div>
-
-          {error && (
-            <p className="text-red-500 text-sm font-medium bg-red-50 px-3 py-2 rounded-lg">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm font-medium bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
         </div>
-
-        {/* Footer */}
         <div className="px-6 pb-5 flex gap-3 justify-end">
           <button
             onClick={onCancel}
@@ -120,22 +62,88 @@ function BOMSettingsModal({ onConfirm, onCancel }) {
   );
 }
 
-// ── BOM Section Table ───────────────────────────────────────────────────────
+// ── Inline settings panel (live-editable) ────────────────────────────────────
+
+function SettingsPanel({ settings, onChange }) {
+  const { alRate, sparePct, includeBlindRivets, includeSDS } = settings;
+
+  const set = (key, value) => onChange({ ...settings, [key]: value });
+
+  const fastenerError = !includeBlindRivets && !includeSDS;
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm px-6 py-4">
+      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">BOM Settings — edit to update live</p>
+      <div className="flex flex-wrap gap-6 items-end">
+
+        {/* Al Rate */}
+        <div className="flex flex-col gap-1.5 min-w-[160px]">
+          <label className="text-xs font-semibold text-gray-600">
+            Aluminum Rate <span className="text-gray-400 font-normal">(₹/kg)</span>
+          </label>
+          <input
+            type="number" min="0" step="0.01"
+            value={alRate}
+            onChange={e => set('alRate', parseFloat(e.target.value) || 0)}
+            className="px-3 py-2 border-2 border-yellow-300 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent w-36 bg-yellow-50"
+          />
+        </div>
+
+        {/* Spare % */}
+        <div className="flex flex-col gap-1.5 min-w-[120px]">
+          <label className="text-xs font-semibold text-gray-600">Spare %</label>
+          <input
+            type="number" min="0" step="0.1"
+            value={sparePct}
+            onChange={e => set('sparePct', parseFloat(e.target.value) || 0)}
+            className="px-3 py-2 border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent w-24"
+          />
+        </div>
+
+        {/* Fasteners */}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-xs font-semibold text-gray-600">Fasteners</span>
+          <div className="flex gap-4">
+            <label className={`flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-xl border-2 text-sm font-medium transition-colors ${includeBlindRivets ? 'border-blue-400 bg-blue-50 text-blue-800' : 'border-gray-200 text-gray-500'}`}>
+              <input
+                type="checkbox"
+                checked={includeBlindRivets}
+                onChange={e => set('includeBlindRivets', e.target.checked)}
+                className="w-3.5 h-3.5 accent-blue-500"
+              />
+              Blind Rivets
+            </label>
+            <label className={`flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-xl border-2 text-sm font-medium transition-colors ${includeSDS ? 'border-blue-400 bg-blue-50 text-blue-800' : 'border-gray-200 text-gray-500'}`}>
+              <input
+                type="checkbox"
+                checked={includeSDS}
+                onChange={e => set('includeSDS', e.target.checked)}
+                className="w-3.5 h-3.5 accent-blue-500"
+              />
+              SDS Screws
+            </label>
+          </div>
+          {fastenerError && (
+            <p className="text-red-500 text-xs font-medium mt-0.5">Select at least one fastener.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── BOM Section Table ─────────────────────────────────────────────────────────
 
 function BOMSectionTable({ title, items, accentColor = 'blue' }) {
-  const headerBg   = accentColor === 'orange' ? 'bg-orange-600' : 'bg-blue-700';
-  const subtitleBg = accentColor === 'orange' ? 'bg-orange-50 border-orange-200 text-orange-800' : 'bg-blue-50 border-blue-200 text-blue-800';
-
-  const totalCost  = items.reduce((s, i) => s + (i.cost || 0), 0);
-  const totalWt    = items.reduce((s, i) => s + (i.totalWeight || 0), 0);
+  const headerBg = accentColor === 'orange' ? 'bg-orange-600' : 'bg-blue-700';
+  const totalCost = items.reduce((s, i) => s + (i.cost || 0), 0);
+  const totalWt   = items.reduce((s, i) => s + (i.totalWeight || 0), 0);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-      {/* Section header */}
       <div className={`px-6 py-3 ${headerBg}`}>
         <h3 className="text-sm font-bold text-white tracking-wide uppercase">{title}</h3>
       </div>
-
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -196,20 +204,30 @@ function BOMSectionTable({ title, items, accentColor = 'blue' }) {
   );
 }
 
-// ── Main Page ───────────────────────────────────────────────────────────────
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
+const DEFAULT_SETTINGS = {
+  alRate: 0,
+  sparePct: 0.1,
+  includeBlindRivets: true,
+  includeSDS: true,
+};
 
 export default function WalkwayBOMPage() {
   const navigate = useNavigate();
-  const [project, setProject]     = useState(null);
-  const [rows, setRows]           = useState([]);
-  const [bom, setBom]             = useState(null);       // { horizontal, vertical, summary }
-  const [settings, setSettings]   = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading]     = useState(true);
-  const [saving, setSaving]       = useState(false);
-  const [error, setError]         = useState('');
 
-  // Load project + rows on mount
+  const [project, setProject]         = useState(null);
+  const [rows, setRows]               = useState([]);
+  const [settings, setSettings]       = useState(DEFAULT_SETTINGS);
+  const [bomActive, setBomActive]     = useState(false);   // true once Al Rate has been set
+  const [showModal, setShowModal]     = useState(false);
+  const [loading, setLoading]         = useState(true);
+  const [saveStatus, setSaveStatus]   = useState('saved'); // 'saved' | 'saving' | 'unsaved'
+  const [error, setError]             = useState('');
+
+  const saveTimerRef = useRef(null);
+
+  // Load project + rows + existing saved BOM on mount
   useEffect(() => {
     const projectId = localStorage.getItem(WALKWAY_PROJECT_KEY);
     if (!projectId) { navigate('/walkway/create'); return; }
@@ -223,16 +241,15 @@ export default function WalkwayBOMPage() {
         setProject(proj);
         setRows(savedRows ?? []);
 
-        // Try to load existing saved BOM
+        // Restore previously saved BOM settings
         try {
           const saved = await walkwayAPI.getBOM(projectId);
-          if (saved?.bomData?.moduleType === 'WALKWAY') {
-            const { settings: s, bom: b } = saved.bomData;
-            setSettings(s);
-            setBom(b);
+          if (saved?.bomData?.moduleType === 'WALKWAY' && saved.bomData.settings) {
+            setSettings(saved.bomData.settings);
+            setBomActive(true);
           }
         } catch {
-          // No saved BOM yet — that's fine
+          // No saved BOM yet
         }
       } catch (err) {
         setError('Failed to load project data.');
@@ -245,38 +262,52 @@ export default function WalkwayBOMPage() {
     load();
   }, [navigate]);
 
-  const handleCreateBOM = () => setShowModal(true);
+  // Derived BOM — recalculates whenever rows or settings change
+  const bom = useMemo(() => {
+    if (!bomActive || settings.alRate <= 0) return null;
+    const fastenerOk = settings.includeBlindRivets || settings.includeSDS;
+    if (!fastenerOk) return null;
+    return calculateWalkwayBOM(rows, settings);
+  }, [rows, settings, bomActive]);
 
-  const handleSettingsConfirm = async (s) => {
-    setShowModal(false);
-    setSettings(s);
-
-    const result = calculateWalkwayBOM(rows, s);
-    setBom(result);
-
-    // Persist to DB
-    const projectId = localStorage.getItem(WALKWAY_PROJECT_KEY);
-    if (projectId) {
-      setSaving(true);
+  // Debounced save to DB whenever bom changes
+  const scheduleSave = useCallback((currentSettings, currentBom) => {
+    setSaveStatus('unsaved');
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
+      const projectId = localStorage.getItem(WALKWAY_PROJECT_KEY);
+      if (!projectId) return;
+      setSaveStatus('saving');
       try {
         await walkwayAPI.saveBOM(projectId, {
           moduleType: 'WALKWAY',
-          settings: s,
-          bom: result,
+          settings: currentSettings,
+          bom: currentBom,
           generatedAt: new Date().toISOString(),
         });
+        setSaveStatus('saved');
       } catch (err) {
-        console.error('Failed to save BOM snapshot:', err);
-      } finally {
-        setSaving(false);
+        console.error('Failed to save BOM:', err);
+        setSaveStatus('unsaved');
       }
-    }
+    }, 1500);
+  }, []);
+
+  useEffect(() => {
+    if (bom) scheduleSave(settings, bom);
+  }, [bom, settings, scheduleSave]);
+
+  const handleFirstSetup = (alRate) => {
+    setShowModal(false);
+    setSettings(s => ({ ...s, alRate }));
+    setBomActive(true);
   };
 
-  const handleBack = () => navigate('/walkway-app');
+  const handleSettingsChange = (next) => {
+    setSettings(next);
+  };
 
   const handlePrintPreview = () => {
-    // Store bom + settings + project in sessionStorage for print page
     sessionStorage.setItem('walkwayBomPrint', JSON.stringify({ bom, settings, project }));
     navigate('/walkway-bom/print-preview');
   };
@@ -295,16 +326,13 @@ export default function WalkwayBOMPage() {
     );
   }
 
-  const hasH = rows.some(r => r.type === 'H');
-  const hasV = rows.some(r => r.type === 'V');
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Modal */}
+
       {showModal && (
-        <BOMSettingsModal
-          onConfirm={handleSettingsConfirm}
-          onCancel={() => setShowModal(false)}
+        <FirstSetupModal
+          onConfirm={handleFirstSetup}
+          onCancel={() => navigate('/walkway-app')}
         />
       )}
 
@@ -332,19 +360,11 @@ export default function WalkwayBOMPage() {
           )}
 
           <div className="flex items-center gap-3 shrink-0">
-            {saving && (
-              <span className="text-xs text-gray-500 flex items-center gap-1.5">
-                <svg className="animate-spin w-3.5 h-3.5 text-yellow-500" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Saving...
-              </span>
-            )}
+            <SaveIndicator status={saveStatus} />
             {bom && (
               <button
                 onClick={handlePrintPreview}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -353,17 +373,8 @@ export default function WalkwayBOMPage() {
               </button>
             )}
             <button
-              onClick={handleCreateBOM}
-              className="flex items-center gap-2 px-5 py-2 text-sm font-bold bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-colors shadow-sm"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              {bom ? 'Regenerate BOM' : 'Generate BOM'}
-            </button>
-            <button
-              onClick={handleBack}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-colors"
+              onClick={() => navigate('/walkway-app')}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -381,8 +392,8 @@ export default function WalkwayBOMPage() {
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">{error}</div>
         )}
 
-        {/* Empty state — no BOM generated yet */}
-        {!bom && (
+        {/* Empty state — Al Rate not set yet */}
+        {!bomActive && (
           <div className="bg-white rounded-2xl border-2 border-dashed border-gray-200 py-20 flex flex-col items-center gap-4 text-center">
             <div className="w-16 h-16 rounded-full bg-yellow-50 flex items-center justify-center">
               <svg className="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -390,35 +401,26 @@ export default function WalkwayBOMPage() {
               </svg>
             </div>
             <div>
-              <p className="text-lg font-bold text-gray-700">No BOM generated yet</p>
-              <p className="text-sm text-gray-400 mt-1">Click <strong>Generate BOM</strong> to configure settings and create the Bill of Materials.</p>
+              <p className="text-lg font-bold text-gray-700">Enter Aluminum Rate to generate BOM</p>
+              <p className="text-sm text-gray-400 mt-1">All other settings can be adjusted live once the BOM is visible.</p>
             </div>
             <button
-              onClick={handleCreateBOM}
+              onClick={() => setShowModal(true)}
               className="mt-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl shadow-sm transition-colors"
             >
-              Generate BOM
+              Set Rate & Generate
             </button>
           </div>
         )}
 
-        {/* BOM content */}
+        {/* Live settings panel */}
+        {bomActive && (
+          <SettingsPanel settings={settings} onChange={handleSettingsChange} />
+        )}
+
+        {/* BOM tables */}
         {bom && (
           <>
-            {/* Settings summary bar */}
-            {settings && (
-              <div className="flex flex-wrap gap-3 bg-gray-100 rounded-xl px-5 py-3 text-sm text-gray-700">
-                <span>Al Rate: <strong>₹{settings.alRate}/kg</strong></span>
-                <span className="text-gray-400">|</span>
-                <span>Spare: <strong>{settings.sparePct}%</strong></span>
-                <span className="text-gray-400">|</span>
-                <span>Fasteners: <strong>
-                  {[settings.includeBlindRivets && 'Blind Rivets', settings.includeSDS && 'SDS'].filter(Boolean).join(' + ')}
-                </strong></span>
-              </div>
-            )}
-
-            {/* Section A — Horizontal */}
             {bom.horizontal && (
               <BOMSectionTable
                 title="Section A — Horizontal Walkway"
@@ -427,7 +429,6 @@ export default function WalkwayBOMPage() {
               />
             )}
 
-            {/* Section B — Vertical */}
             {bom.vertical && (
               <BOMSectionTable
                 title="Section B — Vertical Walkway"
@@ -450,7 +451,7 @@ export default function WalkwayBOMPage() {
               />
               <SummaryCard
                 label="Cost per Running Metre"
-                value={`₹${bom.summary.costPerRM.toFixed(2)}/RM`}
+                value={`₹${bom.summary.costPerRM.toFixed(2)} / RM`}
                 color="green"
               />
             </div>
@@ -466,6 +467,34 @@ export default function WalkwayBOMPage() {
         )}
       </main>
     </div>
+  );
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function SaveIndicator({ status }) {
+  if (status === 'saving') return (
+    <span className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+      <svg className="animate-spin w-3.5 h-3.5 text-yellow-500" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+      </svg>
+      Saving...
+    </span>
+  );
+  if (status === 'unsaved') return (
+    <span className="flex items-center gap-1.5 text-xs text-amber-600 font-medium">
+      <span className="w-2 h-2 rounded-full bg-amber-400 inline-block"></span>
+      Unsaved
+    </span>
+  );
+  return (
+    <span className="flex items-center gap-1.5 text-xs text-green-600 font-medium">
+      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+      </svg>
+      Saved
+    </span>
   );
 }
 
