@@ -5,35 +5,55 @@ import { calculateWalkwayBOM } from '../lib/walkwayBomCalculations';
 
 const WALKWAY_PROJECT_KEY = 'currentWalkwayProjectId';
 
-// ── First-time setup modal (just Al Rate, required to start) ─────────────────
+// ── First-time setup modal ────────────────────────────────────────────────────
 
 function FirstSetupModal({ onConfirm, onCancel }) {
-  const [alRate, setAlRate] = useState('');
-  const [error, setError] = useState('');
+  const [magnelisRate, setMagnelisRate] = useState('');
+  const [alRate, setAlRate]             = useState('');
+  const [error, setError]               = useState('');
 
   const handleSubmit = () => {
+    if (!magnelisRate || parseFloat(magnelisRate) <= 0) {
+      setError('Please enter a valid Magnelis Rate.');
+      return;
+    }
     if (!alRate || parseFloat(alRate) <= 0) {
-      setError('Please enter a valid Aluminum Rate.');
+      setError('Please enter a valid Aluminium Rate.');
       return;
     }
     setError('');
-    onConfirm(parseFloat(alRate));
+    onConfirm({ magnelisRate: parseFloat(magnelisRate), alRate: parseFloat(alRate) });
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
         <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 px-6 py-4">
-          <h2 className="text-lg font-bold text-white">Set Aluminum Rate</h2>
+          <h2 className="text-lg font-bold text-white">Set Material Rates</h2>
           <p className="text-yellow-100 text-sm mt-0.5">Required to calculate material costs</p>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Aluminum Rate <span className="text-gray-400 font-normal">(INR / kg)</span>
+              Magnelis Rate <span className="text-gray-400 font-normal">(INR / kg)</span>
+              <span className="ml-2 text-xs text-gray-400">— Walkway Section, Cleat, Jointer, Base Rail</span>
             </label>
             <input
               type="number" min="0" step="0.01" autoFocus
+              value={magnelisRate}
+              onChange={e => setMagnelisRate(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+              placeholder="e.g. 180"
+              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm font-medium"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              Aluminium Rate <span className="text-gray-400 font-normal">(INR / kg)</span>
+              <span className="ml-2 text-xs text-gray-400">— Rail Nut (Al 6063-T6)</span>
+            </label>
+            <input
+              type="number" min="0" step="0.01"
               value={alRate}
               onChange={e => setAlRate(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSubmit()}
@@ -65,7 +85,7 @@ function FirstSetupModal({ onConfirm, onCancel }) {
 // ── Inline settings panel (live-editable) ────────────────────────────────────
 
 function SettingsPanel({ settings, onChange }) {
-  const { alRate, sparePct, includeBlindRivets, includeSDS } = settings;
+  const { magnelisRate, alRate, sparePct, includeBlindRivets, includeSDS } = settings;
 
   const set = (key, value) => onChange({ ...settings, [key]: value });
 
@@ -76,22 +96,38 @@ function SettingsPanel({ settings, onChange }) {
       <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">BOM Settings — edit to update live</p>
       <div className="flex flex-wrap gap-6 items-end">
 
-        {/* Al Rate */}
-        <div className="flex flex-col gap-1.5 min-w-[160px]">
+        {/* Magnelis Rate */}
+        <div className="flex flex-col gap-1.5">
           <label className="text-xs font-semibold text-gray-600">
-            Aluminum Rate <span className="text-gray-400 font-normal">(₹/kg)</span>
+            Magnelis Rate <span className="text-gray-400 font-normal">(₹/kg)</span>
           </label>
+          <div className="text-xs text-gray-400 -mt-1">Section · Cleat · Jointer · Base Rail</div>
           <input
             type="number" min="0" step="0.01"
-            value={alRate}
-            onChange={e => set('alRate', parseFloat(e.target.value) || 0)}
+            value={magnelisRate}
+            onChange={e => set('magnelisRate', parseFloat(e.target.value) || 0)}
             className="px-3 py-2 border-2 border-yellow-300 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent w-36 bg-yellow-50"
           />
         </div>
 
+        {/* Aluminium Rate */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold text-gray-600">
+            Aluminium Rate <span className="text-gray-400 font-normal">(₹/kg)</span>
+          </label>
+          <div className="text-xs text-gray-400 -mt-1">Rail Nut (Al 6063-T6)</div>
+          <input
+            type="number" min="0" step="0.01"
+            value={alRate}
+            onChange={e => set('alRate', parseFloat(e.target.value) || 0)}
+            className="px-3 py-2 border-2 border-blue-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent w-36 bg-blue-50"
+          />
+        </div>
+
         {/* Spare % */}
-        <div className="flex flex-col gap-1.5 min-w-[120px]">
+        <div className="flex flex-col gap-1.5">
           <label className="text-xs font-semibold text-gray-600">Spare %</label>
+          <div className="text-xs text-gray-400 -mt-1">All items</div>
           <input
             type="number" min="0" step="0.1"
             value={sparePct}
@@ -103,7 +139,8 @@ function SettingsPanel({ settings, onChange }) {
         {/* Fasteners */}
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-semibold text-gray-600">Fasteners</span>
-          <div className="flex gap-4">
+          <div className="text-xs text-gray-400 -mt-1">Fixed rate/pc — not weight-based</div>
+          <div className="flex gap-3">
             <label className={`flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-xl border-2 text-sm font-medium transition-colors ${includeBlindRivets ? 'border-blue-400 bg-blue-50 text-blue-800' : 'border-gray-200 text-gray-500'}`}>
               <input
                 type="checkbox"
@@ -207,6 +244,7 @@ function BOMSectionTable({ title, items, accentColor = 'blue' }) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 const DEFAULT_SETTINGS = {
+  magnelisRate: 0,
   alRate: 0,
   sparePct: 0.1,
   includeBlindRivets: true,
@@ -264,7 +302,7 @@ export default function WalkwayBOMPage() {
 
   // Derived BOM — recalculates whenever rows or settings change
   const bom = useMemo(() => {
-    if (!bomActive || settings.alRate <= 0) return null;
+    if (!bomActive || settings.magnelisRate <= 0 || settings.alRate <= 0) return null;
     const fastenerOk = settings.includeBlindRivets || settings.includeSDS;
     if (!fastenerOk) return null;
     return calculateWalkwayBOM(rows, settings);
@@ -297,9 +335,9 @@ export default function WalkwayBOMPage() {
     if (bom) scheduleSave(settings, bom);
   }, [bom, settings, scheduleSave]);
 
-  const handleFirstSetup = (alRate) => {
+  const handleFirstSetup = ({ magnelisRate, alRate }) => {
     setShowModal(false);
-    setSettings(s => ({ ...s, alRate }));
+    setSettings(s => ({ ...s, magnelisRate, alRate }));
     setBomActive(true);
   };
 
@@ -401,8 +439,8 @@ export default function WalkwayBOMPage() {
               </svg>
             </div>
             <div>
-              <p className="text-lg font-bold text-gray-700">Enter Aluminum Rate to generate BOM</p>
-              <p className="text-sm text-gray-400 mt-1">All other settings can be adjusted live once the BOM is visible.</p>
+              <p className="text-lg font-bold text-gray-700">Enter material rates to generate BOM</p>
+              <p className="text-sm text-gray-400 mt-1">Set Magnelis and Aluminium rates. All settings can be adjusted live after.</p>
             </div>
             <button
               onClick={() => setShowModal(true)}

@@ -2,11 +2,11 @@
     { value: "U Cleat Long Rail - Regular", label: "U Cleat Long Rail - Regular" },
 
     { value: "U Cleat Long Rail - Regular - Asbestos", label: "U Cleat Long Rail - Regular - Asbestos" },
-    // { value: "U Cleat Long Rail - Regular - Seam Clamp", label: "U Cleat Long Rail - Regular - Seam Clamp" },
+    { value: "U Cleat Long Rail - Regular - Seam Clamp", label: "U Cleat Long Rail - Regular - Seam Clamp" },
 
     { value: "U Cleat Long Rail - Large Span/Height", label: "U Cleat Long Rail - Large Span/Height" },
     { value: "U Cleat Long Rail - Large Span - Asbestos", label: "U Cleat Long Rail - Large Span - Asbestos" },
-    // { value: "U Cleat Long Rail - Large Height - Seam Clamp", label: "U Cleat Long Rail - Large Height - Seam Clamp" },
+    { value: "U Cleat Long Rail - Large Height - Seam Clamp", label: "U Cleat Long Rail - Large Height - Seam Clamp" },
 
     { value: "Double U Cleat Long Rail -160mm Height", label: "Double U Cleat Long Rail -160mm Height"},
     { value: "Double U Cleat Long Rail -180mm Height", label: "Double U Cleat Long Rail -180mm Height"},

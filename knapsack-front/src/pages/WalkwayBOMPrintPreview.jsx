@@ -64,7 +64,9 @@ export default function WalkwayBOMPrintPreview() {
           {/* Settings summary */}
           {settings && (
             <div className="mt-3 flex flex-wrap gap-4 text-xs text-gray-700 bg-gray-50 rounded-lg px-4 py-2 border border-gray-200">
-              <span>Al Rate: <strong>₹{settings.alRate}/kg</strong></span>
+              <span>Magnelis Rate: <strong>₹{settings.magnelisRate}/kg</strong></span>
+              <span>|</span>
+              <span>Aluminium Rate: <strong>₹{settings.alRate}/kg</strong></span>
               <span>|</span>
               <span>Spare: <strong>{settings.sparePct}%</strong></span>
               <span>|</span>

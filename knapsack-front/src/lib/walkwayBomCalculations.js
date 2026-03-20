@@ -65,12 +65,12 @@ function withSpare(baseQty, sparePct) {
  * @param {string}  description
  * @param {number}  baseQty
  * @param {number}  sparePct
- * @param {number|null} wtPc     — kg/pc (null for fasteners)
- * @param {number}  alRate       — INR/kg (used when wtPc != null)
- * @param {number|null} fixedRatePc — INR/pc override (for fasteners)
+ * @param {number|null} wtPc        — kg/pc (null for fasteners)
+ * @param {number}  materialRate    — INR/kg for this specific material
+ * @param {number|null} fixedRatePc — INR/pc override (for fasteners, SS items)
  * @param {string}  material
  */
-function makeItem(description, baseQty, sparePct, wtPc, alRate, fixedRatePc, material) {
+function makeItem(description, baseQty, sparePct, wtPc, materialRate, fixedRatePc, material) {
   const { baseQty: bq, spareQty, totalQty } = withSpare(baseQty, sparePct);
 
   let wtPcFinal   = wtPc ?? 0;
@@ -79,15 +79,15 @@ function makeItem(description, baseQty, sparePct, wtPc, alRate, fixedRatePc, mat
   let cost;
 
   if (fixedRatePc != null) {
-    // Fastener: cost by fixed rate/pc, no meaningful weight
+    // Fastener / SS item: cost by fixed rate/pc, no weight-based cost
     ratePc      = fixedRatePc;
     totalWeight = 0;
     cost        = totalQty * ratePc;
   } else {
-    // Profile: cost by wt × rate/kg
-    ratePc      = wtPcFinal * alRate;
+    // Profile: cost = Total Weight × material rate
+    ratePc      = wtPcFinal * materialRate;
     totalWeight = totalQty * wtPcFinal;
-    cost        = totalQty * ratePc;
+    cost        = totalWeight * materialRate;
   }
 
   return {
@@ -109,25 +109,26 @@ function makeItem(description, baseQty, sparePct, wtPc, alRate, fixedRatePc, mat
  */
 function buildHorizontalBOM(agg, settings) {
   const { totalSections, totalLCleats, totalJointers } = agg;
-  const { alRate, sparePct, includeBlindRivets, includeSDS } = settings;
+  const { magnelisRate, alRate, sparePct, includeBlindRivets, includeSDS } = settings;
 
   const fastenerQty = totalLCleats + totalJointers * 4;
 
   const items = [];
 
-  items.push(makeItem('Walkway Section (310mm width, 2010mm)', totalSections, sparePct, WEIGHTS.walkwaySection, alRate, null, 'Magnelis'));
-  items.push(makeItem('Walkway Cleat (L-Angle, 40mm)',         totalLCleats,  sparePct, WEIGHTS.walkwayCleat,   alRate, null, 'Magnelis'));
-  items.push(makeItem('Jointer (200mm)',                       totalJointers, sparePct, WEIGHTS.jointer,        alRate, null, 'Magnelis'));
+  // Magnelis profiles → use magnelisRate
+  items.push(makeItem('Walkway Section (310mm width, 2010mm)', totalSections, sparePct, WEIGHTS.walkwaySection, magnelisRate, null, 'Magnelis'));
+  items.push(makeItem('Walkway Cleat (L-Angle, 40mm)',         totalLCleats,  sparePct, WEIGHTS.walkwayCleat,   magnelisRate, null, 'Magnelis'));
+  items.push(makeItem('Jointer (200mm)',                       totalJointers, sparePct, WEIGHTS.jointer,        magnelisRate, null, 'Magnelis'));
 
+  // Fasteners → fixed rate/pc
   if (includeBlindRivets) {
-    items.push(makeItem('Blind Rivets (4.8×15mm)', fastenerQty, sparePct, null, alRate, FASTENER_RATES.blindRivets, 'Al 5000'));
+    items.push(makeItem('Blind Rivets (4.8×15mm)', fastenerQty, sparePct, null, null, FASTENER_RATES.blindRivets, 'Al 5000'));
   }
   if (includeSDS) {
     const sdsRate = settings.sdsRate != null ? settings.sdsRate : null;
-    items.push(makeItem('SDS Screws', fastenerQty, sparePct, null, alRate, sdsRate, '—'));
+    items.push(makeItem('SDS Screws', fastenerQty, sparePct, null, null, sdsRate, '—'));
   }
-
-  items.push(makeItem('EPDM Pad (30×30×2mm)', totalLCleats, sparePct, null, alRate, FASTENER_RATES.epdmPad, 'Al 5001'));
+  items.push(makeItem('EPDM Pad (30×30×2mm)', totalLCleats, sparePct, null, null, FASTENER_RATES.epdmPad, 'Al 5001'));
 
   return items;
 }
@@ -137,29 +138,35 @@ function buildHorizontalBOM(agg, settings) {
  */
 function buildVerticalBOM(agg, settings) {
   const { totalSections, totalLCleats, totalJointers, totalBaseRail } = agg;
-  const { alRate, sparePct, includeBlindRivets, includeSDS } = settings;
+  const { magnelisRate, alRate, sparePct, includeBlindRivets, includeSDS } = settings;
 
   const fastenerQty = (totalBaseRail * 2) + totalLCleats + (totalJointers * 4);
 
   const items = [];
 
-  items.push(makeItem('Walkway Section (310mm width, 2010mm)', totalSections, sparePct, WEIGHTS.walkwaySection, alRate, null, 'Magnelis'));
-  items.push(makeItem('Base Rail (400mm)',                     totalBaseRail, sparePct, WEIGHTS.baseRail,       alRate, null, 'Magnelis'));
-  items.push(makeItem('Walkway Cleat (L-Angle, 40mm)',         totalLCleats,  sparePct, WEIGHTS.walkwayCleat,   alRate, null, 'Magnelis'));
-  items.push(makeItem('Jointer (200mm)',                       totalJointers, sparePct, WEIGHTS.jointer,        alRate, null, 'Magnelis'));
-  items.push(makeItem('Rail Nut',                              totalLCleats,  sparePct, WEIGHTS.railNut,        alRate, null, 'Al 6063-T6'));
-  items.push(makeItem('M8×20 Allen Hex Bolt',                 totalLCleats,  sparePct, null, alRate, FASTENER_RATES.m8Bolt,   'SS 304'));
-  items.push(makeItem('M8 Plain & Spring Washer',             totalLCleats,  sparePct, null, alRate, FASTENER_RATES.m8Washer, 'SS 304'));
+  // Magnelis profiles → use magnelisRate
+  items.push(makeItem('Walkway Section (310mm width, 2010mm)', totalSections, sparePct, WEIGHTS.walkwaySection, magnelisRate, null, 'Magnelis'));
+  items.push(makeItem('Base Rail (400mm)',                     totalBaseRail, sparePct, WEIGHTS.baseRail,       magnelisRate, null, 'Magnelis'));
+  items.push(makeItem('Walkway Cleat (L-Angle, 40mm)',         totalLCleats,  sparePct, WEIGHTS.walkwayCleat,   magnelisRate, null, 'Magnelis'));
+  items.push(makeItem('Jointer (200mm)',                       totalJointers, sparePct, WEIGHTS.jointer,        magnelisRate, null, 'Magnelis'));
 
+  // Al 6063-T6 profile → use alRate
+  items.push(makeItem('Rail Nut', totalLCleats, sparePct, WEIGHTS.railNut, alRate, null, 'Al 6063-T6'));
+
+  // SS 304 fasteners → fixed rate/pc
+  items.push(makeItem('M8×20 Allen Hex Bolt',     totalLCleats, sparePct, null, null, FASTENER_RATES.m8Bolt,   'SS 304'));
+  items.push(makeItem('M8 Plain & Spring Washer', totalLCleats, sparePct, null, null, FASTENER_RATES.m8Washer, 'SS 304'));
+
+  // Blind Rivets / SDS → fixed rate/pc
   if (includeBlindRivets) {
-    items.push(makeItem('Blind Rivets (4.8×15mm)', fastenerQty, sparePct, null, alRate, FASTENER_RATES.blindRivets, 'Al 5000'));
+    items.push(makeItem('Blind Rivets (4.8×15mm)', fastenerQty, sparePct, null, null, FASTENER_RATES.blindRivets, 'Al 5000'));
   }
   if (includeSDS) {
     const sdsRate = settings.sdsRate != null ? settings.sdsRate : null;
-    items.push(makeItem('SDS Screws', fastenerQty, sparePct, null, alRate, sdsRate, '—'));
+    items.push(makeItem('SDS Screws', fastenerQty, sparePct, null, null, sdsRate, '—'));
   }
 
-  items.push(makeItem('EPDM Pad (30×30×2mm)', totalBaseRail * 2, sparePct, null, alRate, FASTENER_RATES.epdmPad, 'Al 5001'));
+  items.push(makeItem('EPDM Pad (30×30×2mm)', totalBaseRail * 2, sparePct, null, null, FASTENER_RATES.epdmPad, 'Al 5001'));
 
   return items;
 }
