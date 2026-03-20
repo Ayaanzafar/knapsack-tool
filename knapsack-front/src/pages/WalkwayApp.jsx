@@ -253,11 +253,11 @@ export default function WalkwayApp() {
                     <div className="text-xs text-gray-400 font-normal">lines</div>
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-gray-600 bg-blue-50/60">
-                    Sections
+                    Walkway Sections
                     <div className="text-xs text-gray-400 font-normal">per line</div>
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-gray-600 bg-blue-50/60">
-                    L-Cleats
+                    Walkway Cleat
                     <div className="text-xs text-gray-400 font-normal">per line</div>
                   </th>
                   <th className="px-4 py-3 text-center font-semibold text-gray-600 bg-blue-50/60">
