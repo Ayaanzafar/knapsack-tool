@@ -245,6 +245,16 @@ export default function WalkwayApp() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
+                <tr className="bg-gray-50 border-b border-gray-100 text-xs">
+                  <th colSpan={4} className="px-4 py-2"></th>
+                  <th colSpan={hasVertical ? 4 : 3} className="px-4 py-2 text-center font-bold text-blue-700 bg-blue-50/80 border-b-2 border-blue-200 tracking-wide uppercase">
+                    One Line
+                  </th>
+                  <th colSpan={hasVertical ? 5 : 4} className="px-4 py-2 text-center font-bold text-yellow-700 bg-yellow-50 border-b-2 border-yellow-300 tracking-wide uppercase">
+                    Length × Quantity
+                  </th>
+                  <th className="px-4 py-2"></th>
+                </tr>
                 <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="px-4 py-3 text-left font-semibold text-gray-600 w-8">#</th>
                   <th className="px-4 py-3 text-center font-semibold text-gray-600 w-28">Type</th>
