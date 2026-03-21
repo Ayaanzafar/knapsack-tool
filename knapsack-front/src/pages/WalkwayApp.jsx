@@ -367,7 +367,7 @@ export default function WalkwayApp() {
                       )}
 
                       <td className="px-4 py-3 text-center bg-yellow-50/40">
-                        {c ? <CalcCell value={c.totalLength} bold /> : <EmptyCell />}
+                        {c ? <CalcCell value={c.totalLength.toFixed(2)} bold /> : <EmptyCell />}
                       </td>
                       <td className="px-4 py-3 text-center bg-yellow-50/40">
                         {c ? <CalcCell value={c.totalSections} bold /> : <EmptyCell />}
@@ -409,7 +409,7 @@ export default function WalkwayApp() {
                     <td className="px-4 py-4 text-center">—</td>
                     <td className="px-4 py-4 text-center">—</td>
                     {hasVertical && <td className="px-4 py-4 text-center">—</td>}
-                    <td className="px-4 py-4 text-center"><span className="text-yellow-400 font-black text-base">{totals.totalLength}</span></td>
+                    <td className="px-4 py-4 text-center"><span className="text-yellow-400 font-black text-base">{totals.totalLength.toFixed(2)}</span></td>
                     <td className="px-4 py-4 text-center"><span className="text-yellow-400 font-black text-base">{totals.sections}</span></td>
                     <td className="px-4 py-4 text-center"><span className="text-yellow-400 font-black text-base">{totals.lCleats}</span></td>
                     <td className="px-4 py-4 text-center"><span className="text-yellow-400 font-black text-base">{totals.jointers}</span></td>
