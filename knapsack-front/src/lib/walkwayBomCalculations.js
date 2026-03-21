@@ -38,10 +38,11 @@ function aggregateRows(rows) {
     if (!length || length <= 0 || !qty || qty <= 0) continue;
 
     const sections  = Math.ceil(length / SECTION_LENGTH);
-    const lCleats   = sections * 6;
+    const baseRailPerRun = sections * 2 + 1;
+    const lCleats   = row.type === 'V' ? baseRailPerRun * 2 : sections * 6;
     const jointers  = sections * 2;
     // Base rail: (sections × 2) + 1 per line
-    const baseRail  = row.type === 'V' ? (sections * 2 + 1) * qty : 0;
+    const baseRail  = row.type === 'V' ? baseRailPerRun * qty : 0;
 
     totalSections  += sections  * qty;
     totalLCleats   += lCleats   * qty;

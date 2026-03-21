@@ -11,9 +11,10 @@ function calcRow(lengthStr, qtyStr, type) {
   if (!length || length <= 0 || !qty || qty <= 0) return null;
 
   const sections = Math.ceil(length / SECTION_LENGTH);
-  const lCleats = sections * 6;
+  const baseRailPerRun = type === 'V' ? (sections * 2) + 1 : 0;
+  const lCleats = type === 'V' ? baseRailPerRun * 2 : sections * 6;
   const jointers = sections * 2;
-  const baseRail = type === 'V' ? (sections * 2) + 1 : 0;
+  const baseRail = baseRailPerRun;
 
   return {
     sections,
@@ -212,7 +213,8 @@ export default function WalkwayApp() {
           <span>
             Each section = <strong>2.01 m</strong> &nbsp;|&nbsp;
             Sections = ⌈ Length ÷ 2.01 ⌉ &nbsp;|&nbsp;
-            L-Cleats = Sections × 6 &nbsp;|&nbsp;
+            L-Cleats (H) = Sections × 6 &nbsp;|&nbsp;
+            L-Cleats (V) = Base Rail × 2 &nbsp;|&nbsp;
             Jointers = Sections × 2 &nbsp;|&nbsp;
             Base Rail = (Sections × 2) + 1 <span className="italic">(Vertical only)</span>
           </span>
