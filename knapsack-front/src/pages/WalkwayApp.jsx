@@ -21,6 +21,7 @@ function calcRow(lengthStr, qtyStr, type) {
     lCleats,
     jointers,
     baseRail,
+    totalLength: length * qty,
     totalSections: sections * qty,
     totalLCleats: lCleats * qty,
     totalJointers: jointers * qty,
@@ -134,12 +135,13 @@ export default function WalkwayApp() {
 
   const totals = rowCalcs.reduce(
     (acc, c) => c ? {
+      totalLength: acc.totalLength + c.totalLength,
       sections: acc.sections + c.totalSections,
       lCleats: acc.lCleats + c.totalLCleats,
       jointers: acc.jointers + c.totalJointers,
       baseRail: acc.baseRail + c.totalBaseRail,
     } : acc,
-    { sections: 0, lCleats: 0, jointers: 0, baseRail: 0 }
+    { totalLength: 0, sections: 0, lCleats: 0, jointers: 0, baseRail: 0 }
   );
 
   const hasVertical = rows.some(r => r.type === 'V');
@@ -272,8 +274,9 @@ export default function WalkwayApp() {
                       <div className="text-xs text-gray-400 font-normal">per line (V only)</div>
                     </th>
                   )}
-                  <th className="px-4 py-3 text-center font-semibold text-yellow-700 bg-yellow-50">Total Sections</th>
-                  <th className="px-4 py-3 text-center font-semibold text-yellow-700 bg-yellow-50">Total L-Cleats</th>
+                  <th className="px-4 py-3 text-center font-semibold text-yellow-700 bg-yellow-50">Total Length<div className="text-xs text-yellow-500 font-normal">(m)</div></th>
+                  <th className="px-4 py-3 text-center font-semibold text-yellow-700 bg-yellow-50">Total Walkway Sections</th>
+                  <th className="px-4 py-3 text-center font-semibold text-yellow-700 bg-yellow-50">Total Walkway Cleats</th>
                   <th className="px-4 py-3 text-center font-semibold text-yellow-700 bg-yellow-50">Total Jointers</th>
                   {hasVertical && (
                     <th className="px-4 py-3 text-center font-semibold text-orange-700 bg-orange-50">Total Base Rail</th>
@@ -335,6 +338,9 @@ export default function WalkwayApp() {
                       )}
 
                       <td className="px-4 py-3 text-center bg-yellow-50/40">
+                        {c ? <CalcCell value={c.totalLength} bold /> : <EmptyCell />}
+                      </td>
+                      <td className="px-4 py-3 text-center bg-yellow-50/40">
                         {c ? <CalcCell value={c.totalSections} bold /> : <EmptyCell />}
                       </td>
                       <td className="px-4 py-3 text-center bg-yellow-50/40">
@@ -374,6 +380,7 @@ export default function WalkwayApp() {
                     <td className="px-4 py-4 text-center">—</td>
                     <td className="px-4 py-4 text-center">—</td>
                     {hasVertical && <td className="px-4 py-4 text-center">—</td>}
+                    <td className="px-4 py-4 text-center"><span className="text-yellow-400 font-black text-base">{totals.totalLength}</span></td>
                     <td className="px-4 py-4 text-center"><span className="text-yellow-400 font-black text-base">{totals.sections}</span></td>
                     <td className="px-4 py-4 text-center"><span className="text-yellow-400 font-black text-base">{totals.lCleats}</span></td>
                     <td className="px-4 py-4 text-center"><span className="text-yellow-400 font-black text-base">{totals.jointers}</span></td>
