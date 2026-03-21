@@ -101,7 +101,7 @@ function SettingsPanel({ settings, onChange }) {
           <label className="text-xs font-semibold text-gray-600">
             Magnelis Rate <span className="text-gray-400 font-normal">(₹/kg)</span>
           </label>
-          <div className="text-xs text-gray-400 -mt-1">Section · Cleat · Jointer · Base Rail</div>
+          {/* <div className="text-xs text-gray-400 -mt-1">Section · Cleat · Jointer · Base Rail</div> */}
           <input
             type="number" min="0" step="0.01"
             value={magnelisRate}
@@ -115,7 +115,7 @@ function SettingsPanel({ settings, onChange }) {
           <label className="text-xs font-semibold text-gray-600">
             Aluminium Rate <span className="text-gray-400 font-normal">(₹/kg)</span>
           </label>
-          <div className="text-xs text-gray-400 -mt-1">Rail Nut (Al 6063-T6)</div>
+          {/* <div className="text-xs text-gray-400 -mt-1">Rail Nut (Al 6063-T6)</div> */}
           <input
             type="number" min="0" step="0.01"
             value={alRate}
@@ -127,7 +127,7 @@ function SettingsPanel({ settings, onChange }) {
         {/* Spare % */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-semibold text-gray-600">Spare %</label>
-          <div className="text-xs text-gray-400 -mt-1">All items</div>
+          {/* <div className="text-xs text-gray-400 -mt-1">All items</div> */}
           <input
             type="number" min="0" step="0.1"
             value={sparePct}
@@ -139,7 +139,7 @@ function SettingsPanel({ settings, onChange }) {
         {/* Fasteners */}
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-semibold text-gray-600">Fasteners</span>
-          <div className="text-xs text-gray-400 -mt-1">Fixed rate/pc — not weight-based</div>
+          {/* <div className="text-xs text-gray-400 -mt-1">Fixed rate/pc — not weight-based</div> */}
           <div className="flex gap-3">
             <label className={`flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-xl border-2 text-sm font-medium transition-colors ${includeBlindRivets ? 'border-blue-400 bg-blue-50 text-blue-800' : 'border-gray-200 text-gray-500'}`}>
               <input
