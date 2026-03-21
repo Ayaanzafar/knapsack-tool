@@ -99,6 +99,7 @@ function makeItem(description, baseQty, sparePct, wtPc, materialRate, fixedRateP
     totalQty,
     wtPc: wtPcFinal || null,
     totalWeight: totalWeight || null,
+    rateKg: fixedRatePc != null ? null : materialRate,
     ratePc: parseFloat(ratePc.toFixed(4)),
     cost: parseFloat(cost.toFixed(2)),
     uom: 'Nos',

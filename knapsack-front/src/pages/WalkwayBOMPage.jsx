@@ -194,6 +194,7 @@ function BOMSectionTable({ title, items, accentColor = 'blue' }) {
               <th className="px-4 py-3 text-center">UoM</th>
               <th className="px-4 py-3 text-center">Wt/pc (kg)</th>
               <th className="px-4 py-3 text-center">Total Wt (kg)</th>
+              <th className="px-4 py-3 text-center">Rate/kg (₹)</th>
               <th className="px-4 py-3 text-center">Rate/pc (₹)</th>
               <th className="px-4 py-3 text-center">Cost (₹)</th>
             </tr>
@@ -215,6 +216,9 @@ function BOMSectionTable({ title, items, accentColor = 'blue' }) {
                   {item.totalWeight != null && item.totalWeight > 0 ? item.totalWeight.toFixed(2) : '—'}
                 </td>
                 <td className="px-4 py-3 text-center text-gray-600">
+                  {item.rateKg != null ? `₹${item.rateKg.toFixed(2)}` : '—'}
+                </td>
+                <td className="px-4 py-3 text-center text-gray-600">
                   {item.ratePc != null ? `₹${item.ratePc.toFixed(2)}` : '—'}
                 </td>
                 <td className="px-4 py-3 text-center font-semibold text-gray-800">
@@ -225,7 +229,7 @@ function BOMSectionTable({ title, items, accentColor = 'blue' }) {
           </tbody>
           <tfoot>
             <tr className="bg-gray-900 text-white border-t-2 border-gray-600">
-              <td colSpan={8} className="px-4 py-3 text-right font-bold text-sm text-gray-300">Section Total</td>
+              <td colSpan={9} className="px-4 py-3 text-right font-bold text-sm text-gray-300">Section Total</td>
               <td className="px-4 py-3 text-center font-bold text-yellow-300">
                 {totalWt > 0 ? totalWt.toFixed(2) : '—'}
               </td>
