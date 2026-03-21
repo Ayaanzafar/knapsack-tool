@@ -147,6 +147,25 @@ export default function WalkwayApp() {
   const hasVertical = rows.some(r => r.type === 'V');
   const hasAnyCalc = rowCalcs.some(Boolean);
 
+  // H/V split calculations for summary cards
+  const splitTotals = rows.reduce((acc, row, idx) => {
+    const c = rowCalcs[idx];
+    if (!c) return acc;
+    if (row.type === 'H') {
+      acc.requiredH += c.totalLength;
+      acc.sectionsH += c.totalSections;
+    } else {
+      acc.requiredV += c.totalLength;
+      acc.sectionsV += c.totalSections;
+    }
+    return acc;
+  }, { requiredH: 0, requiredV: 0, sectionsH: 0, sectionsV: 0 });
+
+  const estimatedH = splitTotals.sectionsH * SECTION_LENGTH;
+  const estimatedV = splitTotals.sectionsV * SECTION_LENGTH;
+  const excessH = splitTotals.requiredH > 0 ? ((estimatedH - splitTotals.requiredH) / splitTotals.requiredH) * 100 : null;
+  const excessV = splitTotals.requiredV > 0 ? ((estimatedV - splitTotals.requiredV) / splitTotals.requiredV) * 100 : null;
+
   if (loadingRows) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -405,21 +424,76 @@ export default function WalkwayApp() {
 
         {/* ── Summary Cards ── */}
         {hasAnyCalc && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <SummaryCard label="Total Walkway Sections" value={totals.sections} sub="Nos" color="yellow"
-              icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>}
-            />
-            <SummaryCard label="Total L-Cleats" value={totals.lCleats} sub="Nos" color="blue"
-              icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10M7 21V3m0 18l-3-3m3 3l3-3M17 3v18m0-18l-3 3m3-3l3 3" /></svg>}
-            />
-            <SummaryCard label="Total Jointers" value={totals.jointers} sub="Nos" color="green"
-              icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>}
-            />
-            {hasVertical && (
-              <SummaryCard label="Total Base Rails" value={totals.baseRail} sub="Nos (Vertical)" color="orange"
-                icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" /></svg>}
-              />
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Card 1: Required Quantity of Length */}
+            <div className="rounded-2xl border-2 border-blue-200 bg-blue-50 p-5">
+              <p className="text-sm font-bold text-blue-700 mb-3">Required Quantity of Length</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded">H</span>
+                  <span className="text-lg font-black text-blue-700">{splitTotals.requiredH.toFixed(2)} <span className="text-xs font-semibold">m</span></span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded">V</span>
+                  <span className="text-lg font-black text-orange-700">{splitTotals.requiredV.toFixed(2)} <span className="text-xs font-semibold">m</span></span>
+                </div>
+                <div className="border-t border-blue-200 pt-2 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Total</span>
+                  <span className="text-lg font-black text-gray-700">{(splitTotals.requiredH + splitTotals.requiredV).toFixed(2)} <span className="text-xs font-semibold">m</span></span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Estimated Quantity of Length */}
+            <div className="rounded-2xl border-2 border-yellow-200 bg-yellow-50 p-5">
+              <p className="text-sm font-bold text-yellow-700 mb-3">Estimated Quantity of Length</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded">H</span>
+                  <span className="text-lg font-black text-blue-700">{estimatedH.toFixed(2)} <span className="text-xs font-semibold">m</span></span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded">V</span>
+                  <span className="text-lg font-black text-orange-700">{estimatedV.toFixed(2)} <span className="text-xs font-semibold">m</span></span>
+                </div>
+                <div className="border-t border-yellow-200 pt-2 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Total</span>
+                  <span className="text-lg font-black text-gray-700">{(estimatedH + estimatedV).toFixed(2)} <span className="text-xs font-semibold">m</span></span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: % Excess */}
+            <div className="rounded-2xl border-2 border-green-200 bg-green-50 p-5">
+              <p className="text-sm font-bold text-green-700 mb-3">% Excess</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded">H</span>
+                  <span className="text-lg font-black text-blue-700">
+                    {excessH !== null ? `${excessH.toFixed(2)}%` : <span className="text-gray-300 text-sm">—</span>}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded">V</span>
+                  <span className="text-lg font-black text-orange-700">
+                    {excessV !== null ? `${excessV.toFixed(2)}%` : <span className="text-gray-300 text-sm">—</span>}
+                  </span>
+                </div>
+                {(() => {
+                  const totalRequired = splitTotals.requiredH + splitTotals.requiredV;
+                  const totalEstimated = estimatedH + estimatedV;
+                  const excessTotal = totalRequired > 0 ? ((totalEstimated - totalRequired) / totalRequired) * 100 : null;
+                  return (
+                    <div className="border-t border-green-200 pt-2 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Total</span>
+                      <span className="text-lg font-black text-gray-700">
+                        {excessTotal !== null ? `${excessTotal.toFixed(2)}%` : <span className="text-gray-300 text-sm">—</span>}
+                      </span>
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
           </div>
         )}
 
