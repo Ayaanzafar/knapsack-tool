@@ -116,6 +116,7 @@ class SavedBomService {
           select: {
             id: true,
             username: true,
+            role: true,
           },
         },
       },
@@ -144,6 +145,7 @@ class SavedBomService {
           select: {
             id: true,
             username: true,
+            role: true,
           },
         },
       },

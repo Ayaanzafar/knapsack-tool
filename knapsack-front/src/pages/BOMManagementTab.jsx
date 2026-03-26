@@ -2,6 +2,23 @@ import { useState, useEffect } from 'react';
 import { savedBomAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
+const ROLE_STYLES = {
+  SALES:          { label: 'Sales',       className: 'bg-green-100 text-green-800' },
+  DESIGN:         { label: 'Design',      className: 'bg-blue-100 text-blue-800' },
+  MANAGER_SALES:  { label: 'Mgr (Sales)', className: 'bg-orange-100 text-orange-800' },
+  MANAGER_DESIGN: { label: 'Mgr (Design)',className: 'bg-purple-100 text-purple-800' },
+};
+
+function RoleBadge({ role }) {
+  const style = ROLE_STYLES[role];
+  if (!style) return <span className="text-gray-400 text-xs">—</span>;
+  return (
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${style.className}`}>
+      {style.label}
+    </span>
+  );
+}
+
 export default function BOMManagementTab({ viewBasePath = '/admin/bom/project' }) {
   const [boms, setBoms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +64,7 @@ export default function BOMManagementTab({ viewBasePath = '/admin/bom/project' }
         createdAt: savedBom.createdAt,
         updatedAt: savedBom.updatedAt,
         createdByUsername: savedBom.user?.username || 'N/A',
+        createdByRole: savedBom.user?.role || null,
         createdById: savedBom.user?.id,
         changeLogCount: Array.isArray(savedBom.changeLog) ? savedBom.changeLog.length : 0,
         hasNotes: Array.isArray(savedBom.userNotes) && savedBom.userNotes.length > 0,
@@ -147,6 +165,9 @@ export default function BOMManagementTab({ viewBasePath = '/admin/bom/project' }
                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-32">
                   Created By
                 </th>
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-32">
+                  Role
+                </th>
                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-40">
                   Created At
                 </th>
@@ -180,14 +201,10 @@ export default function BOMManagementTab({ viewBasePath = '/admin/bom/project' }
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                    <span className="inline-flex items-center">
-                      {bom.createdByUsername}
-                      {/* {bom.hasNotes && (
-                        <span className="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
-                          Notes
-                        </span>
-                      )} */}
-                    </span>
+                    {bom.createdByUsername}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm">
+                    <RoleBadge role={bom.createdByRole} />
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {formatDate(bom.createdAt)}
