@@ -3,6 +3,13 @@
 
 import { API_URL } from './config';
 
+// Maps old/legacy longRailVariation values (stored in DB before template system) to current template names
+const LEGACY_NAME_MAP = {
+  'U Cleat Long Rail': 'U Cleat Long Rail - Regular',
+  'BOM for U Cleat Long Rail': 'U Cleat Long Rail - Regular',
+  'Cleat Long Rail': 'U Cleat Long Rail - Regular',
+};
+
 /**
  * Fetch variation template from database
  * @param {string} variationName - e.g. "U Cleat Long Rail - Regular"
@@ -14,6 +21,9 @@ export async function getVariationTemplate(variationName) {
     return null;
   }
 
+  // Remap legacy variation names to current template names
+  const resolvedName = LEGACY_NAME_MAP[variationName] ?? variationName;
+
   const token = localStorage.getItem('token');
   const headers = {
     'Content-Type': 'application/json',
@@ -24,13 +34,13 @@ export async function getVariationTemplate(variationName) {
 
   try {
     const response = await fetch(
-      `${API_URL}/api/bom-templates/${encodeURIComponent(variationName)}`,
+      `${API_URL}/api/bom-templates/${encodeURIComponent(resolvedName)}`,
       { headers }
     );
 
     if (!response.ok) {
       if (response.status === 404) {
-        console.warn(`Template not found for variation: ${variationName}`);
+        console.warn(`Template not found for variation: ${resolvedName}`);
         return null;
       }
       throw new Error(`Failed to fetch template: ${response.status} ${response.statusText}`);
