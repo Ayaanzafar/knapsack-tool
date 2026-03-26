@@ -354,17 +354,21 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
           <h3 className="text-sm font-bold text-purple-700 uppercase tracking-wide">
             Available Cut Lengths ({enabledCount}/{allLengths.length} selected)
           </h3>
-          <div className="flex gap-2">
-            <button onClick={enableAll} className="text-xs text-purple-600 hover:text-purple-800 font-medium">All</button>
-            <span className="text-gray-300">|</span>
-            <button onClick={disableAll} className="text-xs text-purple-600 hover:text-purple-800 font-medium">None</button>
-          </div>
+          {canEditField('enabledLengths') && (
+            <div className="flex gap-2">
+              <button onClick={enableAll} className="text-xs text-purple-600 hover:text-purple-800 font-medium">All</button>
+              <span className="text-gray-300">|</span>
+              <button onClick={disableAll} className="text-xs text-purple-600 hover:text-purple-800 font-medium">None</button>
+            </div>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           {allLengths.map(len => (
             <label
               key={len}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border cursor-pointer transition-colors ${enabledLengths[len] !== false
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-colors ${
+                !canEditField('enabledLengths') ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+              } ${enabledLengths[len] !== false
                 ? 'bg-purple-100 border-purple-400 text-purple-800'
                 : 'bg-gray-50 border-gray-200 text-gray-400'
                 }`}
@@ -373,6 +377,7 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
                 type="checkbox"
                 checked={enabledLengths[len] !== false}
                 onChange={() => toggleLength(len)}
+                disabled={!canEditField('enabledLengths')}
                 className="w-3.5 h-3.5 text-purple-600 rounded"
               />
               <span className="text-sm font-medium">{len}</span>

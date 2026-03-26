@@ -91,11 +91,13 @@ export default function SettingsPanel({
               label="Cost per Joint Set"
               value={costPerJointSet}
               setValue={(v) => updateSetting('costPerJointSet', v)}
+              disabled={!canEditField('costPerJointSet')}
             />
             <TextField
               label="Joiner Length (mm)"
               value={joinerLength}
               setValue={(v) => updateSetting('joinerLength', v)}
+              disabled={!canEditField('joinerLength')}
             />
           </div>
         </Card>
@@ -108,25 +110,28 @@ export default function SettingsPanel({
             label="Max Pieces"
             value={maxPieces}
             setValue={(v) => updateSetting('maxPieces', v)}
+            disabled={!canEditField('maxPieces')}
           />
 
           <div>
-            <div className="text-sm text-gray-600 mb-2">Priority</div>
+            <div className={`text-sm mb-2 ${!canEditField('priority') ? 'text-gray-400' : 'text-gray-600'}`}>Priority</div>
             <div className="space-y-2">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className={`flex items-center gap-2 ${canEditField('priority') ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
                 <input
                   type="radio"
                   checked={priority === 'length'}
                   onChange={() => updateSetting('priority', 'length')}
+                  disabled={!canEditField('priority')}
                   className="w-4 h-4 text-purple-600"
                 />
                 <span className="text-sm">Lesser rail length</span>
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className={`flex items-center gap-2 ${canEditField('priority') ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
                 <input
                   type="radio"
                   checked={priority === 'joints'}
                   onChange={() => updateSetting('priority', 'joints')}
+                  disabled={!canEditField('priority')}
                   className="w-4 h-4 text-purple-600"
                 />
                 <span className="text-sm">Lesser joints</span>
