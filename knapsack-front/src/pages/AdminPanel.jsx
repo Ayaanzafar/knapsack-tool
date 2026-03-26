@@ -631,8 +631,8 @@ export default function AdminPanel() {
             {[
               can('canManageUsers') && { key: 'users', label: 'User Management' },
               { key: 'boms', label: 'BOM Management' },
-              { key: 'permissions', label: 'Permissions' },
-              { key: 'defaults', label: 'App Defaults' },
+              currentUser?.role === 'MANAGER_DESIGN' && { key: 'permissions', label: 'Permissions' },
+              currentUser?.role === 'MANAGER_DESIGN' && { key: 'defaults', label: 'App Defaults' },
             ].filter(Boolean).map(tab => (
               <button
                 key={tab.key}
