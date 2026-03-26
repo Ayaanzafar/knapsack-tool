@@ -215,7 +215,6 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
             <div className="relative group">
               <label className={`block text-[14px] mb-0.5 ${!canEditField('buffer') ? 'text-gray-400' : 'text-gray-600'}`}>
                 Buffer after End Clamp(mm)
-                {!canEditField('buffer') && <span className="ml-1 text-xs text-red-500">(Advanced Only)</span>}
               </label>
               <NumberInputWithSpinner
                 value={buffer}
