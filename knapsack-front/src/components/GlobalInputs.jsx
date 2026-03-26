@@ -146,24 +146,30 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
           <h3 className="text-xs font-bold text-blue-700 mb-2 uppercase tracking-wide">Module Parameters</h3>
           <div className="grid grid-cols-2 gap-1.5">
             <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">Module Length (mm)</label>
+              <label className={`block text-[14px] mb-0.5 ${!canEditField('moduleLength') ? 'text-gray-400' : 'text-gray-600'}`}>Module Length (mm)</label>
               <NumberInputWithSpinner
                 value={moduleLength}
                 onChange={(val) => updateSetting('moduleLength', val)}
+                disabled={!canEditField('moduleLength')}
+                className={!canEditField('moduleLength') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
             </div>
             <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">Module Width (mm)</label>
+              <label className={`block text-[14px] mb-0.5 ${!canEditField('moduleWidth') ? 'text-gray-400' : 'text-gray-600'}`}>Module Width (mm)</label>
               <NumberInputWithSpinner
                 value={moduleWidth}
                 onChange={(val) => updateSetting('moduleWidth', val)}
+                disabled={!canEditField('moduleWidth')}
+                className={!canEditField('moduleWidth') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
             </div>
             <div>
-              <label className="block text-[14px] text-gray-600 mb-0.5">Frame Thickness (mm)</label>
+              <label className={`block text-[14px] mb-0.5 ${!canEditField('frameThickness') ? 'text-gray-400' : 'text-gray-600'}`}>Frame Thickness (mm)</label>
               <NumberInputWithSpinner
                 value={frameThickness}
                 onChange={(val) => updateSetting('frameThickness', val)}
+                disabled={!canEditField('frameThickness')}
+                className={!canEditField('frameThickness') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
             </div>
             <div>
@@ -190,17 +196,20 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
               <NumberInputWithSpinner
                 value={endClampWidth}
                 onChange={(val) => updateSetting('endClampWidth', val)}
+                disabled={!canEditField('endClampWidth')}
+                className={!canEditField('endClampWidth') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
             </div>
             <div>
-              {/* <label className="block text-[14px] text-gray-600 mb-0.5">Mid Clamp Gap(mm)</label> */}
-              <label className="block text-[14px] text-gray-600 mb-0.5 leading-tight min-h-[34px] flex items-end">
+              <label className={`block text-[14px] mb-0.5 leading-tight min-h-[34px] flex items-end ${!canEditField('midClamp') ? 'text-gray-400' : 'text-gray-600'}`}>
                 Mid Clamp Gap(mm)
               </label>
 
               <NumberInputWithSpinner
                 value={midClamp}
                 onChange={(val) => updateSetting('midClamp', val)}
+                disabled={!canEditField('midClamp')}
+                className={!canEditField('midClamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
             </div>
             <div className="relative group">
@@ -217,11 +226,13 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
             </div>
             <div>
               {/* <label className="block text-[14px] text-gray-600 mb-0.5">Rails/side</label> */}
-              <label className="block text-[13px] text-gray-600 mb-0.5">No. of Rails per each side of module</label>
+              <label className={`block text-[13px] mb-0.5 ${!canEditField('railsPerSide') ? 'text-gray-400' : 'text-gray-600'}`}>No. of Rails per each side of module</label>
               <NumberInputWithSpinner
                 value={railsPerSide}
                 onChange={(val) => updateSetting('railsPerSide', val)}
                 minValue={1}
+                disabled={!canEditField('railsPerSide')}
+                className={!canEditField('railsPerSide') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
               {Number(railsPerSide) === 1 && (
                 <p className="text-[10px] text-amber-600 mt-0.5">⚠ Typically its 2</p>
@@ -235,14 +246,14 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
           <h3 className="text-xs font-bold text-green-700 mb-2 uppercase tracking-wide">Site Parameters</h3>
           <div className="space-y-2">
             <div>
-              <label className={`block text-[14px] mb-0.5 ${longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
+              <label className={`block text-[14px] mb-0.5 ${(longRailVariation?.endsWith('Seam Clamp') || !canEditField('purlinDistance')) ? 'text-gray-400' : 'text-gray-600'}`}>
                 Purlin to Purlin Distance (mm)
               </label>
               <NumberInputWithSpinner
                 value={purlinDistance}
                 onChange={(val) => updateSetting('purlinDistance', val)}
-                disabled={longRailVariation?.endsWith('Seam Clamp')}
-                className={longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
+                disabled={longRailVariation?.endsWith('Seam Clamp') || !canEditField('purlinDistance')}
+                className={(longRailVariation?.endsWith('Seam Clamp') || !canEditField('purlinDistance')) ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
               {applyToAll && !longRailVariation?.endsWith('Seam Clamp') && (
                 <button
@@ -261,25 +272,25 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
 
             <div className="grid grid-cols-2 gap-1.5">
               <div>
-                <label className={`block text-[14px] mb-0.5 ${!longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
+                <label className={`block text-[14px] mb-0.5 ${(!longRailVariation?.endsWith('Seam Clamp') || !canEditField('seamToSeamDistance')) ? 'text-gray-400' : 'text-gray-600'}`}>
                   Seam to Seam (mm)
                 </label>
                 <NumberInputWithSpinner
                   value={seamToSeamDistance}
                   onChange={(val) => updateSetting('seamToSeamDistance', val)}
-                  disabled={!longRailVariation?.endsWith('Seam Clamp')}
-                  className={!longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
+                  disabled={!longRailVariation?.endsWith('Seam Clamp') || !canEditField('seamToSeamDistance')}
+                  className={(!longRailVariation?.endsWith('Seam Clamp') || !canEditField('seamToSeamDistance')) ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
                 />
               </div>
               <div>
-                <label className={`block text-[14px] mb-0.5 ${!longRailVariation?.endsWith('Seam Clamp') ? 'text-gray-400' : 'text-gray-600'}`}>
+                <label className={`block text-[14px] mb-0.5 ${(!longRailVariation?.endsWith('Seam Clamp') || !canEditField('maxSupportDistance')) ? 'text-gray-400' : 'text-gray-600'}`}>
                   Max Support Distance (mm)
                 </label>
                 <NumberInputWithSpinner
                   value={maxSupportDistance}
                   onChange={(val) => updateSetting('maxSupportDistance', val)}
-                  disabled={!longRailVariation?.endsWith('Seam Clamp')}
-                  className={!longRailVariation?.endsWith('Seam Clamp') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
+                  disabled={!longRailVariation?.endsWith('Seam Clamp') || !canEditField('maxSupportDistance')}
+                  className={(!longRailVariation?.endsWith('Seam Clamp') || !canEditField('maxSupportDistance')) ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
                 />
               </div>
             </div>
@@ -304,29 +315,32 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
       <div className="border-2 border-orange-200 rounded-lg p-2.5 bg-orange-50/30 mb-3">
         <h3 className="text-xs font-bold text-orange-700 mb-2 uppercase tracking-wide">Priority</h3>
         <div className="flex gap-4">
-          <label className="flex items-center gap-1.5 cursor-pointer">
+          <label className={`flex items-center gap-1.5 ${canEditField('priority') ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
             <input
               type="radio"
               checked={priority === 'cost'}
               onChange={() => updateSetting('priority', 'cost')}
+              disabled={!canEditField('priority')}
               className="w-3.5 h-3.5 text-orange-600"
             />
             <span className="text-xs font-medium">Cost</span>
           </label>
-          <label className="flex items-center gap-1.5 cursor-pointer">
+          <label className={`flex items-center gap-1.5 ${canEditField('priority') ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
             <input
               type="radio"
               checked={priority === 'length'}
               onChange={() => updateSetting('priority', 'length')}
+              disabled={!canEditField('priority')}
               className="w-3.5 h-3.5 text-orange-600"
             />
             <span className="text-xs font-medium">Length</span>
           </label>
-          <label className="flex items-center gap-1.5 cursor-pointer">
+          <label className={`flex items-center gap-1.5 ${canEditField('priority') ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
             <input
               type="radio"
               checked={priority === 'joints'}
               onChange={() => updateSetting('priority', 'joints')}
+              disabled={!canEditField('priority')}
               className="w-3.5 h-3.5 text-orange-600"
             />
             <span className="text-xs font-medium">Joints</span>
