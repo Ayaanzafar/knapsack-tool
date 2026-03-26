@@ -7,8 +7,7 @@ import { parseNumList, fmt } from '../lib/storage';
 import { useAuth } from '../context/AuthContext';
 
 export default function ResultCard({ row, settings }) {
-  const { user } = useAuth();
-  const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
+  const { canEditField } = useAuth();
 
   const {
     moduleWidth,
@@ -162,7 +161,7 @@ export default function ResultCard({ row, settings }) {
         </div>
         <KV label="Pieces" value={result.pieces} />
         <KV label="Joints" value={result.joints} />
-        {userMode === 'advanced' && (
+        {canEditField('maxWastePct') && (
           <KV label="Small Pieces" value={result.smallCount} />
         )}
       </div>

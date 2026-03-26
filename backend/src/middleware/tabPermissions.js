@@ -1,20 +1,5 @@
 const prisma = require('../prismaClient');
-
-const ADVANCED_ROLES = new Set(['DESIGN', 'MANAGER']);
-
-const DEFAULTS = {
-  buffer: 15,
-  lengthsInput: '1595, 1798, 2400, 2750, 3600, 4800'
-};
-
-const getDefaultEnabledLengths = () => ({
-  1595: true,
-  1798: true,
-  2400: true,
-  2750: true,
-  3600: true,
-  4800: true
-});
+const configService = require('../services/configService');
 
 const forbiddenField = (res, field, message = 'Advanced only') => {
   return res.status(403).json({ code: 'FORBIDDEN_FIELD', field, message });
@@ -48,27 +33,15 @@ const normalizeNullableString = (value) => {
   return s === '' ? null : s;
 };
 
-const ADVANCED_ONLY_SETTINGS_FIELDS = [
-  'buffer',
-  'lengthsInput',
-  'costPerMm',
-  'costPerJointSet',
-  'joinerLength',
-  'maxPieces',
-  'maxWastePct',
-  'alphaJoint',
-  'betaSmall',
-  'allowUndershootPct',
-  'gammaShort'
+// All tab settings fields that go through permission checks
+const ALL_TAB_SETTINGS_FIELDS = [
+  'buffer', 'lengthsInput', 'costPerMm', 'costPerJointSet', 'joinerLength',
+  'maxPieces', 'maxWastePct', 'alphaJoint', 'betaSmall', 'allowUndershootPct', 'gammaShort',
 ];
 
-// BASIC users are allowed to toggle enabledLengths for *existing* cutlengths only.
-// BASIC users are NOT allowed to change buffer or edit cutlength list (lengthsInput) or other advanced-only fields.
 exports.enforceTabUpdatePermissions = async (req, res, next) => {
   try {
     const role = req.user?.role;
-    if (ADVANCED_ROLES.has(role)) return next();
-
     const settings = req.body?.settings;
     if (!settings || typeof settings !== 'object') return next();
 
@@ -90,16 +63,20 @@ exports.enforceTabUpdatePermissions = async (req, res, next) => {
         alphaJoint: true,
         betaSmall: true,
         allowUndershootPct: true,
-        gammaShort: true
-      }
+        gammaShort: true,
+      },
     });
 
     if (!existingTab) return res.status(404).json({ error: 'Tab not found' });
 
-    // Reject if BASIC attempts to change any advanced-only fields.
-    for (const field of ADVANCED_ONLY_SETTINGS_FIELDS) {
+    // Check each restricted field dynamically
+    for (const field of ALL_TAB_SETTINGS_FIELDS) {
       if (settings[field] === undefined) continue;
 
+      const canEdit = await configService.canEditTabField(role, field);
+      if (canEdit) continue;
+
+      // Field not allowed — enforce that value hasn't changed from stored
       if (field === 'buffer') {
         const nextVal = normalizeInt(settings.buffer);
         if (nextVal === null) return forbiddenField(res, 'buffer');
@@ -131,47 +108,49 @@ exports.enforceTabUpdatePermissions = async (req, res, next) => {
       }
 
       if (field === 'maxWastePct') {
-        // Stored as string/null; treat any non-identical update as forbidden.
         const nextVal = normalizeNullableString(settings.maxWastePct);
         const prevVal = normalizeNullableString(existingTab.maxWastePct);
         if (nextVal !== prevVal) return forbiddenField(res, 'maxWastePct');
         continue;
       }
 
-      // alphaJoint, betaSmall, gammaShort
+      // alphaJoint, betaSmall, gammaShort, maxPieces
       const nextVal = normalizeInt(settings[field]);
       const prevVal = existingTab[field] ?? null;
       if (nextVal === null) return forbiddenField(res, field);
       if (nextVal !== prevVal) return forbiddenField(res, field);
     }
 
-    // Validate enabledLengths: only toggle existing lengths.
+    // Validate enabledLengths: only toggle existing lengths if not allowed to edit lengthsInput
     if (settings.enabledLengths !== undefined && settings.enabledLengths !== null) {
       if (typeof settings.enabledLengths !== 'object') {
         return forbiddenField(res, 'enabledLengths', 'Invalid enabledLengths payload');
       }
 
-      const existingLengths = new Set(parseNumList(existingTab.lengthsInput).map(String));
-      const updateKeys = Object.keys(settings.enabledLengths);
+      const canEditLengthsInput = await configService.canEditTabField(role, 'lengthsInput');
 
-      for (const key of updateKeys) {
-        if (!existingLengths.has(String(key))) {
-          return forbiddenField(res, 'enabledLengths', 'BASIC cannot add/delete cutlengths');
+      if (!canEditLengthsInput) {
+        const existingLengths = new Set(parseNumList(existingTab.lengthsInput).map(String));
+        const updateKeys = Object.keys(settings.enabledLengths);
+
+        for (const key of updateKeys) {
+          if (!existingLengths.has(String(key))) {
+            return forbiddenField(res, 'enabledLengths', 'Cannot add/delete cutlengths');
+          }
         }
-      }
 
-      const prevEnabled = (existingTab.enabledLengths && typeof existingTab.enabledLengths === 'object') ? existingTab.enabledLengths : {};
-      const merged = { ...prevEnabled, ...settings.enabledLengths };
-
-      // Keep only known lengths keys in storage for consistency
-      const filteredMerged = {};
-      for (const key of Object.keys(merged)) {
-        if (existingLengths.has(String(key))) {
-          filteredMerged[key] = merged[key];
+        const prevEnabled = (existingTab.enabledLengths && typeof existingTab.enabledLengths === 'object')
+          ? existingTab.enabledLengths
+          : {};
+        const merged = { ...prevEnabled, ...settings.enabledLengths };
+        const filteredMerged = {};
+        for (const key of Object.keys(merged)) {
+          if (existingLengths.has(String(key))) {
+            filteredMerged[key] = merged[key];
+          }
         }
+        req.body.settings.enabledLengths = filteredMerged;
       }
-
-      req.body.settings.enabledLengths = filteredMerged;
     }
 
     return next();
@@ -180,29 +159,36 @@ exports.enforceTabUpdatePermissions = async (req, res, next) => {
   }
 };
 
-// For BASIC users, ignore/force defaults for advanced-only settings during tab creation.
-exports.sanitizeTabCreateForRole = (req, res, next) => {
-  const role = req.user?.role;
-  if (ADVANCED_ROLES.has(role)) return next();
+// For restricted users, reset non-editable fields to admin-configured defaults during tab creation
+exports.sanitizeTabCreateForRole = async (req, res, next) => {
+  try {
+    const role = req.user?.role;
 
-  if (!req.body) req.body = {};
-  if (!req.body.settings || typeof req.body.settings !== 'object') req.body.settings = {};
+    if (!req.body) req.body = {};
+    if (!req.body.settings || typeof req.body.settings !== 'object') req.body.settings = {};
 
-  // Force safe defaults for BASIC so they can't "create" with advanced-only overrides.
-  req.body.settings.buffer = DEFAULTS.buffer;
-  req.body.settings.lengthsInput = DEFAULTS.lengthsInput;
-  req.body.settings.enabledLengths = getDefaultEnabledLengths();
+    const tabDefs = await configService.getTabDefaults();
 
-  // Ensure BASIC can't set other advanced-only fields during create (use TabService defaults).
-  delete req.body.settings.costPerMm;
-  delete req.body.settings.costPerJointSet;
-  delete req.body.settings.joinerLength;
-  delete req.body.settings.maxPieces;
-  delete req.body.settings.maxWastePct;
-  delete req.body.settings.alphaJoint;
-  delete req.body.settings.betaSmall;
-  delete req.body.settings.allowUndershootPct;
-  delete req.body.settings.gammaShort;
+    for (const field of ALL_TAB_SETTINGS_FIELDS) {
+      const canEdit = await configService.canEditTabField(role, field);
+      if (!canEdit) {
+        if (field === 'lengthsInput') {
+          req.body.settings.lengthsInput = tabDefs.lengthsInput;
+          // Also reset enabledLengths to match the default lengths list
+          const defaultLengths = parseNumList(tabDefs.lengthsInput);
+          const enabledLengths = {};
+          for (const l of defaultLengths) enabledLengths[l] = true;
+          req.body.settings.enabledLengths = enabledLengths;
+        } else if (tabDefs[field] !== undefined) {
+          req.body.settings[field] = tabDefs[field];
+        } else {
+          delete req.body.settings[field];
+        }
+      }
+    }
 
-  return next();
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 };

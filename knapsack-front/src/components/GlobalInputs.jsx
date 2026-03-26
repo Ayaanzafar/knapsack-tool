@@ -7,9 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import NumberInputWithSpinner from './NumberInputWithSpinner';
 
 export default function GlobalInputs({ settings, setSettings, applyToAll, longRailVariation, moduleWp, setModuleWp }) {
-  const { user } = useAuth();
-  const isBasicUser = user?.role === 'BASIC';
-  const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
+  const { canEditField, appDefaults } = useAuth();
 
   // Local state for lengthsInput to prevent cursor jumping
   const [localLengthsInput, setLocalLengthsInput] = useState(settings.lengthsInput || '');
@@ -108,22 +106,21 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
 
   const handleResetToDefaults = () => {
     if (window.confirm('⚠️ Are you sure you want to reset all Global Parameters to default values? This action cannot be undone.')) {
-      setSettings(prev => ({
-        ...prev,
-        moduleLength: 2278,
-        moduleWidth: 1134,
-        frameThickness: 35,
-        midClamp: 20,
-        endClampWidth: 40,
-        buffer: 15,
-        purlinDistance: 1700,
-        seamToSeamDistance: 400,
-        maxSupportDistance: 1800,
-        railsPerSide: 2,
-        priority: 'cost'
-      }));
+      const tabDefs = appDefaults?.tabDefaults;
+      if (tabDefs) {
+        setSettings(prev => ({ ...prev, ...tabDefs }));
+      } else {
+        // Fallback to hardcoded values if appDefaults not yet loaded
+        setSettings(prev => ({
+          ...prev,
+          moduleLength: 2278, moduleWidth: 1134, frameThickness: 35,
+          midClamp: 20, endClampWidth: 40, buffer: 15,
+          purlinDistance: 1700, seamToSeamDistance: 400, maxSupportDistance: 1800,
+          railsPerSide: 2, priority: 'cost',
+        }));
+      }
       // Reset module Wp (project-level)
-      setModuleWp(DEFAULT_MODULE_WP);
+      setModuleWp(appDefaults?.bomDefaults?.moduleWp ?? DEFAULT_MODULE_WP);
     }
   };
 
@@ -207,15 +204,15 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
               />
             </div>
             <div className="relative group">
-              <label className={`block text-[14px] mb-0.5 ${isBasicUser ? 'text-gray-400' : 'text-gray-600'}`}>
+              <label className={`block text-[14px] mb-0.5 ${!canEditField('buffer') ? 'text-gray-400' : 'text-gray-600'}`}>
                 Buffer after End Clamp(mm)
-                {isBasicUser && <span className="ml-1 text-xs text-red-500">(Advanced Only)</span>}
+                {!canEditField('buffer') && <span className="ml-1 text-xs text-red-500">(Advanced Only)</span>}
               </label>
               <NumberInputWithSpinner
                 value={buffer}
                 onChange={(val) => updateSetting('buffer', val)}
-                disabled={isBasicUser}
-                className={isBasicUser ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
+                disabled={!canEditField('buffer')}
+                className={!canEditField('buffer') ? 'bg-gray-100 cursor-not-allowed text-gray-400' : ''}
               />
             </div>
             <div>
@@ -374,7 +371,7 @@ export default function GlobalInputs({ settings, setSettings, applyToAll, longRa
       </div>
 
       {/* Advanced: Edit lengths */}
-      {(userMode === 'advanced' && !isBasicUser) && (
+      {canEditField('lengthsInput') && (
         <div className="mt-4 pt-4 border-t">
           <TextField
             label="Edit Cut Lengths (comma-separated)"

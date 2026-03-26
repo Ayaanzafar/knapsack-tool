@@ -129,7 +129,7 @@ export default function ShareBOMModal({ isOpen, onClose, projectId }) {
                   Filter by Role:
                 </label>
                 <div className="flex gap-2 flex-wrap">
-                  {['ALL', 'BASIC', 'DESIGN', 'MANAGER'].map(role => (
+                  {['ALL', 'SALES', 'DESIGN', 'MANAGER_SALES', 'MANAGER_DESIGN'].map(role => (
                     <button
                       key={role}
                       onClick={() => setRoleFilter(role)}

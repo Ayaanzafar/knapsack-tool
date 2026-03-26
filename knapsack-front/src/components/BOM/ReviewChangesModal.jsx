@@ -3,14 +3,13 @@ import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function ReviewChangesModal({ isOpen, changes, defaultNotesChanges = [], bomData, originalBomData, onCancel, onConfirm, showToast }) {
-  const { user } = useAuth();
+  const { can } = useAuth();
   const [reasons, setReasons] = useState({});
   const [updateMasterMap, setUpdateMasterMap] = useState({});
   const [materialUpdateChoice, setMaterialUpdateChoice] = useState({});
   const [defaultNotesUpdateChoice, setDefaultNotesUpdateChoice] = useState('bom-only'); // 'global' or 'bom-only'
 
-  // Check if user is ADMIN or MANAGER
-  const canUpdateMaster = user?.role === 'ADMIN' || user?.role === 'MANAGER';
+  const canUpdateMaster = can('canUpdateMasterItem');
   const hasDefaultNotesChanges = defaultNotesChanges && defaultNotesChanges.length > 0;
 
   const allChanges = useMemo(() => {

@@ -54,7 +54,7 @@ model User {
   id                 Int       @id @default(autoincrement())
   username           String    @unique @db.VarChar(50)
   passwordHash       String    @map("password_hash") @db.VarChar(255)
-  role               String    @default("BASIC") @db.VarChar(20) // BASIC, DESIGN, MANAGER
+  role               String    @default("SALES") @db.VarChar(20) // SALES, DESIGN, MANAGER_SALES, MANAGER_DESIGN
   status             String    @default("INACTIVE") @db.VarChar(20) // INACTIVE, ACTIVE, HOLD, DELETED
   mustChangePassword Boolean   @default(true) @map("must_change_password")
   isActive           Boolean   @default(true) @map("is_active") // DEPRECATED: Use status field instead
@@ -440,4 +440,13 @@ model BomShareUser {
   @@index([userId])
   @@index([createdBomId])
   @@map("bom_share_users")
+}
+
+// System Config Table - Stores dynamic permissions and app defaults
+model SystemConfig {
+  key       String   @id @db.VarChar(100)
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_config")
 }

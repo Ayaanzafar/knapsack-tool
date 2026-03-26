@@ -1372,8 +1372,7 @@ const ensureStableIds = (items) => {
 };
 
 export default function BOMPage() {
-  const { user } = useAuth();
-  const isBasicUser = user?.role === 'BASIC';
+  const { user, canEditField } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [bomData, setBomData] = useState(null);
@@ -3123,8 +3122,8 @@ export default function BOMPage() {
                       });
                       setModuleWp(newValue);
                     }}
-                    disabled={!editMode}
-                    className={!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
+                    disabled={!editMode || !canEditField('moduleWp', 'bom')}
+                    className={(!editMode || !canEditField('moduleWp', 'bom')) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
                     minValue={0}
                   />
                 </div>
@@ -3151,8 +3150,8 @@ export default function BOMPage() {
                       });
                       setSparePercentage(newValue);
                     }}
-                    disabled={!editMode}
-                    className={!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
+                    disabled={!editMode || !canEditField('sparePercentage', 'bom')}
+                    className={(!editMode || !canEditField('sparePercentage', 'bom')) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
                     minValue={0}
                   />
                 </div>
@@ -3179,8 +3178,8 @@ export default function BOMPage() {
                       });
                       setAluminumRate(newValue);
                     }}
-                    disabled={!editMode}
-                    className={!editMode ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
+                    disabled={!editMode || !canEditField('aluminumRate', 'bom')}
+                    className={(!editMode || !canEditField('aluminumRate', 'bom')) ? 'bg-gray-50 cursor-not-allowed text-gray-500' : ''}
                     minValue={0}
                   />
                 </div>

@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { authenticateToken, authorizeRoles } = require('../middleware/authMiddleware');
+const { authenticateToken, authorizeRoles, requirePermission } = require('../middleware/authMiddleware');
 
 // Public authenticated routes (accessible to all authenticated users)
 router.get('/list', authenticateToken, userController.getUserList.bind(userController));
 
-// Protect all other user routes - Only accessible by MANAGERS
+// Protect all other user routes - Only accessible by roles with canManageUsers
 router.use(authenticateToken);
-router.use(authorizeRoles('MANAGER'));
+router.use(requirePermission('canManageUsers'));
 
 // GET /api/users - Get all users
 router.get('/', userController.getAllUsers.bind(userController));

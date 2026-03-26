@@ -42,12 +42,12 @@ const PrivateRoute = ({ children }) => {
   return children;
 };
 
-const RoleRoute = ({ children, roles }) => {
-  const { user, loading } = useAuth();
-  
+const AdminRoute = ({ children }) => {
+  const { can, loading } = useAuth();
+
   if (loading) return <div>Loading...</div>;
 
-  if (!user || !roles.includes(user.role)) {
+  if (!can('canAccessAdmin')) {
     return <Navigate to="/" replace />;
   }
 
@@ -65,9 +65,9 @@ export default function Router() {
           path="/admin"
           element={
             <PrivateRoute>
-              <RoleRoute roles={['MANAGER']}>
+              <AdminRoute>
                 <AdminPanel />
-              </RoleRoute>
+              </AdminRoute>
             </PrivateRoute>
           }
         />
@@ -76,9 +76,9 @@ export default function Router() {
           path="/admin/bom/project/:projectId"
           element={
             <PrivateRoute>
-              <RoleRoute roles={['MANAGER']}>
+              <AdminRoute>
                 <AdminBOMView />
-              </RoleRoute>
+              </AdminRoute>
             </PrivateRoute>
           }
         />

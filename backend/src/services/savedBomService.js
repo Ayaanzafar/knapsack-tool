@@ -100,7 +100,7 @@ class SavedBomService {
 
   // Get all saved BOMs with project information (for admin)
   async getAllSavedBoms() {
-    const savedBoms = await prisma.savedBom.findMany({
+    return prisma.savedBom.findMany({
       include: {
         project: {
           select: {
@@ -110,21 +110,45 @@ class SavedBomService {
             projectId: true,
             longRailVariation: true,
             createdAt: true,
-          }
+          },
         },
         user: {
           select: {
             id: true,
             username: true,
-          }
-        }
+          },
+        },
       },
-      orderBy: {
-        updatedAt: 'desc'
-      }
+      orderBy: { updatedAt: 'desc' },
     });
+  }
 
-    return savedBoms;
+  // Get saved BOMs filtered by user roles (for scoped admin view)
+  async getSavedBomsByRoles(roles) {
+    return prisma.savedBom.findMany({
+      where: {
+        user: { role: { in: roles } },
+      },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+            clientName: true,
+            projectId: true,
+            longRailVariation: true,
+            createdAt: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
   }
 }
 

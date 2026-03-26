@@ -702,7 +702,7 @@ import SplitText from './SplitText';
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, user, logout, login } = useAuth();
+  const { isAuthenticated, user, logout, login, can } = useAuth();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -766,8 +766,6 @@ export default function HomePage() {
   const handleAnimationComplete = () => {
     console.log('All letters have animated!');
   };
-
-  const isManager = user?.role === 'MANAGER';
 
   // Landing Page for Unauthenticated Users
   if (!isAuthenticated) {
@@ -1088,7 +1086,7 @@ export default function HomePage() {
                 </span>
               )}
             </button>
-            {isManager && (
+            {can('canAccessAdmin') && (
               <button
                 onClick={() => navigate('/admin')}
                 className="px-5 py-2.5 border-2 border-black bg-yellow-400 text-black text-sm font-semibold rounded-lg hover:bg-yellow-500 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"

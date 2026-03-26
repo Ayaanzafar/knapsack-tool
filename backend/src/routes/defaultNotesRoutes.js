@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const defaultNotesController = require('../controllers/defaultNotesController');
-const { authenticateToken, checkPasswordChange, authorizeRoles } = require('../middleware/authMiddleware');
+const { authenticateToken, checkPasswordChange, requirePermission } = require('../middleware/authMiddleware');
 
 // Protect all routes
 router.use(authenticateToken);
@@ -11,15 +11,15 @@ router.use(checkPasswordChange);
 router.get('/', defaultNotesController.getAllDefaultNotes);
 
 // POST /api/default-notes - Add a new default note (MANAGER only)
-router.post('/', authorizeRoles('MANAGER'), defaultNotesController.addDefaultNote);
+router.post('/', requirePermission('canEditDefaultNotes'), defaultNotesController.addDefaultNote);
 
 // PUT /api/default-notes/:noteOrder - Update a specific default note (MANAGER only)
-router.put('/:noteOrder', authorizeRoles('MANAGER'), defaultNotesController.updateDefaultNote);
+router.put('/:noteOrder', requirePermission('canEditDefaultNotes'), defaultNotesController.updateDefaultNote);
 
 // PUT /api/default-notes - Update multiple default notes (MANAGER only)
-router.put('/', authorizeRoles('MANAGER'), defaultNotesController.updateDefaultNotes);
+router.put('/', requirePermission('canEditDefaultNotes'), defaultNotesController.updateDefaultNotes);
 
 // DELETE /api/default-notes/:noteOrder - Delete a default note (MANAGER only)
-router.delete('/:noteOrder', authorizeRoles('MANAGER'), defaultNotesController.deleteDefaultNote);
+router.delete('/:noteOrder', requirePermission('canEditDefaultNotes'), defaultNotesController.deleteDefaultNote);
 
 module.exports = router;

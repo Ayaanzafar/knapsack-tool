@@ -29,7 +29,7 @@ export default function NotesSection({
   variationName,
   customDefaultNotes,
 }) {
-  const { user } = useAuth();
+  const { user, can } = useAuth();
   const [defaultNotes, setDefaultNotes] = useState([]);
   const [originalDefaultNotes, setOriginalDefaultNotes] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
@@ -42,7 +42,7 @@ export default function NotesSection({
   const [newDefaultText, setNewDefaultText] = useState('');
   const [loadingDefaults, setLoadingDefaults] = useState(true);
 
-  const isManager = user?.role === 'MANAGER';
+  const isManager = can('canEditDefaultNotes');
 
   // Load default notes from database
   useEffect(() => {

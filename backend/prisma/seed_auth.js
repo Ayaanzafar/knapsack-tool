@@ -15,7 +15,7 @@ async function main() {
     create: {
       username: 'admin',
       passwordHash,
-      role: 'MANAGER',
+      role: 'MANAGER_DESIGN',
       mustChangePassword: true,
     },
   });

@@ -10,8 +10,7 @@ export default function SettingsPanel({
   onClose,
   applyToAll
 }) {
-  const { user } = useAuth();
-  const userMode = (user?.role === 'MANAGER' || user?.role === 'DESIGN') ? 'advanced' : 'normal';
+  const { canEditField, appDefaults } = useAuth();
 
   const {
     moduleLength,
@@ -46,9 +45,14 @@ export default function SettingsPanel({
 
   const handleReset = () => {
     if (confirm('Reset all settings to defaults?')) {
+      const tabDefs = appDefaults?.tabDefaults;
+      const base = tabDefs ? { ...DEFAULT_SETTINGS, ...tabDefs } : DEFAULT_SETTINGS;
+      const defaultLengths = tabDefs?.lengthsInput
+        ? tabDefs.lengthsInput.split(/[,\s]+/).map(s => parseInt(s)).filter(n => !isNaN(n))
+        : DEFAULT_LENGTHS;
       setSettings({
-        ...DEFAULT_SETTINGS,
-        enabledLengths: DEFAULT_LENGTHS.reduce((acc, len) => ({ ...acc, [len]: true }), {})
+        ...base,
+        enabledLengths: defaultLengths.reduce((acc, len) => ({ ...acc, [len]: true }), {}),
       });
     }
   };
@@ -75,25 +79,27 @@ export default function SettingsPanel({
   return (
     <div className="space-y-4">
       {/* Cost Settings */}
-      <Card title="Cost Settings">
-        <div className="space-y-3">
-          <TextField
-            label="Cost per mm"
-            value={costPerMm}
-            setValue={(v) => updateSetting('costPerMm', v)}
-          />
-          <TextField
-            label="Cost per Joint Set"
-            value={costPerJointSet}
-            setValue={(v) => updateSetting('costPerJointSet', v)}
-          />
-          <TextField
-            label="Joiner Length (mm)"
-            value={joinerLength}
-            setValue={(v) => updateSetting('joinerLength', v)}
-          />
-        </div>
-      </Card>
+      {canEditField('costPerMm') && (
+        <Card title="Cost Settings">
+          <div className="space-y-3">
+            <TextField
+              label="Cost per mm"
+              value={costPerMm}
+              setValue={(v) => updateSetting('costPerMm', v)}
+            />
+            <TextField
+              label="Cost per Joint Set"
+              value={costPerJointSet}
+              setValue={(v) => updateSetting('costPerJointSet', v)}
+            />
+            <TextField
+              label="Joiner Length (mm)"
+              value={joinerLength}
+              setValue={(v) => updateSetting('joinerLength', v)}
+            />
+          </div>
+        </Card>
+      )}
 
       {/* Optimization */}
       <Card title="Optimization">
@@ -131,7 +137,7 @@ export default function SettingsPanel({
       </Card>
 
       {/* Advanced Settings */}
-      {userMode === 'advanced' && (
+      {canEditField('maxWastePct') && (
         <Card title="Advanced">
           <div className="space-y-3">
             <NumberField

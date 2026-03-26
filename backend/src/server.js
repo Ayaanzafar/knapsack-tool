@@ -16,6 +16,7 @@ const savedBomRoutes = require('./routes/savedBomRoutes');
 const defaultNotesRoutes = require('./routes/defaultNotesRoutes');
 const templateRoutes = require('./routes/templateRoutes');
 const walkwayRoutes = require('./routes/walkwayRoutes');
+const configRoutes = require('./routes/configRoutes');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -71,6 +72,7 @@ app.use('/api/saved-boms', savedBomRoutes);
 app.use('/api/default-notes', defaultNotesRoutes);
 app.use('/api/bom-templates', templateRoutes);
 app.use('/api/projects/:projectId/walkway-rows', walkwayRoutes);
+app.use('/api/config', configRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

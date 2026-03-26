@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const configService = require('../services/configService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-it-in-production';
 
@@ -35,6 +36,16 @@ exports.checkPasswordChange = (req, res, next) => {
     });
   }
   next();
+};
+
+// Dynamic permission check middleware
+exports.requirePermission = (permissionKey) => {
+  return async (req, res, next) => {
+    const role = req.user?.role;
+    const allowed = await configService.hasPermission(role, permissionKey);
+    if (!allowed) return res.status(403).json({ error: 'Access denied' });
+    next();
+  };
 };
 
 // Role-based Access Control Middleware

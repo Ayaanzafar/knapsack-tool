@@ -24,26 +24,14 @@ const getUserRoleFromToken = () => {
   return decodeJwtPayload(token)?.role || null;
 };
 
-const BASIC_FORBIDDEN_TAB_SETTINGS_FIELDS = new Set([
-  'buffer',
-  'lengthsInput',
-  'costPerMm',
-  'costPerJointSet',
-  'joinerLength',
-  'maxPieces',
-  'maxWastePct',
-  'alphaJoint',
-  'betaSmall',
-  'allowUndershootPct',
-  'gammaShort'
-]);
-
-const sanitizeTabSettingsForRole = (settings, role) => {
+// editableTabFields is the array from permissions[role].editableTabFields
+// Pass ['all'] to skip sanitization (advanced users), or the allowed fields list
+const sanitizeTabSettingsForRole = (settings, editableTabFields) => {
   if (!settings || typeof settings !== 'object') return settings;
-  if (role !== 'BASIC') return settings;
+  if (!editableTabFields || editableTabFields.includes('all')) return settings;
   const sanitized = { ...settings };
-  for (const field of BASIC_FORBIDDEN_TAB_SETTINGS_FIELDS) {
-    delete sanitized[field];
+  for (const key of Object.keys(sanitized)) {
+    if (!editableTabFields.includes(key)) delete sanitized[key];
   }
   return sanitized;
 };
@@ -254,17 +242,21 @@ export const tabAPI = {
   },
 
   // Create new tab
-  create: async (projectId, data) => {
-    const role = getUserRoleFromToken();
-    const payload = data?.settings ? { ...data, settings: sanitizeTabSettingsForRole(data.settings, role) } : data;
+  // editableTabFields: optional array from permissions (e.g. ['all'] or ['buffer', ...]); if omitted, no client-side sanitization
+  create: async (projectId, data, editableTabFields) => {
+    const payload = (data?.settings && editableTabFields)
+      ? { ...data, settings: sanitizeTabSettingsForRole(data.settings, editableTabFields) }
+      : data;
     const response = await apiClient.post(`/projects/${projectId}/tabs`, payload);
     return response.data;
   },
 
   // Update tab (name and/or settings)
-  update: async (id, data) => {
-    const role = getUserRoleFromToken();
-    const payload = data?.settings ? { ...data, settings: sanitizeTabSettingsForRole(data.settings, role) } : data;
+  // editableTabFields: optional array from permissions
+  update: async (id, data, editableTabFields) => {
+    const payload = (data?.settings && editableTabFields)
+      ? { ...data, settings: sanitizeTabSettingsForRole(data.settings, editableTabFields) }
+      : data;
     const response = await apiClient.put(`/tabs/${id}`, payload);
     return response.data;
   },
@@ -486,6 +478,17 @@ export const defaultNotesAPI = {
     const response = await apiClient.delete(`/default-notes/${noteOrder}`);
     return response.data;
   },
+};
+
+// ====================
+// CONFIG API
+// ====================
+
+export const configAPI = {
+  getPermissions: () => apiClient.get('/config/permissions').then(r => r.data),
+  updatePermissions: (cfg) => apiClient.put('/config/permissions', cfg).then(r => r.data),
+  getDefaults: () => apiClient.get('/config/defaults').then(r => r.data),
+  updateDefaults: (cfg) => apiClient.put('/config/defaults', cfg).then(r => r.data),
 };
 
 export default apiClient;

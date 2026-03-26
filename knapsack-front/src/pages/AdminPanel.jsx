@@ -1,17 +1,310 @@
 import { useState, useEffect } from 'react';
-import { userAPI } from '../services/api';
+import { userAPI, configAPI } from '../services/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BOMManagementTab from './BOMManagementTab';
 import { useAuth } from '../context/AuthContext';
 
+// ─── Feature permission rows for Permissions tab ──────────────────────────────
+const FEATURE_PERMS = [
+  { key: 'canUpdateMasterItem', label: 'Update Master DB' },
+  { key: 'canViewAllBoms',      label: 'View All BOMs' },
+  { key: 'canViewSalesBoms',    label: 'View Sales BOMs' },
+  { key: 'canViewDesignBoms',   label: 'View Design BOMs' },
+  { key: 'canEditDefaultNotes', label: 'Edit Default Notes' },
+  { key: 'canManageUsers',      label: 'Manage Users' },
+  { key: 'canAccessAdmin',      label: 'Access Admin Panel' },
+];
+
+const FIELD_GROUPS = [
+  { key: 'moduleParams', label: 'Module Parameters', fields: [
+    { key: 'moduleLength', label: 'Module Length', isBom: false },
+    { key: 'moduleWidth',  label: 'Module Width',  isBom: false },
+    { key: 'frameThickness', label: 'Frame Thickness', isBom: false },
+    { key: 'midClamp',     label: 'Mid Clamp Gap', isBom: false },
+    { key: 'endClampWidth',label: 'End Clamp Width', isBom: false },
+  ]},
+  { key: 'structural', label: 'MMS / Structural', fields: [
+    { key: 'buffer',       label: 'Buffer',         isBom: false },
+    { key: 'railsPerSide', label: 'Rails per Side', isBom: false },
+  ]},
+  { key: 'site', label: 'Site Parameters', fields: [
+    { key: 'purlinDistance',       label: 'Purlin Distance',      isBom: false },
+    { key: 'seamToSeamDistance',   label: 'Seam to Seam',         isBom: false },
+    { key: 'maxSupportDistance',   label: 'Max Support Distance', isBom: false },
+  ]},
+  { key: 'cutLengths', label: 'Cut Lengths', fields: [
+    { key: 'enabledLengths', label: 'Toggle on/off',  isBom: false },
+    { key: 'lengthsInput',   label: 'Edit list',      isBom: false },
+  ]},
+  { key: 'optimizer', label: 'Optimizer / Cost Settings', fields: [
+    { key: 'costPerMm',       label: 'Cost per mm',       isBom: false },
+    { key: 'costPerJointSet', label: 'Cost per Joint Set', isBom: false },
+    { key: 'joinerLength',    label: 'Joiner Length',     isBom: false },
+    { key: 'maxPieces',       label: 'Max Pieces',        isBom: false },
+    { key: 'priority',        label: 'Priority',          isBom: false },
+  ]},
+  { key: 'advanced', label: 'Advanced Optimizer', fields: [
+    { key: 'maxWastePct',        label: 'Max Waste %',        isBom: false },
+    { key: 'alphaJoint',         label: 'Alpha (Joint)',      isBom: false },
+    { key: 'betaSmall',          label: 'Beta (Small)',       isBom: false },
+    { key: 'allowUndershootPct', label: 'Allow Undershoot %', isBom: false },
+    { key: 'gammaShort',         label: 'Gamma (Short)',      isBom: false },
+  ]},
+  { key: 'bomRates', label: 'BOM Rate Fields', fields: [
+    { key: 'aluminumRate',      label: 'Aluminum Rate',          isBom: true },
+    { key: 'sparePercentage',   label: 'Spare %',                isBom: true },
+    { key: 'moduleWp',          label: 'Module Wp',              isBom: true },
+    { key: 'perItemCost',       label: 'Per-item Cost Override', isBom: true },
+    { key: 'perItemAluminumRate', label: 'Per-item Al Rate',     isBom: true },
+  ]},
+];
+
+const ROLES = [
+  { key: 'SALES', label: 'Sales' },
+  { key: 'DESIGN', label: 'Design' },
+  { key: 'MANAGER_SALES', label: 'Mgr (Sales)' },
+  { key: 'MANAGER_DESIGN', label: 'Mgr (Design)', locked: true },
+];
+
+function PermissionsTab({ permissionsConfig, loading, saving, msg, expandedGroups, setExpandedGroups, onToggleFeature, onToggleTabField, onToggleBomField, onSave }) {
+  if (loading) return <div className="p-8 text-center text-gray-500">Loading permissions...</div>;
+  if (!permissionsConfig) return <div className="p-8 text-center text-gray-500">No permissions data.</div>;
+
+  const CheckCell = ({ locked, checked, onChange }) => (
+    <td className="px-3 py-2 text-center">
+      {locked
+        ? <span className="text-gray-400 text-xs">🔒</span>
+        : <input type="checkbox" checked={!!checked} onChange={onChange} className="w-4 h-4 cursor-pointer" />
+      }
+    </td>
+  );
+
+  return (
+    <div className="bg-white shadow sm:rounded-lg p-6 space-y-8">
+      <div>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">Feature Permissions</h3>
+        <p className="text-sm text-gray-500 mb-4">Control which features each role can access.</p>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border border-gray-200 rounded-lg">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-48">Permission</th>
+                {ROLES.map(r => <th key={r.key} className="px-3 py-3 text-center text-xs font-semibold text-gray-600 uppercase">{r.label}</th>)}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {FEATURE_PERMS.map(perm => (
+                <tr key={perm.key} className="hover:bg-gray-50">
+                  <td className="px-4 py-2 text-sm text-gray-700">{perm.label}</td>
+                  {ROLES.map(role => (
+                    <CheckCell
+                      key={role.key}
+                      locked={role.locked}
+                      checked={permissionsConfig[role.key]?.[perm.key]}
+                      onChange={() => onToggleFeature(role.key, perm.key)}
+                    />
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">Field-Level Edit Control</h3>
+        <p className="text-sm text-gray-500 mb-4">Control which input fields each role can edit.</p>
+        <div className="space-y-2">
+          {FIELD_GROUPS.map(group => (
+            <div key={group.key} className="border border-gray-200 rounded-lg overflow-hidden">
+              <button
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 transition-colors"
+                onClick={() => setExpandedGroups(prev => ({ ...prev, [group.key]: !prev[group.key] }))}
+              >
+                <span>{group.label}</span>
+                <span className="text-gray-400">{expandedGroups[group.key] ? '▼' : '▶'}</span>
+              </button>
+              {expandedGroups[group.key] && (
+                <table className="min-w-full">
+                  <thead className="bg-gray-50/50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs text-gray-500 w-48">Field</th>
+                      {ROLES.map(r => <th key={r.key} className="px-3 py-2 text-center text-xs text-gray-500">{r.label}</th>)}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {group.fields.map(field => (
+                      <tr key={field.key} className="hover:bg-gray-50/50">
+                        <td className="px-4 py-2 text-sm text-gray-700">{field.label}</td>
+                        {ROLES.map(role => {
+                          const arr = field.isBom
+                            ? permissionsConfig[role.key]?.editableBomFields ?? []
+                            : permissionsConfig[role.key]?.editableTabFields ?? [];
+                          const checked = arr.includes('all') || arr.includes(field.key);
+                          return (
+                            <CheckCell
+                              key={role.key}
+                              locked={role.locked}
+                              checked={checked}
+                              onChange={() => field.isBom
+                                ? onToggleBomField(role.key, field.key)
+                                : onToggleTabField(role.key, field.key)
+                              }
+                            />
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {msg && <p className={`text-sm ${msg.startsWith('Error') ? 'text-red-600' : 'text-green-600'}`}>{msg}</p>}
+      <div className="flex justify-end">
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          {saving ? 'Saving...' : 'Save Permissions'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AppDefaultsTab({ defaultsConfig, setDefaultsConfig, loading, saving, msg, onSave, onReset }) {
+  if (loading) return <div className="p-8 text-center text-gray-500">Loading defaults...</div>;
+  if (!defaultsConfig) return <div className="p-8 text-center text-gray-500">No defaults data.</div>;
+
+  const tab = defaultsConfig.tabDefaults ?? {};
+  const bom = defaultsConfig.bomDefaults ?? {};
+
+  const setTab = (key, val) => setDefaultsConfig(prev => ({ ...prev, tabDefaults: { ...prev.tabDefaults, [key]: val } }));
+  const setBom = (key, val) => setDefaultsConfig(prev => ({ ...prev, bomDefaults: { ...prev.bomDefaults, [key]: val } }));
+
+  const Field = ({ label, value, onChange, type = 'number' }) => (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-medium text-gray-600">{label}</label>
+      <input
+        type={type}
+        value={value ?? ''}
+        onChange={e => onChange(type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value)}
+        className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+      />
+    </div>
+  );
+
+  const Section = ({ title, children }) => (
+    <div className="border border-gray-200 rounded-lg p-4">
+      <h4 className="text-sm font-semibold text-gray-700 mb-3">{title}</h4>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">{children}</div>
+    </div>
+  );
+
+  return (
+    <div className="bg-white shadow sm:rounded-lg p-6 space-y-5">
+      <div>
+        <h3 className="text-lg font-medium text-gray-900">App Defaults</h3>
+        <p className="text-sm text-gray-500 mt-1">Used when any user creates a new tab or BOM. Existing tabs and BOMs are NOT affected.</p>
+      </div>
+
+      <Section title="BOM Rates & Specs">
+        <Field label="Aluminum Rate (₹/kg)" value={bom.aluminumRate} onChange={v => setBom('aluminumRate', v)} />
+        <Field label="HDG Rate (₹/kg)" value={bom.hdgRatePerKg} onChange={v => setBom('hdgRatePerKg', v)} />
+        <Field label="Magnelis Rate (₹/kg)" value={bom.magnelisRatePerKg} onChange={v => setBom('magnelisRatePerKg', v)} />
+        <Field label="Module Wp (W)" value={bom.moduleWp} onChange={v => setBom('moduleWp', v)} />
+        <Field label="Spare Percentage (%)" value={bom.sparePercentage} onChange={v => setBom('sparePercentage', v)} />
+      </Section>
+
+      <Section title="Module Parameters">
+        <Field label="Module Length (mm)" value={tab.moduleLength} onChange={v => setTab('moduleLength', v)} />
+        <Field label="Module Width (mm)" value={tab.moduleWidth} onChange={v => setTab('moduleWidth', v)} />
+        <Field label="Frame Thickness (mm)" value={tab.frameThickness} onChange={v => setTab('frameThickness', v)} />
+        <Field label="Mid Clamp Gap (mm)" value={tab.midClamp} onChange={v => setTab('midClamp', v)} />
+        <Field label="End Clamp Width (mm)" value={tab.endClampWidth} onChange={v => setTab('endClampWidth', v)} />
+      </Section>
+
+      <Section title="Structural Parameters">
+        <Field label="Buffer (mm)" value={tab.buffer} onChange={v => setTab('buffer', v)} />
+        <Field label="Rails per Side" value={tab.railsPerSide} onChange={v => setTab('railsPerSide', v)} />
+        <Field label="Purlin Distance (mm)" value={tab.purlinDistance} onChange={v => setTab('purlinDistance', v)} />
+        <Field label="Seam to Seam (mm)" value={tab.seamToSeamDistance} onChange={v => setTab('seamToSeamDistance', v)} />
+        <Field label="Max Support Dist (mm)" value={tab.maxSupportDistance} onChange={v => setTab('maxSupportDistance', v)} />
+      </Section>
+
+      <Section title="Optimizer Settings">
+        <div className="col-span-2 md:col-span-3">
+          <Field label="Cut Lengths (comma-separated)" value={tab.lengthsInput} onChange={v => setTab('lengthsInput', v)} type="text" />
+        </div>
+        <Field label="Max Pieces" value={tab.maxPieces} onChange={v => setTab('maxPieces', v)} />
+        <Field label="Cost per mm" value={tab.costPerMm} onChange={v => setTab('costPerMm', v)} type="text" />
+        <Field label="Cost per Joint Set" value={tab.costPerJointSet} onChange={v => setTab('costPerJointSet', v)} type="text" />
+        <Field label="Joiner Length (mm)" value={tab.joinerLength} onChange={v => setTab('joinerLength', v)} type="text" />
+        <Field label="Max Waste %" value={tab.maxWastePct} onChange={v => setTab('maxWastePct', v)} type="text" />
+        <Field label="Alpha (Joint, mm)" value={tab.alphaJoint} onChange={v => setTab('alphaJoint', v)} />
+        <Field label="Beta (Small, mm)" value={tab.betaSmall} onChange={v => setTab('betaSmall', v)} />
+        <Field label="Allow Undershoot %" value={tab.allowUndershootPct} onChange={v => setTab('allowUndershootPct', v)} />
+        <Field label="Gamma (Short)" value={tab.gammaShort} onChange={v => setTab('gammaShort', v)} />
+        <div>
+          <label className="text-xs font-medium text-gray-600 block mb-1">Priority</label>
+          <select
+            value={tab.priority ?? 'cost'}
+            onChange={e => setTab('priority', e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+          >
+            <option value="cost">Cost</option>
+            <option value="length">Length</option>
+            <option value="joints">Joints</option>
+          </select>
+        </div>
+      </Section>
+
+      {msg && <p className={`text-sm ${msg.startsWith('Error') ? 'text-red-600' : 'text-green-600'}`}>{msg}</p>}
+      <div className="flex justify-between items-center">
+        <button
+          onClick={onReset}
+          className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          Reset to Factory Defaults
+        </button>
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          {saving ? 'Saving...' : 'Save App Defaults'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPanel() {
   const { user: currentUser } = useAuth();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState('users'); // 'users' or 'boms'
+  const [activeTab, setActiveTab] = useState('users'); // 'users', 'boms', 'permissions', 'defaults'
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Permissions tab state
+  const [permissionsConfig, setPermissionsConfig] = useState(null);
+  const [permissionsLoading, setPermissionsLoading] = useState(false);
+  const [permissionsSaving, setPermissionsSaving] = useState(false);
+  const [permissionsMsg, setPermissionsMsg] = useState('');
+  const [expandedGroups, setExpandedGroups] = useState({ moduleParams: true, structural: true, site: true, cutLengths: true, optimizer: false, advanced: false, bomRates: false });
+
+  // App Defaults tab state
+  const [defaultsConfig, setDefaultsConfig] = useState(null);
+  const [defaultsLoading, setDefaultsLoading] = useState(false);
+  const [defaultsSaving, setDefaultsSaving] = useState(false);
+  const [defaultsMsg, setDefaultsMsg] = useState('');
 
   // Check if returning from AdminBOMView with a specific tab
   useEffect(() => {
@@ -25,7 +318,7 @@ export default function AdminPanel() {
   // Form State
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('BASIC');
+  const [role, setRole] = useState('SALES');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -36,6 +329,110 @@ export default function AdminPanel() {
   const [copiedUsername, setCopiedUsername] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
   const [copiedBoth, setCopiedBoth] = useState(false);
+
+  // Load permissions/defaults when switching to those tabs
+  useEffect(() => {
+    if (activeTab === 'permissions' && !permissionsConfig) {
+      setPermissionsLoading(true);
+      configAPI.getPermissions()
+        .then(data => setPermissionsConfig(data))
+        .catch(err => setPermissionsMsg('Failed to load permissions: ' + err.message))
+        .finally(() => setPermissionsLoading(false));
+    }
+    if (activeTab === 'defaults' && !defaultsConfig) {
+      setDefaultsLoading(true);
+      configAPI.getDefaults()
+        .then(data => setDefaultsConfig(data))
+        .catch(err => setDefaultsMsg('Failed to load defaults: ' + err.message))
+        .finally(() => setDefaultsLoading(false));
+    }
+  }, [activeTab]);
+
+  const handleSavePermissions = async () => {
+    setPermissionsSaving(true);
+    setPermissionsMsg('');
+    try {
+      const updated = await configAPI.updatePermissions(permissionsConfig);
+      setPermissionsConfig(updated);
+      setPermissionsMsg('Permissions saved successfully.');
+    } catch (err) {
+      setPermissionsMsg('Error: ' + err.message);
+    } finally {
+      setPermissionsSaving(false);
+    }
+  };
+
+  const handleSaveDefaults = async () => {
+    setDefaultsSaving(true);
+    setDefaultsMsg('');
+    try {
+      const updated = await configAPI.updateDefaults(defaultsConfig);
+      setDefaultsConfig(updated);
+      setDefaultsMsg('App defaults saved successfully.');
+    } catch (err) {
+      setDefaultsMsg('Error: ' + err.message);
+    } finally {
+      setDefaultsSaving(false);
+    }
+  };
+
+  const handleResetDefaultsToFactory = () => {
+    if (!window.confirm('Reset to factory defaults? This will overwrite all current App Defaults.')) return;
+    const FACTORY = {
+      tabDefaults: {
+        moduleLength: 2278, moduleWidth: 1134, frameThickness: 35,
+        midClamp: 20, endClampWidth: 40, buffer: 15,
+        purlinDistance: 1700, seamToSeamDistance: 400, maxSupportDistance: 1800,
+        railsPerSide: 2, lengthsInput: '1595, 1798, 2400, 2750, 3600, 4800',
+        maxPieces: 3, maxWastePct: '', alphaJoint: 220, betaSmall: 60,
+        allowUndershootPct: 0, gammaShort: 5, costPerMm: '0.1',
+        costPerJointSet: '50', joinerLength: '100', priority: 'cost',
+      },
+      bomDefaults: {
+        aluminumRate: 460, hdgRatePerKg: 125, magnelisRatePerKg: 125, moduleWp: 590, sparePercentage: 1.0,
+      },
+    };
+    setDefaultsConfig(FACTORY);
+    setDefaultsMsg('Factory defaults loaded. Click Save to apply.');
+  };
+
+  const toggleFeaturePerm = (roleKey, permKey) => {
+    if (roleKey === 'MANAGER_DESIGN') return; // always locked
+    setPermissionsConfig(prev => ({
+      ...prev,
+      [roleKey]: { ...prev[roleKey], [permKey]: !prev[roleKey][permKey] },
+    }));
+  };
+
+  const toggleTabField = (roleKey, fieldKey) => {
+    if (roleKey === 'MANAGER_DESIGN') return;
+    setPermissionsConfig(prev => {
+      const current = prev[roleKey].editableTabFields ?? [];
+      const has = current.includes(fieldKey);
+      return {
+        ...prev,
+        [roleKey]: {
+          ...prev[roleKey],
+          editableTabFields: has ? current.filter(f => f !== fieldKey) : [...current, fieldKey],
+        },
+      };
+    });
+  };
+
+  const toggleBomField = (roleKey, fieldKey) => {
+    if (roleKey === 'MANAGER_DESIGN') return;
+    setPermissionsConfig(prev => {
+      const current = prev[roleKey].editableBomFields ?? [];
+      const has = current.includes(fieldKey);
+      return {
+        ...prev,
+        [roleKey]: {
+          ...prev[roleKey],
+          editableBomFields: has ? current.filter(f => f !== fieldKey) : [...current, fieldKey],
+        },
+      };
+    });
+  };
 
   // Generate random secure password
   const generatePassword = () => {
@@ -151,7 +548,7 @@ export default function AdminPanel() {
       // Reset form
       setUsername('');
       setPassword('');
-      setRole('BASIC');
+      setRole('SALES');
       setCopied(false);
 
       loadUsers(); // Refresh list
@@ -231,26 +628,24 @@ export default function AdminPanel() {
         {/* Tab Navigation */}
         <div className="bg-white shadow sm:rounded-lg mb-6">
           <div className="flex border-b border-gray-200">
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${
-                activeTab === 'users'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              User Management
-            </button>
-            <button
-              onClick={() => setActiveTab('boms')}
-              className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${
-                activeTab === 'boms'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              BOM Management
-            </button>
+            {[
+              { key: 'users', label: 'User Management' },
+              { key: 'boms', label: 'BOM Management' },
+              { key: 'permissions', label: 'Permissions' },
+              { key: 'defaults', label: 'App Defaults' },
+            ].map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${
+                  activeTab === tab.key
+                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -331,9 +726,10 @@ export default function AdminPanel() {
                     onChange={(e) => setRole(e.target.value)}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white"
                   >
-                    <option value="BASIC">BASIC</option>
+                    <option value="SALES">SALES</option>
                     <option value="DESIGN">DESIGN</option>
-                    <option value="MANAGER">MANAGER (Admin)</option>
+                    <option value="MANAGER_SALES">MANAGER (Sales)</option>
+                    <option value="MANAGER_DESIGN">MANAGER (Design)</option>
                   </select>
                 </div>
               </div>
@@ -378,7 +774,8 @@ export default function AdminPanel() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.username}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.role === 'MANAGER' ? 'bg-purple-100 text-purple-800' :
+                          user.role === 'MANAGER_DESIGN' ? 'bg-purple-100 text-purple-800' :
+                          user.role === 'MANAGER_SALES' ? 'bg-indigo-100 text-indigo-800' :
                           user.role === 'DESIGN' ? 'bg-blue-100 text-blue-800' :
                           'bg-gray-100 text-gray-800'
                         }`}>
@@ -456,7 +853,7 @@ export default function AdminPanel() {
           </div>
         </div>
           </>
-        ) : (
+        ) : activeTab === 'boms' ? (
           /* BOM Management Tab */
           <div className="bg-white shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:p-6">
@@ -467,6 +864,31 @@ export default function AdminPanel() {
               <BOMManagementTab />
             </div>
           </div>
+        ) : activeTab === 'permissions' ? (
+          /* Permissions Tab */
+          <PermissionsTab
+            permissionsConfig={permissionsConfig}
+            loading={permissionsLoading}
+            saving={permissionsSaving}
+            msg={permissionsMsg}
+            expandedGroups={expandedGroups}
+            setExpandedGroups={setExpandedGroups}
+            onToggleFeature={toggleFeaturePerm}
+            onToggleTabField={toggleTabField}
+            onToggleBomField={toggleBomField}
+            onSave={handleSavePermissions}
+          />
+        ) : (
+          /* App Defaults Tab */
+          <AppDefaultsTab
+            defaultsConfig={defaultsConfig}
+            setDefaultsConfig={setDefaultsConfig}
+            loading={defaultsLoading}
+            saving={defaultsSaving}
+            msg={defaultsMsg}
+            onSave={handleSaveDefaults}
+            onReset={handleResetDefaultsToFactory}
+          />
         )}
 
       </main>

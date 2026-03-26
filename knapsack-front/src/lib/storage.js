@@ -75,3 +75,11 @@ export function parseNumList(s) {
 export function fmt(n) {
   return new Intl.NumberFormat().format(n);
 }
+
+// Return merged defaults: admin-configured appDefaults take priority over hardcoded DEFAULT_SETTINGS
+// Falls back to DEFAULT_SETTINGS if appDefaults haven't loaded yet
+export function getEffectiveDefaults(appDefaults) {
+  return appDefaults?.tabDefaults
+    ? { ...DEFAULT_SETTINGS, ...appDefaults.tabDefaults }
+    : DEFAULT_SETTINGS;
+}

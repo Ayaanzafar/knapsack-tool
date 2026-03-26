@@ -24,8 +24,7 @@ import {
 } from './lib/tabStorageAPI';
 
 export default function App() {
-  const { user } = useAuth();
-  const isBasicUser = user?.role === 'BASIC';
+  const { canEditField } = useAuth();
 
   // State
   const [tabsData, setTabsData] = useState({ tabs: [], activeTabId: null });
@@ -219,24 +218,14 @@ export default function App() {
       ? newSettings(prevSettings)
       : { ...prevSettings, ...newSettings };
 
-    // BASIC defense-in-depth: do not allow client-side state to persist advanced-only changes.
-    const forbiddenFields = [
-      'buffer',
-      'lengthsInput',
-      'costPerMm',
-      'costPerJointSet',
-      'joinerLength',
-      'maxPieces',
-      'maxWastePct',
-      'alphaJoint',
-      'betaSmall',
-      'allowUndershootPct',
-      'gammaShort'
+    // Client-side defense-in-depth: revert fields the user cannot edit
+    const protectedTabFields = [
+      'buffer', 'lengthsInput', 'costPerMm', 'costPerJointSet', 'joinerLength',
+      'maxPieces', 'maxWastePct', 'alphaJoint', 'betaSmall', 'allowUndershootPct', 'gammaShort',
     ];
-
-    if (isBasicUser) {
-      for (const field of forbiddenFields) {
-        if (Object.prototype.hasOwnProperty.call(nextSettings, field) && nextSettings[field] !== prevSettings[field]) {
+    for (const field of protectedTabFields) {
+      if (Object.prototype.hasOwnProperty.call(nextSettings, field) && nextSettings[field] !== prevSettings[field]) {
+        if (!canEditField(field)) {
           nextSettings[field] = prevSettings[field];
           showToast(`${field}: Advanced only`);
         }
@@ -336,8 +325,7 @@ export default function App() {
 
     // Server update
     try {
-      const forbiddenGlobalKeys = new Set(['buffer', 'costPerMm', 'costPerJointSet', 'joinerLength', 'maxPieces']);
-      if (isBasicUser && forbiddenGlobalKeys.has(key)) {
+      if (!canEditField(key)) {
         showToast(`${key}: Advanced only`);
         const active = getActiveTab(tabsData);
         if (active?.id) await revertTabFromServer(active.id);

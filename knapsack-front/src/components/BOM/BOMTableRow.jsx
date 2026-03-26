@@ -6,8 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../services/config';
 
 const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange, profileOptions, onItemUpdate, onDeleteRow, dragHandleProps, aluminumRate, hdgRate, magnelisRate, ...props }, ref) => {
-  const { user } = useAuth();
-  const isBasicUser = user?.role === 'BASIC';
+  const { canEditField } = useAuth();
 
   const {
     sn,
@@ -347,7 +346,7 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
       {/* Rate per Unit Wt */}
       <td className={`border border-gray-400 px-3 py-2 text-sm text-center ${hasManualAlRate ? 'bg-blue-100' : 'bg-orange-50'}`}>
         {((wtPerRm > 0 || wt > 0) && !costPerPiece) ? (
-          editMode ? (
+          (editMode && canEditField('perItemAluminumRate', 'bom')) ? (
             <div className="flex items-center justify-center gap-1">
               <NumberInputWithSpinner
                 value={hasManualAlRate ? (userEdits.manualAluminumRate || 0) : (defaultRateByMaterial || 0)}
@@ -379,7 +378,7 @@ const BOMTableRow = forwardRef(({ item, tabs, isEven, editMode, onProfileChange,
       {/* Rate Per Piece */}
       <td className={`border border-gray-400 px-3 py-2 text-sm text-center ${getCellBgColor()}`}>
         {costPerPiece !== null && costPerPiece !== undefined ? (
-          editMode ? (
+          (editMode && canEditField('perItemCost', 'bom')) ? (
             <NumberInputWithSpinner
               value={costPerPiece || 0}
               onChange={(val) => handleInputChange('costPerPiece', val)}

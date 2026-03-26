@@ -1,4 +1,5 @@
 const prisma = require('../prismaClient');
+const configService = require('./configService');
 
 class TabService {
   // Create a new tab
@@ -6,9 +7,10 @@ class TabService {
     const { name, createdAt, settings } = data;
 
     // Get default profile (40mm Long Rail - sNo 26 historically)
-    const defaultProfile = await prisma.sunrackProfile.findFirst({
-      where: { genericName: '40mm Long Rail' }
-    });
+    const [defaultProfile, tabDefs] = await Promise.all([
+      prisma.sunrackProfile.findFirst({ where: { genericName: '40mm Long Rail' } }),
+      configService.getTabDefaults(),
+    ]);
 
     const tab = await prisma.tab.create({
       data: {
@@ -16,32 +18,32 @@ class TabService {
         name: name || 'Untitled Tab',
         createdAt: createdAt ? new Date(createdAt) : new Date(),
         longRailProfileSerialNumber: String(defaultProfile?.sNo ?? 26),
-        // Settings
-        moduleLength: parseInt(settings?.moduleLength || 2278),
-        moduleWidth: parseInt(settings?.moduleWidth || 1134),
-        frameThickness: parseInt(settings?.frameThickness || 35),
-        midClamp: parseInt(settings?.midClamp || 20),
-        endClampWidth: parseInt(settings?.endClampWidth || 40),
-        buffer: parseInt(settings?.buffer || 15),
-        purlinDistance: parseInt(settings?.purlinDistance || 1700),
-        seamToSeamDistance: parseInt(settings?.seamToSeamDistance || 1700),
-        railsPerSide: parseInt(settings?.railsPerSide || 2),
-        lengthsInput: settings?.lengthsInput || null,
-        enabledLengths: settings?.enabledLengths || null,
-        maxPieces: parseInt(settings?.maxPieces || 3),
-        maxWastePct: settings?.maxWastePct || null,
-        alphaJoint: parseInt(settings?.alphaJoint || 220),
-        betaSmall: parseInt(settings?.betaSmall || 60),
-        allowUndershootPct: parseFloat(settings?.allowUndershootPct || 0),
-        gammaShort: parseInt(settings?.gammaShort || 5),
-        costPerMm: settings?.costPerMm || '0.1',
-        costPerJointSet: settings?.costPerJointSet || '50',
-        joinerLength: settings?.joinerLength || '100',
-        priority: settings?.priority || 'cost',
+        // Settings — use ?? (nullish) so 0 is valid; fall back to admin-configured defaults
+        moduleLength: parseInt(settings?.moduleLength ?? tabDefs.moduleLength),
+        moduleWidth: parseInt(settings?.moduleWidth ?? tabDefs.moduleWidth),
+        frameThickness: parseInt(settings?.frameThickness ?? tabDefs.frameThickness),
+        midClamp: parseInt(settings?.midClamp ?? tabDefs.midClamp),
+        endClampWidth: parseInt(settings?.endClampWidth ?? tabDefs.endClampWidth),
+        buffer: parseInt(settings?.buffer ?? tabDefs.buffer),
+        purlinDistance: parseInt(settings?.purlinDistance ?? tabDefs.purlinDistance),
+        seamToSeamDistance: parseInt(settings?.seamToSeamDistance ?? tabDefs.seamToSeamDistance),
+        railsPerSide: parseInt(settings?.railsPerSide ?? tabDefs.railsPerSide),
+        lengthsInput: settings?.lengthsInput ?? tabDefs.lengthsInput ?? null,
+        enabledLengths: settings?.enabledLengths ?? null,
+        maxPieces: parseInt(settings?.maxPieces ?? tabDefs.maxPieces),
+        maxWastePct: settings?.maxWastePct ?? tabDefs.maxWastePct ?? null,
+        alphaJoint: parseInt(settings?.alphaJoint ?? tabDefs.alphaJoint),
+        betaSmall: parseInt(settings?.betaSmall ?? tabDefs.betaSmall),
+        allowUndershootPct: parseFloat(settings?.allowUndershootPct ?? tabDefs.allowUndershootPct),
+        gammaShort: parseInt(settings?.gammaShort ?? tabDefs.gammaShort),
+        costPerMm: settings?.costPerMm ?? tabDefs.costPerMm,
+        costPerJointSet: settings?.costPerJointSet ?? tabDefs.costPerJointSet,
+        joinerLength: settings?.joinerLength ?? tabDefs.joinerLength,
+        priority: settings?.priority ?? tabDefs.priority,
         userMode: settings?.userMode || 'normal',
         // Handle both enableSB2 (frontend) and enableSb2 (backend) for compatibility
-        enableSb2: settings?.enableSB2 !== undefined ? settings.enableSB2 : (settings?.enableSb2 || false)
-      }
+        enableSb2: settings?.enableSB2 !== undefined ? settings.enableSB2 : (settings?.enableSb2 || false),
+      },
     });
 
     // Update parent project's updatedAt

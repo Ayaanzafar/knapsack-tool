@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const prisma = require('../prismaClient');
-const { authenticateToken, checkPasswordChange, authorizeRoles } = require('../middleware/authMiddleware');
+const { authenticateToken, checkPasswordChange, requirePermission } = require('../middleware/authMiddleware');
 
 // Protect all routes
 router.use(authenticateToken);
@@ -97,7 +97,7 @@ router.get('/:variationName/default-notes', async (req, res, next) => {
  * - { notes: [{ noteOrder, noteText }, ...] } (compat)
  * Stores as an array of strings in bom_variation_templates.default_notes.
  */
-router.put('/:variationName/default-notes', authorizeRoles('MANAGER'), async (req, res, next) => {
+router.put('/:variationName/default-notes', requirePermission('canEditDefaultNotes'), async (req, res, next) => {
   try {
     const { variationName } = req.params;
     const incoming = req.body?.defaultNotes ?? req.body?.notes ?? [];

@@ -89,10 +89,12 @@ class SavedBomController {
     }
   }
 
-  // GET /api/saved-boms/all - Get all saved BOMs (for admin)
+  // GET /api/saved-boms/all - Get all saved BOMs (scoped by role permissions)
   async getAllSavedBoms(req, res) {
     try {
-      const savedBoms = await savedBomService.getAllSavedBoms();
+      const savedBoms = req.bomViewScope === 'all'
+        ? await savedBomService.getAllSavedBoms()
+        : await savedBomService.getSavedBomsByRoles(req.bomViewRoles);
       res.json(savedBoms);
     } catch (error) {
       console.error('Error fetching all saved BOMs:', error);
