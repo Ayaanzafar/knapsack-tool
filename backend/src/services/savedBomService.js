@@ -55,11 +55,11 @@ class SavedBomService {
 
     if (!savedBom) return null;
 
-    // Backward compatibility: some stored snapshots may not contain profilesMap,
-    // which BOMPage needs for recalculations on edits.
+    // Backward compatibility: some stored snapshots may not contain profilesMap or tabs,
+    // which BOMPage/BOMTable needs for recalculations and rendering.
     const needsReconstruction =
       savedBom?.bomData &&
-      !savedBom.bomData?.profilesMap &&
+      (!savedBom.bomData?.profilesMap || !Array.isArray(savedBom.bomData?.tabs)) &&
       Array.isArray(savedBom.bomData?.bomItems) &&
       savedBom.bomData.bomItems.length > 0;
 

@@ -53,7 +53,7 @@ function SortableBOMTableRow(props) {
 // Let's modify BOMTableRow to accept `rowRef` and `style` props.
 
 export default function BOMTable({ bomData, editMode, onProfileChange, profileOptions, onItemUpdate, aluminumRate, hdgRate, magnelisRate, sparePercentage, onDeleteRow, onDragEnd }) {
-  const { tabs, panelCounts, bomItems, projectInfo } = bomData;
+  const { tabs = [], panelCounts = {}, bomItems = [], projectInfo = {} } = bomData;
 
   const sensors = useSensors(
     useSensor(PointerSensor),
