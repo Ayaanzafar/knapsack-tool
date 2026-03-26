@@ -1,8 +1,8 @@
 # Master Implementation Plan — Roles, Permissions & App Defaults
 ### Knapsack BOM Tool
 
-> **Last Updated:** 2026-03-25
-> **Status:** Ready to implement
+> **Last Updated:** 2026-03-26
+> **Status:** Phases A–I COMPLETE — Post-deploy bugs fixed — Next: BOM List entry point for non-admin roles
 > **Replaces:** `ROLE_CHANGE_PLAN.md`, `PERMISSIONS_IMPL_PLAN.md`, `FIELD_PERMISSIONS_IMPL_PLAN.md`, `APP_DEFAULTS_IMPL_PLAN.md`
 
 ---
@@ -24,20 +24,20 @@ You no longer need your manager to decide Manager(Sales) permissions before codi
 
 ## 2. Role System — Before & After
 
-### Current (3 roles)
+### Old (3 roles)
 | Role String | Who |
 |---|---|
 | `BASIC` | Standard user |
 | `DESIGN` | Advanced user |
 | `MANAGER` | Admin |
 
-### New (4 roles)
+### New (4 roles) ✅ DONE
 | Role String | Who | Maps From |
 |---|---|---|
-| `SALES` | Standard user | `BASIC` (rename) |
+| `SALES` | Standard user | `BASIC` (renamed) |
 | `DESIGN` | Advanced user | `DESIGN` (no change) |
-| `MANAGER_SALES` | Sales manager | New role (starts restricted, configurable) |
-| `MANAGER_DESIGN` | Design manager / Admin | `MANAGER` (rename) |
+| `MANAGER_SALES` | Sales manager | New role |
+| `MANAGER_DESIGN` | Design manager / Admin | `MANAGER` (renamed) |
 
 ---
 
@@ -82,8 +82,6 @@ Frontend: AdminPanel.jsx (4 tabs)
 ---
 
 ## 4. The Permissions Config Structure
-
-Two `canEdit*` boolean flags from the original plan are **replaced** by field arrays (from Field Permissions plan). This is the final shape of `role_permissions`:
 
 ```json
 {
@@ -161,14 +159,191 @@ Two `canEdit*` boolean flags from the original plan are **replaced** by field ar
 | Flag | What it gates |
 |---|---|
 | `canUpdateMasterItem` | "Apply to Future" — update master item DB from BOM |
-| `canViewAllBoms` | View every BOM from every user in Admin BOM tab |
-| `canViewSalesBoms` | View BOMs created by SALES-role users only |
-| `canViewDesignBoms` | View BOMs created by DESIGN-role users only |
+| `canViewAllBoms` | View every BOM from every user |
+| `canViewSalesBoms` | View BOMs created by SALES + MANAGER_SALES role users |
+| `canViewDesignBoms` | View BOMs created by DESIGN role users |
 | `canEditDefaultNotes` | Edit global default notes & variation template notes |
 | `canManageUsers` | Create, delete, reset password, activate/hold users |
 | `canAccessAdmin` | Access the Admin Panel at all |
 
-> **BOM visibility combines:** If a role has both `canViewSalesBoms` and `canViewDesignBoms`, they see both pools merged. `canViewAllBoms` overrides all three and bypasses filtering entirely.
+> **BOM visibility combines:** If a role has both `canViewSalesBoms` and `canViewDesignBoms`, they see both pools merged. `canViewAllBoms` overrides all and bypasses filtering entirely.
+
+---
+
+## 5. Implementation Status
+
+### ✅ PHASES A–I — COMPLETE
+
+All 9 phases were implemented across 31 files (29 modified + 2 new).
+
+| Phase | What | Status |
+|---|---|---|
+| A — DB | SystemConfig model, role rename SQL, seed update | ✅ Done |
+| B — Backend Infrastructure | configService.js, configRoutes.js, server.js | ✅ Done |
+| C — Middleware | authMiddleware requirePermission(), tabPermissions, bomPermissions dynamic | ✅ Done |
+| D — Routes | userRoutes, defaultNotesRoutes, templateRoutes, savedBomRoutes + canViewBoms | ✅ Done |
+| E — tabService | createTab uses ?? + configService.getTabDefaults() for all 20 fields | ✅ Done |
+| F — Frontend api.js + AuthContext | configAPI, sanitizeTabSettingsForRole, can(), canEditField(), appDefaults | ✅ Done |
+| G — Role checks | All 14 frontend files — BASIC/MANAGER string comparisons → can()/canEditField() | ✅ Done |
+| H — Defaults | GlobalInputs + SettingsPanel reset uses appDefaults; storage.js getEffectiveDefaults() | ✅ Done |
+| I — Admin Panel | PermissionsTab (7 flags + 27 field checkboxes) + AppDefaultsTab visible to MANAGER_DESIGN | ✅ Done |
+
+---
+
+## 6. Post-Deploy Bugs Fixed
+
+### Bug 1 — AdminBOMView crash when opening old BOMs
+**Error:** `BOMTable.jsx: Cannot read properties of undefined (reading 'map')` on `tabs.map()`
+
+**Root cause:** Old BOM records in DB were saved before `tabs` was added to `bomData` structure. The `savedBomService` skipped reconstruction (because `profilesMap` existed) and returned raw old data without a `tabs` array. `BOMTable` destructured `tabs` without a default, so `tabs.map()` crashed.
+
+**Fix (2 files):**
+- `BOMTable.jsx:56` — added `= []` defaults: `const { tabs = [], panelCounts = {}, bomItems = [], projectInfo = {} } = bomData;`
+- `savedBomService.js` — reconstruction condition now also triggers when `tabs` is missing:
+  ```js
+  const needsReconstruction =
+    savedBom?.bomData &&
+    (!savedBom.bomData?.profilesMap || !Array.isArray(savedBom.bomData?.tabs)) &&
+    Array.isArray(savedBom.bomData?.bomItems) &&
+    savedBom.bomData.bomItems.length > 0;
+  ```
+
+---
+
+### Bug 2 — BOM creation: Template 404 for old projects
+**Error:** `GET /api/bom-templates/BOM%20for%20U%20Cleat%20Long%20Rail 404 (Not Found)`
+
+**Root cause:** Old projects in DB had `longRailVariation` stored as informal display labels (e.g. `"U Cleat Long Rail"`, `"BOM for U Cleat Long Rail"`, `"Cleat Long Rail"`) instead of the exact template names used in the `bomVariationTemplate` table (e.g. `"U Cleat Long Rail - Regular"`).
+
+**DB records affected:**
+| Old Value | Count | Fixed To |
+|---|---|---|
+| `"U Cleat Long Rail"` | 21 | `"U Cleat Long Rail - Regular"` |
+| `"BOM for U Cleat Long Rail"` | 3 | `"U Cleat Long Rail - Regular"` |
+| `"Cleat Long Rail"` | 1 | `"U Cleat Long Rail - Regular"` |
+
+**Fix (2 parts):**
+1. **DB data migration** — ran `updateMany` to fix all 25 old project records
+2. **`templateService.js` legacy map** — safety net for old names still embedded in saved `bomData.projectInfo`:
+   ```js
+   const LEGACY_NAME_MAP = {
+     'U Cleat Long Rail': 'U Cleat Long Rail - Regular',
+     'BOM for U Cleat Long Rail': 'U Cleat Long Rail - Regular',
+     'Cleat Long Rail': 'U Cleat Long Rail - Regular',
+   };
+   ```
+
+**Remaining known non-matches (no template exists for these):**
+- `"L Cleat Long Rail"` — 2 projects — disabled in LONG_RAIL_OPTIONS, no template in DB yet
+- `"Mini Rail"` — 1 project — not in options, no template in DB
+- `null` — 22 projects — no variation selected, no template expected
+
+---
+
+### Bug 3 — Prisma migration shadow DB failure
+**Error:** `Migration 20260106_add_fasteners_and_polymorphic_links failed — Table bom_variation_items doesn't exist`
+
+**Root cause:** The migration does `ALTER TABLE bom_variation_items` but that table was originally created manually (not via a tracked migration). The real DB has it, but Prisma's shadow DB (which replays all migrations from scratch) fails at query #3.
+
+**Workaround applied:** `npx prisma db push` — syncs schema directly to real DB without going through migration replay. App works correctly.
+
+**Permanent fix (not yet done):** Either add a `CREATE TABLE IF NOT EXISTS bom_variation_items` before the ALTER in that migration file, or use `prisma migrate resolve --applied` to mark it as already applied and remove the conflict from history.
+
+---
+
+## 7. Permissions Wiring Audit — What's Done vs Missing
+
+After the full audit (2026-03-26), here is the exact wiring status of every permission:
+
+| Permission | Backend Enforced | Frontend UI Gated | Entry Point for Non-Admin | Status |
+|---|---|---|---|---|
+| `canAccessAdmin` | ✅ | ✅ AdminRoute guard + HomePage button | N/A (is the gate) | **Fully wired** |
+| `canUpdateMasterItem` | ✅ | ✅ ReviewChangesModal column | N/A (used inline in BOMPage) | **Fully wired** |
+| `canEditDefaultNotes` | ✅ | ✅ NotesSection edit button | N/A (used inline in BOMPage) | **Fully wired** |
+| `canManageUsers` | ✅ API routes | ❌ Users tab always renders for any admin | N/A | **UI gap** |
+| `canViewAllBoms` | ✅ API filters | ❌ No button/route for non-admin roles | ❌ Missing | **UI + entry point missing** |
+| `canViewSalesBoms` | ✅ API filters | ❌ No button/route for non-admin roles | ❌ Missing | **UI + entry point missing** |
+| `canViewDesignBoms` | ✅ API filters | ❌ Never used (default false everywhere) | ❌ Missing | **Unused + UI missing** |
+| Tab fields (22) | ✅ tabPermissions middleware | ❌ Fields still render; rejected only on save | N/A | **API-only enforcement** |
+| BOM fields (5) | ✅ bomPermissions middleware | ❌ Fields still render; rejected only on save | N/A | **API-only enforcement** |
+
+### Role-by-role what currently works
+
+| Role | What works today | What's broken/missing |
+|---|---|---|
+| **SALES** | Create/view own BOMs, edit allowed tab fields | Field inputs still render even for restricted fields (no UI hiding) |
+| **DESIGN** | All SALES + canUpdateMasterItem | canViewAllBoms / canViewDesignBoms have no entry point if granted. Field UI not hidden. |
+| **MANAGER_SALES** | canViewSalesBoms is set — but **has no page to visit**. Cannot reach /admin. | Entire BOM list feature is unreachable. This role is effectively broken for its main purpose. |
+| **MANAGER_DESIGN** | Full access, Admin Panel works. | canManageUsers not checked before rendering Users tab (minor — backend still blocks API). |
+
+---
+
+## 8. Next Steps — What Needs to Be Built
+
+### Priority 1 — BOM List entry point for non-admin roles (CRITICAL)
+
+**Affected roles:** MANAGER_SALES (broken today), DESIGN/SALES if granted view permissions
+
+**What to build:**
+1. New route `/bom-list` — accessible to any role that has `canViewAllBoms` OR `canViewSalesBoms` OR `canViewDesignBoms`
+2. Route guard: if none of those three permissions → redirect to home
+3. **Reuse existing components** — `BOMManagementTab` + `AdminBOMView` already exist and work
+4. Add a **"BOM List" button on `HomePage`** — visible only when user has any of the three view permissions:
+   ```js
+   {(can('canViewAllBoms') || can('canViewSalesBoms') || can('canViewDesignBoms')) && (
+     <button onClick={() => navigate('/bom-list')}>BOM List</button>
+   )}
+   ```
+5. The `BOMManagementTab` calls the same `/api/saved-boms/all` endpoint — backend already filters by role scope. No backend changes needed.
+
+**Files to touch:**
+| File | Change |
+|---|---|
+| `Router.jsx` | Add `/bom-list` route with permission guard |
+| `HomePage.jsx` | Add BOM List button with permission check |
+| New: `pages/BOMListPage.jsx` | Thin wrapper that renders `BOMManagementTab` — or just add a route pointing directly to it |
+
+---
+
+### Priority 2 — Gate Users tab in AdminPanel by canManageUsers
+
+**Problem:** Any role with `canAccessAdmin` can see the Users tab. Backend blocks the API calls, but the UI still renders.
+
+**Fix:**
+- `AdminPanel.jsx` — wrap the Users tab render with `can('canManageUsers')`
+- Also hide the "Users" tab button in the tab bar if the user lacks this permission
+
+**Files:** `AdminPanel.jsx` only
+
+---
+
+### Priority 3 — canViewDesignBoms clarification
+
+**Problem:** This permission is defined but defaults to `false` for all roles and is never actually used anywhere.
+
+**Decision needed:**
+- If it means "DESIGN role users can view their own team's BOMs" → wire it up like `canViewSalesBoms` (already handled by backend `getSavedBomsByRoles(['DESIGN'])`)
+- If it means "view BOMs where the project variation is Design type" → different meaning entirely
+- If it's not needed → remove it from the permissions config to reduce confusion
+
+---
+
+### Priority 4 — Field-level UI hiding (optional / UX improvement)
+
+**Problem:** Restricted fields (buffer, aluminum rate, etc.) still render as editable inputs for SALES users. They get rejected by the API on save, but the UX is confusing.
+
+**Fix:** Use `canEditField()` from AuthContext to disable or hide restricted inputs in:
+- `GlobalInputs.jsx` — buffer, lengthsInput
+- `SettingsPanel.jsx` — Optimizer/Cost/Advanced sections
+- `RailTable.jsx` — per-field checks
+- `BOMPage.jsx` — aluminumRate, sparePercentage, moduleWp
+- `BOMTableRow.jsx` — perItemCost, perItemAluminumRate
+
+**Note:** This is a UX improvement only. Backend already enforces correctly. Low urgency.
+
+---
+
+## 9. The Permissions Config (Section 4) Fields Reference
 
 ### All 27 Controllable Fields
 
@@ -204,9 +379,9 @@ Two `canEdit*` boolean flags from the original plan are **replaced** by field ar
 
 ---
 
-## 5. The App Defaults Config Structure
+## 10. App Defaults Config Structure
 
-Stored as `key = 'app_defaults'` in the same `SystemConfig` table:
+Stored as `key = 'app_defaults'` in the `SystemConfig` table:
 
 ```json
 {
@@ -243,652 +418,70 @@ Stored as `key = 'app_defaults'` in the same `SystemConfig` table:
 }
 ```
 
-> Changing these does NOT affect existing tabs or BOMs. Only new creations use the updated defaults. "Reset to Defaults" button in GlobalInputs also uses these values.
+> Changing these does NOT affect existing tabs or BOMs. Only new creations use the updated defaults.
 
 ---
 
-## 6. Implementation Steps — In Order
+## 11. Complete File Change Log
 
----
-
-### PHASE A — Database
-
-#### A1. Run DB Migration SQL (one-time, on server)
-
-```sql
--- Rename BASIC users to SALES
-UPDATE users SET role = 'SALES' WHERE role = 'BASIC';
-
--- Rename MANAGER users to MANAGER_DESIGN
-UPDATE users SET role = 'MANAGER_DESIGN' WHERE role = 'MANAGER';
-
--- DESIGN users: no change needed
--- MANAGER_SALES: new role, no existing users to migrate
-```
-
-#### A2. Add SystemConfig Table
-
-**File:** `backend/prisma/schema.prisma`
-
-Add at the bottom:
-```prisma
-model SystemConfig {
-  key       String   @id @db.VarChar(100)
-  value     Json
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("system_config")
-}
-```
-
-Also update the `User` model role comment:
-```prisma
-// Before
-role String @default("BASIC") @db.VarChar(20) // BASIC, DESIGN, MANAGER
-
-// After
-role String @default("SALES") @db.VarChar(20) // SALES, DESIGN, MANAGER_SALES, MANAGER_DESIGN
-```
-
-Run:
-```bash
-npx prisma migrate dev --name add_system_config_and_rename_roles
-npx prisma generate
-```
-
-#### A3. Update Seed File
-
-**File:** `backend/prisma/seed_auth.js`
-
-Change seed user role from `MANAGER` → `MANAGER_DESIGN`.
-
----
-
-### PHASE B — Backend: Shared Infrastructure
-
-#### B1. Create `configService.js`
-
-**New file:** `backend/src/services/configService.js`
-
-Full API of the service:
-
-```
-configService
-  ├── _cache = { permissions: null, defaults: null }
-  │
-  ├── // Permissions
-  ├── getPermissions()                   → full role_permissions object (cached)
-  ├── hasPermission(role, key)           → boolean (e.g. canManageUsers)
-  ├── canEditTabField(role, fieldKey)    → boolean (checks editableTabFields array)
-  ├── canEditBomField(role, fieldKey)    → boolean (checks editableBomFields array)
-  ├── updatePermissions(data)            → saves to DB, clears permissions cache
-  │
-  ├── // App Defaults
-  ├── getAppDefaults()                   → full app_defaults object (cached)
-  ├── getTabDefaults()                   → appDefaults.tabDefaults
-  ├── getBomDefaults()                   → appDefaults.bomDefaults
-  └── updateAppDefaults(data)            → saves to DB, clears defaults cache
-```
-
-**Self-seeding:** If `role_permissions` row is missing, auto-insert the default config from Section 4. If `app_defaults` row is missing, auto-insert defaults from Section 5. No manual seed step needed — works on first API call.
-
-**Caching:** Module-level `_cache` object. Cleared on each `update*` call. No DB hit on every request.
-
-#### B2. Create `configRoutes.js`
-
-**New file:** `backend/src/routes/configRoutes.js`
-
-```
-GET  /api/config/permissions
-     → authenticateToken (any logged-in user)
-     → Returns full permissions config
-     → Frontend loads on login
-
-PUT  /api/config/permissions
-     → authenticateToken + authorizeRoles('MANAGER_DESIGN')
-     → Server-side safety: reject if MANAGER_DESIGN.canManageUsers === false
-     → Server-side safety: reject if MANAGER_DESIGN.canAccessAdmin === false
-     → Calls configService.updatePermissions(req.body)
-     → Returns updated config
-
-GET  /api/config/defaults
-     → authenticateToken (any logged-in user)
-     → Returns full app_defaults config
-     → Frontend loads on login
-
-PUT  /api/config/defaults
-     → authenticateToken + authorizeRoles('MANAGER_DESIGN')
-     → Validates values are within sane ranges (no negative lengths, etc.)
-     → Calls configService.updateAppDefaults(req.body)
-     → Returns updated config
-```
-
-#### B3. Register Routes
-
-**File:** `backend/src/server.js`
-
-```js
-const configRoutes = require('./routes/configRoutes');
-app.use('/api/config', configRoutes);
-```
-
----
-
-### PHASE C — Backend: Middleware Updates
-
-#### C1. `authMiddleware.js` — Add `requirePermission`
-
-**File:** `backend/src/middleware/authMiddleware.js`
-
-Add new export alongside existing `authorizeRoles`:
-
-```js
-const configService = require('../services/configService');
-
-exports.requirePermission = (permissionKey) => {
-  return async (req, res, next) => {
-    const role = req.user?.role;
-    const allowed = await configService.hasPermission(role, permissionKey);
-    if (!allowed) return res.status(403).json({ error: 'Access denied' });
-    next();
-  };
-};
-```
-
-#### C2. `tabPermissions.js` — Dynamic field list + dynamic defaults
-
-**File:** `backend/src/middleware/tabPermissions.js`
-
-**`enforceTabUpdatePermissions`:**
-```js
-// BEFORE
-const ADVANCED_ROLES = new Set(['DESIGN', 'MANAGER']);
-if (ADVANCED_ROLES.has(role)) return next();
-// ...loops through ADVANCED_ONLY_SETTINGS_FIELDS
-
-// AFTER
-const editableFields = await configService.getEditableTabFields(role) // from canEditTabField
-// For each field being changed, check if it's in editableFields
-for (const field of Object.keys(settings)) {
-  const allowed = await configService.canEditTabField(role, field);
-  if (!allowed && /* value actually changed vs stored */) {
-    return forbiddenField(res, field);
-  }
-}
-```
-
-**`sanitizeTabCreateForRole`:**
-```js
-// BEFORE
-const DEFAULTS = { buffer: 15, lengthsInput: '...' };
-req.body.settings.buffer = DEFAULTS.buffer;
-
-// AFTER
-const tabDefs = await configService.getTabDefaults();
-const editableFields = await configService.getEditableTabFields(role);
-for (const field of ALL_TAB_SETTINGS_FIELDS) {
-  if (!editableFields.includes('all') && !editableFields.includes(field)) {
-    req.body.settings[field] = tabDefs[field]; // reset to admin-configured default
-  }
-}
-```
-
-#### C3. `bomPermissions.js` — Dynamic field checks + dynamic defaults
-
-**File:** `backend/src/middleware/bomPermissions.js`
-
-**`enforceBomUpdatePermissions`:**
-```js
-// BEFORE
-const ADVANCED_ROLES = new Set(['DESIGN', 'MANAGER']);
-if (ADVANCED_ROLES.has(role)) return next();
-// ...checks aluminumRate, sparePercentage, moduleWp vs DEFAULT_*
-
-// AFTER — per-field checks with dynamic defaults as baseline
-const bomDefs = await configService.getBomDefaults();
-const canEditAlRate = await configService.canEditBomField(role, 'aluminumRate');
-const canEditSpare  = await configService.canEditBomField(role, 'sparePercentage');
-const canEditWp     = await configService.canEditBomField(role, 'moduleWp');
-
-const currentAluminumRate = toNullableNumber(currentMeta.aluminumRate) ?? bomDefs.aluminumRate;
-// ...then use the same existing comparison logic, gated by the boolean above
-```
-
-`forbidBasicMasterItemMutation` → unchanged in structure, just check `canUpdateMasterItem` via `configService.hasPermission(role, 'canUpdateMasterItem')`.
-
----
-
-### PHASE D — Backend: Route Updates
-
-Replace `authorizeRoles('MANAGER')` with `requirePermission(key)` in 4 route files:
-
-| File | Current | Replace with |
-|---|---|---|
-| `src/routes/userRoutes.js` | `authorizeRoles('MANAGER')` | `requirePermission('canManageUsers')` |
-| `src/routes/savedBomRoutes.js` | `authorizeRoles('MANAGER')` on `/all` | Custom `canViewBoms` middleware (see below) |
-| `src/routes/defaultNotesRoutes.js` | `authorizeRoles('MANAGER')` on POST/PUT/DELETE | `requirePermission('canEditDefaultNotes')` |
-| `src/routes/templateRoutes.js` | `authorizeRoles('MANAGER')` on PUT | `requirePermission('canEditDefaultNotes')` |
-
-#### Special case: `savedBomRoutes.js` — BOM View Scope Middleware
-
-The `/all` route cannot use a single `requirePermission` call because three separate flags (`canViewAllBoms`, `canViewSalesBoms`, `canViewDesignBoms`) all grant access — just with different scopes. Use a custom inline middleware instead:
-
-```js
-// savedBomRoutes.js
-const canViewBoms = async (req, res, next) => {
-  const role = req.user?.role;
-  const canAll    = await configService.hasPermission(role, 'canViewAllBoms');
-  const canSales  = await configService.hasPermission(role, 'canViewSalesBoms');
-  const canDesign = await configService.hasPermission(role, 'canViewDesignBoms');
-
-  if (!canAll && !canSales && !canDesign)
-    return res.status(403).json({ error: 'Access denied' });
-
-  if (canAll) {
-    req.bomViewScope = 'all';
-  } else {
-    const roles = [];
-    if (canSales)  roles.push('SALES');
-    if (canDesign) roles.push('DESIGN');
-    req.bomViewRoles = roles; // e.g. ['SALES'], ['DESIGN'], or ['SALES', 'DESIGN']
-  }
-  next();
-};
-
-router.get('/all', canViewBoms, savedBomController.getAllSavedBoms);
-```
-
-#### `savedBomService.js` — Add Filtered Method
-
-```js
-// New method alongside existing getAllSavedBoms()
-async getSavedBomsByRoles(roles) {
-  return prisma.savedBom.findMany({
-    where: { user: { role: { in: roles } } }, // Prisma supports array natively
-    include: {
-      project: { select: { id: true, name: true, clientName: true, projectId: true, longRailVariation: true, createdAt: true } },
-      user:    { select: { id: true, username: true } }
-    },
-    orderBy: { updatedAt: 'desc' }
-  });
-}
-```
-
-#### `savedBomController.js` — Read Scope
-
-```js
-async getAllSavedBoms(req, res) {
-  const savedBoms = req.bomViewScope === 'all'
-    ? await savedBomService.getAllSavedBoms()
-    : await savedBomService.getSavedBomsByRoles(req.bomViewRoles);
-  res.json(savedBoms);
-}
-```
-
-> **Frontend — zero changes needed.** `BOMManagementTab.jsx` calls the same `GET /api/saved-boms/all` endpoint and just displays whatever the server returns. The filtering is 100% server-side.
-
----
-
-### PHASE E — Backend: Tab Service Defaults
-
-**File:** `backend/src/services/tabService.js`
-
-`createTab` currently uses hardcoded `||` fallbacks. Replace with dynamic defaults using `??` (nullish coalescing, so `0` is valid):
-
-```js
-// BEFORE
-buffer: parseInt(settings?.buffer || 15),
-alphaJoint: parseInt(settings?.alphaJoint || 220),
-// ...same pattern for all 20 fields
-
-// AFTER
-const tabDefs = await configService.getTabDefaults();
-buffer: parseInt(settings?.buffer ?? tabDefs.buffer),
-alphaJoint: parseInt(settings?.alphaJoint ?? tabDefs.alphaJoint),
-// ...same pattern for all 20 fields
-```
-
----
-
-### PHASE F — Frontend: AuthContext + api.js
-
-**File:** `knapsack-front/src/services/api.js`
-
-Add `configAPI` alongside existing API objects:
-```js
-export const configAPI = {
-  getPermissions: () => apiClient.get('/config/permissions').then(r => r.data),
-  updatePermissions: (cfg) => apiClient.put('/config/permissions', cfg).then(r => r.data),
-  getDefaults: () => apiClient.get('/config/defaults').then(r => r.data),
-  updateDefaults: (cfg) => apiClient.put('/config/defaults', cfg).then(r => r.data),
-};
-```
-
-Also update `sanitizeTabSettingsForRole` to use the field list instead of hardcoded role check:
-```js
-// BEFORE
-const sanitizeTabSettingsForRole = (settings, role) => {
-  if (role !== 'BASIC') return settings;
-  // strip advanced fields...
-};
-
-// AFTER
-const sanitizeTabSettingsForRole = (settings, editableTabFields) => {
-  if (editableTabFields.includes('all')) return settings;
-  const sanitized = { ...settings };
-  for (const key of Object.keys(sanitized)) {
-    if (!editableTabFields.includes(key)) delete sanitized[key];
-  }
-  return sanitized;
-};
-```
-
-**File:** `knapsack-front/src/context/AuthContext.jsx`
-
-On login and on `initAuth`, fetch permissions and defaults in parallel:
-
-```js
-const [permissions, setPermissions] = useState(null);
-const [appDefaults, setAppDefaults] = useState(null);
-
-// In initAuth, after setUser(userData):
-const [permsData, defaultsData] = await Promise.all([
-  configAPI.getPermissions(),
-  configAPI.getDefaults()
-]);
-setPermissions(permsData);
-setAppDefaults(defaultsData);
-
-// Feature permission check
-const can = (permissionKey) => {
-  if (!user || !permissions) return false;
-  return permissions[user.role]?.[permissionKey] === true;
-};
-
-// Field-level permission check
-const canEditField = (fieldKey, fieldGroup = 'tab') => {
-  if (!user || !permissions) return false;
-  const key = fieldGroup === 'bom' ? 'editableBomFields' : 'editableTabFields';
-  const fields = permissions[user.role]?.[key] ?? [];
-  return fields.includes('all') || fields.includes(fieldKey);
-};
-
-// Expose: { user, permissions, appDefaults, can, canEditField, login, logout, refreshUser, loading, isAuthenticated }
-```
-
----
-
-### PHASE G — Frontend: Replace Hardcoded Role Checks (14 files)
-
-Replace all hardcoded role string comparisons with `can()` and `canEditField()` from AuthContext.
-
-#### Full Mapping
-
-| File | Old check | New check |
-|---|---|---|
-| `Router.jsx` | `roles={['MANAGER']}` | `can('canAccessAdmin')` in ProtectedRoute |
-| `App.jsx` | `role === 'BASIC'` | `!can('canUpdateMasterItem')` or relevant key |
-| `services/api.js` | `role !== 'BASIC'` in sanitize | `editableTabFields` from context (done in Phase F) |
-| `pages/AdminPanel.jsx` | Role dropdown `BASIC/DESIGN/MANAGER` | Update to `SALES/DESIGN/MANAGER_SALES/MANAGER_DESIGN` |
-| `pages/HomePage.jsx` | `role === 'MANAGER'` (admin link) | `can('canAccessAdmin')` |
-| `components/GlobalInputs.jsx` | `isBasicUser` → buffer disabled | `!canEditField('buffer')` |
-| `components/GlobalInputs.jsx` | `isBasicUser` → lengthsInput hidden | `!canEditField('lengthsInput')` |
-| `components/RailTable.jsx` | `role === 'BASIC'` checks | `canEditField(fieldKey)` per field |
-| `components/ResultCard.jsx` | `userMode === 'advanced'` | `canEditField('costPerMm')` or similar |
-| `components/SettingsPanel.jsx` | `userMode === 'advanced'` for Advanced card | `canEditField('maxWastePct')` or any advanced field |
-| `components/SettingsPanel.jsx` | `userMode === 'advanced'` for Cost Settings | `canEditField('costPerMm')` |
-| `components/BOM/BOMPage.jsx` | `isBasicUser` for BOM rate fields | `canEditField('aluminumRate', 'bom')` |
-| `components/BOM/BOMTableRow.jsx` | `isBasicUser` for per-item cost | `canEditField('perItemCost', 'bom')` |
-| `components/BOM/NotesSection.jsx` | `isManager` | `can('canEditDefaultNotes')` |
-| `components/BOM/ReviewChangesModal.jsx` | `canUpdateMaster` | `can('canUpdateMasterItem')` |
-| `components/BOM/ShareBOMModal.jsx` | `['ALL', 'BASIC', 'DESIGN', 'MANAGER']` | `['ALL', 'SALES', 'DESIGN', 'MANAGER_SALES', 'MANAGER_DESIGN']` |
-
----
-
-### PHASE H — Frontend: Replace Hardcoded Defaults in Components
-
-**File:** `knapsack-front/src/components/GlobalInputs.jsx`
-
-`handleResetToDefaults` — replace hardcoded values with context:
-```js
-// BEFORE
-setSettings(prev => ({ ...prev, moduleLength: 2278, buffer: 15, ...etc }));
-
-// AFTER
-const { appDefaults } = useAuth();
-setSettings(prev => ({ ...prev, ...appDefaults.tabDefaults }));
-setModuleWp(appDefaults.bomDefaults.moduleWp);
-```
-
-**File:** `knapsack-front/src/components/SettingsPanel.jsx`
-
-`handleReset` — replace `DEFAULT_SETTINGS` with `appDefaults.tabDefaults`.
-
-**File:** `knapsack-front/src/lib/storage.js`
-
-Keep `DEFAULT_SETTINGS` as factory fallback (used only if the API hasn't loaded yet). Add helper:
-```js
-export const getEffectiveDefaults = (appDefaults) =>
-  appDefaults?.tabDefaults
-    ? { ...DEFAULT_SETTINGS, ...appDefaults.tabDefaults }
-    : DEFAULT_SETTINGS;
-```
-
----
-
-### PHASE I — Frontend: Admin Panel UI (New Tabs)
-
-**File:** `knapsack-front/src/pages/AdminPanel.jsx`
-
-Add two new tabs, visible only to `user.role === 'MANAGER_DESIGN'`:
-
----
-
-#### Tab 3 — Permissions
-
-Two sections on one tab:
-
-**Section A — Feature Permissions** (7 rows × 4 role columns):
-
-```
-┌──────────────────────┬────────┬────────┬──────────────┬──────────┐
-│ Permission           │ Sales  │ Design │ Mgr (Sales)  │ Mgr (Des)│
-├──────────────────────┼────────┼────────┼──────────────┼──────────┤
-│ Update Master DB     │  [ ]   │  [✓]   │     [ ]      │  [✓] 🔒  │
-│ View All BOMs        │  [ ]   │  [ ]   │     [ ]      │  [✓] 🔒  │
-│ View Sales BOMs      │  [ ]   │  [ ]   │     [✓]      │  [✓] 🔒  │
-│ View Design BOMs     │  [ ]   │  [ ]   │     [ ]      │  [✓] 🔒  │
-│ Edit Default Notes   │  [ ]   │  [ ]   │     [ ]      │  [✓] 🔒  │
-│ Manage Users         │  [ ]   │  [ ]   │     [ ]      │  [✓] 🔒  │
-│ Access Admin Panel   │  [ ]   │  [ ]   │     [ ]      │  [✓] 🔒  │
-└──────────────────────┴────────┴────────┴──────────────┴──────────┘
-```
-
-> Note: "View All BOMs" overrides the two scoped rows. If "View All BOMs" is checked, the Sales/Design rows are ignored. Consider greying them out in the UI when "View All BOMs" is on.
-
-**Section B — Field-Level Edit Control** (27 rows × 4 columns, grouped and collapsible):
-
-```
-▼ Module Parameters
-  Module Length    [✓] [✓] [✓] [🔒]
-  Module Width     [✓] [✓] [✓] [🔒]
-  Frame Thickness  [✓] [✓] [✓] [🔒]
-  Mid Clamp Gap    [✓] [✓] [✓] [🔒]
-  End Clamp Width  [✓] [✓] [✓] [🔒]
-
-▼ MMS / Structural
-  Buffer           [ ] [✓] [ ] [🔒]
-  Rails per Side   [✓] [✓] [✓] [🔒]
-
-▼ Site Parameters
-  Purlin Distance  [✓] [✓] [✓] [🔒]
-  Seam to Seam     [✓] [✓] [✓] [🔒]
-  Max Support Dist [✓] [✓] [✓] [🔒]
-
-▼ Cut Lengths
-  Toggle on/off    [✓] [✓] [✓] [🔒]
-  Edit list        [ ] [✓] [ ] [🔒]
-
-▶ Optimizer / Cost Settings  (collapsed by default)
-▶ Advanced Optimizer          (collapsed by default)
-▶ BOM Rate Fields             (collapsed by default)
-
-                                      [Save Permissions]
-```
-
-**Safety rules (also enforced server-side):**
-- `MANAGER_DESIGN` column is always all-checked, all toggles disabled
-- `MANAGER_DESIGN.canManageUsers` and `canAccessAdmin` are always `true` — protected against lockout
-
----
-
-#### Tab 4 — App Defaults
-
-```
-┌──────────────────────────────────────────────────────────────────┐
-│  App Defaults                                                     │
-│  Used when any user creates a new tab or BOM.                    │
-│  Existing tabs and BOMs are NOT affected.                        │
-│                                                                  │
-│  ┌─ BOM Rates & Specs ─────────────────────────────────────┐    │
-│  │  Aluminum Rate (₹/kg) [460]   HDG Rate (₹/kg)  [125]   │    │
-│  │  Magnelis Rate (₹/kg) [125]   Module Wp (W)     [590]   │    │
-│  │  Spare Percentage (%) [1.0]                              │    │
-│  └──────────────────────────────────────────────────────────┘    │
-│                                                                  │
-│  ┌─ Module Parameters ─────────────────────────────────────┐    │
-│  │  Module Length [2278]    Module Width     [1134]         │    │
-│  │  Frame Thickness [35]    Mid Clamp Gap    [20]           │    │
-│  │  End Clamp Width [40]                                    │    │
-│  └──────────────────────────────────────────────────────────┘    │
-│                                                                  │
-│  ┌─ Structural Parameters ─────────────────────────────────┐    │
-│  │  Buffer (mm)     [15]    Rails per Side   [2]            │    │
-│  │  Purlin Distance [1700]  Seam to Seam     [400]          │    │
-│  │  Max Support     [1800]                                  │    │
-│  └──────────────────────────────────────────────────────────┘    │
-│                                                                  │
-│  ┌─ Optimizer Settings ────────────────────────────────────┐    │
-│  │  Cut Lengths  [1595, 1798, 2400, 2750, 3600, 4800]      │    │
-│  │  Max Pieces [3]  Cost/mm [0.1]  Cost/Joint [50]         │    │
-│  │  Joiner Length [100]    Max Waste % [  ]                 │    │
-│  │  α [220]  β [60]  Undershoot% [0]  γ [5]               │    │
-│  │  Priority: (●) Cost  ( ) Length  ( ) Joints             │    │
-│  └──────────────────────────────────────────────────────────┘    │
-│                                                                  │
-│       [Reset to Factory Defaults]      [Save App Defaults]      │
-└──────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 7. Complete Files Changed
-
-### New Files (3)
+### New Files (2)
 | File | Purpose |
 |---|---|
 | `backend/src/services/configService.js` | All config read/write/cache logic |
 | `backend/src/routes/configRoutes.js` | GET/PUT endpoints for permissions and defaults |
-| `backend/prisma/migrations/*/migration.sql` | Auto-generated by `prisma migrate dev` |
 
-### Modified Files (27)
+### Modified Files (29)
 
 **Backend:**
-| File | What Changes |
+| File | What Changed |
 |---|---|
-| `prisma/schema.prisma` | Add `SystemConfig` model, update `User` role comment |
-| `prisma/seed_auth.js` | Seed user role `MANAGER` → `MANAGER_DESIGN` |
-| `src/server.js` | Register `/api/config` routes |
-| `src/middleware/authMiddleware.js` | Add `requirePermission` export |
-| `src/middleware/tabPermissions.js` | Dynamic field list + dynamic defaults (replaces `ADVANCED_ROLES` + `DEFAULTS`) |
-| `src/middleware/bomPermissions.js` | Per-field checks + dynamic BOM defaults (replaces `ADVANCED_ROLES` + hardcoded constants) |
+| `prisma/schema.prisma` | Added `SystemConfig` model, updated `User` role default BASIC→SALES |
+| `prisma/seed_auth.js` | Seed user role MANAGER → MANAGER_DESIGN |
+| `src/server.js` | Registered `/api/config` routes |
+| `src/middleware/authMiddleware.js` | Added `requirePermission` export |
+| `src/middleware/tabPermissions.js` | Dynamic field list + dynamic defaults (replaces ADVANCED_ROLES + DEFAULTS) |
+| `src/middleware/bomPermissions.js` | Per-field checks + dynamic BOM defaults |
 | `src/routes/userRoutes.js` | `authorizeRoles('MANAGER')` → `requirePermission('canManageUsers')` |
-| `src/routes/savedBomRoutes.js` | Replace `authorizeRoles('MANAGER')` with `canViewBoms` scope middleware |
-| `src/services/savedBomService.js` | Add `getSavedBomsByRoles(roles)` method with `where: { user: { role: { in: roles } } }` |
+| `src/routes/savedBomRoutes.js` | `authorizeRoles('MANAGER')` → canViewBoms scope middleware |
+| `src/services/savedBomService.js` | Added `getSavedBomsByRoles(roles)` + fixed reconstruction condition for missing tabs |
 | `src/controllers/savedBomController.js` | `getAllSavedBoms` reads `req.bomViewScope` to call correct service method |
 | `src/routes/defaultNotesRoutes.js` | `authorizeRoles('MANAGER')` → `requirePermission('canEditDefaultNotes')` |
 | `src/routes/templateRoutes.js` | `authorizeRoles('MANAGER')` → `requirePermission('canEditDefaultNotes')` |
 | `src/services/tabService.js` | `settings?.x \|\| hardcoded` → `settings?.x ?? tabDefs.x` (20 fields) |
 
 **Frontend:**
-| File | What Changes |
+| File | What Changed |
 |---|---|
 | `src/context/AuthContext.jsx` | Load permissions + defaults, expose `can()`, `canEditField()`, `appDefaults` |
-| `src/services/api.js` | Add `configAPI`, update `sanitizeTabSettingsForRole` |
+| `src/services/api.js` | Added `configAPI`, updated `sanitizeTabSettingsForRole` |
+| `src/services/templateService.js` | Added `LEGACY_NAME_MAP` for old `longRailVariation` values |
 | `src/Router.jsx` | Admin route guard uses `can('canAccessAdmin')` |
 | `src/App.jsx` | Role checks → `can()` calls |
-| `src/pages/AdminPanel.jsx` | Role dropdown updated, add Permissions tab + App Defaults tab |
+| `src/pages/AdminPanel.jsx` | Role dropdown updated to 4 roles, added Permissions tab + App Defaults tab |
 | `src/pages/HomePage.jsx` | Admin link uses `can('canAccessAdmin')` |
-| `src/lib/storage.js` | Add `getEffectiveDefaults()` helper |
+| `src/lib/storage.js` | Added `getEffectiveDefaults()` helper |
 | `src/components/GlobalInputs.jsx` | `isBasicUser` → `canEditField()`, reset uses `appDefaults` |
 | `src/components/RailTable.jsx` | Role checks → `canEditField()` |
 | `src/components/ResultCard.jsx` | `userMode` → `canEditField()` |
 | `src/components/SettingsPanel.jsx` | `userMode` → `canEditField()`, reset uses `appDefaults` |
 | `src/components/BOM/BOMPage.jsx` | `isBasicUser` → `canEditField('...', 'bom')` |
+| `src/components/BOM/BOMTable.jsx` | Added `= []` defaults to destructuring to prevent crash on old BOM data |
 | `src/components/BOM/BOMTableRow.jsx` | `isBasicUser` → `canEditField('perItemCost', 'bom')` |
 | `src/components/BOM/NotesSection.jsx` | `isManager` → `can('canEditDefaultNotes')` |
 | `src/components/BOM/ReviewChangesModal.jsx` | `canUpdateMaster` → `can('canUpdateMasterItem')` |
-| `src/components/BOM/ShareBOMModal.jsx` | Role filter array updated for 4 new role strings |
+| `src/components/BOM/ShareBOMModal.jsx` | Role filter array updated to 4 new role strings |
 
-**Total: 3 new + 29 modified = 32 files**
-
----
-
-## 8. Implementation Order
-
-Execute phases in this order. Each phase is safe to ship independently — no phase breaks the app mid-way.
-
-```
-Phase A  →  DB migration (SQL on server) + Prisma schema + seed file
-Phase B  →  configService + configRoutes + server.js registration
-Phase C  →  Middleware: authMiddleware, tabPermissions, bomPermissions
-Phase D  →  Route files: 4 route files updated
-Phase E  →  tabService: dynamic defaults for createTab
-Phase F  →  Frontend: api.js configAPI + AuthContext
-Phase G  →  Frontend: replace all hardcoded role checks (14 files)
-Phase H  →  Frontend: replace hardcoded defaults in reset functions
-Phase I  →  Frontend: Admin Panel — Permissions tab + App Defaults tab
-```
-
-> **Safe stopping point after Phase B:** Backend is fully dynamic, defaults match current behavior exactly. Old frontend still works because nothing is broken, just not yet using the new endpoints.
-
-> **Safe stopping point after Phase D:** All backend auth is dynamic. Deploy and test backend before touching frontend.
+**Total: 2 new + 29 modified = 31 files**
 
 ---
 
-## 9. Difficulty Summary
+## 12. Known Remaining Issues
 
-| Phase | Effort | Notes |
+| Issue | Severity | Notes |
 |---|---|---|
-| A — DB | Low | SQL + one Prisma model |
-| B — Infrastructure | Low | New patterns but not complex |
-| C — Middleware | Medium | Async changes, but logic is cleaner after |
-| D — Routes | Low | 4-line changes per file |
-| E — tabService | Low | Mechanical substitution, 20 fields |
-| F — AuthContext | Low | Parallel fetch + two helper functions |
-| G — Role checks (14 files) | Medium | Repetitive but mechanical |
-| H — Default resets | Low | 2 files, swap one object reference |
-| I — Admin Panel UI | Medium | Most UI work is in field-level table |
-
-**Overall: Medium** — The only genuinely non-trivial parts are the middleware async changes (Phase C) and building the collapsible field-level table UI (Phase I). Everything else is structured, mechanical work.
-
----
-
-## 10. What Manager(Design) Gets
-
-After this is built, Manager(Design) can:
-
-1. **Go to Admin Panel → Permissions tab**
-   - Toggle which features each role has (View All BOMs, Manage Users, etc.)
-   - Toggle which specific input fields each role can edit (buffer, aluminum rate, etc.)
-   - Hit Save → changes take effect immediately, no deployment needed
-
-2. **Go to Admin Panel → App Defaults tab**
-   - Change any default value (aluminum rate, buffer, cut lengths, module dimensions, etc.)
-   - Hit Save → all new tabs/BOMs created by any user will use these values
-   - "Reset to Factory Defaults" button restores the original hardcoded values
-
-3. **Configure Manager(Sales) permissions independently** without waiting for a dev
-   - Start from SALES-equivalent (fully restricted)
-   - Gradually grant access: maybe give them `canViewAllBoms`, `canManageUsers`, and a few BOM fields
-   - No code change, no deployment, instant effect
+| MANAGER_SALES has no BOM list entry point | HIGH | Role has `canViewSalesBoms` but can't reach BOM list — see Priority 1 above |
+| canManageUsers not gated in AdminPanel UI | MEDIUM | Backend blocks API; UI still renders. See Priority 2 above |
+| canViewDesignBoms is unused/dead | LOW | Default false everywhere, no UI hooks it. See Priority 3 above |
+| Field inputs render for restricted roles | LOW | API rejects on save. UX improvement only. See Priority 4 above |
+| Prisma migration shadow DB conflict | LOW | `db push` workaround applied. `prisma migrate dev` will fail until migration SQL is fixed |
+| Old `longRailVariation` in saved bomData | LOW | Legacy map in templateService.js handles it. DB records already fixed. |
