@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken, checkPasswordChange, authorizeRoles } = require('../middleware/authMiddleware');
+const { authenticateToken, checkPasswordChange, authorizeRoles, requirePermission } = require('../middleware/authMiddleware');
 const configService = require('../services/configService');
 
 // All config routes require authentication
@@ -23,9 +23,10 @@ router.put('/permissions', authorizeRoles('MANAGER_DESIGN'), async (req, res) =>
   try {
     const data = req.body;
 
-    // Safety: MANAGER_DESIGN must always retain admin + manage-users access
-    if (data.MANAGER_DESIGN?.canAccessAdmin === false || data.MANAGER_DESIGN?.canManageUsers === false) {
-      return res.status(400).json({ error: 'Cannot remove canAccessAdmin or canManageUsers from MANAGER_DESIGN' });
+    // Safety: MANAGER_DESIGN must always retain core permissions
+    const md = data.MANAGER_DESIGN ?? {};
+    if (md.canAccessAdmin === false || md.canManageUsers === false || md.canEditAppDefaults === false) {
+      return res.status(400).json({ error: 'Cannot remove canAccessAdmin, canManageUsers, or canEditAppDefaults from MANAGER_DESIGN' });
     }
 
     const updated = await configService.updatePermissions(data);
@@ -47,8 +48,8 @@ router.get('/defaults', async (req, res) => {
   }
 });
 
-// PUT /api/config/defaults — MANAGER_DESIGN only
-router.put('/defaults', authorizeRoles('MANAGER_DESIGN'), async (req, res) => {
+// PUT /api/config/defaults — requires canEditAppDefaults permission
+router.put('/defaults', requirePermission('canEditAppDefaults'), async (req, res) => {
   try {
     const data = req.body;
 

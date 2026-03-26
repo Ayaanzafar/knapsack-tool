@@ -9,6 +9,7 @@ const DEFAULT_PERMISSIONS = {
     canViewSalesBoms: false,
     canViewDesignBoms: false,
     canEditDefaultNotes: false,
+    canEditAppDefaults: false,
     canManageUsers: false,
     canAccessAdmin: false,
     editableTabFields: [
@@ -25,6 +26,7 @@ const DEFAULT_PERMISSIONS = {
     canViewSalesBoms: false,
     canViewDesignBoms: false,
     canEditDefaultNotes: false,
+    canEditAppDefaults: false,
     canManageUsers: false,
     canAccessAdmin: false,
     editableTabFields: [
@@ -46,6 +48,7 @@ const DEFAULT_PERMISSIONS = {
     canViewSalesBoms: true,
     canViewDesignBoms: false,
     canEditDefaultNotes: false,
+    canEditAppDefaults: false,
     canManageUsers: false,
     canAccessAdmin: false,
     editableTabFields: [
@@ -62,6 +65,7 @@ const DEFAULT_PERMISSIONS = {
     canViewSalesBoms: true,
     canViewDesignBoms: true,
     canEditDefaultNotes: true,
+    canEditAppDefaults: true,
     canManageUsers: true,
     canAccessAdmin: true,
     editableTabFields: ['all'],
@@ -120,9 +124,34 @@ async function getPermissions() {
     row = await prisma.systemConfig.create({
       data: { key: 'role_permissions', value: DEFAULT_PERMISSIONS },
     });
+    _cache.permissions = row.value;
+    return _cache.permissions;
   }
 
-  _cache.permissions = row.value;
+  // Backfill: merge any new permission keys added to DEFAULT_PERMISSIONS
+  // that don't yet exist in the stored DB row (forward-compatible)
+  const stored = row.value;
+  let dirty = false;
+  const merged = {};
+  for (const role of Object.keys(DEFAULT_PERMISSIONS)) {
+    merged[role] = { ...DEFAULT_PERMISSIONS[role], ...stored[role] };
+    // Check if any key from DEFAULT is missing in stored
+    for (const key of Object.keys(DEFAULT_PERMISSIONS[role])) {
+      if (!(key in (stored[role] ?? {}))) {
+        dirty = true;
+      }
+    }
+  }
+
+  if (dirty) {
+    // Persist the backfilled data so future reads don't need to backfill again
+    row = await prisma.systemConfig.update({
+      where: { key: 'role_permissions' },
+      data: { value: merged },
+    });
+  }
+
+  _cache.permissions = dirty ? merged : stored;
   return _cache.permissions;
 }
 
@@ -147,13 +176,14 @@ async function updatePermissions(data) {
   // Always lock MANAGER_DESIGN to full access
   data.MANAGER_DESIGN = {
     ...data.MANAGER_DESIGN,
-    canManageUsers: true,
-    canAccessAdmin: true,
     canUpdateMasterItem: true,
     canViewAllBoms: true,
     canViewSalesBoms: true,
     canViewDesignBoms: true,
     canEditDefaultNotes: true,
+    canEditAppDefaults: true,
+    canManageUsers: true,
+    canAccessAdmin: true,
     editableTabFields: ['all'],
     editableBomFields: ['all'],
   };

@@ -11,9 +11,13 @@ const FEATURE_PERMS = [
   { key: 'canViewSalesBoms',    label: 'View Sales BOMs' },
   { key: 'canViewDesignBoms',   label: 'View Design BOMs' },
   { key: 'canEditDefaultNotes', label: 'Edit Default Notes' },
+  { key: 'canEditAppDefaults',  label: 'Edit App Defaults' },
   { key: 'canManageUsers',      label: 'Manage Users' },
   { key: 'canAccessAdmin',      label: 'Access Admin Panel' },
 ];
+
+// Permissions that require canAccessAdmin to be useful
+const REQUIRES_ADMIN = ['canManageUsers', 'canEditAppDefaults'];
 
 const FIELD_GROUPS = [
   { key: 'moduleParams', label: 'Module Parameters', fields: [
@@ -66,7 +70,7 @@ const ROLES = [
   { key: 'MANAGER_DESIGN', label: 'Mgr (Design)', locked: true },
 ];
 
-function PermissionsTab({ permissionsConfig, loading, saving, msg, expandedGroups, setExpandedGroups, onToggleFeature, onToggleTabField, onToggleBomField, onSave }) {
+function PermissionsTab({ permissionsConfig, loading, saving, msg, autoLinkMsg, expandedGroups, setExpandedGroups, onToggleFeature, onToggleTabField, onToggleBomField, onSave }) {
   if (loading) return <div className="p-8 text-center text-gray-500">Loading permissions...</div>;
   if (!permissionsConfig) return <div className="p-8 text-center text-gray-500">No permissions data.</div>;
 
@@ -81,6 +85,12 @@ function PermissionsTab({ permissionsConfig, loading, saving, msg, expandedGroup
 
   return (
     <div className="bg-white shadow sm:rounded-lg p-6 space-y-8">
+      {autoLinkMsg && (
+        <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-lg px-4 py-3">
+          <span className="mt-0.5">ℹ️</span>
+          <span>{autoLinkMsg}</span>
+        </div>
+      )}
       <div>
         <h3 className="text-lg font-medium text-gray-900 mb-1">Feature Permissions</h3>
         <p className="text-sm text-gray-500 mb-4">Control which features each role can access.</p>
@@ -298,6 +308,7 @@ export default function AdminPanel() {
   const [permissionsLoading, setPermissionsLoading] = useState(false);
   const [permissionsSaving, setPermissionsSaving] = useState(false);
   const [permissionsMsg, setPermissionsMsg] = useState('');
+  const [autoLinkMsg, setAutoLinkMsg] = useState('');
   const [expandedGroups, setExpandedGroups] = useState({ moduleParams: true, structural: true, site: true, cutLengths: true, optimizer: false, advanced: false, bomRates: false });
 
   // App Defaults tab state
@@ -398,10 +409,37 @@ export default function AdminPanel() {
 
   const toggleFeaturePerm = (roleKey, permKey) => {
     if (roleKey === 'MANAGER_DESIGN') return; // always locked
-    setPermissionsConfig(prev => ({
-      ...prev,
-      [roleKey]: { ...prev[roleKey], [permKey]: !prev[roleKey][permKey] },
-    }));
+    setAutoLinkMsg('');
+    setPermissionsConfig(prev => {
+      const current = prev[roleKey];
+      const newVal = !current[permKey];
+      const updated = { ...current, [permKey]: newVal };
+      let msg = '';
+
+      // Turning ON a permission that requires Admin Panel → auto-enable canAccessAdmin
+      if (newVal && REQUIRES_ADMIN.includes(permKey) && !updated.canAccessAdmin) {
+        updated.canAccessAdmin = true;
+        msg = 'Admin Panel access was also enabled — it is required for this permission.';
+      }
+
+      // Turning OFF canAccessAdmin → auto-disable all dependent permissions
+      if (!newVal && permKey === 'canAccessAdmin') {
+        const disabled = [];
+        REQUIRES_ADMIN.forEach(dep => {
+          if (updated[dep]) {
+            updated[dep] = false;
+            const label = FEATURE_PERMS.find(p => p.key === dep)?.label ?? dep;
+            disabled.push(label);
+          }
+        });
+        if (disabled.length) {
+          msg = `"${disabled.join('" and "')}" ${disabled.length > 1 ? 'were' : 'was'} also disabled — ${disabled.length > 1 ? 'they require' : 'it requires'} Admin Panel access.`;
+        }
+      }
+
+      if (msg) setTimeout(() => setAutoLinkMsg(msg), 0);
+      return { ...prev, [roleKey]: updated };
+    });
   };
 
   const toggleTabField = (roleKey, fieldKey) => {
@@ -632,7 +670,7 @@ export default function AdminPanel() {
               can('canManageUsers') && { key: 'users', label: 'User Management' },
               { key: 'boms', label: 'BOM Management' },
               currentUser?.role === 'MANAGER_DESIGN' && { key: 'permissions', label: 'Permissions' },
-              currentUser?.role === 'MANAGER_DESIGN' && { key: 'defaults', label: 'App Defaults' },
+              can('canEditAppDefaults') && { key: 'defaults', label: 'App Defaults' },
             ].filter(Boolean).map(tab => (
               <button
                 key={tab.key}
@@ -875,6 +913,7 @@ export default function AdminPanel() {
             loading={permissionsLoading}
             saving={permissionsSaving}
             msg={permissionsMsg}
+            autoLinkMsg={autoLinkMsg}
             expandedGroups={expandedGroups}
             setExpandedGroups={setExpandedGroups}
             onToggleFeature={toggleFeaturePerm}
