@@ -12,6 +12,7 @@ import WalkwayBOMPage from './pages/WalkwayBOMPage';
 import WalkwayBOMPrintPreview from './pages/WalkwayBOMPrintPreview';
 import AdminPanel from './pages/AdminPanel';
 import AdminBOMView from './pages/AdminBOMView';
+import BomListPage from './pages/BomListPage';
 import SharedBOMPage from './pages/SharedBOMPage';
 import SharedWithMePage from './pages/SharedWithMePage';
 import SharedLoginPage from './pages/SharedLoginPage';
@@ -54,6 +55,18 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
+const BomViewRoute = ({ children }) => {
+  const { can, loading } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
+
+  if (!can('canViewAllBoms') && !can('canViewSalesBoms') && !can('canViewDesignBoms')) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
 export default function Router() {
   return (
     <AuthProvider>
@@ -79,6 +92,28 @@ export default function Router() {
               <AdminRoute>
                 <AdminBOMView />
               </AdminRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/bom-list"
+          element={
+            <PrivateRoute>
+              <BomViewRoute>
+                <BomListPage />
+              </BomViewRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/bom-list/bom/project/:projectId"
+          element={
+            <PrivateRoute>
+              <BomViewRoute>
+                <AdminBOMView />
+              </BomViewRoute>
             </PrivateRoute>
           }
         />

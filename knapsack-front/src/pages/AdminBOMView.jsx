@@ -84,7 +84,13 @@ export default function AdminBOMView() {
   };
 
   const handleBack = () => {
-    navigate('/admin', { state: { activeTab: 'boms' } });
+    // Navigate back to whichever list page opened this view
+    const fromBomList = window.location.pathname.startsWith('/bom-list');
+    if (fromBomList) {
+      navigate('/bom-list');
+    } else {
+      navigate('/admin', { state: { activeTab: 'boms' } });
+    }
   };
 
   const handlePrintSettings = (settings, action) => {

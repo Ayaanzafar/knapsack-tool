@@ -1086,6 +1086,15 @@ export default function HomePage() {
                 </span>
               )}
             </button>
+            {(can('canViewAllBoms') || can('canViewSalesBoms') || can('canViewDesignBoms')) && !can('canAccessAdmin') && (
+              <button
+                onClick={() => navigate('/bom-list')}
+                className="px-5 py-2.5 border-2 border-blue-600 bg-white text-blue-600 text-sm font-semibold rounded-lg hover:bg-blue-50 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
+                aria-label="View BOM List"
+              >
+                BOM List
+              </button>
+            )}
             {can('canAccessAdmin') && (
               <button
                 onClick={() => navigate('/admin')}

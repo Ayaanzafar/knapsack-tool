@@ -285,9 +285,9 @@ function AppDefaultsTab({ defaultsConfig, setDefaultsConfig, loading, saving, ms
 }
 
 export default function AdminPanel() {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, can } = useAuth();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState('users'); // 'users', 'boms', 'permissions', 'defaults'
+  const [activeTab, setActiveTab] = useState(() => can('canManageUsers') ? 'users' : 'boms');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -516,7 +516,7 @@ export default function AdminPanel() {
   };
 
   useEffect(() => {
-    loadUsers();
+    if (can('canManageUsers')) loadUsers();
   }, []);
 
   const loadUsers = async () => {
@@ -629,11 +629,11 @@ export default function AdminPanel() {
         <div className="bg-white shadow sm:rounded-lg mb-6">
           <div className="flex border-b border-gray-200">
             {[
-              { key: 'users', label: 'User Management' },
+              can('canManageUsers') && { key: 'users', label: 'User Management' },
               { key: 'boms', label: 'BOM Management' },
               { key: 'permissions', label: 'Permissions' },
               { key: 'defaults', label: 'App Defaults' },
-            ].map(tab => (
+            ].filter(Boolean).map(tab => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
@@ -650,7 +650,11 @@ export default function AdminPanel() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'users' ? (
+        {activeTab === 'users' && !can('canManageUsers') ? (
+          <div className="bg-white shadow sm:rounded-lg p-8 text-center text-gray-500">
+            You do not have permission to manage users.
+          </div>
+        ) : activeTab === 'users' ? (
           <>
             {/* Add User Section */}
             <div className="bg-white shadow sm:rounded-lg mb-8">

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { savedBomAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
-export default function BOMManagementTab() {
+export default function BOMManagementTab({ viewBasePath = '/admin/bom/project' }) {
   const [boms, setBoms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -63,7 +63,7 @@ export default function BOMManagementTab() {
   };
 
   const handleViewBOM = (projectDbId) => {
-    navigate(`/admin/bom/project/${projectDbId}`);
+    navigate(`${viewBasePath}/${projectDbId}`);
   };
 
   const formatDate = (dateString) => {
