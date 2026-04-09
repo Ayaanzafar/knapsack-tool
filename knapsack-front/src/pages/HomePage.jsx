@@ -738,6 +738,10 @@ export default function HomePage() {
     navigate('/walkway/create');
   };
 
+  const handleCustomBom = () => {
+    navigate('/custom-bom/create');
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -1003,6 +1007,20 @@ export default function HomePage() {
   // Authenticated HomePage - BOM Creation Interface
 // BOM Module Configuration
   const bomModules = [
+    {
+      id: 'custom-bom',
+      title: 'Custom BOM',
+      description: 'Create a fully custom Bill of Materials',
+      icon: (
+        <svg className="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      ),
+      available: true,
+      badge: 'Active',
+      badgeColor: 'bg-green-500',
+      onClick: handleCustomBom
+    },
     {
       id: 'long-rail',
       title: 'Long Rail',
