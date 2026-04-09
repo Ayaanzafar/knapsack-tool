@@ -491,4 +491,15 @@ export const configAPI = {
   updateDefaults: (cfg) => apiClient.put('/config/defaults', cfg).then(r => r.data),
 };
 
+// ====================
+// Custom BOM API
+// ====================
+
+export const customBomAPI = {
+  // GET /api/custom-bom/:projectId
+  get: (projectId) => apiClient.get(`/custom-bom/${projectId}`).then(r => r.data),
+  // PUT /api/custom-bom/:projectId
+  save: (projectId, data) => apiClient.put(`/custom-bom/${projectId}`, data).then(r => r.data),
+};
+
 export default apiClient;

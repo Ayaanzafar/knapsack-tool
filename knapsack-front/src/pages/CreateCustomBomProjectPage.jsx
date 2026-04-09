@@ -78,7 +78,7 @@ export default function CreateCustomBomProjectPage() {
         userId: user.id
       });
       setCurrentProjectId(newProject.id);
-      navigate('/app');
+      navigate('/custom-bom/app');
     } catch (err) {
       setError(err.message || 'Failed to create project');
     } finally {
@@ -88,7 +88,7 @@ export default function CreateCustomBomProjectPage() {
 
   const handleOpenProject = (project) => {
     setCurrentProjectId(project.id);
-    navigate('/app');
+    navigate('/custom-bom/app');
   };
 
   const totalPages = Math.ceil(totalProjects / pageSize);

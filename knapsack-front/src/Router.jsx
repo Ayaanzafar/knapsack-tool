@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import CreateProjectPage from './pages/CreateProjectPage';
 import CreateWalkwayProjectPage from './pages/CreateWalkwayProjectPage';
 import CreateCustomBomProjectPage from './pages/CreateCustomBomProjectPage';
+import CustomBOMPage from './pages/CustomBOMPage';
 import WalkwayApp from './pages/WalkwayApp';
 import WalkwayBOMPage from './pages/WalkwayBOMPage';
 import WalkwayBOMPrintPreview from './pages/WalkwayBOMPrintPreview';
@@ -142,6 +143,15 @@ export default function Router() {
           element={
             <PrivateRoute>
               <CreateCustomBomProjectPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/custom-bom/app"
+          element={
+            <PrivateRoute>
+              <CustomBOMPage />
             </PrivateRoute>
           }
         />

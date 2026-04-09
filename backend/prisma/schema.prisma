@@ -29,6 +29,7 @@ model Project {
   generatedBoms GeneratedBom[]
   savedBom      SavedBom?
   walkwayRows   WalkwayRow[]
+  customBom     CustomBom?
 
   @@map("projects")
 }
@@ -449,4 +450,27 @@ model SystemConfig {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("system_config")
+}
+
+// Custom BOM Table - Stores custom BOM data (buildings + line items + material rates) per project
+model CustomBom {
+  id          Int      @id @default(autoincrement())
+  projectId   Int      @unique @map("project_id")
+
+  // Material rates (INR per kg)
+  ss304Rate   Decimal  @default(0) @map("ss304_rate") @db.Decimal(10, 2)
+  al6063Rate  Decimal  @default(0) @map("al6063_rate") @db.Decimal(10, 2)
+  t6Rate      Decimal  @default(0) @map("t6_rate") @db.Decimal(10, 2)
+  giRate      Decimal  @default(0) @map("gi_rate") @db.Decimal(10, 2)
+
+  // Buildings with line items stored as JSON
+  // Structure: [{ id, name, items: [{ id, profileId, itemType, genericName, itemCode, itemDescription, material, designWeight, length, quantity, rm, wt, cost }] }]
+  buildings   Json     @default("[]")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("custom_boms")
 }
