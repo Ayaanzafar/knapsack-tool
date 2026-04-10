@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { bomAPI, customBomAPI, projectAPI } from '../services/api';
 import { getCurrentProjectId } from '../lib/tabStorageAPI';
+import TabContextMenu from '../components/TabContextMenu';
+import RenameTabDialog from '../components/RenameTabDialog';
 
 const MATERIALS = ['SS 304', 'Al 6063', 'T6', 'GI'];
 
@@ -283,6 +285,8 @@ export default function CustomBOMPage() {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null); // { buildingId, itemId }
+  const [contextMenu, setContextMenu] = useState({ isOpen: false, buildingId: null, position: { x: 0, y: 0 } });
+  const [renameDialog, setRenameDialog] = useState({ isOpen: false, buildingId: null, currentName: '' });
 
   // Load project info, profiles, and saved BOM data
   useEffect(() => {
@@ -548,22 +552,20 @@ export default function CustomBOMPage() {
             {buildings.map(b => (
               <div
                 key={b.id}
-                className={`group flex items-center gap-1 px-4 py-3 border-r-2 border-yellow-100 shrink-0 cursor-pointer transition-all ${
+                className={`group flex items-center gap-1 px-4 py-3 border-r-2 border-yellow-100 shrink-0 cursor-pointer select-none transition-all ${
                   activeBuilding === b.id
                     ? 'bg-black text-yellow-400 border-b-2 border-b-black'
                     : 'text-gray-600 hover:bg-yellow-100'
                 }`}
                 onClick={() => setActiveBuilding(b.id)}
+                onContextMenu={e => {
+                  e.preventDefault();
+                  setContextMenu({ isOpen: true, buildingId: b.id, position: { x: e.clientX, y: e.clientY } });
+                }}
               >
-                <input
-                  value={b.name}
-                  onChange={e => { e.stopPropagation(); renameBuilding(b.id, e.target.value); }}
-                  onClick={e => e.stopPropagation()}
-                  className={`bg-transparent border-none outline-none text-sm font-bold w-24 cursor-pointer ${
-                    activeBuilding === b.id ? 'text-yellow-400' : 'text-gray-700'
-                  }`}
-                  title="Click to rename"
-                />
+                <span className={`text-sm font-bold ${activeBuilding === b.id ? 'text-yellow-400' : 'text-gray-700'}`}>
+                  {b.name}
+                </span>
                 {buildings.length > 1 && (
                   <button
                     onClick={e => { e.stopPropagation(); removeBuilding(b.id); }}
@@ -718,6 +720,36 @@ export default function CustomBOMPage() {
         rates={rates}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddItem}
+      />
+
+      {/* Tab right-click context menu */}
+      <TabContextMenu
+        isOpen={contextMenu.isOpen}
+        position={contextMenu.position}
+        onClose={() => setContextMenu(m => ({ ...m, isOpen: false }))}
+        onRename={() => {
+          const b = buildings.find(b => b.id === contextMenu.buildingId);
+          if (b) setRenameDialog({ isOpen: true, buildingId: b.id, currentName: b.name });
+        }}
+        onDuplicate={() => {
+          const b = buildings.find(b => b.id === contextMenu.buildingId);
+          if (b) {
+            const copy = { ...b, id: `b-${Date.now()}`, name: `${b.name} (Copy)`, items: b.items.map(i => ({ ...i, id: `item-${Date.now()}-${Math.random().toString(36).substr(2,6)}` })) };
+            setBuildings(prev => [...prev, copy]);
+          }
+        }}
+      />
+
+      {/* Rename dialog */}
+      <RenameTabDialog
+        isOpen={renameDialog.isOpen}
+        currentName={renameDialog.currentName}
+        existingTabNames={buildings.map(b => b.name)}
+        onClose={() => setRenameDialog(d => ({ ...d, isOpen: false }))}
+        onRename={newName => {
+          renameBuilding(renameDialog.buildingId, newName);
+          setRenameDialog(d => ({ ...d, isOpen: false }));
+        }}
       />
 
       {/* Delete Confirm Modal */}
