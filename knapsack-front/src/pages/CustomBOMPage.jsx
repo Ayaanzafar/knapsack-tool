@@ -273,6 +273,8 @@ export default function CustomBOMPage() {
 
   const [project, setProject] = useState(null);
   const [profiles, setProfiles] = useState([]);
+  const [moduleWp, setModuleWp] = useState(590);
+  const [sparePercent, setSparePercent] = useState(1);
   const [rates, setRates] = useState({ ss304Rate: '', al6063Rate: '', t6Rate: '', giRate: '' });
   const [buildings, setBuildings] = useState([]);
   const [activeBuilding, setActiveBuilding] = useState(null);
@@ -297,6 +299,8 @@ export default function CustomBOMPage() {
 
         setProject(proj);
         setProfiles(masterItems);
+        setModuleWp(bomData.moduleWp ?? 590);
+        setSparePercent(bomData.sparePercent ?? 1);
         setRates({
           ss304Rate: bomData.ss304Rate || '',
           al6063Rate: bomData.al6063Rate || '',
@@ -387,6 +391,8 @@ export default function CustomBOMPage() {
     setSaveMsg('');
     try {
       await customBomAPI.save(projectId, {
+        moduleWp: parseFloat(moduleWp) || 590,
+        sparePercent: parseFloat(sparePercent) || 1,
         ss304Rate: parseFloat(rates.ss304Rate) || 0,
         al6063Rate: parseFloat(rates.al6063Rate) || 0,
         t6Rate: parseFloat(rates.t6Rate) || 0,
@@ -472,35 +478,64 @@ export default function CustomBOMPage() {
 
       <div className="max-w-full mx-auto px-4 sm:px-6 py-6 space-y-5">
 
-        {/* Material Rates Bar */}
+        {/* Rates & Params Bar */}
         <div className="bg-white rounded-2xl border-2 border-yellow-200 shadow-sm p-4">
-          <h2 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-            <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            Material Rates <span className="text-gray-400 font-normal text-xs">(₹ per kg)</span>
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="flex flex-wrap gap-3">
+            {/* Module Wp */}
+            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[150px]">
+              <svg className="w-4 h-4 text-yellow-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Module Wp:</label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={moduleWp}
+                onChange={e => setModuleWp(e.target.value)}
+                className="w-16 bg-transparent border-none outline-none text-sm text-gray-800 font-semibold text-right"
+              />
+            </div>
+
+            {/* Spare % */}
+            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[130px]">
+              <svg className="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Spare %:</label>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={sparePercent}
+                onChange={e => setSparePercent(e.target.value)}
+                className="w-12 bg-transparent border-none outline-none text-sm text-gray-800 font-semibold text-right"
+              />
+            </div>
+
+            <div className="w-px bg-gray-200 self-stretch mx-1 hidden sm:block" />
+
+            {/* Material Rates */}
             {[
-              { label: 'SS 304', key: 'ss304Rate' },
-              { label: 'Al 6063', key: 'al6063Rate' },
-              { label: 'T6', key: 't6Rate' },
-              { label: 'GI', key: 'giRate' },
+              { label: 'SS 304 (₹/kg)', key: 'ss304Rate' },
+              { label: 'Al 6063 (₹/kg)', key: 'al6063Rate' },
+              { label: 'T6 (₹/kg)', key: 't6Rate' },
+              { label: 'GI (₹/kg)', key: 'giRate' },
             ].map(({ label, key }) => (
-              <div key={key}>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{label}</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">₹</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={rates[key]}
-                    onChange={e => handleRateChange(key, e.target.value)}
-                    placeholder="0.00"
-                    className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent hover:border-yellow-300 transition-colors"
-                  />
-                </div>
+              <div key={key} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[160px]">
+                <svg className="w-4 h-4 text-orange-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">{label}:</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={rates[key]}
+                  onChange={e => handleRateChange(key, e.target.value)}
+                  placeholder="0"
+                  className="w-16 bg-transparent border-none outline-none text-sm text-gray-800 font-semibold text-right"
+                />
               </div>
             ))}
           </div>

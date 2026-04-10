@@ -457,6 +457,10 @@ model CustomBom {
   id          Int      @id @default(autoincrement())
   projectId   Int      @unique @map("project_id")
 
+  // Project params
+  moduleWp    Decimal  @default(590) @map("module_wp") @db.Decimal(10, 2)
+  sparePercent Decimal @default(1)   @map("spare_percent") @db.Decimal(5, 2)
+
   // Material rates (INR per kg)
   ss304Rate   Decimal  @default(0) @map("ss304_rate") @db.Decimal(10, 2)
   al6063Rate  Decimal  @default(0) @map("al6063_rate") @db.Decimal(10, 2)
