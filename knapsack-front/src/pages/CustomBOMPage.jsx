@@ -4,6 +4,7 @@ import { bomAPI, customBomAPI, projectAPI } from '../services/api';
 import { getCurrentProjectId } from '../lib/tabStorageAPI';
 import TabContextMenu from '../components/TabContextMenu';
 import RenameTabDialog from '../components/RenameTabDialog';
+import { API_URL } from '../services/config';
 
 const MATERIALS = ['SS 304', 'Al 6063', 'T6', 'GI'];
 
@@ -14,23 +15,34 @@ const MATERIAL_RATE_KEYS = {
   'GI': 'giRate',
 };
 
-function calcItem(item, rates) {
+function calcItem(item, rates, sparePercent = 0) {
   const length = parseFloat(item.length) || 0;
   const qty = parseFloat(item.quantity) || 0;
   const designWeight = parseFloat(item.designWeight) || 0;
   const rateKey = MATERIAL_RATE_KEYS[item.material];
   const rate = parseFloat(rates[rateKey]) || 0;
+  const sp = parseFloat(sparePercent) || 0;
 
-  const rm = (qty * length) / 1000; // running meters
+  const spareQty = Math.ceil(qty * sp / 100);
+  const finalQty = qty + spareQty;
+  const rm = (finalQty * length) / 1000;
   const wt = rm * designWeight;
   const cost = wt * rate;
 
-  return { ...item, rm: parseFloat(rm.toFixed(4)), wt: parseFloat(wt.toFixed(4)), cost: parseFloat(cost.toFixed(2)) };
+  return {
+    ...item,
+    spareQty,
+    finalQty,
+    rate,
+    rm: parseFloat(rm.toFixed(4)),
+    wt: parseFloat(wt.toFixed(4)),
+    cost: parseFloat(cost.toFixed(2)),
+  };
 }
 
 // ── Add Item Modal ────────────────────────────────────────────────────────────
 
-function AddItemModal({ isOpen, profiles, rates, onClose, onAdd }) {
+function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd }) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(null);
   const [material, setMaterial] = useState('');
@@ -62,7 +74,7 @@ function AddItemModal({ isOpen, profiles, rates, onClose, onAdd }) {
   };
 
   const preview = selected
-    ? calcItem({ ...selected, material: material || selected.material || MATERIALS[0], length, quantity }, rates)
+    ? calcItem({ ...selected, material: material || selected.material || MATERIALS[0], length, quantity }, rates, sparePercent)
     : null;
 
   const handleAdd = () => {
@@ -79,9 +91,11 @@ function AddItemModal({ isOpen, profiles, rates, onClose, onAdd }) {
       itemDescription: selected.itemDescription || '',
       material: material || MATERIALS[0],
       designWeight: parseFloat(selected.designWeight) || 0,
+      uom: selected.uom || '',
+      profileImagePath: selected.profileImagePath || null,
       length: parseFloat(length),
       quantity: parseFloat(quantity),
-    }, rates);
+    }, rates, sparePercent);
 
     onAdd(newItem);
     onClose();
@@ -228,7 +242,15 @@ function AddItemModal({ isOpen, profiles, rates, onClose, onAdd }) {
 
           {/* Live preview */}
           {preview && length && quantity && (
-            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl px-4 py-3 grid grid-cols-3 gap-3 text-center">
+            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl px-4 py-3 grid grid-cols-5 gap-2 text-center">
+              <div>
+                <div className="text-xs text-gray-500 font-medium">Spare Qty</div>
+                <div className="font-bold text-gray-800">{preview.spareQty}</div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 font-medium">Final Qty</div>
+                <div className="font-bold text-gray-800">{preview.finalQty}</div>
+              </div>
               <div>
                 <div className="text-xs text-gray-500 font-medium">RM (m)</div>
                 <div className="font-bold text-gray-800">{preview.rm.toFixed(3)}</div>
@@ -373,7 +395,7 @@ export default function CustomBOMPage() {
       const items = b.items.map(item => {
         if (item.id !== itemId) return item;
         const updated = { ...item, [field]: value };
-        return calcItem(updated, rates);
+        return calcItem(updated, rates, sparePercent);
       });
       return { ...b, items };
     }));
@@ -385,7 +407,16 @@ export default function CustomBOMPage() {
     setRates(newRates);
     setBuildings(prev => prev.map(b => ({
       ...b,
-      items: b.items.map(item => calcItem(item, newRates)),
+      items: b.items.map(item => calcItem(item, newRates, sparePercent)),
+    })));
+  };
+
+  // Recalc all items when spare % changes
+  const handleSparePercentChange = (value) => {
+    setSparePercent(value);
+    setBuildings(prev => prev.map(b => ({
+      ...b,
+      items: b.items.map(item => calcItem(item, rates, value)),
     })));
   };
 
@@ -512,7 +543,7 @@ export default function CustomBOMPage() {
                 min="0"
                 step="0.1"
                 value={sparePercent}
-                onChange={e => setSparePercent(e.target.value)}
+                onChange={e => handleSparePercentChange(e.target.value)}
                 className="w-12 bg-transparent border-none outline-none text-sm text-gray-800 font-semibold text-right"
               />
             </div>
@@ -595,26 +626,70 @@ export default function CustomBOMPage() {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse min-w-[900px]">
+            <table className="w-full text-sm border-collapse" style={{ minWidth: 1300 }}>
               <thead>
-                <tr className="bg-gray-50 border-b-2 border-gray-200">
-                  <th className="px-3 py-3 text-left text-xs font-bold text-gray-600 w-10">#</th>
-                  <th className="px-3 py-3 text-left text-xs font-bold text-gray-600">Item Name</th>
-                  <th className="px-3 py-3 text-left text-xs font-bold text-gray-600 w-32">Item Code</th>
-                  <th className="px-3 py-3 text-left text-xs font-bold text-gray-600 w-24">Material</th>
-                  <th className="px-3 py-3 text-right text-xs font-bold text-gray-600 w-24">Length (mm)</th>
-                  <th className="px-3 py-3 text-right text-xs font-bold text-gray-600 w-20">Qty</th>
-                  <th className="px-3 py-3 text-right text-xs font-bold text-gray-600 w-24">RM (m)</th>
-                  <th className="px-3 py-3 text-right text-xs font-bold text-gray-600 w-24">Wt/RM<br/>(kg/m)</th>
-                  <th className="px-3 py-3 text-right text-xs font-bold text-gray-600 w-24">Total Wt<br/>(kg)</th>
-                  <th className="px-3 py-3 text-right text-xs font-bold text-gray-600 w-28">Cost (₹)</th>
-                  <th className="px-3 py-3 w-10"></th>
+                {/* Row 1 — group headers */}
+                <tr className="bg-yellow-400">
+                  <th colSpan={7} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
+                    {project?.name || ''}
+                  </th>
+                  <th className="bg-gray-300 w-3 border-0" />
+                  <th colSpan={2} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
+                    Spare
+                  </th>
+                  <th className="bg-gray-300 w-3 border-0" />
+                  <th colSpan={5} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
+                    Weight Calculation and Cost Calculation
+                  </th>
+                  <th className="border-0 w-8"></th>
+                </tr>
+                {/* Row 2 — sub-headers / rates */}
+                <tr className="bg-yellow-400">
+                  <th colSpan={7} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center text-gray-700">
+                    {buildings.find(b => b.id === activeBuilding)?.name || ''}
+                  </th>
+                  <th className="bg-gray-300 w-3 border-0" />
+                  <th colSpan={2} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center text-gray-700">
+                    {sparePercent}%
+                  </th>
+                  <th className="bg-gray-300 w-3 border-0" />
+                  <th colSpan={5} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center">
+                    <span className="text-purple-700">SS304: ₹{rates.ss304Rate || 0}</span>
+                    <span className="mx-2 text-gray-400">|</span>
+                    <span className="text-blue-700">Al 6063: ₹{rates.al6063Rate || 0}</span>
+                    <span className="mx-2 text-gray-400">|</span>
+                    <span className="text-orange-700">T6: ₹{rates.t6Rate || 0}</span>
+                    <span className="mx-2 text-gray-400">|</span>
+                    <span className="text-teal-700">GI: ₹{rates.giRate || 0}</span>
+                  </th>
+                  <th className="border-0 w-8"></th>
+                </tr>
+                {/* Row 3 — column labels */}
+                <tr className="bg-yellow-400">
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-10">S.N</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-12">Profile</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-28">Sunrack Code</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center">Item Description</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-28">Material</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-24">Length (mm)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-16">UoM</th>
+                  <th className="bg-gray-300 w-3 border-0" />
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Spare<br/>Qty</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Final<br/>Qty</th>
+                  <th className="bg-gray-300 w-3 border-0" />
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Wt/RM<br/>(kg/m)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">RM (m)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Wt (kg)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-24">Rate<br/>(₹/kg)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-28">Cost (₹)</th>
+                  <th className="w-8 border-0"></th>
                 </tr>
               </thead>
+
               <tbody>
                 {!activeB?.items?.length ? (
                   <tr>
-                    <td colSpan={11} className="px-4 py-16 text-center text-gray-400">
+                    <td colSpan={17} className="px-4 py-16 text-center text-gray-400">
                       <svg className="w-12 h-12 mx-auto mb-3 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                       </svg>
@@ -623,73 +698,131 @@ export default function CustomBOMPage() {
                     </td>
                   </tr>
                 ) : (
-                  activeB.items.map((item, idx) => (
-                    <tr key={item.id} className="border-b border-gray-100 hover:bg-yellow-50/40 group transition-colors">
-                      <td className="px-3 py-2.5 text-gray-500 text-xs font-medium">{idx + 1}</td>
-                      <td className="px-3 py-2.5">
-                        <div className="font-semibold text-gray-800 text-xs">{item.genericName}</div>
-                        {item.itemDescription && (
-                          <div className="text-gray-400 text-xs mt-0.5 truncate max-w-[180px]">{item.itemDescription}</div>
-                        )}
-                      </td>
-                      <td className="px-3 py-2.5 text-xs text-gray-600">{item.itemCode || '—'}</td>
-                      <td className="px-3 py-2.5">
-                        <select
-                          value={item.material}
-                          onChange={e => handleEditItem(activeBuilding, item.id, 'material', e.target.value)}
-                          className="text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-yellow-400 bg-white w-full"
-                        >
-                          {MATERIALS.map(m => <option key={m} value={m}>{m}</option>)}
-                        </select>
-                      </td>
-                      <td className="px-3 py-2.5">
-                        <input
-                          type="number"
-                          value={item.length}
-                          onChange={e => handleEditItem(activeBuilding, item.id, 'length', parseFloat(e.target.value) || 0)}
-                          className="text-xs border border-gray-200 rounded-lg px-2 py-1 w-full text-right focus:outline-none focus:ring-1 focus:ring-yellow-400"
-                        />
-                      </td>
-                      <td className="px-3 py-2.5">
-                        <input
-                          type="number"
-                          value={item.quantity}
-                          onChange={e => handleEditItem(activeBuilding, item.id, 'quantity', parseFloat(e.target.value) || 0)}
-                          className="text-xs border border-gray-200 rounded-lg px-2 py-1 w-full text-right focus:outline-none focus:ring-1 focus:ring-yellow-400"
-                        />
-                      </td>
-                      <td className="px-3 py-2.5 text-right text-xs text-gray-700">{item.rm?.toFixed(3)}</td>
-                      <td className="px-3 py-2.5 text-right text-xs text-gray-700">{item.designWeight?.toFixed(4)}</td>
-                      <td className="px-3 py-2.5 text-right text-xs text-gray-700">{item.wt?.toFixed(3)}</td>
-                      <td className="px-3 py-2.5 text-right text-xs font-semibold text-gray-800">
-                        {item.cost?.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
-                      </td>
-                      <td className="px-3 py-2.5">
-                        <button
-                          onClick={() => setDeleteConfirm({ buildingId: activeBuilding, itemId: item.id })}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-red-50 text-red-400 hover:text-red-600"
-                          title="Delete row"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  activeB.items.map((item, idx) => {
+                    const imgSrc = item.profileImagePath
+                      ? (item.profileImagePath.startsWith('/') ? `${API_URL}${item.profileImagePath}` : item.profileImagePath)
+                      : null;
+                    const isEven = idx % 2 === 0;
+                    const rowBg = isEven ? 'bg-white' : 'bg-gray-50';
+                    return (
+                      <tr key={item.id} className={`${rowBg} hover:bg-yellow-50/40 group transition-colors`}>
+                        {/* S.N */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center text-gray-500 font-medium">{idx + 1}</td>
+
+                        {/* Profile image */}
+                        <td className="border border-gray-200 px-2 py-2 text-center">
+                          {imgSrc ? (
+                            <img src={imgSrc} alt="" className="w-9 h-9 object-contain mx-auto"
+                              onError={e => { e.target.style.display='none'; }}/>
+                          ) : (
+                            <div className="w-9 h-9 bg-gray-100 rounded flex items-center justify-center mx-auto">
+                              <span className="text-gray-300 text-xs">—</span>
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Sunrack Code */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center text-gray-600">{item.itemCode || '—'}</td>
+
+                        {/* Item Description */}
+                        <td className="border border-gray-200 px-3 py-2 text-xs text-gray-800">
+                          <div className="font-semibold">{item.genericName}</div>
+                          {item.itemDescription && item.itemDescription !== item.genericName && (
+                            <div className="text-gray-400 mt-0.5 truncate max-w-[200px]">{item.itemDescription}</div>
+                          )}
+                        </td>
+
+                        {/* Material */}
+                        <td className="border border-gray-200 px-2 py-2">
+                          <select
+                            value={item.material}
+                            onChange={e => handleEditItem(activeBuilding, item.id, 'material', e.target.value)}
+                            className="text-xs border border-gray-200 rounded px-1 py-1 focus:outline-none focus:ring-1 focus:ring-yellow-400 bg-white w-full"
+                          >
+                            {MATERIALS.map(m => <option key={m} value={m}>{m}</option>)}
+                          </select>
+                        </td>
+
+                        {/* Length */}
+                        <td className="border border-gray-200 px-2 py-2">
+                          <input
+                            type="number"
+                            value={item.length}
+                            onChange={e => handleEditItem(activeBuilding, item.id, 'length', parseFloat(e.target.value) || 0)}
+                            className="text-xs border border-gray-200 rounded px-1 py-1 w-full text-right focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                          />
+                        </td>
+
+                        {/* UoM */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center text-gray-600">{item.uom || '—'}</td>
+
+                        {/* separator */}
+                        <td className="bg-gray-200 w-3" />
+
+                        {/* Spare Qty */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-green-50 text-green-800 font-medium">{item.spareQty ?? 0}</td>
+
+                        {/* Final Qty */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-purple-50 font-bold text-purple-800">{item.finalQty ?? item.quantity}</td>
+
+                        {/* separator */}
+                        <td className="bg-gray-200 w-3" />
+
+                        {/* Wt/RM */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">{item.designWeight?.toFixed(4) ?? '—'}</td>
+
+                        {/* RM */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">{item.rm?.toFixed(3) ?? '—'}</td>
+
+                        {/* Wt */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-orange-50 text-gray-700">{item.wt?.toFixed(3) ?? '—'}</td>
+
+                        {/* Rate ₹/kg */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-orange-50 text-gray-700">{item.rate?.toFixed(2) ?? '—'}</td>
+
+                        {/* Cost */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-right font-bold bg-green-50 text-gray-800">
+                          ₹{item.cost?.toLocaleString('en-IN', { maximumFractionDigits: 2 }) ?? '—'}
+                        </td>
+
+                        {/* Delete */}
+                        <td className="px-1 py-2 text-center">
+                          <button
+                            onClick={() => setDeleteConfirm({ buildingId: activeBuilding, itemId: item.id })}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50 text-red-400 hover:text-red-600"
+                            title="Delete row"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
 
               {/* Totals row */}
               {totalItems > 0 && (
                 <tfoot>
-                  <tr className="bg-yellow-50 border-t-2 border-yellow-300 font-bold">
-                    <td colSpan={8} className="px-3 py-3 text-xs text-gray-700">
+                  <tr className="bg-yellow-100 border-t-2 border-yellow-400 font-bold">
+                    <td colSpan={10} className="border border-gray-300 px-3 py-2.5 text-xs text-gray-700">
                       Total — {totalItems} item{totalItems !== 1 ? 's' : ''}
                     </td>
-                    <td className="px-3 py-3 text-right text-xs text-gray-800">{totalWt.toFixed(3)}</td>
-                    <td className="px-3 py-3 text-right text-xs text-yellow-700">
-                      ₹ {totalCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                    <td className="bg-gray-200 w-3" />
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-600">
+                      {activeB.items.reduce((s, i) => s + (parseFloat(i.designWeight) || 0), 0).toFixed(3)}
+                    </td>
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-700">
+                      {activeB.items.reduce((s, i) => s + (i.rm || 0), 0).toFixed(3)}
+                    </td>
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-800">
+                      {totalWt.toFixed(3)}
+                    </td>
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-600">—</td>
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-right text-yellow-800">
+                      ₹{totalCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                     </td>
                     <td></td>
                   </tr>
@@ -718,6 +851,7 @@ export default function CustomBOMPage() {
         isOpen={showAddModal}
         profiles={profiles}
         rates={rates}
+        sparePercent={sparePercent}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddItem}
       />
