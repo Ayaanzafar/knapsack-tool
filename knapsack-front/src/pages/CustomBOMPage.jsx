@@ -19,25 +19,27 @@ function calcItem(item, rates, sparePercent = 0) {
   const length = parseFloat(item.length) || 0;
   const qty = parseFloat(item.quantity) || 0;
   const designWeight = parseFloat(item.designWeight) || 0;
+  const costPerPiece = parseFloat(item.costPerPiece) ?? null;
   const rateKey = MATERIAL_RATE_KEYS[item.material];
   const rate = parseFloat(rates[rateKey]) || 0;
   const sp = parseFloat(sparePercent) || 0;
 
   const spareQty = Math.ceil(qty * sp / 100);
   const finalQty = qty + spareQty;
-  const rm = (finalQty * length) / 1000;
-  const wt = rm * designWeight;
-  const cost = wt * rate;
 
-  return {
-    ...item,
-    spareQty,
-    finalQty,
-    rate,
-    rm: parseFloat(rm.toFixed(4)),
-    wt: parseFloat(wt.toFixed(4)),
-    cost: parseFloat(cost.toFixed(2)),
-  };
+  let rm = 0, wt = 0, cost = 0;
+
+  if (costPerPiece !== null && costPerPiece > 0) {
+    // Fastener — cost per piece
+    cost = parseFloat((finalQty * costPerPiece).toFixed(2));
+  } else {
+    // Profile — weight-based
+    rm = parseFloat(((finalQty * length) / 1000).toFixed(4));
+    wt = parseFloat((rm * designWeight).toFixed(4));
+    cost = parseFloat((wt * rate).toFixed(2));
+  }
+
+  return { ...item, spareQty, finalQty, rate, rm, wt, cost };
 }
 
 // ── Add Item Modal ────────────────────────────────────────────────────────────
@@ -77,9 +79,11 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
     ? calcItem({ ...selected, material: material || selected.material || MATERIALS[0], length, quantity }, rates, sparePercent)
     : null;
 
+  const isFastener = selected?.itemType === 'FASTENER' || (selected?.costPerPiece != null && parseFloat(selected.costPerPiece) > 0);
+
   const handleAdd = () => {
     if (!selected) { alert('Please select an item'); return; }
-    if (!length || parseFloat(length) <= 0) { alert('Please enter a valid length'); return; }
+    if (!isFastener && (!length || parseFloat(length) <= 0)) { alert('Please enter a valid length'); return; }
     if (!quantity || parseFloat(quantity) <= 0) { alert('Please enter a valid quantity'); return; }
 
     const newItem = calcItem({
@@ -91,9 +95,10 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
       itemDescription: selected.itemDescription || '',
       material: material || MATERIALS[0],
       designWeight: parseFloat(selected.designWeight) || 0,
+      costPerPiece: selected.costPerPiece != null ? parseFloat(selected.costPerPiece) : null,
       uom: selected.uom || '',
       profileImagePath: selected.profileImagePath || null,
-      length: parseFloat(length),
+      length: isFastener ? 0 : parseFloat(length),
       quantity: parseFloat(quantity),
     }, rates, sparePercent);
 
@@ -184,16 +189,26 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
             )}
           </div>
 
-          {/* Item Code (auto-filled, read-only) */}
+          {/* Item Code + fastener cost badge */}
           {selected && (
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1.5">Item Code</label>
-              <input
-                type="text"
-                readOnly
-                value={selected.sunrackCode || selected.serialNumber || '—'}
-                className="w-full px-4 py-2.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-sm text-gray-600 cursor-not-allowed"
-              />
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <label className="block text-sm font-bold text-gray-700 mb-1.5">Item Code</label>
+                <input
+                  type="text"
+                  readOnly
+                  value={selected.sunrackCode || selected.serialNumber || '—'}
+                  className="w-full px-4 py-2.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-sm text-gray-600 cursor-not-allowed"
+                />
+              </div>
+              {isFastener && selected.costPerPiece != null && (
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-1.5">Cost / Piece</label>
+                  <div className="px-4 py-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl text-sm font-bold text-blue-700">
+                    ₹{parseFloat(selected.costPerPiece).toFixed(2)}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -211,19 +226,27 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
               </select>
             </div>
 
-            {/* Length */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1.5">Length (mm) <span className="text-red-500">*</span></label>
-              <input
-                type="number"
-                min="0"
-                step="1"
-                value={length}
-                onChange={e => setLength(e.target.value)}
-                placeholder="e.g. 6000"
-                className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
-              />
-            </div>
+            {/* Length — hidden for fasteners */}
+            {!isFastener ? (
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1.5">Length (mm) <span className="text-red-500">*</span></label>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={length}
+                  onChange={e => setLength(e.target.value)}
+                  placeholder="e.g. 6000"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
+                />
+              </div>
+            ) : (
+              <div className="flex items-end">
+                <div className="w-full px-4 py-2.5 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-400 text-center">
+                  No length for fasteners
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Quantity */}
@@ -241,8 +264,8 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
           </div>
 
           {/* Live preview */}
-          {preview && length && quantity && (
-            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl px-4 py-3 grid grid-cols-5 gap-2 text-center">
+          {preview && quantity && (isFastener || length) && (
+            <div className={`border-2 rounded-xl px-4 py-3 grid gap-2 text-center ${isFastener ? 'bg-blue-50 border-blue-200 grid-cols-3' : 'bg-yellow-50 border-yellow-200 grid-cols-5'}`}>
               <div>
                 <div className="text-xs text-gray-500 font-medium">Spare Qty</div>
                 <div className="font-bold text-gray-800">{preview.spareQty}</div>
@@ -251,17 +274,23 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
                 <div className="text-xs text-gray-500 font-medium">Final Qty</div>
                 <div className="font-bold text-gray-800">{preview.finalQty}</div>
               </div>
-              <div>
-                <div className="text-xs text-gray-500 font-medium">RM (m)</div>
-                <div className="font-bold text-gray-800">{preview.rm.toFixed(3)}</div>
-              </div>
-              <div>
-                <div className="text-xs text-gray-500 font-medium">Wt (kg)</div>
-                <div className="font-bold text-gray-800">{preview.wt.toFixed(3)}</div>
-              </div>
+              {!isFastener && (
+                <>
+                  <div>
+                    <div className="text-xs text-gray-500 font-medium">RM (m)</div>
+                    <div className="font-bold text-gray-800">{preview.rm.toFixed(3)}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 font-medium">Wt (kg)</div>
+                    <div className="font-bold text-gray-800">{preview.wt.toFixed(3)}</div>
+                  </div>
+                </>
+              )}
               <div>
                 <div className="text-xs text-gray-500 font-medium">Cost (₹)</div>
-                <div className="font-bold text-yellow-700">{preview.cost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
+                <div className={`font-bold ${isFastener ? 'text-blue-700' : 'text-yellow-700'}`}>
+                  {preview.cost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                </div>
               </div>
             </div>
           )}
@@ -638,7 +667,7 @@ export default function CustomBOMPage() {
                     Spare
                   </th>
                   <th className="bg-gray-300 w-3 border-0" />
-                  <th colSpan={5} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
+                  <th colSpan={6} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
                     Weight Calculation and Cost Calculation
                   </th>
                   <th className="border-0 w-8"></th>
@@ -653,7 +682,7 @@ export default function CustomBOMPage() {
                     {sparePercent}%
                   </th>
                   <th className="bg-gray-300 w-3 border-0" />
-                  <th colSpan={5} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center">
+                  <th colSpan={6} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center">
                     <span className="text-purple-700">SS304: ₹{rates.ss304Rate || 0}</span>
                     <span className="mx-2 text-gray-400">|</span>
                     <span className="text-blue-700">Al 6063: ₹{rates.al6063Rate || 0}</span>
@@ -668,20 +697,21 @@ export default function CustomBOMPage() {
                 <tr className="bg-yellow-400">
                   <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-10">S.N</th>
                   <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-12">Profile</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-28">Sunrack Code</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center">Item Description</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-28">Material</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-24">Length (mm)</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-16">UoM</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-24">Sunrack Code</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-40">Item Description</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-24">Material</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Length (mm)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-14">UoM</th>
                   <th className="bg-gray-300 w-3 border-0" />
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Spare<br/>Qty</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Final<br/>Qty</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-16">Spare<br/>Qty</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-16">Final<br/>Qty</th>
                   <th className="bg-gray-300 w-3 border-0" />
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Wt/RM<br/>(kg/m)</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">RM (m)</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Wt (kg)</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-24">Rate<br/>(₹/kg)</th>
-                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-28">Cost (₹)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-18">Wt/RM<br/>(kg/m)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-18">RM (m)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-18">Wt (kg)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Rate<br/>(₹/kg)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Rate/Piece<br/>(₹)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-24">Cost (₹)</th>
                   <th className="w-8 border-0"></th>
                 </tr>
               </thead>
@@ -689,7 +719,7 @@ export default function CustomBOMPage() {
               <tbody>
                 {!activeB?.items?.length ? (
                   <tr>
-                    <td colSpan={17} className="px-4 py-16 text-center text-gray-400">
+                    <td colSpan={18} className="px-4 py-16 text-center text-gray-400">
                       <svg className="w-12 h-12 mx-auto mb-3 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                       </svg>
@@ -777,8 +807,21 @@ export default function CustomBOMPage() {
                         {/* Wt */}
                         <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-orange-50 text-gray-700">{item.wt?.toFixed(3) ?? '—'}</td>
 
-                        {/* Rate ₹/kg */}
-                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-orange-50 text-gray-700">{item.rate?.toFixed(2) ?? '—'}</td>
+                        {/* Rate ₹/kg — only for profiles */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-orange-50 text-gray-700">
+                          {item.costPerPiece != null && parseFloat(item.costPerPiece) > 0
+                            ? <span className="text-gray-300">—</span>
+                            : item.rate?.toFixed(2) ?? '—'
+                          }
+                        </td>
+
+                        {/* Rate/Piece — only for fasteners */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-blue-50 text-gray-700">
+                          {item.costPerPiece != null && parseFloat(item.costPerPiece) > 0
+                            ? <span className="text-blue-700 font-semibold">₹{parseFloat(item.costPerPiece).toFixed(2)}</span>
+                            : <span className="text-gray-300">—</span>
+                          }
+                        </td>
 
                         {/* Cost */}
                         <td className="border border-gray-200 px-2 py-2 text-xs text-right font-bold bg-green-50 text-gray-800">
@@ -820,7 +863,8 @@ export default function CustomBOMPage() {
                     <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-800">
                       {totalWt.toFixed(3)}
                     </td>
-                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-600">—</td>
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-400">—</td>
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-400">—</td>
                     <td className="border border-gray-300 px-2 py-2.5 text-xs text-right text-yellow-800">
                       ₹{totalCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                     </td>
