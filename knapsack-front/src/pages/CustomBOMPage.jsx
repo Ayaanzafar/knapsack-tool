@@ -50,11 +50,11 @@ function AddItemModal({ isOpen, profiles, rates, onClose, onAdd }) {
   const filtered = profiles.filter(p =>
     p.genericName?.toLowerCase().includes(search.toLowerCase()) ||
     p.itemDescription?.toLowerCase().includes(search.toLowerCase())
-  ).slice(0, 30);
+  ).slice(0, 50);
 
   const handleSelect = (profile) => {
     setSelected(profile);
-    setSearch(profile.genericName);
+    setSearch('');
     setMaterial(profile.material || MATERIALS[0]);
     setShowDropdown(false);
   };
@@ -93,40 +93,77 @@ function AddItemModal({ isOpen, profiles, rates, onClose, onAdd }) {
         {/* Header */}
         <div className="bg-gradient-to-r from-yellow-400 to-amber-500 px-6 py-4 rounded-t-2xl">
           <h2 className="text-lg font-bold text-white">Add Item</h2>
-          <p className="text-yellow-100 text-sm mt-0.5">Search and select an item from the catalog</p>
+          <p className="text-yellow-100 text-sm mt-0.5">Select an item from the catalog</p>
         </div>
 
         <div className="px-6 py-5 space-y-4">
-          {/* Item Search */}
+          {/* Item Dropdown */}
           <div className="relative">
             <label className="block text-sm font-bold text-gray-700 mb-1.5">Item <span className="text-red-500">*</span></label>
-            <input
-              type="text"
-              value={search}
-              onChange={e => { setSearch(e.target.value); setSelected(null); setShowDropdown(true); }}
-              onFocus={() => setShowDropdown(true)}
-              placeholder="Search by name or description..."
-              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
-              autoFocus
-            />
-            {showDropdown && search && filtered.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border-2 border-yellow-200 rounded-xl shadow-xl max-h-52 overflow-y-auto">
-                {filtered.map(p => (
-                  <button
-                    key={p.serialNumber || p.id}
-                    type="button"
-                    onMouseDown={() => handleSelect(p)}
-                    className="w-full text-left px-4 py-2.5 hover:bg-yellow-50 border-b border-gray-100 last:border-0"
-                  >
-                    <div className="font-semibold text-sm text-gray-800">{p.genericName}</div>
-                    <div className="text-xs text-gray-500 flex gap-3 mt-0.5">
-                      {p.sunrackCode && <span>Code: {p.sunrackCode}</span>}
-                      <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${p.itemType === 'FASTENER' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
-                        {p.itemType}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+
+            {/* Trigger button */}
+            <button
+              type="button"
+              onClick={() => setShowDropdown(prev => !prev)}
+              className={`w-full flex items-center justify-between px-4 py-2.5 border-2 rounded-xl text-sm text-left transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
+                showDropdown ? 'border-yellow-400' : 'border-gray-200 hover:border-yellow-300'
+              }`}
+            >
+              {selected ? (
+                <div className="min-w-0">
+                  <div className="font-semibold text-gray-800 truncate">{selected.genericName}</div>
+                  <div className="text-xs text-gray-400">{selected.sunrackCode || selected.serialNumber || ''}</div>
+                </div>
+              ) : (
+                <span className="text-gray-400">Select an item...</span>
+              )}
+              <svg
+                className={`w-4 h-4 text-gray-400 shrink-0 ml-2 transition-transform ${showDropdown ? 'rotate-180' : ''}`}
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+
+            {/* Dropdown panel */}
+            {showDropdown && (
+              <div className="absolute z-10 w-full mt-1 bg-white border-2 border-yellow-300 rounded-xl shadow-2xl">
+                {/* Search inside dropdown */}
+                <div className="p-2 border-b border-yellow-100">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    placeholder="Type to search..."
+                    autoFocus
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  />
+                </div>
+                {/* List */}
+                <div className="max-h-52 overflow-y-auto">
+                  {filtered.length === 0 ? (
+                    <div className="px-4 py-6 text-center text-sm text-gray-400">No items found</div>
+                  ) : (
+                    filtered.map(p => (
+                      <button
+                        key={p.serialNumber || p.id}
+                        type="button"
+                        onMouseDown={() => handleSelect(p)}
+                        className={`w-full text-left px-4 py-2.5 hover:bg-yellow-50 border-b border-gray-100 last:border-0 transition-colors ${
+                          selected?.id === p.id ? 'bg-yellow-50' : ''
+                        }`}
+                      >
+                        <div className="font-semibold text-sm text-gray-800">{p.genericName}</div>
+                        <div className="text-xs text-gray-500 flex gap-3 mt-0.5">
+                          {p.sunrackCode && <span>Code: {p.sunrackCode}</span>}
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${p.itemType === 'FASTENER' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                            {p.itemType}
+                          </span>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
               </div>
             )}
           </div>
