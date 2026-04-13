@@ -29,9 +29,9 @@ function calcItem(item, rates, sparePercent = 0) {
 
   let rm = 0, wt = 0, cost = 0;
 
-  if (costPerPiece !== null && costPerPiece > 0) {
+  if (item.itemType === 'FASTENER' || (costPerPiece !== null && item.costPerPiece !== null)) {
     // Fastener — cost per piece
-    cost = parseFloat((finalQty * costPerPiece).toFixed(2));
+    cost = parseFloat((finalQty * (costPerPiece || 0)).toFixed(2));
   } else {
     // Profile — weight-based
     rm = parseFloat(((finalQty * length) / 1000).toFixed(4));
@@ -864,10 +864,17 @@ export default function CustomBOMPage() {
                           }
                         </td>
 
-                        {/* Rate/Piece — only for fasteners */}
-                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-blue-50 text-gray-700">
-                          {item.costPerPiece != null && parseFloat(item.costPerPiece) > 0
-                            ? <span className="text-blue-700 font-semibold">₹{parseFloat(item.costPerPiece).toFixed(2)}</span>
+                        {/* Rate/Piece — editable for fasteners */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-blue-50">
+                          {item.costPerPiece != null && parseFloat(item.costPerPiece) >= 0
+                            ? <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={item.costPerPiece}
+                                onChange={e => handleEditItem(activeBuilding, item.id, 'costPerPiece', parseFloat(e.target.value) || 0)}
+                                className="text-xs border border-blue-200 rounded px-1 py-1 w-full text-right focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-blue-700 font-semibold"
+                              />
                             : <span className="text-gray-300">—</span>
                           }
                         </td>
