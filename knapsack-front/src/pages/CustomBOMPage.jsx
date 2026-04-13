@@ -5,6 +5,7 @@ import { getCurrentProjectId } from '../lib/tabStorageAPI';
 import TabContextMenu from '../components/TabContextMenu';
 import RenameTabDialog from '../components/RenameTabDialog';
 import { API_URL } from '../services/config';
+import NumberInputWithSpinner from '../components/NumberInputWithSpinner';
 
 const MATERIALS = ['SS 304', 'Al 6063', 'T6', 'GI'];
 
@@ -812,11 +813,11 @@ export default function CustomBOMPage() {
 
                         {/* Length */}
                         <td className="border border-gray-200 px-2 py-2">
-                          <input
-                            type="number"
+                          <NumberInputWithSpinner
                             value={item.length}
-                            onChange={e => handleEditItem(activeBuilding, item.id, 'length', parseFloat(e.target.value) || 0)}
-                            className="text-xs border border-gray-200 rounded px-1 py-1 w-full text-right focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                            onChange={val => handleEditItem(activeBuilding, item.id, 'length', val)}
+                            minValue={0}
+                            size="sm"
                           />
                         </td>
 
@@ -825,13 +826,11 @@ export default function CustomBOMPage() {
 
                         {/* Qty */}
                         <td className="border border-gray-200 px-2 py-2">
-                          <input
-                            type="number"
-                            min="0"
-                            step="1"
+                          <NumberInputWithSpinner
                             value={item.quantity}
-                            onChange={e => handleEditItem(activeBuilding, item.id, 'quantity', parseFloat(e.target.value) || 0)}
-                            className="text-xs border border-gray-200 rounded px-1 py-1 w-full text-right focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                            onChange={val => handleEditItem(activeBuilding, item.id, 'quantity', val)}
+                            minValue={0}
+                            size="sm"
                           />
                         </td>
 
@@ -867,13 +866,12 @@ export default function CustomBOMPage() {
                         {/* Rate/Piece — editable for fasteners */}
                         <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-blue-50">
                           {item.costPerPiece != null && parseFloat(item.costPerPiece) >= 0
-                            ? <input
-                                type="number"
-                                min="0"
-                                step="0.01"
+                            ? <NumberInputWithSpinner
                                 value={item.costPerPiece}
-                                onChange={e => handleEditItem(activeBuilding, item.id, 'costPerPiece', parseFloat(e.target.value) || 0)}
-                                className="text-xs border border-blue-200 rounded px-1 py-1 w-full text-right focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-blue-700 font-semibold"
+                                onChange={val => handleEditItem(activeBuilding, item.id, 'costPerPiece', val)}
+                                minValue={0}
+                                size="sm"
+                                className="border-blue-200 text-blue-700 font-semibold focus:ring-blue-400"
                               />
                             : <span className="text-gray-300">—</span>
                           }
