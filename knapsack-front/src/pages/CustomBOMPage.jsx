@@ -583,35 +583,35 @@ export default function CustomBOMPage() {
         <div className="bg-white rounded-2xl border-2 border-yellow-200 shadow-sm p-4">
           <div className="flex flex-wrap gap-3">
             {/* Module Wp */}
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[150px]">
+            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[180px]">
               <svg className="w-4 h-4 text-yellow-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
               <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Module Wp:</label>
-              <input
-                type="number"
-                min="0"
-                step="1"
-                value={moduleWp}
-                onChange={e => setModuleWp(e.target.value)}
-                className="w-16 bg-transparent border-none outline-none text-sm text-gray-800 font-semibold text-right"
-              />
+              <div className="w-24">
+                <NumberInputWithSpinner
+                  value={parseFloat(moduleWp) || 0}
+                  onChange={val => setModuleWp(val)}
+                  minValue={0}
+                  size="sm"
+                />
+              </div>
             </div>
 
             {/* Spare % */}
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[130px]">
+            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[160px]">
               <svg className="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
               <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Spare %:</label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={sparePercent}
-                onChange={e => handleSparePercentChange(e.target.value)}
-                className="w-12 bg-transparent border-none outline-none text-sm text-gray-800 font-semibold text-right"
-              />
+              <div className="w-20">
+                <NumberInputWithSpinner
+                  value={parseFloat(sparePercent) || 0}
+                  onChange={val => handleSparePercentChange(val)}
+                  minValue={0}
+                  size="sm"
+                />
+              </div>
             </div>
 
             <div className="w-px bg-gray-200 self-stretch mx-1 hidden sm:block" />
@@ -623,20 +623,19 @@ export default function CustomBOMPage() {
               { label: 'T6 (₹/kg)', key: 't6Rate' },
               { label: 'GI (₹/kg)', key: 'giRate' },
             ].map(({ label, key }) => (
-              <div key={key} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[160px]">
+              <div key={key} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[200px]">
                 <svg className="w-4 h-4 text-orange-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">{label}:</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={rates[key]}
-                  onChange={e => handleRateChange(key, e.target.value)}
-                  placeholder="0"
-                  className="w-16 bg-transparent border-none outline-none text-sm text-gray-800 font-semibold text-right"
-                />
+                <div className="w-24">
+                  <NumberInputWithSpinner
+                    value={parseFloat(rates[key]) || 0}
+                    onChange={val => handleRateChange(key, val)}
+                    minValue={0}
+                    size="sm"
+                  />
+                </div>
               </div>
             ))}
           </div>
