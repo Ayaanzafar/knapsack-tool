@@ -365,7 +365,7 @@ export default function CustomBOMPage() {
   const [profiles, setProfiles] = useState([]);
   const [moduleWp, setModuleWp] = useState(590);
   const [sparePercent, setSparePercent] = useState(1);
-  const [rates, setRates] = useState({ ss304Rate: '', al6063Rate: '', t6Rate: '', giRate: '' });
+  const [rates, setRates] = useState({ ss304Rate: 210, al6063Rate: 320, t6Rate: 360, giRate: 70 });
   const [buildings, setBuildings] = useState([]);
   const [activeBuilding, setActiveBuilding] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -394,10 +394,10 @@ export default function CustomBOMPage() {
         setModuleWp(bomData.moduleWp ?? 590);
         setSparePercent(bomData.sparePercent ?? 1);
         setRates({
-          ss304Rate: bomData.ss304Rate || '',
-          al6063Rate: bomData.al6063Rate || '',
-          t6Rate: bomData.t6Rate || '',
-          giRate: bomData.giRate || '',
+          ss304Rate: bomData.ss304Rate || 210,
+          al6063Rate: bomData.al6063Rate || 320,
+          t6Rate: bomData.t6Rate || 360,
+          giRate: bomData.giRate || 70,
         });
 
         const loadedBuildings = bomData.buildings?.length > 0
