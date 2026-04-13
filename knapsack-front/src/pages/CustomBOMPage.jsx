@@ -51,6 +51,7 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
   const [length, setLength] = useState('');
   const [quantity, setQuantity] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [typeFilter, setTypeFilter] = useState('PROFILE');
 
   useEffect(() => {
     if (isOpen) {
@@ -60,13 +61,23 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
       setLength('');
       setQuantity('');
       setShowDropdown(false);
+      setTypeFilter('PROFILE');
     }
   }, [isOpen]);
 
   const filtered = profiles.filter(p =>
-    p.genericName?.toLowerCase().includes(search.toLowerCase()) ||
-    p.itemDescription?.toLowerCase().includes(search.toLowerCase())
+    p.itemType === typeFilter &&
+    (p.genericName?.toLowerCase().includes(search.toLowerCase()) ||
+     p.itemDescription?.toLowerCase().includes(search.toLowerCase()))
   ).slice(0, 50);
+
+  const handleTypeFilter = (type) => {
+    setTypeFilter(type);
+    setSelected(null);
+    setSearch('');
+    setLength('');
+    setMaterial('');
+  };
 
   const handleSelect = (profile) => {
     setSelected(profile);
@@ -114,13 +125,38 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
         {/* Header */}
         <div className="bg-gradient-to-r from-yellow-400 to-amber-500 px-6 py-4 rounded-t-2xl">
           <h2 className="text-lg font-bold text-white">Add Item</h2>
-          <p className="text-yellow-100 text-sm mt-0.5">Select an item from the catalog</p>
+          <p className="text-yellow-100 text-sm mt-0.5">Select a profile or fastener from the catalog</p>
         </div>
 
         <div className="px-6 py-5 space-y-4">
+          {/* Type Toggle */}
+          <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+            {[
+              { label: 'Profile', value: 'PROFILE', color: 'green' },
+              { label: 'Fastener', value: 'FASTENER', color: 'blue' },
+            ].map(({ label, value, color }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => handleTypeFilter(value)}
+                className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${
+                  typeFilter === value
+                    ? value === 'PROFILE'
+                      ? 'bg-green-500 text-white shadow-sm'
+                      : 'bg-blue-500 text-white shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
           {/* Item Dropdown */}
           <div className="relative">
-            <label className="block text-sm font-bold text-gray-700 mb-1.5">Item <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-bold text-gray-700 mb-1.5">
+              {typeFilter === 'PROFILE' ? 'Profile' : 'Fastener'} <span className="text-red-500">*</span>
+            </label>
 
             {/* Trigger button */}
             <button
