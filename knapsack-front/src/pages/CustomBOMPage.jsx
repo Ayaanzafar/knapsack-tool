@@ -704,7 +704,7 @@ export default function CustomBOMPage() {
                     Spare
                   </th>
                   <th className="bg-gray-300 w-3 border-0" />
-                  <th colSpan={6} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
+                  <th colSpan={7} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
                     Weight Calculation and Cost Calculation
                   </th>
                   <th className="border-0 w-8"></th>
@@ -719,7 +719,7 @@ export default function CustomBOMPage() {
                     {sparePercent}%
                   </th>
                   <th className="bg-gray-300 w-3 border-0" />
-                  <th colSpan={6} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center">
+                  <th colSpan={7} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center">
                     <span className="text-purple-700">SS304: ₹{rates.ss304Rate || 0}</span>
                     <span className="mx-2 text-gray-400">|</span>
                     <span className="text-blue-700">Al 6063: ₹{rates.al6063Rate || 0}</span>
@@ -745,6 +745,7 @@ export default function CustomBOMPage() {
                   <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-16">Final<br/>Qty</th>
                   <th className="bg-gray-300 w-3 border-0" />
                   <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-18">Wt/RM<br/>(kg/m)</th>
+                  <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-18">Wt/pc<br/>(kg)</th>
                   <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-18">RM (m)</th>
                   <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-18">Wt (kg)</th>
                   <th className="border border-gray-400 px-2 py-2 text-xs font-bold text-center w-20">Rate<br/>(₹/kg)</th>
@@ -757,7 +758,7 @@ export default function CustomBOMPage() {
               <tbody>
                 {!activeB?.items?.length ? (
                   <tr>
-                    <td colSpan={19} className="px-4 py-16 text-center text-gray-400">
+                    <td colSpan={20} className="px-4 py-16 text-center text-gray-400">
                       <svg className="w-12 h-12 mx-auto mb-3 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                       </svg>
@@ -849,6 +850,14 @@ export default function CustomBOMPage() {
                         {/* Wt/RM */}
                         <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">{item.designWeight?.toFixed(4) ?? '—'}</td>
 
+                        {/* Wt/pc */}
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">
+                          {item.itemType === 'FASTENER'
+                            ? <span className="text-gray-300">—</span>
+                            : ((parseFloat(item.length) || 0) / 1000 * (parseFloat(item.designWeight) || 0)).toFixed(4)
+                          }
+                        </td>
+
                         {/* RM */}
                         <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">{item.rm?.toFixed(3) ?? '—'}</td>
 
@@ -911,6 +920,7 @@ export default function CustomBOMPage() {
                     <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-600">
                       {activeB.items.reduce((s, i) => s + (parseFloat(i.designWeight) || 0), 0).toFixed(3)}
                     </td>
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-400">—</td>
                     <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-700">
                       {activeB.items.reduce((s, i) => s + (i.rm || 0), 0).toFixed(3)}
                     </td>
