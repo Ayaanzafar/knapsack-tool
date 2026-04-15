@@ -7,12 +7,10 @@ import RenameTabDialog from '../components/RenameTabDialog';
 import { API_URL } from '../services/config';
 import NumberInputWithSpinner from '../components/NumberInputWithSpinner';
 
-const MATERIALS = ['SS 304', 'Al 6063', 'T6', 'GI'];
+const MATERIALS = ['SS 304', 'Al 6063', 'GI'];
 
 const MATERIAL_RATE_KEYS = {
-  'SS 304': 'ss304Rate',
   'Al 6063': 'al6063Rate',
-  'T6': 't6Rate',
   'GI': 'giRate',
 };
 
@@ -365,7 +363,7 @@ export default function CustomBOMPage() {
   const [profiles, setProfiles] = useState([]);
   const [moduleWp, setModuleWp] = useState(590);
   const [sparePercent, setSparePercent] = useState(1);
-  const [rates, setRates] = useState({ ss304Rate: 210, al6063Rate: 320, t6Rate: 360, giRate: 70 });
+  const [rates, setRates] = useState({ al6063Rate: 320, giRate: 70 });
   const [buildings, setBuildings] = useState([]);
   const [activeBuilding, setActiveBuilding] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -394,9 +392,9 @@ export default function CustomBOMPage() {
         setModuleWp(bomData.moduleWp ?? 590);
         setSparePercent(bomData.sparePercent ?? 1);
         setRates({
-          ss304Rate: bomData.ss304Rate || 210,
+
           al6063Rate: bomData.al6063Rate || 320,
-          t6Rate: bomData.t6Rate || 360,
+
           giRate: bomData.giRate || 70,
         });
 
@@ -494,9 +492,9 @@ export default function CustomBOMPage() {
       await customBomAPI.save(projectId, {
         moduleWp: parseFloat(moduleWp) || 590,
         sparePercent: parseFloat(sparePercent) || 1,
-        ss304Rate: parseFloat(rates.ss304Rate) || 0,
+
         al6063Rate: parseFloat(rates.al6063Rate) || 0,
-        t6Rate: parseFloat(rates.t6Rate) || 0,
+
         giRate: parseFloat(rates.giRate) || 0,
         buildings,
       });
@@ -618,9 +616,7 @@ export default function CustomBOMPage() {
 
             {/* Material Rates */}
             {[
-              { label: 'SS 304 (₹/kg)', key: 'ss304Rate' },
               { label: 'Al 6063 (₹/kg)', key: 'al6063Rate' },
-              { label: 'T6 (₹/kg)', key: 't6Rate' },
               { label: 'GI (₹/kg)', key: 'giRate' },
             ].map(({ label, key }) => (
               <div key={key} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[200px]">
@@ -719,11 +715,7 @@ export default function CustomBOMPage() {
                   </th>
                   <th className="bg-gray-300 w-3 border-0" />
                   <th colSpan={7} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center">
-                    <span className="text-purple-700">SS304: ₹{rates.ss304Rate || 0}</span>
-                    <span className="mx-2 text-gray-400">|</span>
                     <span className="text-blue-700">Al 6063: ₹{rates.al6063Rate || 0}</span>
-                    <span className="mx-2 text-gray-400">|</span>
-                    <span className="text-orange-700">T6: ₹{rates.t6Rate || 0}</span>
                     <span className="mx-2 text-gray-400">|</span>
                     <span className="text-teal-700">GI: ₹{rates.giRate || 0}</span>
                   </th>
