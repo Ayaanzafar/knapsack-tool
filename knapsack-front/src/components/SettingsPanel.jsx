@@ -106,13 +106,6 @@ export default function SettingsPanel({
       {/* Optimization */}
       <Card title="Optimization">
         <div className="space-y-3">
-          <NumberField
-            label="Max Pieces"
-            value={maxPieces}
-            setValue={(v) => updateSetting('maxPieces', v)}
-            disabled={!canEditField('maxPieces')}
-          />
-
           <div>
             <div className={`text-sm mb-2 ${!canEditField('priority') ? 'text-gray-400' : 'text-gray-600'}`}>Priority</div>
             <div className="space-y-2">
@@ -141,39 +134,6 @@ export default function SettingsPanel({
         </div>
       </Card>
 
-      {/* Advanced Settings */}
-      {canEditField('maxWastePct') && (
-        <Card title="Advanced">
-          <div className="space-y-3">
-            <NumberField
-              label="Max Waste %"
-              value={maxWastePct}
-              setValue={(v) => updateSetting('maxWastePct', v)}
-              step={0.01}
-            />
-            <NumberField
-              label="α Joint Penalty"
-              value={alphaJoint}
-              setValue={(v) => updateSetting('alphaJoint', v)}
-            />
-            <NumberField
-              label="β Small Penalty"
-              value={betaSmall}
-              setValue={(v) => updateSetting('betaSmall', v)}
-            />
-            <NumberField
-              label="Allow Undershoot %"
-              value={allowUndershootPct}
-              setValue={(v) => updateSetting('allowUndershootPct', v)}
-            />
-            <NumberField
-              label="γ Shortage Penalty"
-              value={gammaShort}
-              setValue={(v) => updateSetting('gammaShort', v)}
-            />
-          </div>
-        </Card>
-      )}
 
       {/* Export/Import */}
       <Card title="Data">

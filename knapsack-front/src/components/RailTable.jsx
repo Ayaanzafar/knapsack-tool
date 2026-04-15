@@ -738,49 +738,9 @@ export default function RailTable({
                         setValue={(v) => updateSetting('joinerLength', v)}
                         disabled={!canEditField('joinerLength')}
                       />
-                      <NumberField
-                        label="Max Pieces"
-                        value={maxPieces}
-                        setValue={(v) => updateSetting('maxPieces', v)}
-                        disabled={!canEditField('maxPieces')}
-                      />
                     </div>
                   </div>
 
-                  {/* Advanced Settings */}
-                  {canEditField('maxWastePct') && (
-                    <div className="mb-4">
-                      <h4 className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-3">Advanced Tuning</h4>
-                      <div className="space-y-3 bg-orange-50 rounded-lg p-3">
-                        <NumberField
-                          label="Max Waste %"
-                          value={maxWastePct}
-                          setValue={(v) => updateSetting('maxWastePct', v)}
-                          step={0.01}
-                        />
-                        <NumberField
-                          label="α Joint Penalty"
-                          value={alphaJoint}
-                          setValue={(v) => updateSetting('alphaJoint', v)}
-                        />
-                        <NumberField
-                          label="β Small Penalty"
-                          value={betaSmall}
-                          setValue={(v) => updateSetting('betaSmall', v)}
-                        />
-                        <NumberField
-                          label="Allow Undershoot %"
-                          value={allowUndershootPct}
-                          setValue={(v) => updateSetting('allowUndershootPct', v)}
-                        />
-                        <NumberField
-                          label="γ Shortage Penalty"
-                          value={gammaShort}
-                          setValue={(v) => updateSetting('gammaShort', v)}
-                        />
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Footer */}
