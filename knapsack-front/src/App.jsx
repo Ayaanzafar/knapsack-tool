@@ -76,9 +76,17 @@ export default function App() {
         const resolvedModuleWp = adminDefault != null ? adminDefault : (project.moduleWp != null ? Number(project.moduleWp) : 590);
         setModuleWp(resolvedModuleWp);
 
-        // Load tabs
+        // Load tabs, then apply appDefaults.tabDefaults on top so admin changes take effect immediately
         const loadedTabsData = await loadTabs();
-        setTabsData(loadedTabsData);
+        const tabDefaultOverrides = appDefaults?.tabDefaults ?? {};
+        const mergedTabsData = {
+          ...loadedTabsData,
+          tabs: loadedTabsData.tabs.map(tab => ({
+            ...tab,
+            settings: { ...tab.settings, ...tabDefaultOverrides }
+          }))
+        };
+        setTabsData(mergedTabsData);
       } catch (err) {
         console.error('Failed to initialize:', err);
         setError(err.message || 'Failed to load data from server');
