@@ -693,31 +693,24 @@ export default function CustomBOMPage() {
                 <tr className="bg-yellow-400">
                   <th colSpan={8} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
                     {project?.name || ''}
+                    {buildings.find(b => b.id === activeBuilding)?.name && (
+                      <span className="font-normal text-gray-700 ml-2">
+                        | {buildings.find(b => b.id === activeBuilding).name}
+                      </span>
+                    )}
                   </th>
                   <th className="bg-gray-300 w-3 border-0" />
                   <th colSpan={2} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
-                    Spare
+                    Spare <span className="font-normal text-gray-700 ml-1">{sparePercent}%</span>
                   </th>
                   <th className="bg-gray-300 w-3 border-0" />
                   <th colSpan={7} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
                     Weight Calculation and Cost Calculation
-                  </th>
-                  <th className="border-0 w-8"></th>
-                </tr>
-                {/* Row 2 — sub-headers / rates */}
-                <tr className="bg-yellow-400">
-                  <th colSpan={8} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center text-gray-700">
-                    {buildings.find(b => b.id === activeBuilding)?.name || ''}
-                  </th>
-                  <th className="bg-gray-300 w-3 border-0" />
-                  <th colSpan={2} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center text-gray-700">
-                    {sparePercent}%
-                  </th>
-                  <th className="bg-gray-300 w-3 border-0" />
-                  <th colSpan={7} className="border border-gray-400 px-3 py-1 text-xs font-semibold text-center">
-                    <span className="text-blue-700">Al 6063: ₹{rates.al6063Rate || 0}</span>
-                    <span className="mx-2 text-gray-400">|</span>
-                    <span className="text-teal-700">GI: ₹{rates.giRate || 0}</span>
+                    <span className="ml-3 font-normal text-xs">
+                      <span className="text-blue-700">Al 6063: ₹{rates.al6063Rate || 0}</span>
+                      <span className="mx-2 text-gray-400">|</span>
+                      <span className="text-teal-700">GI: ₹{rates.giRate || 0}</span>
+                    </span>
                   </th>
                   <th className="border-0 w-8"></th>
                 </tr>
