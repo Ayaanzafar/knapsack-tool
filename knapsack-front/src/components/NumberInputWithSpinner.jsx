@@ -19,8 +19,10 @@ export default function NumberInputWithSpinner({
   }, [value]);
 
   // Size configurations
+  // sm: no reserved space for arrows — they appear on hover as overlay
+  // md/lg: always reserve space for arrows
   const sizeClasses = {
-    sm: 'px-2 py-1 text-xs pr-7',
+    sm: 'px-2 py-1 text-xs',
     md: 'px-3 py-1.5 text-sm pr-8',
     lg: 'px-3 py-2 text-sm pr-8'
   };
@@ -70,7 +72,7 @@ export default function NumberInputWithSpinner({
         className={`w-full rounded border border-gray-300 text-center font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${sizeClasses[size]} ${className}`}
       />
       {!disabled && (
-        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex flex-col gap-0.5">
+        <div className={`absolute right-1 top-1/2 -translate-y-1/2 flex flex-col gap-0.5 ${size === 'sm' ? 'opacity-0 group-hover:opacity-100 transition-opacity' : ''}`}>
           <button
             type="button"
             onClick={increment}

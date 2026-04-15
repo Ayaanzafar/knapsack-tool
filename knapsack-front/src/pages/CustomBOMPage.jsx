@@ -846,24 +846,24 @@ export default function CustomBOMPage() {
 
                         {/* Rate ₹/kg — editable with override */}
                         <td className={`border border-gray-200 px-2 py-2 text-xs text-center ${item.rateKgOverride != null ? 'bg-blue-50' : 'bg-orange-50'}`}>
-                          <div className="flex items-center gap-1">
+                          <div className="relative inline-block w-full">
+                            {item.rateKgOverride != null && (
+                              <button
+                                onClick={() => handleEditItem(activeBuilding, item.id, 'rateKgOverride', null)}
+                                className="absolute -top-1.5 -right-1.5 z-10 w-3.5 h-3.5 rounded-full bg-blue-500 hover:bg-red-500 text-white flex items-center justify-center transition-colors shadow"
+                                title="Reset to global rate"
+                              >
+                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                              </button>
+                            )}
                             <NumberInputWithSpinner
                               value={item.rateKgOverride != null ? item.rateKgOverride : (item.rate ?? 0)}
                               onChange={val => handleEditItem(activeBuilding, item.id, 'rateKgOverride', val)}
                               minValue={0}
                               size="sm"
                             />
-                            {item.rateKgOverride != null && (
-                              <button
-                                onClick={() => handleEditItem(activeBuilding, item.id, 'rateKgOverride', null)}
-                                className="text-blue-400 hover:text-red-500 transition-colors shrink-0"
-                                title="Reset to global rate"
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                              </button>
-                            )}
                           </div>
                         </td>
 
