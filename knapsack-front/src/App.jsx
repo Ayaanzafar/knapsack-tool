@@ -24,7 +24,7 @@ import {
 } from './lib/tabStorageAPI';
 
 export default function App() {
-  const { canEditField } = useAuth();
+  const { canEditField, appDefaults } = useAuth();
 
   // State
   const [tabsData, setTabsData] = useState({ tabs: [], activeTabId: null });
@@ -95,7 +95,7 @@ export default function App() {
 
   const handleTabCreate = async (tabName) => {
     try {
-      const newTabsData = await createTab(tabsData, tabName);
+      const newTabsData = await createTab(tabsData, tabName, appDefaults);
       setTabsData(newTabsData);
       setShowCreateDialog(false);
     } catch (err) {

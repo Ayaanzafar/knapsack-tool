@@ -2,6 +2,7 @@
 // API-based tab storage (replaces localStorage)
 
 import { projectAPI, tabAPI, rowAPI } from '../services/api';
+import { getEffectiveDefaults } from './storage';
 
 export const DEFAULT_TAB = {
   settings: {
@@ -194,12 +195,12 @@ export function convertDBTabToAppTab(dbTab) {
 }
 
 // Create new tab
-export async function createTab(tabsData, tabName) {
+export async function createTab(tabsData, tabName, appDefaults = null) {
   try {
     const newTab = await tabAPI.create(currentProjectId, {
       name: tabName,
       createdAt: new Date().toISOString(),
-      settings: DEFAULT_TAB.settings
+      settings: { ...DEFAULT_TAB.settings, ...getEffectiveDefaults(appDefaults) }
     });
 
     const appTab = convertDBTabToAppTab(newTab);
