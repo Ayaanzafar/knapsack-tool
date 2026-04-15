@@ -276,7 +276,15 @@ export default function WalkwayApp() {
                 </tr>
                 <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="px-4 py-3 text-left font-semibold text-gray-600 w-8">#</th>
-                  <th className="px-4 py-3 text-center font-semibold text-gray-600 w-28">Type</th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-600 w-28">
+                    Type
+                    {/* <div className="flex items-center justify-center gap-2 mt-1">
+                      <span className="text-[10px] font-semibold text-blue-500 bg-blue-100 px-1.5 py-0.5 rounded">H</span>
+                      <span className="text-[10px] text-gray-400">= Horizontal</span>
+                      <span className="text-[10px] font-semibold text-orange-500 bg-orange-100 px-1.5 py-0.5 rounded">V</span>
+                      <span className="text-[10px] text-gray-400">= Vertical</span>
+                    </div> */}
+                  </th>
                   <th className="px-4 py-3 text-center font-semibold text-gray-600 w-36">
                     Length (m)
                     <div className="text-xs text-gray-400 font-normal">required</div>
@@ -300,7 +308,7 @@ export default function WalkwayApp() {
                   {hasVertical && (
                     <th className="px-4 py-3 text-center font-semibold text-gray-600 bg-orange-50/60">
                       Base Rail
-                      <div className="text-xs text-gray-400 font-normal">per line (V only)</div>
+                      <div className="text-xs text-gray-400 font-normal">per line (Vertical only)</div>
                     </th>
                   )}
                   <th className="px-4 py-3 text-center font-semibold text-yellow-700 bg-yellow-50">Total Length<div className="text-xs text-yellow-500 font-normal">(m)</div></th>
@@ -430,11 +438,11 @@ export default function WalkwayApp() {
               <p className="text-sm font-bold text-blue-700 mb-3">Required Quantity of Length</p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded">H</span>
+                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded">Horizontal</span>
                   <span className="text-lg font-black text-blue-700">{splitTotals.requiredH.toFixed(2)} <span className="text-xs font-semibold">m</span></span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded">V</span>
+                  <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded">Vertical</span>
                   <span className="text-lg font-black text-orange-700">{splitTotals.requiredV.toFixed(2)} <span className="text-xs font-semibold">m</span></span>
                 </div>
                 <div className="border-t border-blue-200 pt-2 flex items-center justify-between">
@@ -449,11 +457,11 @@ export default function WalkwayApp() {
               <p className="text-sm font-bold text-yellow-700 mb-3">Estimated Quantity of Length</p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded">H</span>
+                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded">Horizontal</span>
                   <span className="text-lg font-black text-blue-700">{estimatedH.toFixed(2)} <span className="text-xs font-semibold">m</span></span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded">V</span>
+                  <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded">Vertical</span>
                   <span className="text-lg font-black text-orange-700">{estimatedV.toFixed(2)} <span className="text-xs font-semibold">m</span></span>
                 </div>
                 <div className="border-t border-yellow-200 pt-2 flex items-center justify-between">
@@ -468,13 +476,13 @@ export default function WalkwayApp() {
               <p className="text-sm font-bold text-green-700 mb-3">% Excess</p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded">H</span>
+                  <span className="text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded">Horizontal</span>
                   <span className="text-lg font-black text-blue-700">
                     {excessH !== null ? `${excessH.toFixed(2)}%` : <span className="text-gray-300 text-sm">—</span>}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded">V</span>
+                  <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded">Vertical</span>
                   <span className="text-lg font-black text-orange-700">
                     {excessV !== null ? `${excessV.toFixed(2)}%` : <span className="text-gray-300 text-sm">—</span>}
                   </span>
