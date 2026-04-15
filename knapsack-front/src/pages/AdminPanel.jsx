@@ -3,6 +3,7 @@ import { userAPI, configAPI } from '../services/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BOMManagementTab from './BOMManagementTab';
 import { useAuth } from '../context/AuthContext';
+import NumberInputWithSpinner from '../components/NumberInputWithSpinner';
 
 // ─── Feature permission rows for Permissions tab ──────────────────────────────
 const FEATURE_PERMS = [
@@ -187,6 +188,37 @@ function PermissionsTab({ permissionsConfig, loading, saving, msg, autoLinkMsg, 
   );
 }
 
+function DefaultsField({ label, value, onChange, type = 'number' }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-medium text-gray-600">{label}</label>
+      {type === 'text' ? (
+        <input
+          type="text"
+          value={value ?? ''}
+          onChange={e => onChange(e.target.value)}
+          className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+        />
+      ) : (
+        <NumberInputWithSpinner
+          value={value ?? 0}
+          onChange={onChange}
+          size="md"
+        />
+      )}
+    </div>
+  );
+}
+
+function DefaultsSection({ title, children }) {
+  return (
+    <div className="border border-gray-200 rounded-lg p-4">
+      <h4 className="text-sm font-semibold text-gray-700 mb-3">{title}</h4>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">{children}</div>
+    </div>
+  );
+}
+
 function AppDefaultsTab({ defaultsConfig, setDefaultsConfig, loading, saving, msg, onSave, onReset }) {
   if (loading) return <div className="p-8 text-center text-gray-500">Loading defaults...</div>;
   if (!defaultsConfig) return <div className="p-8 text-center text-gray-500">No defaults data.</div>;
@@ -197,25 +229,6 @@ function AppDefaultsTab({ defaultsConfig, setDefaultsConfig, loading, saving, ms
   const setTab = (key, val) => setDefaultsConfig(prev => ({ ...prev, tabDefaults: { ...prev.tabDefaults, [key]: val } }));
   const setBom = (key, val) => setDefaultsConfig(prev => ({ ...prev, bomDefaults: { ...prev.bomDefaults, [key]: val } }));
 
-  const Field = ({ label, value, onChange, type = 'number' }) => (
-    <div className="flex flex-col gap-1">
-      <label className="text-xs font-medium text-gray-600">{label}</label>
-      <input
-        type={type}
-        value={value ?? ''}
-        onChange={e => onChange(type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value)}
-        className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
-      />
-    </div>
-  );
-
-  const Section = ({ title, children }) => (
-    <div className="border border-gray-200 rounded-lg p-4">
-      <h4 className="text-sm font-semibold text-gray-700 mb-3">{title}</h4>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">{children}</div>
-    </div>
-  );
-
   return (
     <div className="bg-white shadow sm:rounded-lg p-6 space-y-5">
       <div>
@@ -223,43 +236,43 @@ function AppDefaultsTab({ defaultsConfig, setDefaultsConfig, loading, saving, ms
         <p className="text-sm text-gray-500 mt-1">Used when any user creates a new tab or BOM. Existing tabs and BOMs are NOT affected.</p>
       </div>
 
-      <Section title="BOM Rates & Specs">
-        <Field label="Aluminum Rate (₹/kg)" value={bom.aluminumRate} onChange={v => setBom('aluminumRate', v)} />
-        <Field label="HDG Rate (₹/kg)" value={bom.hdgRatePerKg} onChange={v => setBom('hdgRatePerKg', v)} />
-        <Field label="Magnelis Rate (₹/kg)" value={bom.magnelisRatePerKg} onChange={v => setBom('magnelisRatePerKg', v)} />
-        <Field label="Module Wp (W)" value={bom.moduleWp} onChange={v => setBom('moduleWp', v)} />
-        <Field label="Spare Percentage (%)" value={bom.sparePercentage} onChange={v => setBom('sparePercentage', v)} />
-      </Section>
+      <DefaultsSection title="BOM Rates & Specs">
+        <DefaultsField label="Aluminum Rate (₹/kg)" value={bom.aluminumRate} onChange={v => setBom('aluminumRate', v)} />
+        <DefaultsField label="HDG Rate (₹/kg)" value={bom.hdgRatePerKg} onChange={v => setBom('hdgRatePerKg', v)} />
+        <DefaultsField label="Magnelis Rate (₹/kg)" value={bom.magnelisRatePerKg} onChange={v => setBom('magnelisRatePerKg', v)} />
+        <DefaultsField label="Module Wp (W)" value={bom.moduleWp} onChange={v => setBom('moduleWp', v)} />
+        <DefaultsField label="Spare Percentage (%)" value={bom.sparePercentage} onChange={v => setBom('sparePercentage', v)} />
+      </DefaultsSection>
 
-      <Section title="Module Parameters">
-        <Field label="Module Length (mm)" value={tab.moduleLength} onChange={v => setTab('moduleLength', v)} />
-        <Field label="Module Width (mm)" value={tab.moduleWidth} onChange={v => setTab('moduleWidth', v)} />
-        <Field label="Frame Thickness (mm)" value={tab.frameThickness} onChange={v => setTab('frameThickness', v)} />
-        <Field label="Mid Clamp Gap (mm)" value={tab.midClamp} onChange={v => setTab('midClamp', v)} />
-        <Field label="End Clamp Width (mm)" value={tab.endClampWidth} onChange={v => setTab('endClampWidth', v)} />
-      </Section>
+      <DefaultsSection title="Module Parameters">
+        <DefaultsField label="Module Length (mm)" value={tab.moduleLength} onChange={v => setTab('moduleLength', v)} />
+        <DefaultsField label="Module Width (mm)" value={tab.moduleWidth} onChange={v => setTab('moduleWidth', v)} />
+        <DefaultsField label="Frame Thickness (mm)" value={tab.frameThickness} onChange={v => setTab('frameThickness', v)} />
+        <DefaultsField label="Mid Clamp Gap (mm)" value={tab.midClamp} onChange={v => setTab('midClamp', v)} />
+        <DefaultsField label="End Clamp Width (mm)" value={tab.endClampWidth} onChange={v => setTab('endClampWidth', v)} />
+      </DefaultsSection>
 
-      <Section title="Structural Parameters">
-        <Field label="Buffer (mm)" value={tab.buffer} onChange={v => setTab('buffer', v)} />
-        <Field label="Rails per Side" value={tab.railsPerSide} onChange={v => setTab('railsPerSide', v)} />
-        <Field label="Purlin Distance (mm)" value={tab.purlinDistance} onChange={v => setTab('purlinDistance', v)} />
-        <Field label="Seam to Seam (mm)" value={tab.seamToSeamDistance} onChange={v => setTab('seamToSeamDistance', v)} />
-        <Field label="Max Support Dist (mm)" value={tab.maxSupportDistance} onChange={v => setTab('maxSupportDistance', v)} />
-      </Section>
+      <DefaultsSection title="Structural Parameters">
+        <DefaultsField label="Buffer (mm)" value={tab.buffer} onChange={v => setTab('buffer', v)} />
+        <DefaultsField label="Rails per Side" value={tab.railsPerSide} onChange={v => setTab('railsPerSide', v)} />
+        <DefaultsField label="Purlin Distance (mm)" value={tab.purlinDistance} onChange={v => setTab('purlinDistance', v)} />
+        <DefaultsField label="Seam to Seam (mm)" value={tab.seamToSeamDistance} onChange={v => setTab('seamToSeamDistance', v)} />
+        <DefaultsField label="Max Support Dist (mm)" value={tab.maxSupportDistance} onChange={v => setTab('maxSupportDistance', v)} />
+      </DefaultsSection>
 
-      <Section title="Optimizer Settings">
+      <DefaultsSection title="Optimizer Settings">
         <div className="col-span-2 md:col-span-3">
-          <Field label="Cut Lengths (comma-separated)" value={tab.lengthsInput} onChange={v => setTab('lengthsInput', v)} type="text" />
+          <DefaultsField label="Cut Lengths (comma-separated)" value={tab.lengthsInput} onChange={v => setTab('lengthsInput', v)} type="text" />
         </div>
-        <Field label="Max Pieces" value={tab.maxPieces} onChange={v => setTab('maxPieces', v)} />
-        <Field label="Cost per mm" value={tab.costPerMm} onChange={v => setTab('costPerMm', v)} type="text" />
-        <Field label="Cost per Joint Set" value={tab.costPerJointSet} onChange={v => setTab('costPerJointSet', v)} type="text" />
-        <Field label="Joiner Length (mm)" value={tab.joinerLength} onChange={v => setTab('joinerLength', v)} type="text" />
-        <Field label="Max Waste %" value={tab.maxWastePct} onChange={v => setTab('maxWastePct', v)} type="text" />
-        <Field label="Alpha (Joint, mm)" value={tab.alphaJoint} onChange={v => setTab('alphaJoint', v)} />
-        <Field label="Beta (Small, mm)" value={tab.betaSmall} onChange={v => setTab('betaSmall', v)} />
-        <Field label="Allow Undershoot %" value={tab.allowUndershootPct} onChange={v => setTab('allowUndershootPct', v)} />
-        <Field label="Gamma (Short)" value={tab.gammaShort} onChange={v => setTab('gammaShort', v)} />
+        <DefaultsField label="Max Pieces" value={tab.maxPieces} onChange={v => setTab('maxPieces', v)} />
+        <DefaultsField label="Cost per mm" value={tab.costPerMm} onChange={v => setTab('costPerMm', v)} />
+        <DefaultsField label="Cost per Joint Set" value={tab.costPerJointSet} onChange={v => setTab('costPerJointSet', v)} />
+        <DefaultsField label="Joiner Length (mm)" value={tab.joinerLength} onChange={v => setTab('joinerLength', v)} />
+        <DefaultsField label="Max Waste %" value={tab.maxWastePct} onChange={v => setTab('maxWastePct', v)} />
+        <DefaultsField label="Alpha (Joint, mm)" value={tab.alphaJoint} onChange={v => setTab('alphaJoint', v)} />
+        <DefaultsField label="Beta (Small, mm)" value={tab.betaSmall} onChange={v => setTab('betaSmall', v)} />
+        <DefaultsField label="Allow Undershoot %" value={tab.allowUndershootPct} onChange={v => setTab('allowUndershootPct', v)} />
+        <DefaultsField label="Gamma (Short)" value={tab.gammaShort} onChange={v => setTab('gammaShort', v)} />
         <div>
           <label className="text-xs font-medium text-gray-600 block mb-1">Priority</label>
           <select
@@ -272,7 +285,7 @@ function AppDefaultsTab({ defaultsConfig, setDefaultsConfig, loading, saving, ms
             <option value="joints">Joints</option>
           </select>
         </div>
-      </Section>
+      </DefaultsSection>
 
       {msg && <p className={`text-sm ${msg.startsWith('Error') ? 'text-red-600' : 'text-green-600'}`}>{msg}</p>}
       <div className="flex justify-between items-center">
