@@ -42,7 +42,7 @@ const FIELD_GROUPS = [
     { key: 'lengthsInput',   label: 'Edit list',      isBom: false },
   ]},
   { key: 'optimizer', label: 'Optimizer / Cost Settings', fields: [
-    { key: 'costPerMm',       label: 'Cost per mm',       isBom: false },
+    { key: 'costPerMm',       label: 'Cost per mm of Long Rail',       isBom: false },
     { key: 'costPerJointSet', label: 'Cost per Joint Set', isBom: false },
     { key: 'joinerLength',    label: 'Joiner Length',     isBom: false },
     { key: 'priority',        label: 'Priority',          isBom: false },
@@ -256,7 +256,7 @@ function AppDefaultsTab({ defaultsConfig, setDefaultsConfig, loading, saving, ms
         <div className="col-span-2 md:col-span-3">
           <DefaultsField label="Cut Lengths (comma-separated)" value={tab.lengthsInput} onChange={v => setTab('lengthsInput', v)} type="text" />
         </div>
-        <DefaultsField label="Cost per mm" value={tab.costPerMm} onChange={v => setTab('costPerMm', v)} />
+        <DefaultsField label="Cost per mm of Long Rail" value={tab.costPerMm} onChange={v => setTab('costPerMm', v)} />
         <DefaultsField label="Cost per Joint Set" value={tab.costPerJointSet} onChange={v => setTab('costPerJointSet', v)} />
         <DefaultsField label="Joiner Length (mm)" value={tab.joinerLength} onChange={v => setTab('joinerLength', v)} />
         <div>

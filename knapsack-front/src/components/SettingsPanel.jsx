@@ -83,7 +83,7 @@ export default function SettingsPanel({
         <Card title="Cost Settings">
           <div className="space-y-3">
             <TextField
-              label="Cost per mm"
+              label="Cost per mm of Long Rail"
               value={costPerMm}
               setValue={(v) => updateSetting('costPerMm', v)}
             />

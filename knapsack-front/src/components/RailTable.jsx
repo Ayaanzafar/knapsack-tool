@@ -721,7 +721,7 @@ export default function RailTable({
                     </div>
                     <div className="space-y-3 bg-gray-50 rounded-lg p-3">
                       <TextField
-                        label="Cost per mm"
+                        label="Cost per mm of Long Rail"
                         value={costPerMm}
                         setValue={(v) => updateSetting('costPerMm', v)}
                         disabled={!canEditField('costPerMm')}
