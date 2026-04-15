@@ -18,7 +18,7 @@ function calcItem(item, rates, sparePercent = 0) {
   const length = parseFloat(item.length) || 0;
   const qty = parseFloat(item.quantity) || 0;
   const designWeight = parseFloat(item.designWeight) || 0;
-  const costPerPiece = parseFloat(item.costPerPiece) ?? null;
+  const costPerPiece = parseFloat(item.costPerPiece) || 0;
   const rateKey = MATERIAL_RATE_KEYS[item.material];
   const rate = parseFloat(rates[rateKey]) || 0;
   const sp = parseFloat(sparePercent) || 0;
@@ -26,17 +26,10 @@ function calcItem(item, rates, sparePercent = 0) {
   const spareQty = Math.ceil(qty * sp / 100);
   const finalQty = qty + spareQty;
 
-  let rm = 0, wt = 0, cost = 0;
-
-  if (item.itemType === 'FASTENER' || (costPerPiece !== null && item.costPerPiece !== null)) {
-    // Fastener — cost per piece
-    cost = parseFloat((finalQty * (costPerPiece || 0)).toFixed(2));
-  } else {
-    // Profile — weight-based
-    rm = parseFloat(((finalQty * length) / 1000).toFixed(4));
-    wt = parseFloat((rm * designWeight).toFixed(4));
-    cost = parseFloat((wt * rate).toFixed(2));
-  }
+  // Always: cost = (finalQty * ratePc) + (weight * rateKg)
+  const rm = parseFloat(((finalQty * length) / 1000).toFixed(4));
+  const wt = parseFloat((rm * designWeight).toFixed(4));
+  const cost = parseFloat(((finalQty * costPerPiece) + (wt * rate)).toFixed(2));
 
   return { ...item, spareQty, finalQty, rate, rm, wt, cost };
 }
@@ -105,7 +98,7 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
       itemDescription: selected.itemDescription || '',
       material: material || MATERIALS[0],
       designWeight: parseFloat(selected.designWeight) || 0,
-      costPerPiece: selected.costPerPiece != null ? parseFloat(selected.costPerPiece) : null,
+      costPerPiece: parseFloat(selected.costPerPiece) || 0,
       uom: selected.uom || '',
       profileImagePath: selected.profileImagePath || null,
       length: isFastener ? 0 : parseFloat(length),
@@ -849,26 +842,20 @@ export default function CustomBOMPage() {
                         {/* Wt */}
                         <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-orange-50 text-gray-700">{item.wt?.toFixed(3) ?? '—'}</td>
 
-                        {/* Rate ₹/kg — only for profiles */}
+                        {/* Rate ₹/kg */}
                         <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-orange-50 text-gray-700">
-                          {item.costPerPiece != null && parseFloat(item.costPerPiece) > 0
-                            ? <span className="text-gray-300">—</span>
-                            : item.rate?.toFixed(2) ?? '—'
-                          }
+                          {item.rate?.toFixed(2) ?? '—'}
                         </td>
 
-                        {/* Rate/Piece — editable for fasteners */}
+                        {/* Rate/Piece — editable for all items */}
                         <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-blue-50">
-                          {item.costPerPiece != null && parseFloat(item.costPerPiece) >= 0
-                            ? <NumberInputWithSpinner
-                                value={item.costPerPiece}
-                                onChange={val => handleEditItem(activeBuilding, item.id, 'costPerPiece', val)}
-                                minValue={0}
-                                size="sm"
-                                className="border-blue-200 text-blue-700 font-semibold focus:ring-blue-400"
-                              />
-                            : <span className="text-gray-300">—</span>
-                          }
+                          <NumberInputWithSpinner
+                            value={item.costPerPiece ?? 0}
+                            onChange={val => handleEditItem(activeBuilding, item.id, 'costPerPiece', val)}
+                            minValue={0}
+                            size="sm"
+                            className="border-blue-200 text-blue-700 font-semibold focus:ring-blue-400"
+                          />
                         </td>
 
                         {/* Cost */}
