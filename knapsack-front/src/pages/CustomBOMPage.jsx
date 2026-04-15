@@ -828,7 +828,9 @@ export default function CustomBOMPage() {
                         <td className="bg-gray-200 w-3" />
 
                         {/* Wt/RM */}
-                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">{item.designWeight?.toFixed(4) ?? '—'}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">
+                          {item.itemType === 'FASTENER' ? <span className="text-gray-300">—</span> : (item.designWeight?.toFixed(4) ?? '—')}
+                        </td>
 
                         {/* Wt/pc */}
                         <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">
@@ -839,10 +841,14 @@ export default function CustomBOMPage() {
                         </td>
 
                         {/* RM */}
-                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">{item.rm?.toFixed(3) ?? '—'}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-yellow-50 text-gray-700">
+                          {item.itemType === 'FASTENER' ? <span className="text-gray-300">—</span> : (item.rm?.toFixed(3) ?? '—')}
+                        </td>
 
                         {/* Wt */}
-                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-orange-50 text-gray-700">{item.wt?.toFixed(3) ?? '—'}</td>
+                        <td className="border border-gray-200 px-2 py-2 text-xs text-center bg-orange-50 text-gray-700">
+                          {item.itemType === 'FASTENER' ? <span className="text-gray-300">—</span> : (item.wt?.toFixed(3) ?? '—')}
+                        </td>
 
                         {/* Rate ₹/kg — editable with override */}
                         <td className={`border border-gray-200 px-2 py-2 text-xs text-center ${item.rateKgOverride != null ? 'bg-blue-50' : 'bg-orange-50'}`}>
@@ -909,13 +915,9 @@ export default function CustomBOMPage() {
                       Total — {totalItems} item{totalItems !== 1 ? 's' : ''}
                     </td>
                     <td className="bg-gray-200 w-3" />
-                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-600">
-                      {activeB.items.reduce((s, i) => s + (parseFloat(i.designWeight) || 0), 0).toFixed(3)}
-                    </td>
                     <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-400">—</td>
-                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-700">
-                      {activeB.items.reduce((s, i) => s + (i.rm || 0), 0).toFixed(3)}
-                    </td>
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-400">—</td>
+                    <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-400">—</td>
                     <td className="border border-gray-300 px-2 py-2.5 text-xs text-center text-gray-800">
                       {totalWt.toFixed(3)}
                     </td>
