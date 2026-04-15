@@ -43,6 +43,7 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
   const [material, setMaterial] = useState('');
   const [length, setLength] = useState('');
   const [quantity, setQuantity] = useState('');
+  const [costPerPiece, setCostPerPiece] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
   const [typeFilter, setTypeFilter] = useState('PROFILE');
 
@@ -53,6 +54,7 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
       setMaterial('');
       setLength('');
       setQuantity('');
+      setCostPerPiece(0);
       setShowDropdown(false);
       setTypeFilter('PROFILE');
     }
@@ -76,6 +78,7 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
     setSelected(profile);
     setSearch('');
     setMaterial(profile.material || MATERIALS[0]);
+    setCostPerPiece(parseFloat(profile.costPerPiece) || 0);
     setShowDropdown(false);
   };
 
@@ -99,7 +102,7 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
       itemDescription: selected.itemDescription || '',
       material: material || MATERIALS[0],
       designWeight: parseFloat(selected.designWeight) || 0,
-      costPerPiece: parseFloat(selected.costPerPiece) || 0,
+      costPerPiece: costPerPiece,
       rateKgOverride: null,
       uom: selected.uom || '',
       profileImagePath: selected.profileImagePath || null,
@@ -231,12 +234,17 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
                   className="w-full px-4 py-2.5 bg-gray-50 border-2 border-gray-200 rounded-xl text-sm text-gray-600 cursor-not-allowed"
                 />
               </div>
-              {isFastener && selected.costPerPiece != null && (
+              {isFastener && (
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-1.5">Cost / Piece</label>
-                  <div className="px-4 py-2.5 bg-blue-50 border-2 border-blue-200 rounded-xl text-sm font-bold text-blue-700">
-                    ₹{parseFloat(selected.costPerPiece).toFixed(2)}
-                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={costPerPiece}
+                    onChange={e => setCostPerPiece(parseFloat(e.target.value) || 0)}
+                    className="w-full px-4 py-2.5 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm bg-blue-50"
+                  />
                 </div>
               )}
             </div>
