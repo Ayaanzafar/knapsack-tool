@@ -701,16 +701,17 @@ export default function CustomBOMPage() {
                   </th>
                   <th className="bg-gray-300 w-3 border-0" />
                   <th colSpan={2} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
-                    Spare <span className="font-normal text-gray-700 ml-1">{sparePercent}%</span>
+                    Spare 
+                    {/* <span className="font-normal text-gray-700 ml-1">{sparePercent}%</span> */}
                   </th>
                   <th className="bg-gray-300 w-3 border-0" />
                   <th colSpan={7} className="border border-gray-400 px-3 py-1.5 text-sm font-bold text-center">
                     Weight Calculation and Cost Calculation
-                    <span className="ml-3 font-normal text-xs">
+                    {/* <span className="ml-3 font-normal text-xs">
                       <span className="text-blue-700">Al 6063: ₹{rates.al6063Rate || 0}</span>
                       <span className="mx-2 text-gray-400">|</span>
                       <span className="text-teal-700">GI: ₹{rates.giRate || 0}</span>
-                    </span>
+                    </span> */}
                   </th>
                   <th className="border-0 w-8"></th>
                 </tr>
