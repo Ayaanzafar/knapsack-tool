@@ -294,7 +294,7 @@ function AppDefaultsTab({ defaultsConfig, setDefaultsConfig, loading, saving, ms
 }
 
 export default function AdminPanel() {
-  const { user: currentUser, can } = useAuth();
+  const { user: currentUser, can, loadConfig } = useAuth();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(() => can('canManageUsers') ? 'users' : 'boms');
   const [users, setUsers] = useState([]);
@@ -378,6 +378,7 @@ export default function AdminPanel() {
     try {
       const updated = await configAPI.updateDefaults(defaultsConfig);
       setDefaultsConfig(updated);
+      await loadConfig();
       setDefaultsMsg('App defaults saved successfully.');
     } catch (err) {
       setDefaultsMsg('Error: ' + err.message);

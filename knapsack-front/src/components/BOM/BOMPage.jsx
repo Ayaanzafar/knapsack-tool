@@ -1372,7 +1372,7 @@ const ensureStableIds = (items) => {
 };
 
 export default function BOMPage() {
-  const { user, canEditField } = useAuth();
+  const { user, canEditField, appDefaults } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [bomData, setBomData] = useState(null);
@@ -1381,11 +1381,11 @@ export default function BOMPage() {
   const [projectId, setProjectId] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [profiles, setProfiles] = useState([]);
-  const [sparePercentage, setSparePercentage] = useState(DEFAULT_SPARE_PERCENTAGE);
-  const [moduleWp, setModuleWp] = useState(DEFAULT_MODULE_WP);
-  const [aluminumRate, setAluminumRate] = useState(DEFAULT_ALUMINIUM_RATE_PER_KG);
-  const [hdgRate, setHdgRate] = useState(DEFAULT_HDG_RATE_PER_KG);
-  const [magnelisRate, setMagnelisRate] = useState(DEFAULT_MAGNELIS_RATE_PER_KG);
+  const [sparePercentage, setSparePercentage] = useState(() => appDefaults?.bomDefaults?.sparePercentage ?? DEFAULT_SPARE_PERCENTAGE);
+  const [moduleWp, setModuleWp] = useState(() => appDefaults?.bomDefaults?.moduleWp ?? DEFAULT_MODULE_WP);
+  const [aluminumRate, setAluminumRate] = useState(() => appDefaults?.bomDefaults?.aluminumRate ?? DEFAULT_ALUMINIUM_RATE_PER_KG);
+  const [hdgRate, setHdgRate] = useState(() => appDefaults?.bomDefaults?.hdgRatePerKg ?? DEFAULT_HDG_RATE_PER_KG);
+  const [magnelisRate, setMagnelisRate] = useState(() => appDefaults?.bomDefaults?.magnelisRatePerKg ?? DEFAULT_MAGNELIS_RATE_PER_KG);
   const [changeLog, setChangeLog] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);

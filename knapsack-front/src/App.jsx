@@ -72,7 +72,9 @@ export default function App() {
         setClientName(project.clientName || '');
         setProjectId(project.projectId || '');
         setLongRailVariation(project.longRailVariation || '');
-        setModuleWp(project.moduleWp != null ? Number(project.moduleWp) : 590);
+        const adminDefault = appDefaults?.bomDefaults?.moduleWp;
+        const resolvedModuleWp = adminDefault != null ? adminDefault : (project.moduleWp != null ? Number(project.moduleWp) : 590);
+        setModuleWp(resolvedModuleWp);
 
         // Load tabs
         const loadedTabsData = await loadTabs();

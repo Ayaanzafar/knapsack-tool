@@ -5,10 +5,12 @@ import { collectBOMData, getActiveCutLengths } from '../../services/bomDataColle
 import { generateCompleteBOM } from '../../services/bomCalculations';
 import { bomAPI, savedBomAPI } from '../../services/api';
 import { getCurrentProjectId } from '../../lib/tabStorageAPI';
+import { useAuth } from '../../context/AuthContext';
 
 
 export default function CreateBOMButton({ tabsData, projectName, longRailVariation, moduleWp }) {
   const navigate = useNavigate();
+  const { appDefaults } = useAuth();
   const [hasSavedBom, setHasSavedBom] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,8 +57,9 @@ export default function CreateBOMButton({ tabsData, projectName, longRailVariati
         setHasSavedBom(false);
       }
 
-      // Collect data from all tabs
-      const bomData = collectBOMData(tabsData, projectName, longRailVariation, moduleWp);
+      // Collect data from all tabs — prefer admin-configured default over stale project-level value
+      const effectiveModuleWp = appDefaults?.bomDefaults?.moduleWp ?? moduleWp;
+      const bomData = collectBOMData(tabsData, projectName, longRailVariation, effectiveModuleWp);
 
       // Get active cut lengths (non-zero)
       const activeCutLengths = getActiveCutLengths(bomData);
