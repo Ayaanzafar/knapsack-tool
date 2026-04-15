@@ -45,15 +45,7 @@ const FIELD_GROUPS = [
     { key: 'costPerMm',       label: 'Cost per mm',       isBom: false },
     { key: 'costPerJointSet', label: 'Cost per Joint Set', isBom: false },
     { key: 'joinerLength',    label: 'Joiner Length',     isBom: false },
-    { key: 'maxPieces',       label: 'Max Pieces',        isBom: false },
     { key: 'priority',        label: 'Priority',          isBom: false },
-  ]},
-  { key: 'advanced', label: 'Advanced Optimizer', fields: [
-    { key: 'maxWastePct',        label: 'Max Waste %',        isBom: false },
-    { key: 'alphaJoint',         label: 'Alpha (Joint)',      isBom: false },
-    { key: 'betaSmall',          label: 'Beta (Small)',       isBom: false },
-    { key: 'allowUndershootPct', label: 'Allow Undershoot %', isBom: false },
-    { key: 'gammaShort',         label: 'Gamma (Short)',      isBom: false },
   ]},
   { key: 'bomRates', label: 'BOM Rate Fields', fields: [
     { key: 'aluminumRate',      label: 'Aluminum Rate',          isBom: true },
@@ -264,15 +256,9 @@ function AppDefaultsTab({ defaultsConfig, setDefaultsConfig, loading, saving, ms
         <div className="col-span-2 md:col-span-3">
           <DefaultsField label="Cut Lengths (comma-separated)" value={tab.lengthsInput} onChange={v => setTab('lengthsInput', v)} type="text" />
         </div>
-        <DefaultsField label="Max Pieces" value={tab.maxPieces} onChange={v => setTab('maxPieces', v)} />
         <DefaultsField label="Cost per mm" value={tab.costPerMm} onChange={v => setTab('costPerMm', v)} />
         <DefaultsField label="Cost per Joint Set" value={tab.costPerJointSet} onChange={v => setTab('costPerJointSet', v)} />
         <DefaultsField label="Joiner Length (mm)" value={tab.joinerLength} onChange={v => setTab('joinerLength', v)} />
-        <DefaultsField label="Max Waste %" value={tab.maxWastePct} onChange={v => setTab('maxWastePct', v)} />
-        <DefaultsField label="Alpha (Joint, mm)" value={tab.alphaJoint} onChange={v => setTab('alphaJoint', v)} />
-        <DefaultsField label="Beta (Small, mm)" value={tab.betaSmall} onChange={v => setTab('betaSmall', v)} />
-        <DefaultsField label="Allow Undershoot %" value={tab.allowUndershootPct} onChange={v => setTab('allowUndershootPct', v)} />
-        <DefaultsField label="Gamma (Short)" value={tab.gammaShort} onChange={v => setTab('gammaShort', v)} />
         <div>
           <label className="text-xs font-medium text-gray-600 block mb-1">Priority</label>
           <select
