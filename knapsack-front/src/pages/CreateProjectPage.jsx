@@ -494,7 +494,8 @@ export default function CreateProjectPage() {
         page: currentPage,
         limit: pageSize,
         sortBy: sortBy,
-        search: debouncedSearchTerm || undefined
+        search: debouncedSearchTerm || undefined,
+        moduleType: 'LONG_RAIL'
       };
       const response = await projectAPI.getAll(params);
       if (response.projects && Array.isArray(response.projects)) {
@@ -532,6 +533,7 @@ export default function CreateProjectPage() {
         clientName,
         projectId,
         longRailVariation,
+        moduleType: 'LONG_RAIL',
         userId: user.id
       });
       setCurrentProjectId(newProject.id);

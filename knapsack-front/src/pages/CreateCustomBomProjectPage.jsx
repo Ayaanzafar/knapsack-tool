@@ -43,7 +43,8 @@ export default function CreateCustomBomProjectPage() {
         page: currentPage,
         limit: pageSize,
         sortBy: sortBy,
-        search: debouncedSearchTerm || undefined
+        search: debouncedSearchTerm || undefined,
+        moduleType: 'CUSTOM_BOM'
       };
       const response = await projectAPI.getAll(params);
       if (response.projects && Array.isArray(response.projects)) {
@@ -75,6 +76,7 @@ export default function CreateCustomBomProjectPage() {
         name: projectName || `${clientName} - ${projectId}`,
         clientName,
         projectId,
+        moduleType: 'CUSTOM_BOM',
         userId: user.id
       });
       setCurrentProjectId(newProject.id);
