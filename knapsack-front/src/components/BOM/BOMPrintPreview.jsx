@@ -251,6 +251,10 @@ export default function BOMPrintPreview() {
   }
 
   const { includeQuantity, includeSpare, includeCosting } = printSettings;
+  const includeDisclaimerNotes = printSettings.includeDisclaimerNotes !== false;
+  const includeChangeLog = Boolean(
+    printSettings.includeChangeLog ?? printSettings.includeDisclaimer
+  );
   const orientation = (includeQuantity && includeSpare && includeCosting) ? 'landscape' : 'portrait';
 
   return (
@@ -906,19 +910,21 @@ export default function BOMPrintPreview() {
             </ol>
           </div> */}
 
-          {/* Notes Section (includes default notes + user notes) */}
-          <div className="mt-4">
-            <NotesSection
-              userNotes={userNotes || []}
-              onNotesChange={() => {}}
-              editMode={false}
-              variationName={bomData?.projectInfo?.longRailVariation}
-              customDefaultNotes={bomData?.customDefaultNotes}
-            />
-          </div>
+          {/* Notes / disclaimer (client-facing) */}
+          {includeDisclaimerNotes && (
+            <div className="mt-4">
+              <NotesSection
+                userNotes={userNotes || []}
+                onNotesChange={() => {}}
+                editMode={false}
+                variationName={bomData?.projectInfo?.longRailVariation}
+                customDefaultNotes={bomData?.customDefaultNotes}
+              />
+            </div>
+          )}
 
-          {/* Disclaimer/Changelog Section */}
-          {printSettings?.includeDisclaimer && changeLog && changeLog.length > 0 && (
+          {/* Internal change log */}
+          {includeChangeLog && changeLog && changeLog.length > 0 && (
             <div className="p-3 bg-red-50 border-l-4 border-red-400 rounded mt-4 notes-section">
               <h3 className="text-sm font-bold text-gray-800 mb-2">Disclaimer - Changes Made to this BOM:</h3>
               <div className="space-y-1">

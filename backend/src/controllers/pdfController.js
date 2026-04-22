@@ -91,6 +91,10 @@ const getImageUrl = (path, req) => {
 const generateBOMHtml = (data, req) => {
     const { bomData, printSettings, aluminumRate, sparePercentage, moduleWp, changeLog } = data;
     const { includeQuantity, includeSpare, includeCosting } = printSettings;
+    const includeDisclaimerNotes = printSettings.includeDisclaimerNotes !== false;
+    const includeChangeLog = Boolean(
+        printSettings.includeChangeLog ?? printSettings.includeDisclaimer
+    );
 
     // Determine orientation based on settings
     const orientation = (includeQuantity && includeSpare && includeCosting) ? 'landscape' : 'portrait';
@@ -346,7 +350,8 @@ const generateBOMHtml = (data, req) => {
         </div>
       </div>
 
-      <!-- Notes -->
+      <!-- Notes / disclaimer (client-facing) -->
+      ${includeDisclaimerNotes ? `
       <div class="notes-section mb-4 page-break-inside-avoid">
         <h3 class="text-xs font-bold text-gray-800 mb-1">Note:</h3>
         <ol class="list-decimal list-inside space-y-0.5 text-xs text-gray-700">
@@ -357,9 +362,10 @@ const generateBOMHtml = (data, req) => {
           <li>Purlin Details of sheds T10, T11, T14, T15 are not mentioned in report. They are assumed to be 1.5m. If the actual span is more than 1.7m, an extra Mini rail must be considered additionally (at extra cost).</li>
         </ol>
       </div>
+      ` : ''}
 
-      <!-- Disclaimer/Changelog -->
-      ${(printSettings.includeDisclaimer && changeLog && changeLog.length > 0) ? `
+      <!-- Internal change log -->
+      ${(includeChangeLog && changeLog && changeLog.length > 0) ? `
         <div class="p-3 bg-red-50 border-l-4 border-red-400 rounded mt-4 page-break-inside-avoid">
             <h3 class="text-xs font-bold text-gray-800 mb-2">Disclaimer - Changes Made to this BOM:</h3>
             <div class="space-y-1">

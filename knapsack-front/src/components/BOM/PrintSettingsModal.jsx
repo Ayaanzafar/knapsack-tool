@@ -6,7 +6,10 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
     includeQuantity: true,
     includeSpare: true,
     includeCosting: true,
-    includeDisclaimer: false
+    /** Default notes / disclaimer text on for client-facing prints */
+    includeDisclaimerNotes: true,
+    /** Internal change history — off by default (may be sensitive) */
+    includeChangeLog: false
   });
 
   // Calculate orientation based on selections
@@ -132,17 +135,33 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                 </div>
               </label>
 
-              {/* Disclaimer/Changelog Section */}
+              {/* Disclaimer (Notes) — safe for client */}
               <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
                 <input
                   type="checkbox"
-                  checked={settings.includeDisclaimer}
-                  onChange={() => handleCheckboxChange('includeDisclaimer')}
+                  checked={settings.includeDisclaimerNotes}
+                  onChange={() => handleCheckboxChange('includeDisclaimerNotes')}
+                  className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
+                />
+                <div className="flex-1">
+                  <div className="font-semibold text-gray-800">Disclaimer (Notes)</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Standard and project notes shown on the BOM (suitable to share with the client)
+                  </div>
+                </div>
+              </label>
+
+              {/* Change log — internal / sensitive */}
+              <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  checked={settings.includeChangeLog}
+                  onChange={() => handleCheckboxChange('includeChangeLog')}
                   className="mt-1 h-5 w-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
                 />
                 <div className="flex-1">
                   <div className="font-semibold text-gray-800">
-                    Disclaimer/Changelog
+                    Change log
                     {changeLog && changeLog.length > 0 && (
                       <span className="ml-2 text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full">
                         {changeLog.length} changes
@@ -150,7 +169,7 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
                     )}
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
-                    Show change history and modifications made to this BOM
+                    Internal edit history (rates, rows, etc.). Omit when sharing with the client.
                   </div>
                 </div>
               </label>
