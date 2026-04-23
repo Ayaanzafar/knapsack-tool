@@ -6,6 +6,8 @@ import { API_URL } from '../../services/config';
 import NotesSection from './NotesSection';
 import {
   DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_HDG_RATE_PER_KG,
+  DEFAULT_MAGNELIS_RATE_PER_KG,
   DEFAULT_MODULE_WP,
   DEFAULT_SPARE_PERCENTAGE
 } from '../../constants/bomDefaults';
@@ -16,6 +18,8 @@ export default function BOMPrintPreview() {
   const [bomData, setBomData] = useState(null);
   const [printSettings, setPrintSettings] = useState(null);
   const [aluminumRate, setAluminumRate] = useState(DEFAULT_ALUMINIUM_RATE_PER_KG);
+  const [hdgRate, setHdgRate] = useState(DEFAULT_HDG_RATE_PER_KG);
+  const [magnelisRate, setMagnelisRate] = useState(DEFAULT_MAGNELIS_RATE_PER_KG);
   const [sparePercentage, setSparePercentage] = useState(DEFAULT_SPARE_PERCENTAGE);
   const [moduleWp, setModuleWp] = useState(DEFAULT_MODULE_WP);
   const [scale, setScale] = useState(100); // Scale percentage for zoom
@@ -67,6 +71,8 @@ export default function BOMPrintPreview() {
           setBomData(data.bomData);
           setPrintSettings(data.printSettings);
           setAluminumRate(data.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG);
+          setHdgRate(data.hdgRate || DEFAULT_HDG_RATE_PER_KG);
+          setMagnelisRate(data.magnelisRate || DEFAULT_MAGNELIS_RATE_PER_KG);
           setSparePercentage(data.sparePercentage || DEFAULT_SPARE_PERCENTAGE);
           setModuleWp(data.moduleWp || DEFAULT_MODULE_WP);
           setChangeLog(data.changeLog || []);
@@ -105,6 +111,8 @@ export default function BOMPrintPreview() {
       setBomData(location.state.bomData);
       setPrintSettings(location.state.printSettings);
       setAluminumRate(location.state.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG);
+      setHdgRate(location.state.hdgRate ?? DEFAULT_HDG_RATE_PER_KG);
+      setMagnelisRate(location.state.magnelisRate ?? DEFAULT_MAGNELIS_RATE_PER_KG);
       setSparePercentage(location.state.sparePercentage || DEFAULT_SPARE_PERCENTAGE);
       setModuleWp(location.state.moduleWp || DEFAULT_MODULE_WP);
       setChangeLog(location.state.changeLog || []);
@@ -166,6 +174,8 @@ export default function BOMPrintPreview() {
             bomData,
             projectId: location.state?.projectId,  // Database projectId from state
             aluminumRate,
+            hdgRate,
+            magnelisRate,
             sparePercentage,
             moduleWp,
             changeLog,
@@ -184,7 +194,7 @@ export default function BOMPrintPreview() {
     return () => {
       window.removeEventListener('afterprint', handleAfterPrint);
     };
-  }, [bomData, aluminumRate, sparePercentage, moduleWp, changeLog, userNotes, printedBy, navigate, location.state, isPreviewMode]);
+  }, [bomData, aluminumRate, hdgRate, magnelisRate, sparePercentage, moduleWp, changeLog, userNotes, printedBy, navigate, location.state, isPreviewMode]);
 
   // Format numbers in Indian style
   const formatIndianNumber = (value, decimals = 2) => {
@@ -228,6 +238,8 @@ export default function BOMPrintPreview() {
           bomData,
           projectId: location.state?.projectId,  // Pass the database projectId
           aluminumRate,
+          hdgRate,
+          magnelisRate,
           sparePercentage,
           moduleWp,
           changeLog,

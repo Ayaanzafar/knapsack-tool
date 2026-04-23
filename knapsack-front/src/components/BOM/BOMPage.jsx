@@ -1371,6 +1371,24 @@ const ensureStableIds = (items) => {
   }));
 };
 
+/** Deep snapshot for edit-session discard (avoids shared references mutating the baseline). */
+const cloneBomState = (value) => {
+  if (value === null || value === undefined) return value;
+  if (typeof structuredClone === 'function') {
+    try {
+      return structuredClone(value);
+    } catch (e) {
+      console.warn('[BOMPage] structuredClone failed, using JSON fallback', e);
+    }
+  }
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (e) {
+    console.error('[BOMPage] cloneBomState failed', e);
+    return value;
+  }
+};
+
 export default function BOMPage() {
   const { user, canEditField, appDefaults } = useAuth();
   const location = useLocation();
@@ -1412,6 +1430,8 @@ export default function BOMPage() {
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
   const [hasRowOrderChanges, setHasRowOrderChanges] = useState(false);
   const skipBeforeUnloadRef = useRef(false);
+  /** Snapshot when entering edit mode — used on Discard instead of full page reload. */
+  const discardBaselineRef = useRef(null);
 
   const hasUnsavedChanges = useCallback(() => {
     if (isDirty) return true;
@@ -1543,16 +1563,6 @@ export default function BOMPage() {
             setProjectId(stateProjectId);
             setCurrentProjectId(stateProjectId); // Also set global projectId
           }
-
-          // Restore globals when coming back from Print Preview or other screens that pass them separately.
-          const stateAluminumRate = Number.parseFloat(location.state?.aluminumRate);
-          if (Number.isFinite(stateAluminumRate)) setAluminumRate(stateAluminumRate);
-
-          const stateSparePercentage = Number.parseFloat(location.state?.sparePercentage);
-          if (Number.isFinite(stateSparePercentage)) setSparePercentage(stateSparePercentage);
-
-          const stateModuleWp = Number.parseFloat(location.state?.moduleWp);
-          if (Number.isFinite(stateModuleWp)) setModuleWp(stateModuleWp);
 
           // Load saved changeLog and userNotes
           if (location.state?.changeLog) {
@@ -1701,9 +1711,32 @@ export default function BOMPage() {
           //   console.log('[BOMPage loadBOM] profilesMap[94].sunrackCode:', data.bomData.profilesMap[94].sunrackCode);
           // }
 
-          // Ensure projectInfo.createdBy is set
+          // Ensure projectInfo.createdBy is set.
+          // When navigating back from print preview (no bomId), `location.state` carries the live globals;
+          // `bomData` often still has older embedded rates — prefer explicit navigation state first.
+          const navBomOnly = !bomId && !!location.state?.bomData;
+          const pickGlobal = (stateKey, bomKey) => {
+            if (navBomOnly) {
+              const fromState = Number.parseFloat(location.state?.[stateKey]);
+              if (Number.isFinite(fromState)) return fromState;
+            }
+            const fromBom = Number.parseFloat(data.bomData[bomKey]);
+            return Number.isFinite(fromBom) ? fromBom : undefined;
+          };
+
+          const nextAluminumRate = pickGlobal('aluminumRate', 'aluminumRate');
+          const nextHdgRate = pickGlobal('hdgRate', 'hdgRate');
+          const nextMagnelisRate = pickGlobal('magnelisRate', 'magnelisRate');
+          const nextSparePercentage = pickGlobal('sparePercentage', 'sparePercentage');
+          const nextModuleWp = pickGlobal('moduleWp', 'moduleWp');
+
           const bomDataToSet = {
             ...data.bomData,
+            ...(nextAluminumRate !== undefined && { aluminumRate: nextAluminumRate }),
+            ...(nextHdgRate !== undefined && { hdgRate: nextHdgRate }),
+            ...(nextMagnelisRate !== undefined && { magnelisRate: nextMagnelisRate }),
+            ...(nextSparePercentage !== undefined && { sparePercentage: nextSparePercentage }),
+            ...(nextModuleWp !== undefined && { moduleWp: nextModuleWp }),
             projectInfo: {
               ...data.bomData.projectInfo,
               createdBy: data.bomData.projectInfo?.createdBy || user?.username || 'Unknown'
@@ -1712,20 +1745,11 @@ export default function BOMPage() {
 
           setBomData(bomDataToSet);
 
-          const loadedAluminumRate = Number.parseFloat(data.bomData.aluminumRate);
-          if (Number.isFinite(loadedAluminumRate)) setAluminumRate(loadedAluminumRate);
-
-          const loadedHdgRate = Number.parseFloat(data.bomData.hdgRate);
-          if (Number.isFinite(loadedHdgRate)) setHdgRate(loadedHdgRate);
-
-          const loadedMagnelisRate = Number.parseFloat(data.bomData.magnelisRate);
-          if (Number.isFinite(loadedMagnelisRate)) setMagnelisRate(loadedMagnelisRate);
-
-          const loadedSparePercentage = Number.parseFloat(data.bomData.sparePercentage);
-          if (Number.isFinite(loadedSparePercentage)) setSparePercentage(loadedSparePercentage);
-
-          const loadedModuleWp = Number.parseFloat(data.bomData.moduleWp);
-          if (Number.isFinite(loadedModuleWp)) setModuleWp(loadedModuleWp);
+          if (nextAluminumRate !== undefined) setAluminumRate(nextAluminumRate);
+          if (nextHdgRate !== undefined) setHdgRate(nextHdgRate);
+          if (nextMagnelisRate !== undefined) setMagnelisRate(nextMagnelisRate);
+          if (nextSparePercentage !== undefined) setSparePercentage(nextSparePercentage);
+          if (nextModuleWp !== undefined) setModuleWp(nextModuleWp);
 
           // Load userNotes from backend ONLY if not already loaded from location.state
           // (location.state has priority because it contains the most recent saved snapshot)
@@ -2323,15 +2347,43 @@ export default function BOMPage() {
 
 
   const handleDiscardChanges = async () => {
-    if (window.confirm('Are you sure you want to discard all unsaved changes? This will reload the BOM data.')) {
-      skipBeforeUnloadRef.current = true;
-      changeTracker.stopTracking();
-      setIsDirty(false);
-      setHasRowOrderChanges(false);
-      setUserNotes([...originalUserNotes]); // Restore original notes
-      setEditMode(false);
-      window.location.reload();
+    if (!window.confirm('Discard all unsaved changes? The BOM will return to how it was when you opened edit mode (your last saved version).')) {
+      return;
     }
+    skipBeforeUnloadRef.current = true;
+    changeTracker.stopTracking();
+    setIsDirty(false);
+    setHasRowOrderChanges(false);
+    setDefaultNotesChanges([]);
+
+    const baseline = discardBaselineRef.current;
+    if (baseline?.bomData) {
+      const restored = cloneBomState(baseline.bomData);
+      setBomData(restored);
+      setChangeLog(Array.isArray(baseline.changeLog) ? cloneBomState(baseline.changeLog) : []);
+      const notes = Array.isArray(baseline.userNotes) ? cloneBomState(baseline.userNotes) : [];
+      setUserNotes(notes);
+      setOriginalUserNotes(cloneBomState(notes));
+      setAluminumRate(baseline.aluminumRate);
+      setSparePercentage(baseline.sparePercentage);
+      setModuleWp(baseline.moduleWp);
+      setHdgRate(baseline.hdgRate);
+      setMagnelisRate(baseline.magnelisRate);
+      if (restored.profilesMap) {
+        setProfiles(Object.values(restored.profilesMap));
+      }
+      if (restored.bomItems?.length > 0) {
+        setAddAfterRow(restored.bomItems.length);
+      }
+    } else {
+      setUserNotes([...originalUserNotes]);
+    }
+
+    if (typeof window.resetDefaultNotesBaseline === 'function') {
+      window.resetDefaultNotesBaseline();
+    }
+
+    setEditMode(false);
   };
 
   const handleNotesChange = (updatedNotes) => {
@@ -2343,8 +2395,18 @@ export default function BOMPage() {
     if (editMode) {
       handleDoneEditing();
     } else {
-      setOriginalBomData(bomData);
-      setOriginalUserNotes([...userNotes]); // Save original notes
+      discardBaselineRef.current = {
+        bomData: cloneBomState(bomData),
+        changeLog: cloneBomState(changeLog),
+        userNotes: cloneBomState(userNotes),
+        aluminumRate,
+        sparePercentage,
+        moduleWp,
+        hdgRate,
+        magnelisRate
+      };
+      setOriginalBomData(cloneBomState(bomData));
+      setOriginalUserNotes(Array.isArray(userNotes) ? cloneBomState(userNotes) : []);
       setHasRowOrderChanges(false);
       changeTracker.startTracking();
       setEditMode(true);
@@ -2698,6 +2760,8 @@ export default function BOMPage() {
           printSettings: settings,
           projectId,  // Pass database projectId
           aluminumRate,
+          hdgRate,
+          magnelisRate,
           sparePercentage,
           moduleWp,
           changeLog,
@@ -2713,6 +2777,8 @@ export default function BOMPage() {
           printSettings: settings,
           projectId,  // Pass database projectId
           aluminumRate,
+          hdgRate,
+          magnelisRate,
           sparePercentage,
           moduleWp,
           changeLog,

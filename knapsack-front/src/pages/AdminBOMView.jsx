@@ -9,6 +9,8 @@ import NotesSection from '../components/BOM/NotesSection';
 import PrintSettingsModal from '../components/BOM/PrintSettingsModal';
 import {
   DEFAULT_ALUMINIUM_RATE_PER_KG,
+  DEFAULT_HDG_RATE_PER_KG,
+  DEFAULT_MAGNELIS_RATE_PER_KG,
   DEFAULT_SPARE_PERCENTAGE,
   DEFAULT_MODULE_WP
 } from '../constants/bomDefaults';
@@ -101,6 +103,8 @@ export default function AdminBOMView() {
           printSettings: settings,
           projectId: parseInt(projectId), // Database project ID
           aluminumRate,
+          hdgRate,
+          magnelisRate,
           sparePercentage,
           moduleWp,
           changeLog,
@@ -116,6 +120,8 @@ export default function AdminBOMView() {
           printSettings: settings,
           projectId: parseInt(projectId), // Database project ID
           aluminumRate,
+          hdgRate,
+          magnelisRate,
           sparePercentage,
           moduleWp,
           changeLog,
@@ -295,6 +301,8 @@ export default function AdminBOMView() {
 
   // Get aluminum rate, spare percentage, and module Wp from bomData
   const aluminumRate = bomData.aluminumRate || DEFAULT_ALUMINIUM_RATE_PER_KG;
+  const hdgRate = bomData.hdgRate ?? DEFAULT_HDG_RATE_PER_KG;
+  const magnelisRate = bomData.magnelisRate ?? DEFAULT_MAGNELIS_RATE_PER_KG;
   const sparePercentage = bomData.sparePercentage || DEFAULT_SPARE_PERCENTAGE;
   const moduleWp = bomData.moduleWp || DEFAULT_MODULE_WP;
 
