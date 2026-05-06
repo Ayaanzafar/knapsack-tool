@@ -4,8 +4,15 @@ import { bomAPI, customBomAPI, projectAPI } from '../services/api';
 import { getCurrentProjectId } from '../lib/tabStorageAPI';
 import TabContextMenu from '../components/TabContextMenu';
 import RenameTabDialog from '../components/RenameTabDialog';
+import PrintSettingsModal from '../components/BOM/PrintSettingsModal';
 import { API_URL } from '../services/config';
 import NumberInputWithSpinner from '../components/NumberInputWithSpinner';
+import { useAuth } from '../context/AuthContext';
+import { customBuildingToPrintBomData } from '../utils/customBomPrintAdapter';
+import {
+  DEFAULT_MODULE_WP,
+  DEFAULT_SPARE_PERCENTAGE,
+} from '../constants/bomDefaults';
 
 const MATERIALS = ['SS 304', 'Al 6063', 'GI'];
 
@@ -13,6 +20,11 @@ const MATERIAL_RATE_KEYS = {
   'Al 6063': 'al6063Rate',
   'GI': 'giRate',
 };
+
+/** Line item came from master catalog (editable via profile/fastener picker). */
+function isCatalogLineItem(item) {
+  return Boolean(item?.profileId) && item?.isCustomItem !== true;
+}
 
 function calcItem(item, rates, sparePercent = 0) {
   const length = parseFloat(item.length) || 0;
@@ -35,9 +47,9 @@ function calcItem(item, rates, sparePercent = 0) {
   return { ...item, spareQty, finalQty, rate, rm, wt, cost };
 }
 
-// ── Add Item Modal ────────────────────────────────────────────────────────────
+// ── Catalog item modal (add / edit) ───────────────────────────────────────────
 
-function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd }) {
+function CatalogItemModal({ isOpen, mode, editItem, profiles, rates, sparePercent, onClose, onAdd, onUpdate }) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(null);
   const [material, setMaterial] = useState('');
@@ -48,17 +60,30 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
   const [typeFilter, setTypeFilter] = useState('PROFILE');
 
   useEffect(() => {
-    if (isOpen) {
-      setSearch('');
+    if (!isOpen) return;
+    setSearch('');
+    setShowDropdown(false);
+    if (mode === 'edit' && editItem && isCatalogLineItem(editItem)) {
+      const prof = profiles.find(
+        p =>
+          p.id === editItem.profileId
+          || Number(p.id) === Number(editItem.profileId),
+      );
+      setSelected(prof || null);
+      setTypeFilter(editItem.itemType === 'FASTENER' ? 'FASTENER' : 'PROFILE');
+      setMaterial(editItem.material || MATERIALS[0]);
+      setLength(editItem.itemType === 'FASTENER' ? '' : String(editItem.length ?? ''));
+      setQuantity(String(editItem.quantity ?? ''));
+      setCostPerPiece(parseFloat(editItem.costPerPiece) || 0);
+    } else {
       setSelected(null);
       setMaterial('');
       setLength('');
       setQuantity('');
       setCostPerPiece(0);
-      setShowDropdown(false);
       setTypeFilter('PROFILE');
     }
-  }, [isOpen]);
+  }, [isOpen, mode, editItem, profiles]);
 
   const filtered = profiles.filter(p =>
     p.itemType === typeFilter &&
@@ -83,18 +108,46 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
   };
 
   const preview = selected
-    ? calcItem({ ...selected, material: material || selected.material || MATERIALS[0], length, quantity }, rates, sparePercent)
+    ? calcItem({
+      id: mode === 'edit' && editItem?.id ? editItem.id : 'preview',
+      profileId: selected.id || null,
+      itemType: selected.itemType || 'PROFILE',
+      genericName: selected.genericName,
+      itemCode: selected.sunrackCode || selected.serialNumber || '',
+      itemDescription: selected.itemDescription || '',
+      material: material || selected.material || MATERIALS[0],
+      designWeight: parseFloat(selected.designWeight) || 0,
+      costPerPiece,
+      rateKgOverride: mode === 'edit' && editItem?.profileId === selected.id ? editItem.rateKgOverride : null,
+      uom: selected.uom || '',
+      profileImagePath: selected.profileImagePath || null,
+      length: selected.itemType === 'FASTENER' ? 0 : parseFloat(length) || 0,
+      quantity: parseFloat(quantity) || 0,
+      isCustomItem: false,
+    }, rates, sparePercent)
     : null;
 
-  const isFastener = selected?.itemType === 'FASTENER' || (selected?.costPerPiece != null && parseFloat(selected.costPerPiece) > 0);
+  const isFastener =
+    selected?.itemType === 'FASTENER'
+    || (selected?.costPerPiece != null && parseFloat(selected.costPerPiece) > 0);
 
-  const handleAdd = () => {
-    if (!selected) { alert('Please select an item'); return; }
+  const handleSaveCatalog = () => {
+    if (!selected) {
+      alert(mode === 'edit'
+        ? 'Catalog item must be linked to a profile or fastener. Pick one from the list.'
+        : 'Please select an item');
+      return;
+    }
     if (!isFastener && (!length || parseFloat(length) <= 0)) { alert('Please enter a valid length'); return; }
     if (!quantity || parseFloat(quantity) <= 0) { alert('Please enter a valid quantity'); return; }
 
+    const profileChanged =
+      mode === 'edit'
+      && editItem
+      && Number(editItem.profileId) !== Number(selected.id);
+
     const newItem = calcItem({
-      id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+      id: mode === 'edit' && editItem?.id ? editItem.id : `item-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
       profileId: selected.id || null,
       itemType: selected.itemType || 'PROFILE',
       genericName: selected.genericName,
@@ -102,15 +155,20 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
       itemDescription: selected.itemDescription || '',
       material: material || MATERIALS[0],
       designWeight: parseFloat(selected.designWeight) || 0,
-      costPerPiece: costPerPiece,
-      rateKgOverride: null,
+      costPerPiece,
+      rateKgOverride: profileChanged ? null : (mode === 'edit' ? editItem.rateKgOverride : null),
       uom: selected.uom || '',
       profileImagePath: selected.profileImagePath || null,
       length: isFastener ? 0 : parseFloat(length),
       quantity: parseFloat(quantity),
+      isCustomItem: false,
     }, rates, sparePercent);
 
-    onAdd(newItem);
+    if (mode === 'edit' && editItem) {
+      onUpdate(newItem);
+    } else {
+      onAdd(newItem);
+    }
     onClose();
   };
 
@@ -121,8 +179,12 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
         {/* Header */}
         <div className="bg-gradient-to-r from-yellow-400 to-amber-500 px-6 py-4 rounded-t-2xl">
-          <h2 className="text-lg font-bold text-white">Add Item</h2>
-          <p className="text-yellow-100 text-sm mt-0.5">Select a profile or fastener from the catalog</p>
+          <h2 className="text-lg font-bold text-white">{mode === 'edit' ? 'Edit catalog item' : 'Add from catalog'}</h2>
+          <p className="text-yellow-100 text-sm mt-0.5">
+            {mode === 'edit'
+              ? 'Change profile or fastener, or adjust quantity and length'
+              : 'Select a profile or fastener from the catalog'}
+          </p>
         </div>
 
         <div className="px-6 py-5 space-y-4">
@@ -345,10 +407,277 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
           </button>
           <button
             type="button"
-            onClick={handleAdd}
+            onClick={handleSaveCatalog}
             className="flex-1 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-500 text-white rounded-xl text-sm font-bold hover:from-yellow-600 hover:to-amber-600 transition-all shadow-md"
           >
-            Add Item
+            {mode === 'edit' ? 'Save changes' : 'Add Item'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Custom line item modal (add / edit) ───────────────────────────────────────
+
+function CustomItemModal({ isOpen, editItem, rates, sparePercent, onClose, onAdd, onUpdate }) {
+  const [genericName, setGenericName] = useState('');
+  const [itemDescription, setItemDescription] = useState('');
+  const [itemCode, setItemCode] = useState('');
+  const [material, setMaterial] = useState(MATERIALS[0]);
+  const [itemType, setItemType] = useState('PROFILE');
+  const [designWeight, setDesignWeight] = useState('');
+  const [length, setLength] = useState('');
+  const [uom, setUom] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [costPerPiece, setCostPerPiece] = useState('0');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (editItem) {
+      setGenericName(editItem.genericName || '');
+      setItemDescription(editItem.itemDescription || '');
+      setItemCode(editItem.itemCode || '');
+      setMaterial(editItem.material || MATERIALS[0]);
+      setItemType(editItem.itemType === 'FASTENER' ? 'FASTENER' : 'PROFILE');
+      setDesignWeight(editItem.itemType === 'FASTENER' ? '' : String(editItem.designWeight ?? ''));
+      setLength(editItem.itemType === 'FASTENER' ? '' : String(editItem.length ?? ''));
+      setUom(editItem.uom || '');
+      setQuantity(String(editItem.quantity ?? ''));
+      setCostPerPiece(String(editItem.costPerPiece ?? 0));
+    } else {
+      setGenericName('');
+      setItemDescription('');
+      setItemCode('');
+      setMaterial(MATERIALS[0]);
+      setItemType('PROFILE');
+      setDesignWeight('');
+      setLength('');
+      setUom('nos');
+      setQuantity('');
+      setCostPerPiece('0');
+    }
+  }, [isOpen, editItem]);
+
+  const isFastener = itemType === 'FASTENER';
+
+  const handleSaveCustom = () => {
+    const name = genericName.trim();
+    if (!name) {
+      alert('Please enter an item name');
+      return;
+    }
+    if (!quantity || parseFloat(quantity) <= 0) {
+      alert('Please enter a valid quantity');
+      return;
+    }
+    if (!isFastener) {
+      const dw = parseFloat(designWeight);
+      if (designWeight === '' || Number.isNaN(dw) || dw < 0) {
+        alert('Please enter a valid design weight (kg/m)');
+        return;
+      }
+      if (!length || parseFloat(length) <= 0) {
+        alert('Please enter a valid length (mm)');
+        return;
+      }
+    }
+
+    const dwNum = isFastener ? 0 : parseFloat(designWeight) || 0;
+    const lenNum = isFastener ? 0 : parseFloat(length) || 0;
+    const q = parseFloat(quantity);
+    const cpp = parseFloat(costPerPiece) || 0;
+
+    const newItem = calcItem({
+      id: editItem?.id || `item-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+      profileId: null,
+      isCustomItem: true,
+      itemType: isFastener ? 'FASTENER' : 'PROFILE',
+      genericName: name,
+      itemDescription: itemDescription.trim() || name,
+      itemCode: itemCode.trim(),
+      material: material || MATERIALS[0],
+      designWeight: dwNum,
+      costPerPiece: cpp,
+      rateKgOverride: editItem?.rateKgOverride ?? null,
+      uom: (uom || 'nos').trim(),
+      profileImagePath: editItem?.profileImagePath || null,
+      length: lenNum,
+      quantity: q,
+    }, rates, sparePercent);
+
+    if (editItem) {
+      onUpdate(newItem);
+    } else {
+      onAdd(newItem);
+    }
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="bg-gradient-to-r from-violet-500 to-purple-600 px-6 py-4 rounded-t-2xl">
+          <h2 className="text-lg font-bold text-white">Custom item</h2>
+          <p className="text-violet-100 text-sm mt-0.5">
+            {editItem
+              ? 'Same fields as when you created this line — already filled in. Change only what you need, then save.'
+              : 'Fill in the details below, then add the line to this building.'}
+          </p>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+            {[
+              { label: 'Profile', value: 'PROFILE' },
+              { label: 'Fastener', value: 'FASTENER' },
+            ].map(({ label, value }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setItemType(value)}
+                className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${
+                  itemType === value
+                    ? value === 'PROFILE'
+                      ? 'bg-green-500 text-white shadow-sm'
+                      : 'bg-blue-500 text-white shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-1.5">Item name <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              value={genericName}
+              onChange={e => setGenericName(e.target.value)}
+              placeholder="e.g. Custom bracket"
+              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-1.5">Description</label>
+            <input
+              type="text"
+              value={itemDescription}
+              onChange={e => setItemDescription(e.target.value)}
+              placeholder="Optional detail"
+              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1.5">Sunrack / code</label>
+              <input
+                type="text"
+                value={itemCode}
+                onChange={e => setItemCode(e.target.value)}
+                placeholder="e.g. CUST-01"
+                className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1.5">UoM</label>
+              <input
+                type="text"
+                value={uom}
+                onChange={e => setUom(e.target.value)}
+                placeholder="nos"
+                className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-1.5">Material <span className="text-red-500">*</span></label>
+            <select
+              value={material}
+              onChange={e => setMaterial(e.target.value)}
+              className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm bg-white"
+            >
+              {MATERIALS.map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+
+          {!isFastener ? (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1.5">Wt/RM (kg/m) <span className="text-red-500">*</span></label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.0001"
+                  value={designWeight}
+                  onChange={e => setDesignWeight(e.target.value)}
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1.5">Length (mm) <span className="text-red-500">*</span></label>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={length}
+                  onChange={e => setLength(e.target.value)}
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="px-4 py-2.5 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 text-center">
+              Fasteners use cost per piece; length and profile weight are not used
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1.5">Quantity <span className="text-red-500">*</span></label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={quantity}
+                onChange={e => setQuantity(e.target.value)}
+                className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1.5">Cost / piece (₹)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={costPerPiece}
+                onChange={e => setCostPerPiece(e.target.value)}
+                className="w-full px-4 py-2.5 border-2 border-blue-200 rounded-xl text-sm bg-blue-50"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-3 px-6 pb-5">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 py-2.5 border-2 border-gray-300 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSaveCustom}
+            className="flex-1 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl text-sm font-bold hover:from-violet-600 hover:to-purple-700 shadow-md"
+          >
+            {editItem ? 'Save' : 'Add custom item'}
           </button>
         </div>
       </div>
@@ -361,6 +690,7 @@ function AddItemModal({ isOpen, profiles, rates, sparePercent, onClose, onAdd })
 export default function CustomBOMPage() {
   const navigate = useNavigate();
   const projectId = getCurrentProjectId();
+  const { user } = useAuth();
 
   const [project, setProject] = useState(null);
   const [profiles, setProfiles] = useState([]);
@@ -369,13 +699,17 @@ export default function CustomBOMPage() {
   const [rates, setRates] = useState({ al6063Rate: 320, giRate: 70 });
   const [buildings, setBuildings] = useState([]);
   const [activeBuilding, setActiveBuilding] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
+  /** @type {{ open: boolean, mode: 'add'|'edit', item: object|null }} */
+  const [catalogModal, setCatalogModal] = useState({ open: false, mode: 'add', item: null });
+  /** @type {{ open: boolean, item: object|null }} edit: item set; add: null */
+  const [customModal, setCustomModal] = useState({ open: false, item: null });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null); // { buildingId, itemId }
   const [contextMenu, setContextMenu] = useState({ isOpen: false, buildingId: null, position: { x: 0, y: 0 } });
   const [renameDialog, setRenameDialog] = useState({ isOpen: false, buildingId: null, currentName: '' });
+  const [printSettingsModalOpen, setPrintSettingsModalOpen] = useState(false);
 
   // Load project info, profiles, and saved BOM data
   useEffect(() => {
@@ -447,6 +781,27 @@ export default function CustomBOMPage() {
     ));
   }, [activeBuilding]);
 
+  const handleUpdateLineItem = useCallback((buildingId, updatedItem) => {
+    setBuildings(prev => prev.map(b => {
+      if (b.id !== buildingId) return b;
+      return {
+        ...b,
+        items: b.items.map(i =>
+          i.id === updatedItem.id ? calcItem(updatedItem, rates, sparePercent) : i,
+        ),
+      };
+    }));
+  }, [rates, sparePercent]);
+
+  const openEditLine = useCallback((item) => {
+    const useCustomModal = item.isCustomItem === true || item.profileId == null;
+    if (useCustomModal) {
+      setCustomModal({ open: true, item });
+    } else {
+      setCatalogModal({ open: true, mode: 'edit', item });
+    }
+  }, []);
+
   // Delete item
   const handleDeleteItem = (buildingId, itemId) => {
     setBuildings(prev => prev.map(b =>
@@ -487,7 +842,71 @@ export default function CustomBOMPage() {
     })));
   };
 
-  // Save
+  const activeBuildingData = buildings.find(b => b.id === activeBuilding);
+  const canPrint =
+    Boolean(projectId) && Boolean(activeBuildingData?.items?.length);
+
+  const handlePrintSettings = useCallback(
+    (settings, action) => {
+      if (!canPrint || !activeBuildingData) {
+        setPrintSettingsModalOpen(false);
+        return;
+      }
+
+      let bomData;
+      try {
+        bomData = customBuildingToPrintBomData({
+          project,
+          building: activeBuildingData,
+          moduleWp,
+          sparePercent,
+        });
+      } catch (err) {
+        alert(err?.message || 'Cannot prepare print preview.');
+        setPrintSettingsModalOpen(false);
+        return;
+      }
+
+      const aluminumRate = parseFloat(rates.al6063Rate) || 320;
+      const giRate = parseFloat(rates.giRate) || 70;
+
+      const shared = {
+        bomData,
+        printSettings: settings,
+        projectId: Number(projectId),
+        aluminumRate,
+        hdgRate: giRate,
+        magnelisRate: 0,
+        sparePercentage: parseFloat(sparePercent) || DEFAULT_SPARE_PERCENTAGE,
+        moduleWp: parseFloat(moduleWp) || DEFAULT_MODULE_WP,
+        changeLog: [],
+        userNotes: [],
+        printedBy: user?.username || 'Unknown',
+        returnTo: 'customBom',
+      };
+
+      if (action === 'preview') {
+        navigate('/bom/print-preview', { state: shared });
+      } else if (action === 'direct') {
+        navigate('/bom/print-preview', { state: { ...shared, autoPrint: true } });
+      }
+
+      setPrintSettingsModalOpen(false);
+    },
+    [
+      canPrint,
+      activeBuildingData,
+      project,
+      moduleWp,
+      sparePercent,
+      rates.al6063Rate,
+      rates.giRate,
+      projectId,
+      user?.username,
+      navigate,
+    ]
+  );
+
   const handleSave = async () => {
     setSaving(true);
     setSaveMsg('');
@@ -511,7 +930,7 @@ export default function CustomBOMPage() {
     }
   };
 
-  const activeB = buildings.find(b => b.id === activeBuilding);
+  const activeB = activeBuildingData;
   const totalItems = activeB?.items?.length || 0;
   const totalWt = activeB?.items?.reduce((s, i) => s + (i.wt || 0), 0) || 0;
   const totalCost = activeB?.items?.reduce((s, i) => s + (i.cost || 0), 0) || 0;
@@ -551,12 +970,28 @@ export default function CustomBOMPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
             {saveMsg && (
               <span className={`text-sm font-semibold px-3 py-1 rounded-full ${saveMsg === 'Saved!' ? 'text-green-700 bg-green-100' : 'text-red-700 bg-red-100'}`}>
                 {saveMsg}
               </span>
             )}
+            <button
+              type="button"
+              onClick={() => setPrintSettingsModalOpen(true)}
+              disabled={!canPrint}
+              title={
+                canPrint
+                  ? 'Preview or print the BOM for the selected building tab'
+                  : 'Add at least one line item to this building to print'
+              }
+              className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-yellow-600 text-gray-900 font-bold text-sm rounded-xl hover:bg-yellow-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            >
+              <svg className="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
+              </svg>
+              Print
+            </button>
             <button
               onClick={handleSave}
               disabled={saving}
@@ -751,7 +1186,7 @@ export default function CustomBOMPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                       </svg>
                       <p className="font-semibold text-gray-500">No items added yet</p>
-                      <p className="text-sm mt-1">Click "Add Item" to start building your BOM</p>
+                      <p className="text-sm mt-1">Use &quot;Add from catalog&quot; or &quot;Add custom item&quot; below</p>
                     </td>
                   </tr>
                 ) : (
@@ -897,17 +1332,30 @@ export default function CustomBOMPage() {
                           ₹{item.cost?.toLocaleString('en-IN', { maximumFractionDigits: 2 }) ?? '—'}
                         </td>
 
-                        {/* Delete */}
+                        {/* Edit / delete */}
                         <td className="px-1 py-2 text-center">
-                          <button
-                            onClick={() => setDeleteConfirm({ buildingId: activeBuilding, itemId: item.id })}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50 text-red-400 hover:text-red-600"
-                            title="Delete row"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                          </button>
+                          <div className="flex items-center justify-center gap-0.5">
+                            <button
+                              type="button"
+                              onClick={() => openEditLine(item)}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-amber-50 text-amber-600 hover:text-amber-800"
+                              title="Edit line"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteConfirm({ buildingId: activeBuilding, itemId: item.id })}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50 text-red-400 hover:text-red-600"
+                              title="Delete row"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                              </svg>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -941,29 +1389,56 @@ export default function CustomBOMPage() {
             </table>
           </div>
 
-          {/* Add Item Button */}
-          <div className="p-4 border-t border-yellow-100">
+          {/* Add line items */}
+          <div className="p-4 border-t border-yellow-100 flex flex-wrap gap-3">
             <button
-              onClick={() => setShowAddModal(true)}
+              type="button"
+              onClick={() => setCatalogModal({ open: true, mode: 'add', item: null })}
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-500 text-white text-sm font-bold rounded-xl hover:from-yellow-600 hover:to-amber-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"/>
               </svg>
-              Add Item
+              Add from catalog
+            </button>
+            <button
+              type="button"
+              onClick={() => setCustomModal({ open: true, item: null })}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-bold rounded-xl hover:from-violet-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"/>
+              </svg>
+              Add custom item
             </button>
           </div>
         </div>
       </div>
 
-      {/* Add Item Modal */}
-      <AddItemModal
-        isOpen={showAddModal}
+      <CatalogItemModal
+        key={catalogModal.mode === 'edit' && catalogModal.item?.id
+          ? `catalog-edit-${catalogModal.item.id}`
+          : 'catalog-add'}
+        isOpen={catalogModal.open}
+        mode={catalogModal.mode}
+        editItem={catalogModal.mode === 'edit' ? catalogModal.item : null}
         profiles={profiles}
         rates={rates}
         sparePercent={sparePercent}
-        onClose={() => setShowAddModal(false)}
+        onClose={() => setCatalogModal({ open: false, mode: 'add', item: null })}
         onAdd={handleAddItem}
+        onUpdate={item => handleUpdateLineItem(activeBuilding, item)}
+      />
+
+      <CustomItemModal
+        key={customModal.item?.id ? `custom-edit-${customModal.item.id}` : 'custom-add'}
+        isOpen={customModal.open}
+        editItem={customModal.item}
+        rates={rates}
+        sparePercent={sparePercent}
+        onClose={() => setCustomModal({ open: false, item: null })}
+        onAdd={handleAddItem}
+        onUpdate={item => handleUpdateLineItem(activeBuilding, item)}
       />
 
       {/* Tab right-click context menu */}
@@ -994,6 +1469,23 @@ export default function CustomBOMPage() {
           renameBuilding(renameDialog.buildingId, newName);
           setRenameDialog(d => ({ ...d, isOpen: false }));
         }}
+      />
+
+      <PrintSettingsModal
+        isOpen={printSettingsModalOpen}
+        onClose={() => setPrintSettingsModalOpen(false)}
+        onPrint={handlePrintSettings}
+        bomData={{ projectInfo: { projectName: project?.name || 'Custom BOM' } }}
+        aluminumRate={parseFloat(rates.al6063Rate) || 320}
+        sparePercentage={parseFloat(sparePercent) || 0}
+        moduleWp={parseFloat(moduleWp) || 0}
+        changeLog={[]}
+        userNotes={[]}
+        printScopeHint={
+          activeB?.name
+            ? `Only the «${activeB.name}» building tab is included. Switch tabs and print again to export another building.`
+            : undefined
+        }
       />
 
       {/* Delete Confirm Modal */}

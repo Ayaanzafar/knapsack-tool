@@ -162,6 +162,10 @@ export default function BOMPrintPreview() {
     if (isPreviewMode) return; // Don't navigate when in preview mode
 
     const handleAfterPrint = () => {
+      if (location.state?.returnTo === 'customBom') {
+        navigate('/custom-bom/app', { replace: true });
+        return;
+      }
       // Check where to return to
       if (location.state?.returnTo === 'adminBomView') {
         // Return to AdminBOMView
@@ -226,6 +230,10 @@ export default function BOMPrintPreview() {
   };
 
   const handleClose = () => {
+    if (location.state?.returnTo === 'customBom') {
+      navigate('/custom-bom/app', { replace: true });
+      return;
+    }
     // Check where to return to
     if (location.state?.returnTo === 'adminBomView') {
       // Return to AdminBOMView
@@ -268,6 +276,10 @@ export default function BOMPrintPreview() {
     printSettings.includeChangeLog ?? printSettings.includeDisclaimer
   );
   const orientation = (includeQuantity && includeSpare && includeCosting) ? 'landscape' : 'portrait';
+  const isCustomBom = Boolean(bomData?.projectInfo?.isCustomBom || bomData?.isCustomBom);
+  const customTotalWeightKg = isCustomBom
+    ? bomData.bomItems.reduce((acc, item) => acc + (Number(item.wt) || 0), 0)
+    : 0;
 
   return (
     <>
@@ -666,15 +678,6 @@ export default function BOMPrintPreview() {
         <div className="p-6 bg-white">
           {/* Header */}
           <div className="mb-6 border-b-2 border-purple-600 pb-4 relative">
-            {/* DEBUG INFO - Remove this after testing */}
-            <div className="no-print" style={{ background: 'yellow', padding: '5px', marginBottom: '10px', fontSize: '12px' }}>
-              <strong>DEBUG:</strong> Orientation = {orientation} |
-              includeQuantity={String(includeQuantity)} |
-              includeSpare={String(includeSpare)} |
-              includeCosting={String(includeCosting)} |
-              Title fontSize = {orientation === 'portrait' ? '10px' : '24px'}
-            </div>
-
             <h1
               className="font-bold text-gray-900"
               style={{
@@ -695,6 +698,16 @@ export default function BOMPrintPreview() {
             >
               {bomData.projectInfo.projectName}
             </p>
+            {isCustomBom && bomData.customBomMeta?.buildingName && (
+              <p className="text-gray-600 mt-1 text-sm">
+                Building: <span className="font-semibold">{bomData.customBomMeta.buildingName}</span>
+                {bomData.customBomMeta.sparePercent != null && (
+                  <span className="ml-2 text-gray-500">
+                    · Spare {bomData.customBomMeta.sparePercent}%
+                  </span>
+                )}
+              </p>
+            )}
           </div>
 
           {/* BOM Table */}
@@ -745,15 +758,15 @@ export default function BOMPrintPreview() {
                         {bomData.projectInfo.longRailVariation || 'BOM for U Cleat Long Rail'}
                       </th>
                       <th colSpan={2} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
-                        No. of Panels
+                        {isCustomBom ? 'Panels (N/A)' : 'No. of Panels'}
                       </th>
                       {bomData.tabs.map((tab, index) => (
                         <th key={`panel-${index}-${tab}`} className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
-                          {bomData.panelCounts[tab] || 0}
+                          {isCustomBom ? '—' : (bomData.panelCounts[tab] || 0)}
                         </th>
                       ))}
                       <th className="border border-gray-400 px-2 py-1 text-xs font-bold text-center">
-                        {Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0)}
+                        {isCustomBom ? '—' : Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0)}
                       </th>
                     </>
                   )}
@@ -762,7 +775,15 @@ export default function BOMPrintPreview() {
                     <>
                       <th className="bg-gray-200 w-4"></th>
                       <th colSpan={6} className="border border-gray-400 px-2 py-1 text-sm font-bold text-center">
-                        Aluminum Rate per kg: ₹{aluminumRate}
+                        {isCustomBom ? (
+                          <>
+                            Al 6063 (₹/kg): ₹{formatIndianNumber(Number(aluminumRate) || 0, 2)}
+                            <span className="mx-2 font-normal text-gray-700">|</span>
+                            GI (₹/kg): ₹{formatIndianNumber(Number(hdgRate) || 0, 2)}
+                          </>
+                        ) : (
+                          <>Aluminum Rate per kg: ₹{aluminumRate}</>
+                        )}
                       </th>
                     </>
                   )}
@@ -886,28 +907,53 @@ export default function BOMPrintPreview() {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-3 gap-4 mb-6 summary-cards">
-            <div className="p-3 border-2 border-gray-300 rounded summary-card">
-              <p className="text-xs font-semibold text-gray-600">Total Capacity</p>
-              <p className="text-lg font-bold text-gray-800">
-                {((Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp) / 1000).toFixed(2)} kWp
-              </p>
-            </div>
-            <div className="p-3 border-2 border-gray-300 rounded summary-card">
-              <p className="text-xs font-semibold text-gray-600">Cost/Wp</p>
-              <p className="text-lg font-bold text-gray-800">
-                ₹{formatIndianNumber(
-                  bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0) /
-                  (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp),
-                  2
-                )}
-              </p>
-            </div>
-            <div className="p-3 border-2 border-gray-300 rounded summary-card">
-              <p className="text-xs font-semibold text-gray-600">Total Cost</p>
-              <p className="text-lg font-bold text-gray-800">
-                ₹{formatIndianNumber(bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0), 2)}
-              </p>
-            </div>
+            {isCustomBom ? (
+              <>
+                <div className="p-3 border-2 border-gray-300 rounded summary-card">
+                  <p className="text-xs font-semibold text-gray-600">Module Wp (reference)</p>
+                  <p className="text-lg font-bold text-gray-800">
+                    {moduleWp != null ? `${Number(moduleWp)} W` : '—'}
+                  </p>
+                </div>
+                <div className="p-3 border-2 border-gray-300 rounded summary-card">
+                  <p className="text-xs font-semibold text-gray-600">Total weight</p>
+                  <p className="text-lg font-bold text-gray-800">
+                    {formatIndianNumber(customTotalWeightKg, 3)} kg
+                  </p>
+                </div>
+                <div className="p-3 border-2 border-gray-300 rounded summary-card">
+                  <p className="text-xs font-semibold text-gray-600">Total Cost</p>
+                  <p className="text-lg font-bold text-gray-800">
+                    ₹{formatIndianNumber(bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0), 2)}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="p-3 border-2 border-gray-300 rounded summary-card">
+                  <p className="text-xs font-semibold text-gray-600">Total Capacity</p>
+                  <p className="text-lg font-bold text-gray-800">
+                    {((Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp) / 1000).toFixed(2)} kWp
+                  </p>
+                </div>
+                <div className="p-3 border-2 border-gray-300 rounded summary-card">
+                  <p className="text-xs font-semibold text-gray-600">Cost/Wp</p>
+                  <p className="text-lg font-bold text-gray-800">
+                    ₹{formatIndianNumber(
+                      bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0) /
+                      (Object.values(bomData.panelCounts).reduce((a, b) => a + b, 0) * moduleWp),
+                      2
+                    )}
+                  </p>
+                </div>
+                <div className="p-3 border-2 border-gray-300 rounded summary-card">
+                  <p className="text-xs font-semibold text-gray-600">Total Cost</p>
+                  <p className="text-lg font-bold text-gray-800">
+                    ₹{formatIndianNumber(bomData.bomItems.reduce((acc, item) => acc + (item.cost || 0), 0), 2)}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Notes */}

@@ -1,7 +1,19 @@
 // src/components/BOM/PrintSettingsModal.jsx
 import { useState } from 'react';
 
-export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, aluminumRate, sparePercentage, moduleWp, changeLog, userNotes }) {
+export default function PrintSettingsModal({
+  isOpen,
+  onClose,
+  onPrint,
+  bomData,
+  aluminumRate,
+  sparePercentage,
+  moduleWp,
+  changeLog,
+  userNotes,
+  /** Shown under the title when set (e.g. which building is included in the printout) */
+  printScopeHint,
+}) {
   const [settings, setSettings] = useState({
     includeQuantity: true,
     includeSpare: true,
@@ -80,6 +92,11 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
 
         {/* Main Content */}
         <div className="p-6 flex flex-col overflow-y-auto">
+            {printScopeHint && (
+              <p className="text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+                {printScopeHint}
+              </p>
+            )}
             {/* Instructions */}
             <p className="text-sm text-gray-600 mb-4">
               Select which sections to include in your printout:
@@ -199,24 +216,27 @@ export default function PrintSettingsModal({ isOpen, onClose, onPrint, bomData, 
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              {/* <button
-                onClick={() => onPrint(settings, 'pdf')}
-                className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center justify-center gap-2"
+              <button
+                type="button"
+                onClick={handlePreview}
+                className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0 1 1 0 002 0z" clipRule="evenodd" />
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
                 </svg>
-                Export PDF
-              </button> */}
+                Preview
+              </button>
 
               <button
+                type="button"
                 onClick={handleDirectPrint}
                 className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center gap-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
                 </svg>
-                Print
+                Print now
               </button>
 
               <button
