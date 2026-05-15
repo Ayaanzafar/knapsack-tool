@@ -1,6 +1,6 @@
 // src/components/BOM/BOMPrintPreview.jsx
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../../styles/print.css';
 import { API_URL } from '../../services/config';
 import NotesSection from './NotesSection';
@@ -27,6 +27,7 @@ export default function BOMPrintPreview() {
   const [userNotes, setUserNotes] = useState([]);
   const [printedBy, setPrintedBy] = useState('');
   const [printedAt] = useState(new Date()); // Current timestamp when preview is opened
+  const hasTriggeredAutoPrint = useRef(false);
 
   const resolveImageUrl = (rawUrl) => {
     if (!rawUrl) return null;
@@ -48,6 +49,10 @@ export default function BOMPrintPreview() {
   const params = new URLSearchParams(location.search);
   const isPreviewMode = params.get('previewMode') === 'true';
   const tempId = params.get('tempId');
+  /** Skip on-screen preview toolbar; open browser print once content is rendered */
+  const isDirectPrintFlow =
+    !isPreviewMode
+    && (params.get('autoPrint') === 'true' || params.get('autoPrint') === '1' || Boolean(location.state?.autoPrint));
 
   useEffect(() => {
     // Check if loading from temp data (for PDF export)
@@ -90,13 +95,6 @@ export default function BOMPrintPreview() {
 
           // Signal that page is ready for PDF generation
           window.bomPageReady = true;
-
-          // Auto-print if requested
-          if (searchParams.get('autoPrint') === 'true') {
-            setTimeout(() => {
-              window.print();
-            }, 1000);
-          }
         })
         .catch(err => {
           console.error('Failed to load temp data:', err);
@@ -129,19 +127,30 @@ export default function BOMPrintPreview() {
       } else {
         setScale(90); // For 1-2 sections, 90% is usually good
       }
-
-      // Auto-print if requested
-      if (location.state.autoPrint) {
-        setTimeout(() => {
-          window.print();
-        }, 500);
-      }
     } else {
       // No data, redirect back
       alert('No print data available');
       navigate(-1);
     }
   }, [location.state, location.search, navigate]);
+
+  // Direct print: open browser dialog after BOM content is in the DOM (not while loading spinner shows)
+  useEffect(() => {
+    if (!isDirectPrintFlow || !bomData || !printSettings || hasTriggeredAutoPrint.current) {
+      return;
+    }
+    hasTriggeredAutoPrint.current = true;
+
+    const timer = window.setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.print();
+        });
+      });
+    }, 400);
+
+    return () => window.clearTimeout(timer);
+  }, [bomData, printSettings, isDirectPrintFlow]);
 
   // Set page title for print header
   useEffect(() => {
@@ -579,8 +588,8 @@ export default function BOMPrintPreview() {
 
       `}</style>
 
-      {/* Action Buttons & Controls - Hidden in print and preview mode */}
-      {!isPreviewMode && (
+      {/* Action Buttons & Controls - Hidden in print, iframe preview, and direct-print flow */}
+      {!isPreviewMode && !isDirectPrintFlow && (
         <div className="no-print fixed top-4 right-4 z-50 flex flex-col gap-3">
         {/* Action Buttons */}
         <div className="flex gap-3">

@@ -888,7 +888,7 @@ export default function CustomBOMPage() {
       if (action === 'preview') {
         navigate('/bom/print-preview', { state: shared });
       } else if (action === 'direct') {
-        navigate('/bom/print-preview', { state: { ...shared, autoPrint: true } });
+        navigate('/bom/print-preview?autoPrint=1', { state: { ...shared, autoPrint: true } });
       }
 
       setPrintSettingsModalOpen(false);

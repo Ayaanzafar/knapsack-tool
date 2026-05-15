@@ -350,8 +350,8 @@ export default function WalkwayBOMPage() {
   };
 
   const handlePrintPreview = () => {
-    sessionStorage.setItem('walkwayBomPrint', JSON.stringify({ bom, settings, project }));
-    navigate('/walkway-bom/print-preview');
+    sessionStorage.setItem('walkwayBomPrint', JSON.stringify({ bom, settings, project, autoPrint: true }));
+    navigate('/walkway-bom/print-preview?autoPrint=1');
   };
 
   if (loading) {

@@ -1,9 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function WalkwayBOMPrintPreview() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [data, setData] = useState(null);
+  const hasTriggeredAutoPrint = useRef(false);
+
+  const isDirectPrintFlow =
+    new URLSearchParams(location.search).get('autoPrint') === '1'
+    || new URLSearchParams(location.search).get('autoPrint') === 'true';
 
   useEffect(() => {
     const raw = sessionStorage.getItem('walkwayBomPrint');
@@ -15,6 +21,26 @@ export default function WalkwayBOMPrintPreview() {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    if (!data || !isDirectPrintFlow || hasTriggeredAutoPrint.current) return;
+    hasTriggeredAutoPrint.current = true;
+
+    const timer = window.setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => window.print());
+      });
+    }, 400);
+
+    return () => window.clearTimeout(timer);
+  }, [data, isDirectPrintFlow]);
+
+  useEffect(() => {
+    if (!isDirectPrintFlow) return;
+    const handleAfterPrint = () => navigate('/walkway-bom', { replace: true });
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
+  }, [isDirectPrintFlow, navigate]);
+
   if (!data) return null;
 
   const { bom, settings, project } = data;
@@ -22,7 +48,8 @@ export default function WalkwayBOMPrintPreview() {
 
   return (
     <>
-      {/* Print toolbar — hidden when printing */}
+      {/* Toolbar only when user chose on-screen preview (not direct print) */}
+      {!isDirectPrintFlow && (
       <div className="no-print bg-gray-800 text-white px-6 py-3 flex items-center justify-between sticky top-0 z-50">
         <span className="font-semibold text-sm">Print Preview — Walkway BOM</span>
         <div className="flex gap-3">
@@ -40,6 +67,7 @@ export default function WalkwayBOMPrintPreview() {
           </button>
         </div>
       </div>
+      )}
 
       <div className="print-page bg-white min-h-screen px-10 py-8 text-gray-900 font-sans text-sm max-w-[1050px] mx-auto">
         {/* ── Document header ── */}

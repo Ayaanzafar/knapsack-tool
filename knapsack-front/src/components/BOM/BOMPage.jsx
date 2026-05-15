@@ -2771,7 +2771,7 @@ export default function BOMPage() {
         }
       });
     } else if (action === 'direct') {
-      navigate('/bom/print-preview', {
+      navigate('/bom/print-preview?autoPrint=1', {
         state: {
           bomData,
           printSettings: settings,
